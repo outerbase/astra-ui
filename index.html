@@ -1,0 +1,227 @@
+<html>
+<head>
+    <script type="module" src="./components/button.js" defer></script>
+    <script type="module" src="./components/card.js" defer></script>
+    <script type="module" src="./components/label.js" defer></script>
+    <script type="module" src="./components/input.js" defer></script>
+    <script type="module" src="./components/select.js" defer></script>
+
+    <style>
+        body {
+            background-color: #fafafa;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #0a0a0a;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div style="display: flex; flex-direction: column; margin: auto; width: 600px;">
+        <div style="margin: 130px 0 32px; display: flex; flex-direction: column; gap: 4px;">
+            <astra-label type="h1">Astra</astra-label>
+            <astra-label>The Outerbase component library</astra-label>
+        </div>
+
+        <astra-card size="base">
+            <astra-label type="h2">Card</astra-label>
+            <astra-label type="p">This is a card element.</astra-label>
+        </astra-card>
+
+        <div style="margin: 40px 0 0px; display: flex; flex-direction: column; gap: 4px;">
+            <astra-label type="h2">Button</astra-label>
+            <astra-label>Used for actions and links.</astra-label>
+        </div>
+
+        <div style="margin: 40px 0 16px;">
+            <astra-label type="h4" style="margin-bottom: 4px;">Variants</astra-label>
+        </div>
+
+        <astra-label type="label" style="margin: 24px 0 8px;">Primary</astra-label>
+
+        <div style="display: flex; gap: 8px; margin-bottom: 24px;">
+            <astra-button variant="primary" onclick="test()">Base</astra-button>
+            <astra-button variant="primary" onclick="test()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 256 256"><path d="M197.67,186.37a8,8,0,0,1,0,11.29C196.58,198.73,170.82,224,128,224c-37.39,0-64.53-22.4-80-39.85V208a8,8,0,0,1-16,0V160a8,8,0,0,1,8-8H88a8,8,0,0,1,0,16H55.44C67.76,183.35,93,208,128,208c36,0,58.14-21.46,58.36-21.68A8,8,0,0,1,197.67,186.37ZM216,40a8,8,0,0,0-8,8V71.85C192.53,54.4,165.39,32,128,32,85.18,32,59.42,57.27,58.34,58.34a8,8,0,0,0,11.3,11.34C69.86,69.46,92,48,128,48c35,0,60.24,24.65,72.56,40H168a8,8,0,0,0,0,16h48a8,8,0,0,0,8-8V48A8,8,0,0,0,216,40Z"></path></svg>
+                Icon Left
+            </astra-button>
+            <astra-button variant="primary" onclick="test()">
+                Icon Right
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 256 256"><path d="M197.67,186.37a8,8,0,0,1,0,11.29C196.58,198.73,170.82,224,128,224c-37.39,0-64.53-22.4-80-39.85V208a8,8,0,0,1-16,0V160a8,8,0,0,1,8-8H88a8,8,0,0,1,0,16H55.44C67.76,183.35,93,208,128,208c36,0,58.14-21.46,58.36-21.68A8,8,0,0,1,197.67,186.37ZM216,40a8,8,0,0,0-8,8V71.85C192.53,54.4,165.39,32,128,32,85.18,32,59.42,57.27,58.34,58.34a8,8,0,0,0,11.3,11.34C69.86,69.46,92,48,128,48c35,0,60.24,24.65,72.56,40H168a8,8,0,0,0,0,16h48a8,8,0,0,0,8-8V48A8,8,0,0,0,216,40Z"></path></svg>
+            </astra-button>
+            <astra-button variant="primary" disabled onclick="test()">Disabled</astra-button>
+            <astra-button variant="primary" size="small" onclick="test()">Small</astra-button>
+            <astra-button variant="primary" size="compact" onclick="test()">Compact</astra-button>
+        </div>
+
+        <astra-label type="label" style="margin-bottom: 8px;">Secondary</astra-label>
+
+        <div style="display: flex; gap: 8px; margin-bottom: 24px;">
+            <astra-button variant="secondary" onclick="test()">Base</astra-button>
+            <astra-button variant="secondary" onclick="test()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 256 256"><path d="M197.67,186.37a8,8,0,0,1,0,11.29C196.58,198.73,170.82,224,128,224c-37.39,0-64.53-22.4-80-39.85V208a8,8,0,0,1-16,0V160a8,8,0,0,1,8-8H88a8,8,0,0,1,0,16H55.44C67.76,183.35,93,208,128,208c36,0,58.14-21.46,58.36-21.68A8,8,0,0,1,197.67,186.37ZM216,40a8,8,0,0,0-8,8V71.85C192.53,54.4,165.39,32,128,32,85.18,32,59.42,57.27,58.34,58.34a8,8,0,0,0,11.3,11.34C69.86,69.46,92,48,128,48c35,0,60.24,24.65,72.56,40H168a8,8,0,0,0,0,16h48a8,8,0,0,0,8-8V48A8,8,0,0,0,216,40Z"></path></svg>
+                Icon Left
+            </astra-button>
+            <astra-button variant="secondary" onclick="test()">
+                Icon Right
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 256 256"><path d="M197.67,186.37a8,8,0,0,1,0,11.29C196.58,198.73,170.82,224,128,224c-37.39,0-64.53-22.4-80-39.85V208a8,8,0,0,1-16,0V160a8,8,0,0,1,8-8H88a8,8,0,0,1,0,16H55.44C67.76,183.35,93,208,128,208c36,0,58.14-21.46,58.36-21.68A8,8,0,0,1,197.67,186.37ZM216,40a8,8,0,0,0-8,8V71.85C192.53,54.4,165.39,32,128,32,85.18,32,59.42,57.27,58.34,58.34a8,8,0,0,0,11.3,11.34C69.86,69.46,92,48,128,48c35,0,60.24,24.65,72.56,40H168a8,8,0,0,0,0,16h48a8,8,0,0,0,8-8V48A8,8,0,0,0,216,40Z"></path></svg>
+            </astra-button>
+            <astra-button variant="secondary" disabled onclick="test()">Disabled</astra-button>
+            <astra-button variant="secondary" size="small" onclick="test()">Small</astra-button>
+            <astra-button variant="secondary" size="compact" onclick="test()">Compact</astra-button>
+        </div>
+
+        <astra-label type="label" style="margin-bottom: 8px;">Transparent</astra-label>
+
+        <div style="display: flex; gap: 8px; margin-bottom: 24px;">
+            <astra-button variant="transparent" onclick="test()">Base</astra-button>
+            <astra-button variant="transparent" onclick="test()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 256 256"><path d="M197.67,186.37a8,8,0,0,1,0,11.29C196.58,198.73,170.82,224,128,224c-37.39,0-64.53-22.4-80-39.85V208a8,8,0,0,1-16,0V160a8,8,0,0,1,8-8H88a8,8,0,0,1,0,16H55.44C67.76,183.35,93,208,128,208c36,0,58.14-21.46,58.36-21.68A8,8,0,0,1,197.67,186.37ZM216,40a8,8,0,0,0-8,8V71.85C192.53,54.4,165.39,32,128,32,85.18,32,59.42,57.27,58.34,58.34a8,8,0,0,0,11.3,11.34C69.86,69.46,92,48,128,48c35,0,60.24,24.65,72.56,40H168a8,8,0,0,0,0,16h48a8,8,0,0,0,8-8V48A8,8,0,0,0,216,40Z"></path></svg>
+                Icon Left
+            </astra-button>
+            <astra-button variant="transparent" onclick="test()">
+                Icon Right
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 256 256"><path d="M197.67,186.37a8,8,0,0,1,0,11.29C196.58,198.73,170.82,224,128,224c-37.39,0-64.53-22.4-80-39.85V208a8,8,0,0,1-16,0V160a8,8,0,0,1,8-8H88a8,8,0,0,1,0,16H55.44C67.76,183.35,93,208,128,208c36,0,58.14-21.46,58.36-21.68A8,8,0,0,1,197.67,186.37ZM216,40a8,8,0,0,0-8,8V71.85C192.53,54.4,165.39,32,128,32,85.18,32,59.42,57.27,58.34,58.34a8,8,0,0,0,11.3,11.34C69.86,69.46,92,48,128,48c35,0,60.24,24.65,72.56,40H168a8,8,0,0,0,0,16h48a8,8,0,0,0,8-8V48A8,8,0,0,0,216,40Z"></path></svg>
+            </astra-button>
+            <astra-button variant="transparent" disabled onclick="test()">Disabled</astra-button>
+            <astra-button variant="transparent" size="small" onclick="test()">Small</astra-button>
+            <astra-button variant="transparent" size="compact" onclick="test()">Compact</astra-button>
+        </div>
+
+        <astra-label type="label" style="margin-bottom: 8px;">Destructive</astra-label>
+
+        <div style="display: flex; gap: 8px; margin-bottom: 24px;">
+            <astra-button variant="destructive" class="dark" onclick="test()">Base</astra-button>
+            <astra-button variant="destructive" onclick="test()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 256 256"><path d="M236.8,188.09,149.35,36.22h0a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.35,24.35,0,0,0,40.55,224h174.9a24.35,24.35,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM222.93,203.8a8.5,8.5,0,0,1-7.48,4.2H40.55a8.5,8.5,0,0,1-7.48-4.2,7.59,7.59,0,0,1,0-7.72L120.52,44.21a8.75,8.75,0,0,1,15,0l87.45,151.87A7.59,7.59,0,0,1,222.93,203.8ZM120,144V104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z"></path></svg>
+                Icon Left
+            </astra-button>
+            <astra-button variant="destructive" onclick="test()">
+                Icon Right
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 256 256"><path d="M236.8,188.09,149.35,36.22h0a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.35,24.35,0,0,0,40.55,224h174.9a24.35,24.35,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM222.93,203.8a8.5,8.5,0,0,1-7.48,4.2H40.55a8.5,8.5,0,0,1-7.48-4.2,7.59,7.59,0,0,1,0-7.72L120.52,44.21a8.75,8.75,0,0,1,15,0l87.45,151.87A7.59,7.59,0,0,1,222.93,203.8ZM120,144V104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z"></path></svg>
+            </astra-button>
+            <astra-button variant="destructive" disabled onclick="test()">Disabled</astra-button>
+            <astra-button variant="destructive" size="small" onclick="test()">Small</astra-button>
+            <astra-button variant="destructive" size="compact" onclick="test()">Compact</astra-button>
+        </div>
+
+        <astra-label type="h4" style="margin: 24px 0;">Shape</astra-label>
+        <astra-label type="label" style="margin-bottom: 8px;">Square</astra-label>
+
+        <div style="display: flex; gap: 8px; margin-bottom: 24px;">
+            <astra-button variant="secondary" shape="square" onclick="test()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 256 256"><path d="M144,128a16,16,0,1,1-16-16A16,16,0,0,1,144,128ZM60,112a16,16,0,1,0,16,16A16,16,0,0,0,60,112Zm136,0a16,16,0,1,0,16,16A16,16,0,0,0,196,112Z"></path></svg>
+            </astra-button>
+            <astra-button variant="secondary" shape="square" size="small" onclick="test()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 256 256"><path d="M144,128a16,16,0,1,1-16-16A16,16,0,0,1,144,128ZM60,112a16,16,0,1,0,16,16A16,16,0,0,0,60,112Zm136,0a16,16,0,1,0,16,16A16,16,0,0,0,196,112Z"></path></svg>
+            </astra-button>
+            <astra-button variant="secondary" shape="square" size="compact" onclick="test()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 256 256"><path d="M144,128a16,16,0,1,1-16-16A16,16,0,0,1,144,128ZM60,112a16,16,0,1,0,16,16A16,16,0,0,0,60,112Zm136,0a16,16,0,1,0,16,16A16,16,0,0,0,196,112Z"></path></svg>
+            </astra-button>
+        </div>
+
+        <astra-label type="label" style="margin-bottom: 8px;">Circle</astra-label>
+
+        <div style="display: flex; gap: 8px; margin-bottom: 24px;">
+            <astra-button shape="circle" onclick="test()">
+                <img alt="User avatar" loading="lazy" decoding="async" data-nimg="fill" src="https://app.dev.outerbase.com/assets/uploads/7cfd372e-1d00-49f0-af73-4f37fc3cf67b/500?j=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoie1wicGF0aFwiOlwiL2Fzc2V0cy91cGxvYWRzLzdjZmQzNzJlLTFkMDAtNDlmMC1hZjczLTRmMzdmYzNjZjY3Yi81MDBcIn0iLCJpYXQiOjE3MTI2MjA4MDAsImV4cCI6MTcxMjcwNzIwMH0.vYF0Q6iks-GDzrTmKNQbJAOIdu7wAkY959wKI9Ju620" style="height: 100%; width: 100%; inset: 0px; color: transparent;">
+            </astra-button>
+            <astra-button shape="circle" size="small" onclick="test()">
+                BW
+            </astra-button>
+            <astra-button variant="secondary" shape="circle" size="compact" onclick="test()"></astra-button>
+        </div>
+
+
+        <div style="margin: 40px 0 0px; display: flex; flex-direction: column; gap: 4px;">
+            <astra-label type="h2">Label</astra-label>
+            <astra-label>Used to define inputs in forms.</astra-label>
+
+            <div style="margin-top: 16px;">
+                <astra-label type="h1">Heading 1</astra-label>
+                <astra-label type="h2">Heading 2</astra-label>
+                <astra-label type="h3">Heading 3</astra-label>
+                <astra-label type="h4">Heading 4</astra-label>
+                <astra-label type="h5">Heading 5</astra-label>
+                <astra-label type="p">Paragraph</astra-label>
+                <astra-label type="label">Label</astra-label>
+            </div>
+        </div>
+
+        <div style="margin: 40px 0 0px; display: flex; flex-direction: column; gap: 4px;">
+            <astra-label type="h2">Select</astra-label>
+            <astra-label>Used for option selection.</astra-label>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 32px; margin-top: 40px;">
+            <astra-select placeholder="Placeholder Input">
+                <option value="1">Option 1</option>
+                <option value="2">Option 2</option>
+                <option value="3">Option 3</option>
+            </astra-select>
+        </div>
+
+        <div style="margin: 40px 0 0px; display: flex; flex-direction: column; gap: 4px;">
+            <astra-label type="h2">Input</astra-label>
+            <astra-label>Used for text entry.</astra-label>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 32px; margin-top: 40px;">
+            <div style="display: flex; flex-direction: column; width: 50%;">
+                <astra-label type="h4" style="margin-bottom: 20px;">Placeholder</astra-label>
+                <astra-label type="label" style="margin-bottom: 6px;">Label</astra-label>
+                <astra-input placeholder="Default Input"></astra-input>
+            </div>
+
+            <div style="display: flex; flex-direction: column; width: 50%;">
+                <astra-label type="h4" style="margin-bottom: 20px;">Default</astra-label>
+                <astra-input placeholder="Default Input" value="Brayden Wilmoth"></astra-input>
+            </div>
+    
+            <div style="display: flex; flex-direction: column; width: 50%;">
+                <astra-label type="h4" style="margin-bottom: 20px;">Left Slot</astra-label>
+                <astra-input placeholder="Default Input">
+                    <svg slot="left" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M208,144a15.78,15.78,0,0,1-10.42,14.94l-51.65,19-19,51.61a15.92,15.92,0,0,1-29.88,0L78,178l-51.62-19a15.92,15.92,0,0,1,0-29.88l51.65-19,19-51.61a15.92,15.92,0,0,1,29.88,0l19,51.65,51.61,19A15.78,15.78,0,0,1,208,144ZM152,48h16V64a8,8,0,0,0,16,0V48h16a8,8,0,0,0,0-16H184V16a8,8,0,0,0-16,0V32H152a8,8,0,0,0,0,16Zm88,32h-8V72a8,8,0,0,0-16,0v8h-8a8,8,0,0,0,0,16h8v8a8,8,0,0,0,16,0V96h8a8,8,0,0,0,0-16Z"></path></svg>
+                </astra-input>
+            </div>
+
+            <div style="display: flex; flex-direction: column; width: 50%;">
+                <astra-label type="h4" style="margin-bottom: 20px;">Right Slot</astra-label>
+                <astra-input placeholder="Default Input">
+                    <astra-button slot="right" variant="transparent" shape="square" size="compact" onclick="test()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z"></path></svg>
+                    </astra-button>
+                </astra-input>
+            </div>
+
+            <div style="display: flex; flex-direction: column; width: 50%;">
+                <astra-label type="h4" style="margin-bottom: 20px;">Both Slots – Padding Adjusted</astra-label>
+                <astra-input placeholder="Default Input" style="padding-right: 4px;">
+                    <svg slot="left" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256" class="mb-1.5"><path d="M208,144a15.78,15.78,0,0,1-10.42,14.94l-51.65,19-19,51.61a15.92,15.92,0,0,1-29.88,0L78,178l-51.62-19a15.92,15.92,0,0,1,0-29.88l51.65-19,19-51.61a15.92,15.92,0,0,1,29.88,0l19,51.65,51.61,19A15.78,15.78,0,0,1,208,144ZM152,48h16V64a8,8,0,0,0,16,0V48h16a8,8,0,0,0,0-16H184V16a8,8,0,0,0-16,0V32H152a8,8,0,0,0,0,16Zm88,32h-8V72a8,8,0,0,0-16,0v8h-8a8,8,0,0,0,0,16h8v8a8,8,0,0,0,16,0V96h8a8,8,0,0,0,0-16Z"></path></svg>
+                    <astra-button slot="right" variant="transparent" shape="square" size="compact" onclick="test()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256" class="m-auto align-middle"><path d="M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z"></path></svg>
+                    </astra-button>
+                </astra-input>
+            </div>
+
+            <div style="display: flex; flex-direction: column; width: 50%;">
+                <astra-label type="h4" style="margin-bottom: 20px;">Pre Text - Disabled</astra-label>
+                <astra-label type="label" style="margin-bottom: 6px;">Workspace Name *</astra-label>
+                <astra-input placeholder="MyApp" style="gap: 2px;">
+                    <div slot="left" style="color: gray; opacity: 0.5; cursor: not-allowed;">app.outerbase.com/</div>
+                </astra-input>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    function test() {
+        console.log('test');
+    }
+</script>
+
+</html>
