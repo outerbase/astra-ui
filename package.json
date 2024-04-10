@@ -5,12 +5,7 @@
     "main": "dist/astra.js",
     "module": "dist/astra.js",
     "scripts": {
-      "test": "echo \"Error: no test specified\" && exit 1",
-      "run-local-server": "npx serve .",
-      "build-web-component-bundle": "webpack --mode production",
-      "prepack": "npm run build-web-component-bundle",
-      "publish-npm-module": "npm publish --access restricted",
-      "watch": "node build.mjs"
+      "run-local-server": "npx serve ."
     },
     "files": [
       "dist/*"
