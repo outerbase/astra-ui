@@ -1,17 +1,32 @@
 # Astra
 
-## How to use anywhere
-
-In the root of your project, run:
+## JavaScript or TypeScript
 
 ```
 npm add @outerbase/astra
 ```
 
-Then wherever you intend to use these components, include:
+```
+import  { AstraButton, AstraCard, AstraInput, AstraLabel, AstraSelect }
+from '@outerbase/astra'
+```
+
+## Web via NPM
 
 ```
-import '@outerbase/astra'
+npm add @outerbase/astra
+```
+
+```
+import '@outerbase/out/web-components/astra.bundle.js'
+```
+
+## Web
+
+Place `astra.bundle.js` (found in `out/web-components/astra.bundle.js`) somewhere accessible to your website and then update your HTML to include the following:
+
+```
+<script src="/path/to/astra.bundle.js"></script>
 ```
 
 ## How to use in React
