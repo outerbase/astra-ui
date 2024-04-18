@@ -10,7 +10,6 @@
         "strict": true,
         "experimentalDecorators": true,
         "useDefineForClassFields": false
-        // , "esModuleInterop": true
     },
-    "include": ["../src/components/**/*.ts"]
+    "include": ["../src/index.ts"]
 }
