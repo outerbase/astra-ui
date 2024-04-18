@@ -6,7 +6,7 @@
         "lib": ["es2021", "dom"],
         "declaration": true,
         "declarationMap": true,
-        "outDir": "../out/compiled",
+        "outDir": "../out/js",
         "strict": true,
         "experimentalDecorators": true,
         "useDefineForClassFields": false

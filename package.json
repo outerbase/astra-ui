@@ -2,11 +2,12 @@
     "name": "@outerbase/astra",
     "version": "0.0.1",
     "type": "module",
-    "main": "out/compiled/index.js",
-    "module": "out/compiled/index.js",
-    "types": "out/compiled/index.d.ts",
+    "main": "out/js/index.js",
+    "module": "out/js/index.js",
+    "types": "out/js/index.d.ts",
     "files": [
-        "out/compiled/*"
+        "out/js/*",
+        "out/web/astra.bundle.js"
     ],
     "scripts": {
         "dev": "astro dev --config .config/astro.config.mjs",
@@ -14,14 +15,19 @@
         "build:watch": "node .config/build-on-changes.mjs",
         "compile": "tsc -p .config/tsconfig.distribute.json",
         "compile:watch": "node .config/compile-typescript-on-changes.mjs",
+        "bundle": "rollup -c ./.config/rollup.config.js",
         "preview": "astro preview --config .config/astro.config.mjs",
-        "prepack": "pnpm build && pnpm compile"
+        "prepack": "concurrently \"pnpm compile\" \"pnpm bundle\""
     },
     "devDependencies": {
         "@astrojs/check": "^0.5.10",
         "@astrojs/lit": "^4.0.1",
         "@fontsource/inter": "^5.0.17",
         "@lit-labs/ssr-client": "^1.1.7",
+        "@rollup/plugin-commonjs": "^25.0.7",
+        "@rollup/plugin-multi-entry": "^6.0.1",
+        "@rollup/plugin-node-resolve": "^15.2.3",
+        "@rollup/plugin-terser": "^0.4.4",
         "@webcomponents/template-shadowroot": "^0.2.1",
         "astro": "^4.6.2",
         "chokidar": "^3.6.0",
@@ -29,6 +35,7 @@
         "lit": "^3.1.3",
         "prettier": "^3.2.5",
         "prettier-plugin-astro": "^0.13.0",
+        "rollup": "^4.14.3",
         "typescript": "^5.4.5"
     },
     "peerDependencies": {

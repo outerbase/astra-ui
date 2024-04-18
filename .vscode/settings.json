@@ -28,12 +28,12 @@
     "files.watcherExclude": {
         "**/node_modules": true,
         "**/dist": true,
-        "**/compiled": true
+        "**/js": true
     },
     "search.exclude": {
         "**/node_modules": true,
         "**/dist": true,
-        "**/compiled": true
+        "**/js": true
     },
     "[astro]": {
         "editor.defaultFormatter": "astro-build.astro-vscode"
