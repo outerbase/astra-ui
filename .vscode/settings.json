@@ -17,13 +17,12 @@
     "files.insertFinalNewline": true,
     "files.exclude": {
         "**/node_modules": true,
-        // ".config": true,
-        // "out": true,
-        // ".vscode": true,
+        ".config": true,
+        ".husky": true,
         ".prettierignore": true,
         ".prettierrc.json": true,
-        "pnpm-lock.yaml": true
-        // ".gitignore": true
+        "pnpm-lock.yaml": true,
+        ".gitignore": true
     },
     "files.watcherExclude": {
         "**/node_modules": true,
