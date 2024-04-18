@@ -7,7 +7,7 @@
     "types": "out/js/index.d.ts",
     "files": [
         "out/js/*",
-        "out/web/astra.bundle.js"
+        "out/web-components/astra.bundle.js"
     ],
     "scripts": {
         "dev": "astro dev --config .config/astro.config.mjs",

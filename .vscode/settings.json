@@ -27,12 +27,14 @@
     },
     "files.watcherExclude": {
         "**/node_modules": true,
-        "**/dist": true,
+        "**/web-site": true,
+        "**/web-components": true,
         "**/js": true
     },
     "search.exclude": {
         "**/node_modules": true,
-        "**/dist": true,
+        "**/web-site": true,
+        "**/web-components": true,
         "**/js": true
     },
     "[astro]": {

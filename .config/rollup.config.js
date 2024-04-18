@@ -4,12 +4,10 @@ import resolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
 
 export default {
-    // input: './out/js/index.js', // Point this to the file where your component is defined
     input: './out/js/components/**.js',
     output: {
         // name: 'Astra', // Name of the global variable to hold the module's default export
-        file: 'out/web/astra.bundle.js',
-        // dir: 'out/web',
+        file: 'out/web-components/astra.bundle.js',
         format: 'iife', // "iife" format for a self-executing function, suitable for inclusion as a <script> tag
     },
     plugins: [
