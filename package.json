@@ -2,15 +2,15 @@
     "name": "@outerbase/astra",
     "version": "0.0.1",
     "type": "module",
-    "main": "out/compiled/src/components/index.js",
-    "module": "out/compiled/src/components/index.js",
-    "types": "out/compiled/src/components/index.d.ts",
+    "main": "out/compiled/index.js",
+    "module": "out/compiled/index.js",
+    "types": "out/compiled/index.d.ts",
     "files": [
         "out/compiled/*"
     ],
     "scripts": {
         "dev": "astro dev --config .config/astro.config.mjs",
-        "build": "astro check --config .config/astro.config.mjs && astro build --config .config/astro.config.mjs && .config/bundle-files",
+        "build": "astro check --config .config/astro.config.mjs && astro build --config .config/astro.config.mjs",
         "build:watch": "node .config/build-on-changes.mjs",
         "compile": "tsc -p .config/tsconfig.distribute.json",
         "compile:watch": "node .config/compile-typescript-on-changes.mjs",
