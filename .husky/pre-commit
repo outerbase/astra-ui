@@ -1,8 +1,8 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-if [ ! -f "out/web-components/astra.bundle.js" ]; then
-    echo "Error: Required file 'out/web-components/astra.bundle.js' is missing."
+if [ ! -f "dist/web-components/astra.bundle.js" ]; then
+    echo "Error: Required file 'dist/web-components/astra.bundle.js' is missing."
     exit 1
 else
     exit 0

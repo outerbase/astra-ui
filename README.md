@@ -18,12 +18,12 @@ npm add @outerbase/astra
 ```
 
 ```
-import '@outerbase/out/web-components/astra.bundle.js'
+import '@outerbase/dist/web-components/astra.bundle.js'
 ```
 
 ## Web
 
-Place `astra.bundle.js` (found in `out/web-components/astra.bundle.js`) somewhere accessible to your website and then update your HTML to include the following:
+Place `astra.bundle.js` (found in `dist/web-components/astra.bundle.js`) somewhere accessible to your website and then update your HTML to include the following:
 
 ```
 <script src="/path/to/astra.bundle.js"></script>

@@ -4,5 +4,5 @@
         "experimentalDecorators": true,
         "useDefineForClassFields": false
     },
-    "exclude": ["out/**"]
+    "exclude": ["dist/**"]
 }

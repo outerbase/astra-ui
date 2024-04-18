@@ -1,6 +1,6 @@
 # build output
-out/js
-out/web-site
+dist/js
+dist/web-site
 
 # generated types
 .astro/
