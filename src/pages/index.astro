@@ -1,0 +1,63 @@
+---
+// server-side code goes here and can be accessed below
+import { AstraButton } from '../components/button'
+import { AstraInput } from '../components/input'
+import { AstraCard } from '../components/card'
+import { AstraLabel } from '../components/label'
+import { AstraSelect } from '../components/select'
+
+import '@fontsource/inter' // Defaults to weight 400
+
+const optionsArray = [
+    { label: 'Apples', value: 'apples' },
+    { label: 'Oranges', value: 'oranges' },
+    { label: 'Avocados', value: 'avocados' },
+]
+---
+
+<html lang="en" class="h-full">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="generator" content={Astro.generator} />
+        <style>
+            body {
+                margin: 2rem;
+            }
+            h2:not(:first-child) {
+                margin-top: 2rem;
+                border-top: 1px solid lime;
+            }
+        </style>
+        <script>
+            document.getElementById('arbitrary-button-id')?.addEventListener('click', () => alert('👏🎉'))
+        </script>
+    </head>
+    <body>
+        <main>
+            <h2><pre>&lt;astra-input /&gt;</pre></h2>
+            <AstraInput client:load />
+
+            <h2><pre>&lt;astra-button /&gt;</pre></h2>
+            <AstraButton client:load id="arbitrary-button-id">click click click click click</AstraButton>
+
+            <h2><pre>&lt;astra-card /&gt;</pre></h2>
+            <AstraCard client:load id="arbitrary-button-id">
+                <div>Div tag</div>
+                <p>Paragraph tag</p>
+                <span>Span tag</span>
+            </AstraCard>
+
+            <h2><pre>&lt;astra-label /&gt;</pre></h2>
+            <AstraLabel client:load>variant=undefined</AstraLabel>
+            <AstraLabel client:load variant="label">variant=label</AstraLabel>
+            <AstraLabel client:load variant="h1">variant=h1</AstraLabel>
+            <AstraLabel client:load variant="h2">variant=h2</AstraLabel>
+            <AstraLabel client:load variant="h3">variant=h3</AstraLabel>
+            <AstraLabel client:load variant="h4">variant=h4</AstraLabel>
+
+            <h2><pre>&lt;astra-select /&gt;</pre></h2>
+            <AstraSelect client:load options={optionsArray} placeholder="Choose a fruit" />
+        </main>
+    </body>
+</html>

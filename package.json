@@ -1,24 +1,38 @@
 {
     "name": "@outerbase/astra",
-    "version": "1.0",
-    "description": "",
-    "main": "dist/astra.js",
-    "module": "dist/astra.js",
-    "scripts": {
-      "run-local-server": "npx serve ."
-    },
+    "version": "0.0.1",
+    "type": "module",
+    "main": "out/compiled/src/components/index.js",
+    "module": "out/compiled/src/components/index.js",
+    "types": "out/compiled/src/components/index.d.ts",
     "files": [
-      "dist/*"
+        "out/compiled/*"
     ],
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "devDependencies": {
-        
+    "scripts": {
+        "dev": "astro dev --config .config/astro.config.mjs",
+        "build": "astro check --config .config/astro.config.mjs && astro build --config .config/astro.config.mjs && .config/bundle-files",
+        "build:watch": "node .config/build-on-changes.mjs",
+        "compile": "tsc -p .config/tsconfig.distribute.json",
+        "compile:watch": "node .config/compile-typescript-on-changes.mjs",
+        "preview": "astro preview --config .config/astro.config.mjs",
+        "prepack": "pnpm build && pnpm compile"
     },
-    "private": false,
+    "devDependencies": {
+        "@astrojs/check": "^0.5.10",
+        "@astrojs/lit": "^4.0.1",
+        "@fontsource/inter": "^5.0.17",
+        "@lit-labs/ssr-client": "^1.1.7",
+        "@webcomponents/template-shadowroot": "^0.2.1",
+        "astro": "^4.6.2",
+        "chokidar": "^3.6.0",
+        "concurrently": "^8.2.2",
+        "lit": "^3.1.3",
+        "prettier": "^3.2.5",
+        "prettier-plugin-astro": "^0.13.0",
+        "typescript": "^5.4.5"
+    },
     "peerDependencies": {
-      "@outerbase/scrollable-element": "^0.2.0"
+        "@fontsource/inter": "^5.0.17",
+        "lit": "^3.1.2"
     }
-  }
-  
+}

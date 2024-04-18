@@ -1,0 +1,41 @@
+{
+    "typescript.configFile": ".config/tsconfig.json",
+
+    "eslint.format.enable": true,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+
+    "typescript.preferences.importModuleSpecifier": "non-relative",
+    "javascript.preferences.importModuleSpecifier": "non-relative",
+
+    "files.associations": {
+        // "*.css": "tailwindcss"
+    },
+    "files.insertFinalNewline": true,
+    "files.exclude": {
+        "**/node_modules": true,
+        // ".config": true,
+        // "out": true,
+        // ".vscode": true,
+        ".prettierignore": true,
+        ".prettierrc.json": true,
+        "pnpm-lock.yaml": true
+        // ".gitignore": true
+    },
+    "files.watcherExclude": {
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/compiled": true
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/compiled": true
+    },
+    "[astro]": {
+        "editor.defaultFormatter": "astro-build.astro-vscode"
+    }
+}
