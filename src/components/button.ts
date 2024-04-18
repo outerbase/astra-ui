@@ -3,7 +3,7 @@ import { customElement, property } from 'lit/decorators.js'
 import baseStyles from '../lib/base-styles.js'
 
 @customElement('astra-button')
-export class AstraButton extends LitElement {
+export default class AstraButton extends LitElement {
     static styles = [
         baseStyles,
         css`

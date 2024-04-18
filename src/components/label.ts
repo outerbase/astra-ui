@@ -13,7 +13,7 @@ enum LabelVariant {
 }
 
 @customElement('astra-label')
-export class AstraLabel extends LitElement {
+export default class AstraLabel extends LitElement {
     static styles = [
         baseStyles,
         css`

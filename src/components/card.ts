@@ -9,7 +9,7 @@ enum Size {
 }
 
 @customElement('astra-card')
-export class AstraCard extends LitElement {
+export default class AstraCard extends LitElement {
     static styles = [
         baseStyles,
         css`

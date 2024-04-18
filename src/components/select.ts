@@ -8,7 +8,7 @@ const ToggleIcon = html`<svg xmlns="http://www.w3.org/2000/svg" width="16" heigh
 </svg>`
 
 @customElement('astra-select')
-export class AstraSelect extends LitElement {
+export default class AstraSelect extends LitElement {
     static styles = [
         baseStyles,
         css`
@@ -104,16 +104,16 @@ export class AstraSelect extends LitElement {
     }
 
     private onClickOutside(event: MouseEvent) {
+        if (typeof document === 'undefined') return
         if (event.target === this) return
-
         this.shouldDisplayOptions(false)
         document.removeEventListener('click', this.onClickOutside)
     }
 
     private onClickInside(_event: MouseEvent) {
+        if (typeof document === 'undefined') return
         if (this.isOpen) document.removeEventListener('click', this.onClickOutside)
         else document.addEventListener('click', this.onClickOutside)
-
         this.shouldDisplayOptions(!this.isOpen)
     }
 

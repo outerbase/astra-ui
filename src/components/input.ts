@@ -4,7 +4,7 @@ import { customElement, property } from 'lit/decorators.js'
 import baseStyles from '../lib/base-styles.js'
 
 @customElement('astra-input')
-export class AstraInput extends LitElement {
+export default class AstraInput extends LitElement {
     static styles = [
         baseStyles,
         css`
