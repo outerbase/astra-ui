@@ -1,5 +1,4 @@
 #!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
 
 if [ ! -f "dist/web-components/astra.bundle.js" ]; then
     echo "Error: Required file 'dist/web-components/astra.bundle.js' is missing."
