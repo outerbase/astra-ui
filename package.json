@@ -12,7 +12,6 @@
     "scripts": {
         "dev": "astro dev --config .config/astro.config.mjs",
         "build": "astro check --config .config/astro.config.mjs && astro build --config .config/astro.config.mjs",
-        "build:watch": "node .config/build-on-changes.mjs",
         "compile": "tsc -p .config/tsconfig.distribute.json",
         "compile:watch": "node .config/compile-typescript-on-changes.mjs",
         "bundle": "rollup -c ./.config/rollup.config.js",
