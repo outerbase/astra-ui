@@ -4,7 +4,7 @@ import resolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
 
 export default {
-    input: './out/js/components/**.js',
+    input: './out/js/**.js',
     output: {
         // name: 'Astra', // Name of the global variable to hold the module's default export
         file: 'out/web-components/astra.bundle.js',
