@@ -37,36 +37,36 @@ const optionsArray = [
         <main>
             <h2><pre>&lt;astra-input /&gt;</pre></h2>
             <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-            <AstraInput client:only="lit" />
+            <AstraInput client:load placeholder="This is a placeholder" />
 
             <h2><pre>&lt;astra-button /&gt;</pre></h2>
             <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-            <AstraButton client:only="lit" id="arbitrary-button-id">click click click click click</AstraButton>
+            <AstraButton client:load id="arbitrary-button-id">click click click click click</AstraButton>
 
             <h2><pre>&lt;astra-card /&gt;</pre></h2>
             <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-            <AstraCard client:only="lit" id="arbitrary-button-id">
+            <AstraCard client:load id="arbitrary-button-id">
                 <div>Div tag</div>
                 <p>Paragraph tag</p>
                 <span>Span tag</span>
             </AstraCard>
 
             <h2><pre>&lt;astra-label /&gt;</pre></h2>
-            <AstraLabel client:only="lit">variant=undefined</AstraLabel>
+            <AstraLabel client:load>variant=undefined</AstraLabel>
             <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-            <AstraLabel client:only="lit" variant="label">variant=label</AstraLabel>
+            <AstraLabel client:load variant="label">variant=label</AstraLabel>
             <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-            <AstraLabel client:only="lit" variant="h1">variant=h1</AstraLabel>
+            <AstraLabel client:load variant="h1">variant=h1</AstraLabel>
             <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-            <AstraLabel client:only="lit" variant="h2">variant=h2</AstraLabel>
+            <AstraLabel client:load variant="h2">variant=h2</AstraLabel>
             <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-            <AstraLabel client:only="lit" variant="h3">variant=h3</AstraLabel>
+            <AstraLabel client:load variant="h3">variant=h3</AstraLabel>
             <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-            <AstraLabel client:only="lit" variant="h4">variant=h4</AstraLabel>
+            <AstraLabel client:load variant="h4">variant=h4</AstraLabel>
 
             <h2><pre>&lt;astra-select /&gt;</pre></h2>
             <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-            <AstraSelect client:only="lit" options={optionsArray} placeholder="Choose a fruit" />
+            <AstraSelect client:load options={optionsArray} placeholder="Choose a fruit" />
         </main>
     </body>
 </html>
