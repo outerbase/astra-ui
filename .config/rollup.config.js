@@ -6,7 +6,7 @@ import terser from '@rollup/plugin-terser'
 export default {
     input: './dist/js/**.js',
     output: {
-        // name: 'Astra', // Name of the global variable to hold the module's default export
+        name: 'Astra', // Name of the global variable to hold the module's default export
         file: 'dist/web-components/astra.bundle.js',
         format: 'iife', // "iife" format for a self-executing function, suitable for inclusion as a <script> tag
     },

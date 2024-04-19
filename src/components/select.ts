@@ -84,15 +84,11 @@ export default class AstraSelect extends LitElement {
 
     @property({ attribute: 'placeholder' }) public placeholder = ''
     @property({ attribute: 'value' }) public value = ''
-    @property({ attribute: 'options', type: Object }) options: Array<{ label: any; value: any }> = [] // using `options` instead of `children` because the DOM keeps removing them unless you include `<slot>` (and its visible)
-    @state() isOpen = false
-    @query('#options-list') optionsListElement!: HTMLElement
+    @property({ attribute: 'options', type: Array }) public options: Array<{ label: any; value: any }> = [] // using `options` instead of `children` because the DOM keeps removing them unless you include `<slot>` (and its visible)
+    @state() protected isOpen = false
+    @query('#options-list') protected optionsListElement!: HTMLElement
 
-    connectedCallback(): void {
-        this.onClickOutside = this.onClickOutside.bind(this)
-    }
-
-    private shouldDisplayOptions(isOpen: boolean) {
+    protected shouldDisplayOptions(isOpen: boolean) {
         if (isOpen) {
             this.optionsListElement.style.display = 'block'
             setTimeout(this.optionsListElement.focus.bind(this.optionsListElement), 0)
@@ -103,22 +99,27 @@ export default class AstraSelect extends LitElement {
         this.isOpen = isOpen
     }
 
-    private onClickOutside(event: MouseEvent) {
+    protected onClickOutside(event: MouseEvent) {
         if (typeof document === 'undefined') return
         if (event.target === this) return
         this.shouldDisplayOptions(false)
         document.removeEventListener('click', this.onClickOutside)
     }
 
-    private onClickInside(_event: MouseEvent) {
+    protected onClickInside(_event: MouseEvent) {
         if (typeof document === 'undefined') return
         if (this.isOpen) document.removeEventListener('click', this.onClickOutside)
         else document.addEventListener('click', this.onClickOutside)
         this.shouldDisplayOptions(!this.isOpen)
     }
 
-    private renderOption(text: string, value: string) {
+    protected renderOption(text: string, value: string) {
         return html`<div class="option" @click="${() => (this.value = value)}">${text}</div>`
+    }
+
+    public override connectedCallback(): void {
+        super.connectedCallback()
+        this.onClickOutside = this.onClickOutside.bind(this)
     }
 
     public override render() {
