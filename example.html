@@ -19,10 +19,9 @@
         <!-- load Astra components -->
         <script src="./dist/web-components/astra.bundle.js"></script>
 
-        <!-- add 'click' listener to <astra-button -->
+        <!-- add 'click' listener to <astra-button /> -->
         <script>
             setTimeout(() => {
-                // const btn = document.getElementById('some-btn')
                 const btn = document.getElementsByTagName('astra-button').item(0)
                 btn.addEventListener('click', () => alert('click click click click click'))
             }, 0)
@@ -30,7 +29,7 @@
     </head>
 
     <body>
-        <astra-button id="some-btn">click click click</astra-button>
+        <astra-button>click click click</astra-button>
         <hr />
         <astra-card>arbitrary content</astra-card>
         <hr />

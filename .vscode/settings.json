@@ -1,6 +1,4 @@
 {
-    "typescript.configFile": ".config/tsconfig.json",
-
     "eslint.format.enable": true,
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -11,9 +9,6 @@
     "typescript.preferences.importModuleSpecifier": "non-relative",
     "javascript.preferences.importModuleSpecifier": "non-relative",
 
-    "files.associations": {
-        // "*.css": "tailwindcss"
-    },
     "files.insertFinalNewline": true,
     "files.exclude": {
         "**/node_modules": true,
@@ -26,15 +21,11 @@
     },
     "files.watcherExclude": {
         "**/node_modules": true,
-        "**/web-site": true,
-        "**/web-components": true,
-        "**/js": true
+        "**/dist": true
     },
     "search.exclude": {
         "**/node_modules": true,
-        "**/web-site": true,
-        "**/web-components": true,
-        "**/js": true
+        "**/dist": true
     },
     "[astro]": {
         "editor.defaultFormatter": "astro-build.astro-vscode"
