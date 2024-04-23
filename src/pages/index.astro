@@ -1,14 +1,12 @@
 ---
 // server-side code goes here and can be accessed below
-import AstraButton from '../components/button'
-import AstraCard from '../components/card'
-import AstraInput from '../components/input'
-import AstraLabel from '../components/label'
-import AstraSelect from '../components/select'
-import AstraScrollArea from '../components/scroll-area'
 
+import { AstraButton, AstraCard, AstraInput, AstraLabel, AstraSelect, AstraScrollArea } from '../index'
+
+// include Inter font on the page
 import '@fontsource/inter' // Defaults to weight 400
 
+// options for <astra-select />
 const optionsArray = [
     { label: 'Apples', value: 'apples' },
     { label: 'Oranges', value: 'oranges' },
