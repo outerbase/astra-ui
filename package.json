@@ -10,14 +10,14 @@
     "dist/web-components/astra.bundle.js"
   ],
   "scripts": {
-    "tailwind:dev": "concurrently \"tailwindcss -i .config/tailwind/tailwindlib.css -o .config/tailwind/tailwind.css --watch\" \"node .config/tailwind/css-to-js.mjs --input .config/tailwind/tailwind.css --output ./src/lib/tailwind.ts --watch\"",
-    "tailwind:build": "tailwindcss -c .config/tailwind/tailwind.config.distribute.mjs -i .config/tailwind/tailwindlib.css -o .config/tailwind/tailwind.css && node .config/tailwind/css-to-js.mjs --input .config/tailwind/tailwind.css --output ./src/lib/tailwind.ts",
-    "dev": "concurrently \"pnpm tailwind:dev\" \"astro dev --config .config/astro.config.mjs\"",
-    "build": "pnpm tailwind:build && astro check --config .config/astro.config.mjs && astro build --config .config/astro.config.mjs",
-    "compile": "tsc -p .config/tsconfig.distribute.json",
-    "compile:watch": "node .config/compile-typescript-on-changes.mjs",
-    "bundle": "rollup -c ./.config/rollup.config.js",
-    "preview": "astro preview --config .config/astro.config.mjs",
+    "tailwind:dev": "concurrently \"tailwindcss -i .build/tailwind/tailwindlib.css -o .build/tailwind/tailwind.css --watch\" \"node .build/tailwind/css-to-js.mjs --input .build/tailwind/tailwind.css --output ./src/lib/tailwind.ts --watch\"",
+    "tailwind:build": "tailwindcss -c .build/tailwind/tailwind.config.distribute.mjs -i .build/tailwind/tailwindlib.css -o .build/tailwind/tailwind.css && node .build/tailwind/css-to-js.mjs --input .build/tailwind/tailwind.css --output ./src/lib/tailwind.ts",
+    "dev": "concurrently \"pnpm tailwind:dev\" \"astro dev --config .build/astro.config.mjs\"",
+    "build": "pnpm tailwind:build && astro check --config .build/astro.config.mjs && astro build --config .build/astro.config.mjs",
+    "compile": "tsc -p .build/tsconfig.distribute.json",
+    "compile:watch": "node .build/compile-typescript-on-changes.mjs",
+    "bundle": "rollup -c ./.build/rollup.config.js",
+    "preview": "astro preview --config .build/astro.config.mjs",
     "prepack": "pnpm tailwind:build && pnpm compile && pnpm bundle",
     "prepare": "husky"
   },

@@ -1,6 +1,4 @@
-
-  import { css } from "lit";
-  export const TWStyles = css` /* this file yields the Tailwind classes that are used in the codebase */
+/* this file yields the Tailwind classes that are used in the codebase */
 
 /* ! tailwindcss v3.4.3 | MIT License | https://tailwindcss.com */
 
@@ -31,9 +29,9 @@
 1. Use a consistent sensible line-height in all browsers.
 2. Prevent adjustments of font size after orientation changes in iOS.
 3. Use a more readable tab size.
-4. Use the user's configured sans font-family by default.
-5. Use the user's configured sans font-feature-settings by default.
-6. Use the user's configured sans font-variation-settings by default.
+4. Use the user's configured `sans` font-family by default.
+5. Use the user's configured `sans` font-feature-settings by default.
+6. Use the user's configured `sans` font-variation-settings by default.
 7. Disable tap highlights on iOS
 */
 
@@ -60,7 +58,7 @@ html,
 
 /*
 1. Remove the margin in all browsers.
-2. Inherit line-height from html so users can set them as a class directly on the html element.
+2. Inherit line-height from `html` so users can set them as a class directly on the `html` element.
 */
 
 body {
@@ -127,10 +125,10 @@ strong {
 }
 
 /*
-1. Use the user's configured mono font-family by default.
-2. Use the user's configured mono font-feature-settings by default.
-3. Use the user's configured mono font-variation-settings by default.
-4. Correct the odd em font sizing in all browsers.
+1. Use the user's configured `mono` font-family by default.
+2. Use the user's configured `mono` font-feature-settings by default.
+3. Use the user's configured `mono` font-variation-settings by default.
+4. Correct the odd `em` font sizing in all browsers.
 */
 
 code,
@@ -156,7 +154,7 @@ small {
 }
 
 /*
-Prevent sub and sup elements from affecting the line height in all browsers.
+Prevent `sub` and `sup` elements from affecting the line height in all browsers.
 */
 
 sub,
@@ -258,7 +256,7 @@ Use the modern Firefox focus style for all focusable elements.
 }
 
 /*
-Remove the additional :invalid styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
+Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
 */
 
 :-moz-ui-invalid {
@@ -304,7 +302,7 @@ Remove the inner padding in Chrome and Safari on macOS.
 
 /*
 1. Correct the inability to style clickable types in iOS and Safari.
-2. Change font properties to inherit in Safari.
+2. Change font properties to `inherit` in Safari.
 */
 
 ::-webkit-file-upload-button {
@@ -413,8 +411,8 @@ Make sure disabled buttons don't get the pointer cursor.
 }
 
 /*
-1. Make replaced elements display: block by default. (https://github.com/mozdevs/cssremedy/issues/14)
-2. Add vertical-align: middle to align replaced elements more sensibly by default. (https://github.com/jensimmons/cssremedy/issues/14#issuecomment-634934210)
+1. Make replaced elements `display: block` by default. (https://github.com/mozdevs/cssremedy/issues/14)
+2. Add `vertical-align: middle` to align replaced elements more sensibly by default. (https://github.com/jensimmons/cssremedy/issues/14#issuecomment-634934210)
    This can trigger a poorly considered lint error in some tools but is included by design.
 */
 
@@ -604,7 +602,7 @@ video {
   margin: 0px;
 }
 
-.m-0\\.5 {
+.m-0\.5 {
   margin: 0.125rem;
 }
 
@@ -632,7 +630,7 @@ video {
   height: 0.25rem;
 }
 
-.h-1\\.5 {
+.h-1\.5 {
   height: 0.375rem;
 }
 
@@ -640,7 +638,7 @@ video {
   height: 13rem;
 }
 
-.h-\\[1200px\\] {
+.h-\[1200px\] {
   height: 1200px;
 }
 
@@ -652,11 +650,11 @@ video {
   width: 0.25rem;
 }
 
-.w-1\\.5 {
+.w-1\.5 {
   width: 0.375rem;
 }
 
-.w-\\[2400px\\] {
+.w-\[2400px\] {
   width: 2400px;
 }
 
@@ -724,7 +722,7 @@ video {
   background-color: rgb(229 229 229 / var(--tw-bg-opacity));
 }
 
-.bg-neutral-200\\/60 {
+.bg-neutral-200\/60 {
   background-color: rgb(229 229 229 / 0.6);
 }
 
@@ -733,7 +731,7 @@ video {
   background-color: rgb(64 64 64 / var(--tw-bg-opacity));
 }
 
-.bg-neutral-700\\/50 {
+.bg-neutral-700\/50 {
   background-color: rgb(64 64 64 / 0.5);
 }
 
@@ -836,33 +834,31 @@ video {
   }
 }
 
-.hover\\:bg-neutral-300:hover {
+.hover\:bg-neutral-300:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(212 212 212 / var(--tw-bg-opacity));
 }
 
-.active\\:bg-neutral-300:active {
+.active\:bg-neutral-300:active {
   --tw-bg-opacity: 1;
   background-color: rgb(212 212 212 / var(--tw-bg-opacity));
 }
 
-.dark\\:bg-black:is(.dark *) {
+.dark\:bg-black:is(.dark *) {
   --tw-bg-opacity: 1;
   background-color: rgb(0 0 0 / var(--tw-bg-opacity));
 }
 
-.dark\\:bg-neutral-700\\/50:is(.dark *) {
+.dark\:bg-neutral-700\/50:is(.dark *) {
   background-color: rgb(64 64 64 / 0.5);
 }
 
-.dark\\:hover\\:bg-neutral-700:hover:is(.dark *) {
+.dark\:hover\:bg-neutral-700:hover:is(.dark *) {
   --tw-bg-opacity: 1;
   background-color: rgb(64 64 64 / var(--tw-bg-opacity));
 }
 
-.dark\\:active\\:bg-neutral-700:active:is(.dark *) {
+.dark\:active\:bg-neutral-700:active:is(.dark *) {
   --tw-bg-opacity: 1;
   background-color: rgb(64 64 64 / var(--tw-bg-opacity));
 }
- `
-  
