@@ -56,7 +56,7 @@ pnpm add @outerbase/astra
 _In your `.js`, `.mjs` and `.tsx` files_
 
 ```
-import  { AstraButton, AstraCard, AstraInput, AstraLabel, AstraSelect }
+import  { AstraButton, AstraCard, AstraInput, AstraLabel, AstraSelect, AstraScrollArea }
   from '@outerbase/astra'
 ```
 
