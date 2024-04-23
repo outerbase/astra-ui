@@ -1,0 +1,33 @@
+{
+    "eslint.format.enable": true,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+
+    "typescript.preferences.importModuleSpecifier": "non-relative",
+    "javascript.preferences.importModuleSpecifier": "non-relative",
+
+    "files.insertFinalNewline": true,
+    "files.exclude": {
+        "**/node_modules": true,
+        ".build": true,
+        ".husky": true,
+        ".prettierignore": true,
+        ".prettierrc.json": true,
+        "pnpm-lock.yaml": true,
+        ".gitignore": true
+    },
+    "files.watcherExclude": {
+        "**/node_modules": true,
+        "**/dist": true
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/dist": true
+    },
+    "[astro]": {
+        "editor.defaultFormatter": "astro-build.astro-vscode"
+    }
+}

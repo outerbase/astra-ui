@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Demo: Astra Bundled</title>
+
+        <!-- include 'Inter' via Google Fonts -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700&display=swap" />
+
+        <!-- customize the page's styling -->
+        <style>
+            hr {
+                color: lime;
+                margin: 1rem 0;
+            }
+        </style>
+
+        <!-- load Astra components -->
+        <script src="./dist/web-components/astra.bundle.js"></script>
+
+        <!-- add 'click' listener to <astra-button /> -->
+        <script>
+            setTimeout(() => {
+                const btn = document.getElementsByTagName('astra-button').item(0)
+                btn.addEventListener('click', () => alert('click click click click click'))
+            }, 0)
+        </script>
+    </head>
+
+    <body>
+        <astra-button>click click click</astra-button>
+        <hr />
+        <astra-card>arbitrary content</astra-card>
+        <hr />
+        <astra-input placeholder="Show me what you got"></astra-input>
+        <hr />
+        <astra-label variant="h1">h1</astra-label>
+        <astra-label variant="h2">h2</astra-label>
+        <astra-label variant="h3">h3</astra-label>
+        <astra-label variant="hg">etc...</astra-label>
+        <hr />
+        <astra-select
+            placeholder="Choose a fruit"
+            options='[{"label":"Apple","value":"apple"}, {"label":"Avocado","value":"avocado"}, {"label":"Banana","value":"banana"}]'
+        ></astra-select>
+        <hr />
+        <!-- scroller container -->
+        <div style="position: relative; width: 100%; height: 300px; background-color: lightgreen">
+            <!-- scroller -->
+            <astra-scroll-area>
+                <!-- scroller content -->
+                <div style="height: 2000px; width: 2000px" />
+            </astra-scroll-area>
+        </div>
+    </body>
+</html>

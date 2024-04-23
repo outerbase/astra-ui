@@ -1,0 +1,5 @@
+/* this file yields the Tailwind classes that are used in the codebase */
+
+@tailwind base;
+@tailwind utilities;
+@tailwind components;

@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "target": "ES2021",
+        "module": "ES2015",
+        "moduleResolution": "node",
+        "lib": ["es2021", "dom"],
+        "declaration": true,
+        "declarationMap": true,
+        "outDir": "../dist/js",
+        "strict": true,
+        "experimentalDecorators": true,
+        "useDefineForClassFields": false
+    },
+    "include": ["../src/index.ts"]
+}
