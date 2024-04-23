@@ -5,6 +5,7 @@ import AstraCard from '../components/card'
 import AstraInput from '../components/input'
 import AstraLabel from '../components/label'
 import AstraSelect from '../components/select'
+import AstraScrollArea from '../components/scroll-area'
 
 import '@fontsource/inter' // Defaults to weight 400
 
@@ -67,6 +68,32 @@ const optionsArray = [
             <h2><pre>&lt;astra-select /&gt;</pre></h2>
             <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
             <AstraSelect client:load options={optionsArray} placeholder="Choose a fruit" />
+
+            <h2>&lt;astra-scroll-area /&gt;</h2>
+            <div class="bg-white dark:bg-black">
+                <div class="relative h-52 px-8">
+                    <h1 class="z-10 absolute top-0 left-0 text-xl black">axis unspecified</h1>
+                    <AstraScrollArea client:load><div class="h-[1200px] w-[2400px] bg-blue-50"></div></AstraScrollArea>
+                </div>
+
+                <div class="relative h-52 px-8">
+                    <h1 class="z-10 absolute top-0 left-0 text-xl black">axis=horizontal</h1>
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraScrollArea client:load axis="horizontal"><div class="h-[1200px] w-[2400px] bg-yellow-50"></div></AstraScrollArea>
+                </div>
+
+                <div class="relative h-52 px-8">
+                    <h1 class="z-10 absolute top-0 left-0 text-xl black">axis=vertical</h1>
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraScrollArea client:load axis="vertical"><div class="h-[1200px] w-[2400px] bg-green-50"></div></AstraScrollArea>
+                </div>
+
+                <div class="relative h-52 px-8">
+                    <h1 class="z-10 absolute top-0 left-0 text-xl black">axis=both</h1>
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraScrollArea client:load axis="both"><div class="h-[1200px] w-[2400px] bg-red-50"></div></AstraScrollArea>
+                </div>
+            </div>
         </main>
     </body>
 </html>
