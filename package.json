@@ -10,7 +10,7 @@
     "dist/web-components/astra.bundle.js"
   ],
   "scripts": {
-    "tailwind:dev": "concurrently \"tailwindcss -i .build/tailwind/tailwindlib.css -o .build/tailwind/tailwind.css --watch\" \"node .build/tailwind/css-to-js.mjs --input .build/tailwind/tailwind.css --output ./src/lib/tailwind.ts --watch\"",
+    "tailwind:dev": "concurrently \"tailwindcss -c .build/tailwind/tailwind.config.distribute.mjs -i .build/tailwind/tailwindlib.css -o .build/tailwind/tailwind.css --watch\" \"node .build/tailwind/css-to-js.mjs --input .build/tailwind/tailwind.css --output ./src/lib/tailwind.ts --watch\"",
     "tailwind:build": "tailwindcss -c .build/tailwind/tailwind.config.distribute.mjs -i .build/tailwind/tailwindlib.css -o .build/tailwind/tailwind.css && node .build/tailwind/css-to-js.mjs --input .build/tailwind/tailwind.css --output ./src/lib/tailwind.ts",
     "dev": "concurrently \"pnpm tailwind:dev\" \"astro dev --config .build/astro.config.mjs\"",
     "build": "pnpm tailwind:build && astro check --config .build/astro.config.mjs && astro build --config .build/astro.config.mjs",
