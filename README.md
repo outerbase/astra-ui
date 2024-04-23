@@ -5,7 +5,7 @@
 ## Usage
 
 You do **not** have to build or compile this project in order to use it.
-However, we provide you with every option to do so. We believe this provides the best integration into your existing build/bundle processe(s).
+However, we provide you with every option to do so.
 
 ### Generic Web Components
 
@@ -27,11 +27,11 @@ If you want to include our preferred font `Inter`, you can add it to your own si
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700&display=swap" />
 ```
 
-_We recommend hosting this file yourself, however._
+That said, we recommend hosting this file yourself. See `src/pages/index.astro` for an example.
 
 ### NPM Modules
 
-#### Include the prebuilt + bundled version via NPM
+#### Include the prebuilt, bundled version via NPM
 
 _In your terminal, type_
 
@@ -39,13 +39,15 @@ _In your terminal, type_
 pnpm add @outerbase/astra
 ```
 
-_in your js/ts file(s)_
+_in your js/ts client-side file(s)_
 
 ```
 import '@outerbase/dist/web-components/astra.bundle.js'
 ```
 
-#### Selectively import only the component(s) you want
+This will register all of the Astra copmonents on the page, e.g. `<astra-button />`
+
+#### Selectively import only the component(s) you use
 
 _In your terminal, type_
 
