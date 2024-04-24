@@ -11,14 +11,22 @@ However, we provide you with every option to do so.
 
 #### Quick Demo
 
-`example.html` in the root of this project is a raw, buildless HTML file that utilizes these Astra components. **You can open this file in any browser for a peek at the Astra library.**
+`example.html` in the root of this project is a raw, buildless HTML file that utilizes Astra. **You can open this file in any browser for a peek.**
 
 #### Add to your project
+
+##### CDN
+
+```html
+<script src="https://cdn.outerbase.com/astra/latest/astra.bundle.js"></script>
+```
+
+##### Host it yourself
 
 Place `astra.bundle.js` (found in `dist/web-components/astra.bundle.js`) somewhere accessible to your website. Then update your HTML to include the following:
 
 ```html
-<script src="https://cdn.outerbase.com/astra/latest/astra.bundle.js"></script>
+<script src="/path/to/starboard.bundle.js"></script>
 ```
 
 If you want to include our preferred font `Inter`, you can add it to your own site via Google Fonts with the following `style` tag:
