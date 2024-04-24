@@ -26,7 +26,7 @@ However, we provide you with every option to do so.
 Place `astra.bundle.js` (found in `dist/web-components/astra.bundle.js`) somewhere accessible to your website. Then update your HTML to include the following:
 
 ```html
-<script src="/path/to/starboard.bundle.js"></script>
+<script src="/path/to/astra.bundle.js"></script>
 ```
 
 If you want to include our preferred font `Inter`, you can add it to your own site via Google Fonts with the following `style` tag:
