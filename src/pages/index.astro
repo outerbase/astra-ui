@@ -1,7 +1,7 @@
 ---
 // server-side code goes here and can be accessed below
 
-import { AstraButton, AstraCard, AstraInput, AstraLabel, AstraSelect, AstraScrollArea } from '../index'
+import { AstraButton, AstraCard, AstraInput, AstraLabel, AstraScrollArea, AstraSelect } from '../index'
 
 // include Inter font on the page
 import '@fontsource/inter' // Defaults to weight 400
@@ -20,90 +20,95 @@ const optionsArray = [
         <h2><pre>&lt;astra-input /&gt;</pre></h2>
         <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
         <AstraInput client:load placeholder="This is a placeholder" />
+        <main>
+            <h2><pre>&lt;astra-input /&gt;</pre></h2>
+            <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+            <AstraInput client:load placeholder="This is a placeholder" label="demo input" id="inputter" />
 
-        <h2><pre>&lt;astra-button /&gt;</pre></h2>
-        <div class="flex gap-2 flex-col">
-            <div class="flex gap-2">
-                <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-                <AstraButton client:load disabled>primary + disabled</AstraButton>
-                <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-                <AstraButton client:load variant="primary">primary</AstraButton>
-                <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-                <AstraButton client:load variant="secondary">secondary</AstraButton>
-                <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-                <AstraButton client:load variant="secondary" disabled>secondary disabled</AstraButton>
-                <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-                <AstraButton client:load variant="transparent">transparent</AstraButton>
-                <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-                <AstraButton client:load variant="transparent" disabled>transparent disabled</AstraButton>
-            </div>
-            <div class="flex gap-2">
-                <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-                <AstraButton client:load size="base">size="base"</AstraButton>
-                <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-                <AstraButton client:load size="small">size="small"</AstraButton>
-                <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-                <AstraButton client:load size="compact">size="compact"</AstraButton>
-            </div>
-            <div class="flex gap-2">
-                <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-                <AstraButton client:load size="base" disabled>size="base" disabled</AstraButton>
-                <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-                <AstraButton client:load size="small" disabled>size="small" disabled</AstraButton>
-                <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-                <AstraButton client:load size="compact" disabled>size="compact" disabled</AstraButton>
-            </div>
-        </div>
-
-        <h2><pre>&lt;astra-card /&gt;</pre></h2>
-        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-        <AstraCard client:load id="arbitrary-button-id">
-            <div>Div tag</div>
-            <p>Paragraph tag</p>
-            <span>Span tag</span>
-        </AstraCard>
-
-        <h2><pre>&lt;astra-label /&gt;</pre></h2>
-        <AstraLabel client:load>variant=undefined</AstraLabel>
-        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-        <AstraLabel client:load variant="label">variant=label</AstraLabel>
-        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-        <AstraLabel client:load variant="h1">variant=h1</AstraLabel>
-        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-        <AstraLabel client:load variant="h2">variant=h2</AstraLabel>
-        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-        <AstraLabel client:load variant="h3">variant=h3</AstraLabel>
-        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-        <AstraLabel client:load variant="h4">variant=h4</AstraLabel>
-
-        <h2><pre>&lt;astra-select /&gt;</pre></h2>
-        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-        <AstraSelect client:load options={optionsArray} placeholder="Choose a fruit" />
-
-        <h2>&lt;astra-scroll-area /&gt;</h2>
-        <div class="bg-white dark:bg-black">
-            <h3 class="text-xs black">axis unspecified</h3>
-            <div class="relative h-52 px-8">
-                <AstraScrollArea client:load><div class="h-[1200px] w-[2400px] bg-blue-50"></div></AstraScrollArea>
+            <h2><pre>&lt;astra-button /&gt;</pre></h2>
+            <div class="flex gap-2 flex-col">
+                <div class="flex gap-2">
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load disabled>primary + disabled</AstraButton>
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load variant="primary">primary</AstraButton>
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load variant="secondary">secondary</AstraButton>
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load variant="secondary" disabled>secondary disabled</AstraButton>
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load variant="transparent">transparent</AstraButton>
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load variant="transparent" disabled>transparent disabled</AstraButton>
+                </div>
+                <div class="flex gap-2">
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load size="base">size="base"</AstraButton>
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load size="small">size="small"</AstraButton>
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load size="compact">size="compact"</AstraButton>
+                </div>
+                <div class="flex gap-2">
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load size="base" disabled>size="base" disabled</AstraButton>
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load size="small" disabled>size="small" disabled</AstraButton>
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load size="compact" disabled>size="compact" disabled</AstraButton>
+                </div>
             </div>
 
-            <h3 class="text-xs black">axis=horizontal</h3>
-            <div class="relative h-52 px-8">
-                <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-                <AstraScrollArea client:load axis="horizontal"><div class="h-[1200px] w-[2400px] bg-yellow-50"></div></AstraScrollArea>
-            </div>
+            <h2><pre>&lt;astra-card /&gt;</pre></h2>
+            <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+            <AstraCard client:load id="arbitrary-button-id">
+                <div>Div tag</div>
+                <p>Paragraph tag</p>
+                <span>Span tag</span>
+            </AstraCard>
 
-            <h3 class="text-xs black">axis=vertical</h3>
-            <div class="relative h-52 px-8">
-                <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-                <AstraScrollArea client:load axis="vertical"><div class="h-[1200px] w-[2400px] bg-green-50"></div></AstraScrollArea>
-            </div>
+            <h2><pre>&lt;astra-label /&gt;</pre></h2>
+            <AstraLabel client:load>variant=undefined</AstraLabel>
+            <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+            <AstraLabel client:load variant="label">variant=label</AstraLabel>
+            <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+            <AstraLabel client:load variant="h1">variant=h1</AstraLabel>
+            <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+            <AstraLabel client:load variant="h2">variant=h2</AstraLabel>
+            <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+            <AstraLabel client:load variant="h3">variant=h3</AstraLabel>
+            <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+            <AstraLabel client:load variant="h4">variant=h4</AstraLabel>
 
-            <h3 class="text-xs black">axis=both</h3>
-            <div class="relative h-52 px-8">
-                <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-                <AstraScrollArea client:load axis="both"><div class="h-[1200px] w-[2400px] bg-red-50"></div></AstraScrollArea>
+            <h2><pre>&lt;astra-select /&gt;</pre></h2>
+            <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+            <AstraSelect client:load options={optionsArray} placeholder="Choose a fruit" />
+
+            <h2>&lt;astra-scroll-area /&gt;</h2>
+            <div class="bg-white dark:bg-black">
+                <h3 class="text-xs black">axis unspecified</h3>
+                <div class="relative h-52 px-8">
+                    <AstraScrollArea client:load><div class="h-[1200px] w-[2400px] bg-blue-50"></div></AstraScrollArea>
+                </div>
+
+                <h3 class="text-xs black">axis=horizontal</h3>
+                <div class="relative h-52 px-8">
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraScrollArea client:load axis="horizontal"><div class="h-[1200px] w-[2400px] bg-yellow-50"></div></AstraScrollArea>
+                </div>
+
+                <h3 class="text-xs black">axis=vertical</h3>
+                <div class="relative h-52 px-8">
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraScrollArea client:load axis="vertical"><div class="h-[1200px] w-[2400px] bg-green-50"></div></AstraScrollArea>
+                </div>
+
+                <h3 class="text-xs black">axis=both</h3>
+                <div class="relative h-52 px-8">
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraScrollArea client:load axis="both"><div class="h-[1200px] w-[2400px] bg-red-50"></div></AstraScrollArea>
+                </div>
             </div>
-        </div>
+        </main>
     </main>
 </Layout>
