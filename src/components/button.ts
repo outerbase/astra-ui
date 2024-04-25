@@ -35,7 +35,6 @@ export default class AstraButton extends LitElement {
                 border: none;
                 font-weight: 500;
                 font-family: var(--astra-font-family);
-                -webkit-font-smoothing: antialiased;
                 line-height: 20px;
                 border-radius: 6px;
                 user-select: none;

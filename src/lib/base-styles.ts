@@ -3,7 +3,6 @@ import { css } from 'lit'
 export default css`
     :host {
         font-size: var(--astra-font-size, 14px);
-        -webkit-font-smoothing: antialiased;
 
         --astra-font-family: 'Inter', sans-serif;
         --astra-accent: var(--astra-neutral-400, lime);

@@ -35,7 +35,6 @@ export default class AstraInput extends LitElement {
                 border: none;
                 color: var(--astra-neutral-900);
                 font-family: var(--astra-font-family);
-                -webkit-font-smoothing: antialiased;
                 font-size: 14px;
                 line-height: 20px;
             }
