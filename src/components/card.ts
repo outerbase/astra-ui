@@ -55,9 +55,9 @@ export default class AstraCard extends LitElement {
 
     public override render() {
         return html`
-            <div class="size-${this.size}">
+            <section class="size-${this.size}">
                 <slot></slot>
-            </div>
+            </section>
         `
     }
 }
