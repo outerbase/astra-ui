@@ -40,8 +40,38 @@ const optionsArray = [
             <AstraInput client:load placeholder="This is a placeholder" />
 
             <h2><pre>&lt;astra-button /&gt;</pre></h2>
-            <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-            <AstraButton client:load id="arbitrary-button-id">click click click click click</AstraButton>
+            <div class="flex gap-2 flex-col">
+                <div class="flex gap-2">
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load disabled>primary + disabled</AstraButton>
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load variant="primary">primary</AstraButton>
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load variant="secondary">secondary</AstraButton>
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load variant="secondary" disabled>secondary disabled</AstraButton>
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load variant="transparent">transparent</AstraButton>
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load variant="transparent" disabled>transparent disabled</AstraButton>
+                </div>
+                <div class="flex gap-2">
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load size="base">size="base"</AstraButton>
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load size="small">size="small"</AstraButton>
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load size="compact">size="compact"</AstraButton>
+                </div>
+                <div class="flex gap-2">
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load size="base" disabled>size="base" disabled</AstraButton>
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load size="small" disabled>size="small" disabled</AstraButton>
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraButton client:load size="compact" disabled>size="compact" disabled</AstraButton>
+                </div>
+            </div>
 
             <h2><pre>&lt;astra-card /&gt;</pre></h2>
             <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
