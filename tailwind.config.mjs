@@ -41,18 +41,18 @@ export default {
                     'border-dark': 'var(--border-color-dark, rgb(52,52,56))',
 
                     // column headers
-                    column: 'var(--column-header-background-color, rgba(255,255,255,0.9))',
-                    'column-dark': 'var(--column-header-background-color-dark, rgba(0,0,0,0.9))',
-                    'column-text': 'var(--column-header-text-color, #000000)',
-                    'column-text-dark': 'var(--column-header-text-color-dark, #ffffff)',
+                    column: 'var(--table-column-header-background-color, rgba(255,255,255,0.9))',
+                    'column-dark': 'var(--table-column-header-background-color-dark, rgba(0,0,0,0.9))',
+                    'column-text': 'var(--table-column-header-text-color, #000000)',
+                    'column-text-dark': 'var(--table-column-header-text-color-dark, #ffffff)',
 
                     // rows
                     'row-even': 'var(--table-row-even-background-color, rgba(255,255,255))',
                     'row-even-dark': 'var(--table-row-even-background-color-dark, rgba(0,0,0))',
                     'row-odd': 'var(--table-row-even-background-color, rgba(255,255,255))',
                     'row-odd-dark': 'var(--table-row-even-background-color-dark, rgba(0,0,0))',
-                    'row-hover': 'var(--hover-background-color, rgba(0,0,0,0.03))',
-                    'row-hover-dark': 'var(--hover-background-color-dark, rgba(255,255,255,0.03))',
+                    'row-hover': 'var(--table-row-hover-background-color, rgba(0,0,0,0.03))',
+                    'row-hover-dark': 'var(--table-row-hover-background-color-dark, rgba(255,255,255,0.03))',
                     'row-selected': 'var(--table-row-selected-background-color, rgba(245, 245, 245, 1))',
                     'row-selected-dark': 'var(--table-row-selected-background-color-dark, rgb(23 23 23))',
                     'row-selected-hover': 'var(--table-row-selected-hover-background-color, rgba(229, 229, 229, 1))',
@@ -60,22 +60,9 @@ export default {
                     'row-new': 'var(--table-row-new, rgba(22, 163, 74, 0.33))',
                     'row-new-dark': 'var(--table-row-new-dark, rgba(21, 128, 61, 0.5))',
 
-                    // unused
-                    // active: 'var(--active-background-color-dark, #fefefe)',
-                    // 'active-dark': 'var(--active-background-color-dark, red)',
-                    // 'active-text': 'var(--active-text-color, yellow)',
-                    // 'active-text-dark': 'var(--active-text-color-dark,blue)',
-
-                    // clean cells
-                    // these classes may be redundant / hide row colors
-                    // cell: 'var(--cell-background-color)',
-                    // 'cell-dark': 'var(--cell-background-color-dark)',
-                    // 'cell-text': 'var(--cell-text-color)',
-                    // 'cell-text-dark': 'var(--cell-text-color)',
-
                     // dirty cells
-                    'cell-dirty': 'var(--cell-dirty-background-color, rgb(253 230 138))',
-                    'cell-dirty-dark': 'var(--cell-dirty-background-color, rgba(234, 179, 8, .6))',
+                    'cell-dirty': 'var(--table-cell-dirty-background-color, rgb(253 230 138))',
+                    'cell-dirty-dark': 'var(--table-cell-dirty-background-color-dark, rgba(234, 179, 8, .6))',
                 },
 
                 light: {
@@ -184,5 +171,4 @@ export default {
         },
     },
     plugins: [],
-    // ,plugins: [require('@headlessui/tailwindcss')]
 }
