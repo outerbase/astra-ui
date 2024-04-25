@@ -16,8 +16,8 @@ export default {
                 '3xl': ['30px', '40px'],
             },
             spacing: {
-                'cell-padding-x': 'var(--cell-padding-x, 12px)',
-                'cell-padding-y': 'var(--cell-padding-y, 8px)',
+                'cell-padding-x': 'var(--table-cell-padding-x, 12px)',
+                'cell-padding-y': 'var(--table-cell-padding-y, 8px)',
             },
             colors: {
                 theme: {
@@ -33,24 +33,25 @@ export default {
                     text: 'var(--text-color, #000000)',
                     'text-dark': 'var(--text-color-dark, #ffffff)',
 
+                    // table
                     table: 'var(--table-background-color, rgba(255,255,255, 0))',
                     'table-dark': 'var(--table-background-color, rgba(10,10,10, 0))',
 
                     // borders
-                    border: 'var(--border-color, #e5e7eb)',
-                    'border-dark': 'var(--border-color-dark, rgb(52,52,56))',
+                    border: 'var(--table-border-color, rgb(229, 229, 229))',
+                    'border-dark': 'var(--table-border-color-dark, rgb(38, 38, 38))',
 
                     // column headers
-                    column: 'var(--table-column-header-background-color, rgba(255,255,255,0.9))',
-                    'column-dark': 'var(--table-column-header-background-color-dark, rgba(0,0,0,0.9))',
+                    column: 'var(--table-column-header-background-color, rgba(250,250,250,0.9))',
+                    'column-dark': 'var(--table-column-header-background-color-dark, rgba(10,10,10,0.9))',
                     'column-text': 'var(--table-column-header-text-color, #000000)',
                     'column-text-dark': 'var(--table-column-header-text-color-dark, #ffffff)',
 
                     // rows
-                    'row-even': 'var(--table-row-even-background-color, rgba(255,255,255))',
-                    'row-even-dark': 'var(--table-row-even-background-color-dark, rgba(0,0,0))',
-                    'row-odd': 'var(--table-row-even-background-color, rgba(255,255,255))',
-                    'row-odd-dark': 'var(--table-row-even-background-color-dark, rgba(0,0,0))',
+                    'row-even': 'var(--table-row-even-background-color, rgba(250,250,250))',
+                    'row-even-dark': 'var(--table-row-even-background-color-dark, rgba(10,10,10))',
+                    'row-odd': 'var(--table-row-even-background-color, rgba(250,250,250))',
+                    'row-odd-dark': 'var(--table-row-even-background-color-dark, rgba(10,10,10))',
                     'row-hover': 'var(--table-row-hover-background-color, rgba(0,0,0,0.03))',
                     'row-hover-dark': 'var(--table-row-hover-background-color-dark, rgba(255,255,255,0.03))',
                     'row-selected': 'var(--table-row-selected-background-color, rgba(245, 245, 245, 1))',
@@ -62,7 +63,7 @@ export default {
 
                     // dirty cells
                     'cell-dirty': 'var(--table-cell-dirty-background-color, rgb(253 230 138))',
-                    'cell-dirty-dark': 'var(--table-cell-dirty-background-color-dark, rgba(234, 179, 8, .6))',
+                    'cell-dirty-dark': 'var(--table-cell-dirty-background-color, rgba(234, 179, 8, .6))',
                 },
 
                 light: {
