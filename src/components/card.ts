@@ -19,7 +19,6 @@ export default class AstraCard extends LitElement {
                 gap: 8px;
                 font-weight: 500;
                 font-family: var(--astra-font-family);
-                -webkit-font-smoothing: antialiased;
                 color: black;
                 background: var(--astra-neutral-100);
                 border: 1px solid var(--astra-neutral-200);
@@ -55,9 +54,9 @@ export default class AstraCard extends LitElement {
 
     public override render() {
         return html`
-            <div class="size-${this.size}">
+            <section class="size-${this.size}">
                 <slot></slot>
-            </div>
+            </section>
         `
     }
 }

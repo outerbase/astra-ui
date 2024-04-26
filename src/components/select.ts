@@ -2,14 +2,23 @@ import { LitElement, css, html } from 'lit'
 import { customElement, property, query, state } from 'lit/decorators.js'
 import { repeat } from 'lit/directives/repeat.js'
 import baseStyles from '../lib/base-styles.js'
+import { TWStyles } from '../lib/tailwind.js'
 
-const ToggleIcon = html`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+const ToggleIcon = html`<svg
+    aria-hidden="true"
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    fill="currentColor"
+    viewBox="0 0 256 256"
+>
     <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
 </svg>`
 
 @customElement('astra-select')
 export default class AstraSelect extends LitElement {
     static styles = [
+        TWStyles,
         baseStyles,
         css`
             #container {
@@ -24,6 +33,11 @@ export default class AstraSelect extends LitElement {
                 font-family: var(--astra-font-family);
                 user-select: none;
                 -webkit-user-select: none;
+            }
+
+            #container:focus-within {
+                outline: 1px solid var(--astra-accent, lime);
+                outline-offset: -1px; // 0px draws it _outside_ of the border, where as this covers the border
             }
 
             #options-list {
@@ -48,14 +62,14 @@ export default class AstraSelect extends LitElement {
                 background: var(--astra-neutral-200);
             }
 
-            #placeholder {
-                flex: 1;
-                opacity: 0.5;
+            li {
+                list-style-type: none;
             }
 
-            #selection {
-                flex: 1;
-                display: none;
+            ul {
+                margin-block-start: 0px;
+                margin-block-end: 0px;
+                padding-inline-start: 0px;
             }
 
             @media (prefers-color-scheme: dark) {
@@ -82,9 +96,11 @@ export default class AstraSelect extends LitElement {
         `,
     ]
 
+    @property({ attribute: 'aria-expanded', reflect: true }) ariaExpanded = 'false'
     @property({ attribute: 'placeholder' }) public placeholder = ''
     @property({ attribute: 'value' }) public value = ''
     @property({ attribute: 'options', type: Array }) public options: Array<{ label: any; value: any }> = [] // using `options` instead of `children` because the DOM keeps removing them unless you include `<slot>` (and its visible)
+    @property({ attribute: 'disabled', type: Boolean }) disabled = false
     @state() protected isOpen = false
     @query('#options-list') protected optionsListElement!: HTMLElement
 
@@ -97,46 +113,80 @@ export default class AstraSelect extends LitElement {
         }
 
         this.isOpen = isOpen
+        this.ariaExpanded = isOpen ? 'true' : 'false'
     }
 
     protected onClickOutside(event: MouseEvent) {
         if (typeof document === 'undefined') return
         if (event.target === this) return
+
         this.shouldDisplayOptions(false)
         document.removeEventListener('click', this.onClickOutside)
     }
 
-    protected onClickInside(_event: MouseEvent) {
+    protected onClickInside(_event?: MouseEvent) {
         if (typeof document === 'undefined') return
         if (this.isOpen) document.removeEventListener('click', this.onClickOutside)
         else document.addEventListener('click', this.onClickOutside)
         this.shouldDisplayOptions(!this.isOpen)
     }
 
+    onKeyDown(event: KeyboardEvent) {
+        const { code } = event
+
+        if (this.disabled) return
+        if (code === 'Space' || code === 'Enter') {
+            event.preventDefault()
+            this.onClickInside()
+        }
+    }
+
     protected renderOption(text: string, value: string) {
-        return html`<div class="option" @click="${() => (this.value = value)}">${text}</div>`
+        return html`<li
+            class="option"
+            tabindex="0"
+            @click=${() => {
+                this.value = value
+            }}
+        >
+            ${text}
+        </li>`
     }
 
     public override connectedCallback(): void {
         super.connectedCallback()
         this.onClickOutside = this.onClickOutside.bind(this)
+        this.addEventListener('keydown', this.onKeyDown)
+    }
+
+    override disconnectedCallback(): void {
+        super.disconnectedCallback()
+        this.removeEventListener('keydown', this.onKeyDown)
+    }
+
+    constructor() {
+        super()
+        this.onKeyDown = this.onKeyDown.bind(this)
     }
 
     public override render() {
+        const displayedValue =
+            this.value.length > 0
+                ? html`<div class="flex-1 ">${this.value}</div>`
+                : html`<div class="flex-1 opacity-50">${this.placeholder}</div>`
+        // TODO place a button in here that serves as the trigger instead of the container itself
+        // and then put aria-haspopup="listbox" on it
         return html`
-            <div id="container" @click="${this.onClickInside}">
-                <div id="placeholder">${this.placeholder}</div>
-                <div id="selection">${this.value}</div>
+            <div id="container" aria-haspopup="listbox" tabindex="0" @click=${this.onClickInside} role="listbox">
+                ${displayedValue} ${ToggleIcon}
 
-                ${ToggleIcon}
-
-                <div id="options-list">
+                <ul id="options-list" aria-owns="container" role="menu">
                     ${repeat(
                         this.options,
                         ({ label }) => label,
                         ({ label, value }) => this.renderOption(label, value)
                     )}
-                </div>
+                </ul>
             </div>
         `
     }

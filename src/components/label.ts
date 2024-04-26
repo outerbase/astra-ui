@@ -21,7 +21,6 @@ export default class AstraLabel extends LitElement {
                 display: block;
                 font-weight: 500;
                 font-family: var(--astra-font-family);
-                -webkit-font-smoothing: antialiased;
                 color: black;
                 opacity: 0.8;
                 cursor: text;
@@ -31,7 +30,6 @@ export default class AstraLabel extends LitElement {
                 font-weight: 700;
                 font-size: 12px;
                 font-family: var(--astra-font-family);
-                -webkit-font-smoothing: antialiased;
                 opacity: 0.6;
             }
 

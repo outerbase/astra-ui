@@ -2,9 +2,10 @@ import { css } from 'lit'
 
 export default css`
     :host {
+        font-size: var(--astra-font-size, 14px);
+
         --astra-font-family: 'Inter', sans-serif;
-        font-size: 14px;
-        -webkit-font-smoothing: antialiased;
+        --astra-accent: var(--astra-neutral-400, lime);
 
         --astra-neutral-50: #fafafa;
         --astra-neutral-100: #f5f5f5;
