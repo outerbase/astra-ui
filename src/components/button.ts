@@ -1,4 +1,4 @@
-import { LitElement, css, html, type PropertyValueMap } from 'lit'
+import { LitElement, css, html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import baseStyles from '../lib/base-styles.js'
 
@@ -44,7 +44,7 @@ export default class AstraButton extends LitElement {
 
             /* Enhanced focus styles for keyboard navigation */
             button:focus-visible {
-                box-shadow: 0 0 0 3px var(--astra-focus-color, blue); /* Custom focus indicator */
+                box-shadow: 0 0 0 3px var(--astra-accent, lime); /* Custom focus indicator */
             }
 
             /* Handling active and disabled states */
@@ -192,7 +192,6 @@ export default class AstraButton extends LitElement {
 
     // accessibility, state
     @property({ type: Boolean, reflect: true }) disabled = false // enabled by default
-    @property({ type: Number, reflect: true }) tabIndex = this.disabled ? -1 : 0 // tabbable when enabled
 
     // styling
     @property({ type: String }) size: Size = Size.base
@@ -224,17 +223,9 @@ export default class AstraButton extends LitElement {
         this.removeEventListener('keydown', this.onKeyDown)
     }
 
-    override willUpdate(changedProperties: PropertyValueMap<this>): void {
-        super.willUpdate(changedProperties)
-
-        if (changedProperties.has('disabled')) {
-            this.tabIndex = this.disabled ? -1 : 0
-        }
-    }
-
     override render() {
         return html`
-            <button class="${`variant-${this.variant} size-${this.size} shape-${this.shape}`}" ?disabled="${this.disabled}">
+            <button tabindex="0" class="${`variant-${this.variant} size-${this.size} shape-${this.shape}`}" ?disabled="${this.disabled}">
                 <slot></slot>
             </button>
         `
