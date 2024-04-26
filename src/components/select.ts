@@ -2,6 +2,7 @@ import { LitElement, css, html } from 'lit'
 import { customElement, property, query, state } from 'lit/decorators.js'
 import { repeat } from 'lit/directives/repeat.js'
 import baseStyles from '../lib/base-styles.js'
+import { TWStyles } from '../lib/tailwind.js'
 
 const ToggleIcon = html`<svg
     aria-hidden="true"
@@ -17,6 +18,7 @@ const ToggleIcon = html`<svg
 @customElement('astra-select')
 export default class AstraSelect extends LitElement {
     static styles = [
+        TWStyles,
         baseStyles,
         css`
             #container {
@@ -58,16 +60,6 @@ export default class AstraSelect extends LitElement {
 
             .option:hover {
                 background: var(--astra-neutral-200);
-            }
-
-            #placeholder {
-                flex: 1;
-                opacity: 0.5;
-            }
-
-            #selection {
-                flex: 1;
-                display: none;
             }
 
             li {
@@ -150,7 +142,15 @@ export default class AstraSelect extends LitElement {
     }
 
     protected renderOption(text: string, value: string) {
-        return html`<li class="option" @click=${() => (this.value = value)}>${text}</li>`
+        return html`<li
+            class="option"
+            tabindex="0"
+            @click=${() => {
+                this.value = value
+            }}
+        >
+            ${text}
+        </li>`
     }
 
     public override connectedCallback(): void {
@@ -170,14 +170,15 @@ export default class AstraSelect extends LitElement {
     }
 
     public override render() {
+        const displayedValue =
+            this.value.length > 0
+                ? html`<div class="flex-1 ">${this.value}</div>`
+                : html`<div class="flex-1 opacity-50">${this.placeholder}</div>`
         // TODO place a button in here that serves as the trigger instead of the container itself
         // and then put aria-haspopup="listbox" on it
         return html`
             <div id="container" aria-haspopup="listbox" tabindex="0" @click=${this.onClickInside} role="listbox">
-                <div id="placeholder">${this.placeholder}</div>
-                <div id="selection">${this.value}</div>
-
-                ${ToggleIcon}
+                ${displayedValue} ${ToggleIcon}
 
                 <ul id="options-list" aria-owns="container" role="menu">
                     ${repeat(
