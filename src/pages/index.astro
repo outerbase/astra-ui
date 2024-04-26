@@ -121,25 +121,31 @@ const optionsArray = [
             <div class="bg-white dark:bg-black">
                 <h3 class="text-xs black">axis unspecified</h3>
                 <div class="relative h-52 px-8">
-                    <AstraScrollArea client:load><div class="h-[1200px] w-[2400px] bg-blue-50"></div></AstraScrollArea>
+                    <AstraScrollArea client:load><div class="h-[1200px] w-[2400px] bg-blue-50 dark:bg-blue-950"></div></AstraScrollArea>
                 </div>
 
                 <h3 class="text-xs black">axis=horizontal</h3>
                 <div class="relative h-52 px-8">
                     <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-                    <AstraScrollArea client:load axis="horizontal"><div class="h-[1200px] w-[2400px] bg-yellow-50"></div></AstraScrollArea>
+                    <AstraScrollArea client:load axis="horizontal"
+                        ><div class="h-[1200px] w-[2400px] bg-yellow-50 dark:bg-yellow-950"></div></AstraScrollArea
+                    >
                 </div>
 
                 <h3 class="text-xs black">axis=vertical</h3>
                 <div class="relative h-52 px-8">
                     <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-                    <AstraScrollArea client:load axis="vertical"><div class="h-[1200px] w-[2400px] bg-green-50"></div></AstraScrollArea>
+                    <AstraScrollArea client:load axis="vertical"
+                        ><div class="h-[1200px] w-[2400px] bg-green-50 dark:bg-green-950"></div></AstraScrollArea
+                    >
                 </div>
 
                 <h3 class="text-xs black">axis=both</h3>
                 <div class="relative h-52 px-8">
                     <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-                    <AstraScrollArea client:load axis="both"><div class="h-[1200px] w-[2400px] bg-red-50"></div></AstraScrollArea>
+                    <AstraScrollArea client:load axis="both"
+                        ><div class="h-[1200px] w-[2400px] bg-red-50 dark:bg-red-950"></div></AstraScrollArea
+                    >
                 </div>
             </div>
         </main>
