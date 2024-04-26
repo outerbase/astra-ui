@@ -2,20 +2,47 @@
 
 ![welcoming spaceballs movie frame](https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/8obJdqaaq4cDIkAFJqnL6NpwmemElk.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5)
 
+## Copy + Paste = 🎉
+
+```html
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Classified</title>
+        <script src="https://cdn.outerbase.com/astra/latest/astra.bundle.js"></script>
+    </head>
+    <body>
+        <astra-label variant="h1">Are you ready?</astra-label>
+        <astra-button>Yes!</astra-button>
+    </body>
+</html>
+```
+
+![](https://github.com/outerbase/cdn/assets/368767/e2128f14-9fec-4f61-afa5-68265c260ca9)
+
 ## Usage
 
-You do **not** have to build or compile this project in order to use it.
-However, we provide you with every option to do so.
+You do **not** have to build or compile this project in order to use it. You have the choice:
 
-### Generic Web Components
+-   load directly from our CDN
+-   host `astra.bundle.js` yourself
+-   `npm install` into your project
+-   `import` only the components you use; minimize and build to your liking
 
-#### Quick Demo
+TypeScript and React support is built-in, **not** required.
 
-`example.html` in the root of this project is a raw, buildless HTML file that utilizes Astra. **You can open this file in any browser for a peek.**
+### Web Components
 
-#### Add to your project
+#### Demo page
+
+`example.html` (located in the root of this project) illustrates how to use Astra in the most basic of environments. Go ahead and open it in your favorite browser to see what you can do with minimal effort.
+
+#### Adding to your project
 
 ##### CDN
+
+We're making Astra available from our CDN. You may simply copy/paste the following snippet onto your site to include all of our components.
 
 ```html
 <script src="https://cdn.outerbase.com/astra/latest/astra.bundle.js"></script>
@@ -23,10 +50,10 @@ However, we provide you with every option to do so.
 
 ##### Host it yourself
 
-Place `astra.bundle.js` (found in `dist/web-components/astra.bundle.js`) somewhere accessible to your website. Then update your HTML to include the following:
+Place `astra.bundle.js` (found in `dist/web-components/astra.bundle.js`) somewhere accessible to your website. Then update your HTML to include a script tag that references that location:
 
 ```html
-<script src="/path/to/astra.bundle.js"></script>
+<script src="/your/path/to/astra.bundle.js"></script>
 ```
 
 If you want to include our preferred font `Inter`, you can add it to your own site via Google Fonts with the following `style` tag:
@@ -35,11 +62,11 @@ If you want to include our preferred font `Inter`, you can add it to your own si
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700&display=swap" />
 ```
 
-That said, we recommend hosting this file yourself. See `src/pages/index.astro` for an example.
+We recommend hosting all of your dependencies yourself. See `src/pages/index.astro` for an example including Inter via [NPM](https://www.npmjs.com).
 
 ### NPM Modules
 
-#### Include the prebuilt, bundled version via NPM
+#### How to include the prebuilt +bundled version via NPM
 
 _In your terminal, type_
 
@@ -53,9 +80,9 @@ _in your js/ts client-side file(s)_
 import '@outerbase/dist/web-components/astra.bundle.js'
 ```
 
-This will register all of the Astra copmonents on the page, e.g. `<astra-button />`
+This will include/register all of the Astra copmonents on the page
 
-#### Selectively import only the component(s) you use
+#### Selectively import the component(s) you use
 
 _In your terminal, type_
 
@@ -70,26 +97,19 @@ import  { AstraButton, AstraCard, AstraInput, AstraLabel, AstraSelect, AstraScro
   from '@outerbase/astra'
 ```
 
-_Reference `src/pages/index.astro` for an example of using components this way_
+_Reference `src/pages/index.astro` for an example of using components in this way_
 
 ## React Components
 
-You may also use these components as React components.
+We've also packaged Astra for React:
 
-```ts
-import * as React from 'react'
-import { createComponent } from '@lit/react'
-import { AstraButton } from '@outerbase/astra'
+```js
+import { AstraReactComponents } from '@outerbase/astra'
+const AstraButton = AstraReactComponents.Button
 
-export const Button = createComponent({
-    tagName: 'astra-button',
-    elementClass: AstraButton,
-    react: React,
-
-    events: {
-        onClick: 'click' as EventName<MouseEvent>,
-    },
-})
+function ArbitraryComponent() {
+    return <AstraButton>Click me</AstraButton>
+}
 ```
 
 ## Missing font?
