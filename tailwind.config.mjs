@@ -183,6 +183,4 @@ export default {
             Helvetica: ['Helvetica', 'sans-serif'],
         },
     },
-    plugins: [],
-    // ,plugins: [require('@headlessui/tailwindcss')]
 }

@@ -1,8 +1,8 @@
 import { type TemplateResult } from 'lit'
 
 export enum Theme {
-    'light',
-    'dark',
+    light = 'light',
+    dark = 'dark',
 }
 
 export enum Axis {

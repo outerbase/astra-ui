@@ -22,7 +22,7 @@ export class ClassifiedElement extends LitElement {
     public theme = Theme.light
 
     @property({ reflect: true, attribute: 'class', type: String })
-    public _class = this.theme == Theme.dark ? 'dark' : ''
+    public _class: string = this.theme
 
     public override willUpdate(changedProperties: PropertyValueMap<this>): void {
         super.willUpdate(changedProperties)
