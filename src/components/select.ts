@@ -34,7 +34,7 @@ export default class AstraSelect extends LitElement {
             }
 
             #container:focus-within {
-                outline: 1px solid var(--astra-accent);
+                outline: 1px solid var(--astra-accent, lime);
                 outline-offset: -1px; // 0px draws it _outside_ of the border, where as this covers the border
             }
 

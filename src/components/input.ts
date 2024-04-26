@@ -24,7 +24,7 @@ export default class AstraInput extends LitElement {
             }
 
             div:focus-within {
-                outline: 1px solid var(--astra-accent);
+                outline: 1px solid var(--astra-accent, lime);
                 outline-offset: -1px; // 0px draws it _outside_ of the border, where as this covers the border
             }
 
@@ -72,7 +72,7 @@ export default class AstraInput extends LitElement {
                 }
 
                 div:focus-within {
-                    outline: 1px solid var(--astra-accent);
+                    outline: 1px solid var(--astra-accent, lime);
                     outline-offset: -1px; // 0px draws it _outside_ of the border, where as this covers the border
                 }
             }
