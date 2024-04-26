@@ -7,8 +7,8 @@ import { createRef, ref, type Ref } from 'lit/directives/ref.js'
 import { styleMap } from 'lit/directives/style-map.js'
 import debounce from 'lodash-es/debounce.js'
 
-import { ClassifiedElement } from '../lib/classified-element'
 import { Axis, Theme } from '../lib/types'
+import { ClassifiedElement } from './classified-element'
 
 @customElement('astra-scroll-area')
 export default class ScrollArea extends ClassifiedElement {
