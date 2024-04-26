@@ -70,11 +70,6 @@ export default class AstraInput extends LitElement {
                 input {
                     color: var(--astra-neutral-100);
                 }
-
-                div:focus-within {
-                    outline: 1px solid var(--astra-accent, lime);
-                    outline-offset: -1px; // 0px draws it _outside_ of the border, where as this covers the border
-                }
             }
         `,
     ]
