@@ -102,6 +102,7 @@ export default class AstraSelect extends LitElement {
     protected onClickOutside(event: MouseEvent) {
         if (typeof document === 'undefined') return
         if (event.target === this) return
+
         this.shouldDisplayOptions(false)
         document.removeEventListener('click', this.onClickOutside)
     }
@@ -124,7 +125,7 @@ export default class AstraSelect extends LitElement {
 
     public override render() {
         return html`
-            <div id="container" @click="${this.onClickInside}">
+            <div id="container" @click=${this.onClickInside}>
                 <div id="placeholder">${this.placeholder}</div>
                 <div id="selection">${this.value}</div>
 
