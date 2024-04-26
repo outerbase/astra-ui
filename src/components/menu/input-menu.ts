@@ -7,7 +7,7 @@ import { ChangeEvent, MenuSelectedEvent } from '../../lib/events.js'
 import { Theme } from '../../lib/types.js'
 import { Menu } from './index.js'
 
-@customElement('outerbase-input-menu')
+@customElement('astra-input-menu')
 export class InputMenu extends Menu {
     @property({ type: Object })
     protected _classMap = {

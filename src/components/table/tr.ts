@@ -4,7 +4,7 @@ import { customElement, property } from 'lit/decorators.js'
 import { ClassifiedElement } from '../classified-element.js'
 
 // tl;dr <tr/>, table-row
-@customElement('outerbase-tr')
+@customElement('astra-tr')
 export class TableRow extends ClassifiedElement {
     protected override classMap() {
         return {

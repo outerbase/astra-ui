@@ -2,7 +2,7 @@ import { customElement } from 'lit/decorators.js'
 
 import { Menu } from './index.js'
 
-@customElement('outerbase-th-menu')
+@customElement('astra-th-menu')
 export class ColumnMenu extends Menu {
     protected override get menuPositionClasses() {
         const isRenderingInBrowser = typeof window !== 'undefined'

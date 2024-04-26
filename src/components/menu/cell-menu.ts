@@ -5,7 +5,7 @@ import { classMap } from 'lit/directives/class-map.js'
 import { Theme } from '../../lib/types.js'
 import { Menu } from './index.js'
 
-@customElement('outerbase-td-menu')
+@customElement('astra-td-menu')
 export class CellMenu extends Menu {
     protected override get menuPositionClasses() {
         const isRenderingInBrowser = typeof window !== 'undefined'

@@ -336,10 +336,10 @@ export class AstraTable extends ClassifiedElement {
             ({ id }) => id,
             ({ id, values, originalValues, isNew }, rowIndex) => {
                 return !this.removedRowUUIDs.has(id)
-                    ? html`<outerbase-tr .selected=${this.selectedRowUUIDs.has(id)} ?new=${isNew} @on-selection=${this._onRowSelection}>
+                    ? html`<astra-tr .selected=${this.selectedRowUUIDs.has(id)} ?new=${isNew} @on-selection=${this._onRowSelection}>
                           <!-- checkmark cell -->
                           ${this.selectableRows
-                              ? html`<outerbase-td
+                              ? html`<astra-td
                                     .position=${{
                                         row: id,
                                         column: '__selected', // our own; not expected to exist in DB
@@ -365,7 +365,7 @@ export class AstraTable extends ClassifiedElement {
                                             theme=${this.theme}
                                         />
                                     </div>
-                                </outerbase-td>`
+                                </astra-td>`
                               : null}
 
                           <!-- render a TableCell for each column of data in the current row -->
@@ -384,7 +384,7 @@ export class AstraTable extends ClassifiedElement {
                                   return html`
                                       <!-- TODO @johnny remove separate-cells and instead rely on css variables to suppress borders -->
                                       <!-- TODO @caleb & johnny move plugins to support the new installedPlugins variable -->
-                                      <outerbase-td
+                                      <astra-td
                                           .position=${{ row: id, column: name }}
                                           .value=${values[name]}
                                           .originalValue=${originalValues[name]}
@@ -407,14 +407,14 @@ export class AstraTable extends ClassifiedElement {
                                           ?hide-dirt=${isNew}
                                           ?read-only=${this.readonly}
                                       >
-                                      </outerbase-td>
+                                      </astra-td>
                                   `
                               }
                           )}
                           ${this.blankFill
-                              ? html`<outerbase-td ?outer-border=${false} ?read-only=${true} ?separate-cells=${false} ?bottom-border=${true} ?interactive=${false} ?menu=${false} ?blank=${true}></<outerbase-td>`
+                              ? html`<astra-td ?outer-border=${false} ?read-only=${true} ?separate-cells=${false} ?bottom-border=${true} ?interactive=${false} ?menu=${false} ?blank=${true}></<astra-td>`
                               : ''}
-                      </outerbase-tr>`
+                      </astra-tr>`
                     : null
             }
         )}`
@@ -468,7 +468,7 @@ export class AstraTable extends ClassifiedElement {
 
         // ensure that `this.rowHeight` is correct
         // measure the height of each row
-        const elem = document.createElement('outerbase-td') as TableData
+        const elem = document.createElement('astra-td') as TableData
         elem.withBottomBorder = true
         elem.outerBorder = this.outerBorder
         elem.isInteractive = true
@@ -580,12 +580,12 @@ export class AstraTable extends ClassifiedElement {
                         this.closeLastMenu = event.close
                     }}
                 >
-                    <outerbase-thead>
-                        <outerbase-tr header>
+                    <astra-thead>
+                        <astra-tr header>
                             <!-- first column of (optional) checkboxes -->
                             ${
                                 this.selectableRows
-                                    ? html`<outerbase-th
+                                    ? html`<astra-th
                               theme=${this.theme}
                               table-height=${ifDefined(this._height)}                              width="42px"
                               .value=${null} .originalValue=${null}
@@ -597,7 +597,7 @@ export class AstraTable extends ClassifiedElement {
                               ?read-only=${this.readonly}
                           /><div class="absolute top-0 bottom-0 right-0 left-0 flex items-center justify-center h-full">
                           ${selectAllCheckbox}
-                      </div></outerbase-th>`
+                      </div></astra-th>`
                                     : null
                             }
                             ${repeat(
@@ -605,7 +605,7 @@ export class AstraTable extends ClassifiedElement {
                                 ({ name }, _idx) => name,
                                 ({ name }, idx) => {
                                     // omit column resizer on the last column because it's sort-of awkward
-                                    return html`<outerbase-th
+                                    return html`<astra-th
                                         .options=${this.columnOptions || nothing}
                                         .plugins="${this.plugins}"
                                         installed-plugins=${JSON.stringify(this.installedPlugins)}
@@ -629,28 +629,28 @@ export class AstraTable extends ClassifiedElement {
                                         @resize=${this._onColumnResized}
                                         ?read-only=${this.readonly}
                                     >
-                                    </outerbase-th>`
+                                    </astra-th>`
                                 }
                             )}
                             ${
                                 this.blankFill
-                                    ? html`<outerbase-th ?outer-border=${
+                                    ? html`<astra-th ?outer-border=${
                                           this.outerBorder
                                       } ?read-only=${true} fill .value=${null} .originalValue=${null}>
                             ${
                                 this.isNonInteractive || !this.addableColumns
                                     ? ''
                                     : html`<span class="flex items-center absolute top-0 left-2 bottom-0 right-0">
-                                          <outerbase-add-column-trigger></outerbase-add-column-trigger>
+                                          <astra-add-column-trigger></astra-add-column-trigger>
                                       </span>`
                             }
-                            </<outerbase-th>`
+                            </<astra-th>`
                                     : ''
                             }
-                        </outerbase-tr>
-                    </outerbase-thead>
+                        </astra-tr>
+                    </astra-thead>
 
-                    <outerbase-rowgroup>
+                    <astra-rowgroup>
                         <div
                             style=${styleMap({
                                 height: `${Math.max(this.visibleStartIndex * this.rowHeight, 0)}px`,
@@ -667,7 +667,7 @@ export class AstraTable extends ClassifiedElement {
                             'will-change': 'transform, height',
                         })}
                     ></div>
-                </outerbase-rowgroup>
+                </astra-rowgroup>
             </div>
         </div>`
     }

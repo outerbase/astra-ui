@@ -9,7 +9,7 @@ import { ChangeEvent, ColumnAddedEvent, MenuSelectedEvent } from '../../lib/even
 import { ClassifiedElement } from '../classified-element.js'
 import '../menu/input-menu.js'
 
-@customElement('outerbase-add-column')
+@customElement('astra-add-column')
 export class AddColumnElement extends ClassifiedElement {
     protected classMap() {
         return {
@@ -82,7 +82,7 @@ export class AddColumnElement extends ClassifiedElement {
             <div class="flex flex-col gap-1">
                 <label for="data-type" class=${classMap(AddColumnElement.labelClasses)}>Select Type</label>
 
-                <outerbase-input-menu
+                <astra-input-menu
                     ._classMap=${AddColumnElement.inputClasses}
                     .options=${[
                         { label: 'Text', value: 'Text' },
@@ -99,7 +99,7 @@ export class AddColumnElement extends ClassifiedElement {
                     @menu-selection=${(event: MenuSelectedEvent) => {
                         event.stopPropagation()
                     }}
-                ></outerbase-input-menu>
+                ></astra-input-menu>
             </div>
 
             <button ?disabled="${this.columnName.length === 0}" class=${classMap(AddColumnElement.buttonClasses)} type="submit">
@@ -109,7 +109,7 @@ export class AddColumnElement extends ClassifiedElement {
     }
 }
 
-@customElement('outerbase-add-column-trigger')
+@customElement('astra-add-column-trigger')
 export class AddColumnTriggerElement extends ClassifiedElement {
     protected classMap() {
         return {

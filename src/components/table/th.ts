@@ -18,12 +18,12 @@ import {
 import type { ColumnPlugin, HeaderMenuOptions, PluginWorkspaceInstallationId } from '../../lib/types.js'
 import { Theme } from '../../lib/types.js'
 import '../column-resizer-element.js'
-import '../menu/column-menu.js' // <outerbase-th-menu />
+import '../menu/column-menu.js' // <astra-th-menu />
 import type { ColumnMenu } from '../menu/column-menu.js'
 import { MutableElement } from '../mutable-element.js'
 
 // tl;dr <th/>, table-cell
-@customElement('outerbase-th')
+@customElement('astra-th')
 export class TH extends MutableElement {
     protected override classMap() {
         return {
@@ -172,7 +172,7 @@ export class TH extends MutableElement {
     }
 
     protected onContextMenu(event: MouseEvent) {
-        const menu = this.shadowRoot?.querySelector('outerbase-th-menu') as ColumnMenu | null
+        const menu = this.shadowRoot?.querySelector('astra-th-menu') as ColumnMenu | null
         if (menu) {
             event.preventDefault()
             menu.focus()
@@ -362,8 +362,8 @@ export class TH extends MutableElement {
                       'px-cell-padding-x font-normal': true,
                   })} @blur=${this.onBlur}></input>`
                 : this.hasMenu
-                  ? html`<outerbase-th-menu theme=${this.theme} .options=${options} @menu-selection=${this.onMenuSelection}
-                        ><span class="font-normal">${this.value}</span></outerbase-th-menu
+                  ? html`<astra-th-menu theme=${this.theme} .options=${options} @menu-selection=${this.onMenuSelection}
+                        ><span class="font-normal">${this.value}</span></astra-th-menu
                     >`
                   : html`<span class="font-normal">${this.value}</span>`
 

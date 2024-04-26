@@ -182,7 +182,7 @@ export class MutableElement extends ClassifiedElement {
     @property({ attribute: 'outer-border', type: Boolean })
     public outerBorder = false
 
-    // allows, for example, <outerbase-td separate-cells="true" />
+    // allows, for example, <astra-td separate-cells="true" />
     @property({ type: Boolean, attribute: 'separate-cells' })
     public separateCells: boolean = false
 

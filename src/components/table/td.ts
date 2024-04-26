@@ -11,7 +11,7 @@ import { JSON_TYPES, MutableElement } from '../mutable-element.js'
 
 import type { CellMenu } from '../menu/cell-menu.js'
 
-import '../menu/cell-menu.js' // <outerbase-td-menu />
+import '../menu/cell-menu.js' // <astra-td-menu />
 
 type PluginActionEvent = CustomEvent<{ action: PluginEvent.onEdit | PluginEvent.onStopEdit | PluginEvent.onCancelEdit; value: any }>
 
@@ -29,7 +29,7 @@ const RW_OPTIONS = [
 const R_OPTIONS = [{ label: 'Copy', value: 'copy' }]
 
 // tl;dr <td/>, table-cell
-@customElement('outerbase-td')
+@customElement('astra-td')
 export class TableData extends MutableElement {
     static override styles = [
         ...MutableElement.styles,
@@ -53,7 +53,7 @@ export class TableData extends MutableElement {
         const isPluginEditor = eventTargetIsPluginEditor(event)
         if (isPluginEditor) return
 
-        const menu = (event.currentTarget as HTMLElement).shadowRoot?.querySelector('outerbase-td-menu') as CellMenu | null
+        const menu = (event.currentTarget as HTMLElement).shadowRoot?.querySelector('astra-td-menu') as CellMenu | null
         if (menu) {
             event.preventDefault()
             menu.focus()
@@ -109,7 +109,7 @@ export class TableData extends MutableElement {
         const self = event.currentTarget as TableData
 
         // don't interfere with menu behavior
-        const menu = self.shadowRoot?.querySelector('outerbase-td-menu') as CellMenu | null
+        const menu = self.shadowRoot?.querySelector('astra-td-menu') as CellMenu | null
         if (menu?.open) {
             return
         }
@@ -209,7 +209,7 @@ export class TableData extends MutableElement {
     static onPaste(event: ClipboardEvent) {
         const td = event.composedPath().find((t) => {
             const el = t as HTMLElement
-            if (el.tagName?.toLowerCase() === 'outerbase-td') return true
+            if (el.tagName?.toLowerCase() === 'astra-td') return true
         }) as TableData | undefined
 
         if (td) {
@@ -242,7 +242,7 @@ export class TableData extends MutableElement {
     @property({ attribute: 'plugin-attributes', type: String })
     public pluginAttributes: String = ''
 
-    // allows, for example, <outerbase-td bottom-border="true" />
+    // allows, for example, <astra-td bottom-border="true" />
     @property({ type: Boolean, attribute: 'bottom-border' })
     public withBottomBorder: boolean = false
 
@@ -431,8 +431,8 @@ export class TableData extends MutableElement {
             if (this.isDisplayingPluginEditor) {
                 cellEditorContents = unsafeHTML(
                     `<${tagName.replace(
-                        'outerbase-plugin-cell',
-                        'outerbase-plugin-editor'
+                        'astra-plugin-cell',
+                        'astra-plugin-editor'
                     )} cellvalue='${editorValue}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
                 )
             }
@@ -484,7 +484,7 @@ export class TableData extends MutableElement {
                       @keydown=${TableData.onContentEditableKeyDown}
                       @dragover=${TableData.onDragOver}
                       @drop=${TableData.onDrop}
-                      ><outerbase-td-menu
+                      ><astra-td-menu
                           theme=${this.theme}
                           .options=${menuOptions}
                           ?without-padding=${!!this.plugin}
@@ -493,7 +493,7 @@ export class TableData extends MutableElement {
                           ><span class=${contentWrapperClass}>${cellContents}</span
                           ><span id="plugin-editor" class="absolute top-8 caret-current cursor-auto"
                               >${cellEditorContents}</span
-                          ></outerbase-td-menu
+                          ></astra-td-menu
                       ></span
                   >`
                 : html``
