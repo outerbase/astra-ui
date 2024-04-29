@@ -30,7 +30,7 @@ You do **not** have to build or compile this project in order to use it. You hav
 -   `npm install` into your project
 -   `import` only the components you use; minimize and build to your liking
 
-TypeScript and React support is built-in, **not** required.
+TypeScript support is built-in, **not** required.
 
 ### Web Components
 
@@ -93,13 +93,13 @@ npm add @outerbase/astra-ui
 _In your `.js`, `.mjs` and `.tsx` files_
 
 ```
-import  { Button, Card, Input, Label, ReactComponents, ScrollArea, Select, Table }
+import  { Button, Card, Input, Label, ScrollArea, Select, Table }
   from '@outerbase/astra-ui/components'
 ```
 
 _Reference `src/pages/index.astro` for an example of using components in this way_
 
-## React Components
+<!-- ## React Components
 
 We've also packaged Astra for React:
 
@@ -109,7 +109,7 @@ import { Select, Label, Input, Card, Button } from '@outerbase/astra-ui/react'
 function ArbitraryComponent() {
     return <Button>Click me</Button>
 }
-```
+``` -->
 
 ## Missing font?
 

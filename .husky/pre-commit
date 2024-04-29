@@ -1,8 +1,20 @@
 #!/bin/sh
 
+# ensure dist files references by package.json are not deleted
+
 if [ ! -f "dist/web-components/astra.bundle.js" ]; then
     echo "Error: Required file 'dist/web-components/astra.bundle.js' is missing."
     exit 1
-else
-    exit 0
 fi
+
+if [ ! -f "dist/js/index.js" ]; then
+    echo "Error: Required file 'dist/js/index.js' is missing."
+    exit 1
+fi
+
+if [ ! -f "dist/js/types.js" ]; then
+    echo "Error: Required file 'dist/js/types.js' is missing."
+    exit 1
+fi
+
+exit 0

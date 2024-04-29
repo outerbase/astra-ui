@@ -12,19 +12,20 @@
     "files.insertFinalNewline": true,
     "files.exclude": {
         "**/node_modules": true,
-        ".build": true,
-        ".husky": true,
         ".prettierignore": true,
-        ".prettierrc.json": true,
+        // ".prettierrc.json": true,
         "pnpm-lock.yaml": true,
-        ".gitignore": true
+        ".gitignore": true,
+        ".tmp": true
     },
     "files.watcherExclude": {
         "**/node_modules": true,
-        "**/dist": true
+        "**/dist": true,
+        "**/.tmp": true
     },
     "search.exclude": {
         "**/node_modules": true,
+        "**/.tmp": true,
         "**/dist": true
     },
     "[astro]": {

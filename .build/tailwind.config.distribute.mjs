@@ -1,4 +1,4 @@
-const baseConfig = require('../../tailwind.config.mjs')
+const baseConfig = require('../tailwind.config.mjs')
 
 export default {
     ...baseConfig,

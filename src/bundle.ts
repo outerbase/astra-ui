@@ -1,5 +1,4 @@
 // these are the files that are bundled into `dist/web-components/astra.bundle.js`
-// note that we intentionally omit React
 
 import AstraButton from './components/button'
 import AstraCard from './components/card'

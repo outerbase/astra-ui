@@ -7,16 +7,15 @@
   "exports": {
     "./types": "./dist/js/types.js",
     "./components": "./dist/js/index.js",
-    "./bundle": "./dist/web-components/astra.bundle.js",
-    "./react": "./dist/js/react.js"
+    "./bundle": "./dist/web-components/astra.bundle.js"
   },
   "files": [
     "dist/js/*",
     "dist/web-components/*"
   ],
   "scripts": {
-    "tailwind:dev": "concurrently \"tailwindcss -c .build/tailwind/tailwind.config.distribute.mjs -i .build/tailwind/tailwindlib.css -o .build/tailwind/tailwind.css --watch\" \"node .build/tailwind/css-to-js.mjs --input .build/tailwind/tailwind.css --output ./src/lib/tailwind.ts --watch\"",
-    "tailwind:build": "tailwindcss -c .build/tailwind/tailwind.config.distribute.mjs -i .build/tailwind/tailwindlib.css -o .build/tailwind/tailwind.css && node .build/tailwind/css-to-js.mjs --input .build/tailwind/tailwind.css --output ./src/lib/tailwind.ts",
+    "tailwind:dev": "[ -d .tmp ] && rm -r .tmp; concurrently \"tailwindcss -c .build/tailwind.config.distribute.mjs -i .build/base.css -o .tmp/tailwind.css --watch\" \"node .build/generate-twstyles.mjs --input=.tmp/tailwind.css --output=./src/lib/.tw-styles.ts --watch\"",
+    "tailwind:build": "[ -d .tmp ] && rm -r .tmp; tailwindcss -c .build/tailwind.config.distribute.mjs -i .build/base.css -o .tmp/tailwind.css && node .build/generate-twstyles.mjs --input=.tmp/tailwind.css --output=./src/lib/.tw-styles.ts",
     "dev": "concurrently \"pnpm tailwind:dev\" \"astro dev --config .build/astro.config.mjs\"",
     "build": "pnpm tailwind:build && astro check --config .build/astro.config.mjs && astro build --config .build/astro.config.mjs",
     "compile": "tsc -p .build/tsconfig.distribute.json",
@@ -30,7 +29,7 @@
     "@astrojs/check": "^0.5.10",
     "@astrojs/lit": "^4.0.1",
     "@astrojs/tailwind": "^5.1.0",
-    "@fontsource/inter": "^5.0.17",
+    "@fontsource/inter": "^5.0.18",
     "@lit-labs/ssr-client": "^1.1.7",
     "@lit/react": "^1.0.5",
     "@rollup/plugin-commonjs": "^25.0.7",
@@ -48,14 +47,12 @@
     "lodash-es": "^4.17.21",
     "prettier": "^3.2.5",
     "prettier-plugin-astro": "^0.13.0",
-    "react": "^18.3.1",
     "rollup": "^4.14.3",
     "tailwindcss": "^3.4.3",
-    "typescript": "^5.4.5",
-    "yargs": "^17.7.2"
+    "typescript": "^5.4.5"
   },
   "peerDependencies": {
-    "@fontsource/inter": "^5.0.17",
-    "lit": "^3.1.2"
+    "lit": "^3.1.2",
+    "lodash-es": "^4.17.21"
   }
 }

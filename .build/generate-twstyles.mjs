@@ -1,22 +1,18 @@
 #!/usr/bin/env node
 
 import * as fs from 'fs'
-import yargs from 'yargs'
 
-let input
-let output
-let watch
-try {
-    const argv = yargs(process.argv.slice(2)).argv
-    input = argv.input ?? './TailwindGenerated.css'
-    output = argv.output ?? './ReadyForLitimport.js'
-    watch = argv.watch ?? false
-} catch (e) {
-    // console.log(`Error reading input/output parameters ${e}`)
+// Function to extract command line arguments
+function getCommandLineArguments() {
+    const argv = {}
+    process.argv.slice(2).forEach((arg) => {
+        const [key, value] = arg.split('=')
+        argv[key.replace(/^--/, '')] = value ?? true // Assign true for flags without explicit value
+    })
+    return argv
 }
-
-// console.log(`Reading from file ${input}`)
-// console.log(`Writing to ${output}`)
+// Extract arguments
+const { input, output, watch } = getCommandLineArguments()
 
 const convert = () => {
     try {
@@ -33,7 +29,7 @@ const convert = () => {
 
         const litContents = `
   import { css } from "lit";
-  export const TWStyles = css\` ${cleanContents} \`
+  export const TWStyles = css\` /* THIS FILE IS GENERATED; DO NOT EDIT. */ ${cleanContents} \`
   `
 
         fs.writeFileSync(output, litContents)

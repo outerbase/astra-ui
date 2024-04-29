@@ -18,8 +18,8 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0(astro@4.6.2(@types/node@16.18.70)(terser@5.30.3)(typescript@5.4.5))(tailwindcss@3.4.3)
       '@fontsource/inter':
-        specifier: ^5.0.17
-        version: 5.0.17
+        specifier: ^5.0.18
+        version: 5.0.18
       '@lit-labs/ssr-client':
         specifier: ^1.1.7
         version: 1.1.7
@@ -71,9 +71,6 @@ importers:
       prettier-plugin-astro:
         specifier: ^0.13.0
         version: 0.13.0
-      react:
-        specifier: ^18.3.1
-        version: 18.3.1
       rollup:
         specifier: ^4.14.3
         version: 4.14.3
@@ -83,9 +80,6 @@ importers:
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
-      yargs:
-        specifier: ^17.7.2
-        version: 17.7.2
 
 packages:
 
@@ -583,8 +577,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@fontsource/inter@5.0.17':
-    resolution: {integrity: sha512-2meBGx1kt7u5LwzGc5Sz5rka6ZDrydg6nT3x6Wkt310vHXUchIywrO8pooWMzZdHYcyFY/cv4lEpJZgMD94bCg==}
+  '@fontsource/inter@5.0.18':
+    resolution: {integrity: sha512-YCsoYPTcs713sI7tLtxaPrIhXAXvEetGg5Ry02ivA8qUOb3fQHojbK/X9HLD5OOKvFUNR2Ynkwb1kR1hVKQHpw==}
 
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
@@ -1657,10 +1651,6 @@ packages:
   longest-streak@3.1.0:
     resolution: {integrity: sha512-9Ri+o0JYgehTaVBBDoMqIl8GXtbWg711O3srftcHhZ0dqnETqLaoIK0x17fUw9rFSlK/0NlsKe0Ahhyl5pXE2g==}
 
-  loose-envify@1.4.0:
-    resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
-    hasBin: true
-
   lru-cache@10.2.0:
     resolution: {integrity: sha512-2bIM8x+VAf6JT4bKAljS1qUWgMsqZRPGJS6FSahIMPVvctcNhyVp7AJu7quxOW9jwkryBReKZY5tY5JYv2n/7Q==}
     engines: {node: 14 || >=16.14}
@@ -2109,10 +2099,6 @@ packages:
   rc@1.2.8:
     resolution: {integrity: sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==}
     hasBin: true
-
-  react@18.3.1:
-    resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==}
-    engines: {node: '>=0.10.0'}
 
   read-cache@1.0.0:
     resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}
@@ -3185,7 +3171,7 @@ snapshots:
   '@esbuild/win32-x64@0.20.2':
     optional: true
 
-  '@fontsource/inter@5.0.17': {}
+  '@fontsource/inter@5.0.18': {}
 
   '@isaacs/cliui@8.0.2':
     dependencies:
@@ -4398,10 +4384,6 @@ snapshots:
 
   longest-streak@3.1.0: {}
 
-  loose-envify@1.4.0:
-    dependencies:
-      js-tokens: 4.0.0
-
   lru-cache@10.2.0: {}
 
   lru-cache@5.1.1:
@@ -5031,10 +5013,6 @@ snapshots:
       minimist: 1.2.8
       strip-json-comments: 2.0.1
     optional: true
-
-  react@18.3.1:
-    dependencies:
-      loose-envify: 1.4.0
 
   read-cache@1.0.0:
     dependencies:
