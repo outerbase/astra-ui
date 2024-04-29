@@ -44,28 +44,28 @@ let AddColumnElement = AddColumnElement_1 = class AddColumnElement extends Class
     }
     render() {
         return html `<form @submit=${this.onSubmit} class="flex flex-col gap-3.5 text-xs">
-            <div class="flex flex-col gap-1">
-                <label for="column-name" class=${classMap(AddColumnElement_1.labelClasses)}>Column Name</label>
-                <input
-                    required
-                    type="text"
-                    name="column-name"
-                    id="column-name"
-                    class=${classMap(AddColumnElement_1.inputClasses)}
-                    placeholder="Enter name"
-                    autocomplete="off"
-                    .value=${this.columnName}
-                    @input=${this.onChange}
-                />
-                ${this.errorMessage}
-            </div>
+      <div class="flex flex-col gap-1">
+        <label for="column-name" class=${classMap(AddColumnElement_1.labelClasses)}>Column Name</label>
+        <input
+          required
+          type="text"
+          name="column-name"
+          id="column-name"
+          class=${classMap(AddColumnElement_1.inputClasses)}
+          placeholder="Enter name"
+          autocomplete="off"
+          .value=${this.columnName}
+          @input=${this.onChange}
+        />
+        ${this.errorMessage}
+      </div>
 
-            <div class="flex flex-col gap-1">
-                <label for="data-type" class=${classMap(AddColumnElement_1.labelClasses)}>Select Type</label>
+      <div class="flex flex-col gap-1">
+        <label for="data-type" class=${classMap(AddColumnElement_1.labelClasses)}>Select Type</label>
 
-                <astra-input-menu
-                    ._classMap=${AddColumnElement_1.inputClasses}
-                    .options=${[
+        <astra-input-menu
+          ._classMap=${AddColumnElement_1.inputClasses}
+          .options=${[
             { label: 'Text', value: 'Text' },
             { label: 'Integer', value: 'Integer' },
             { label: 'Date and time', value: 'Date and time' },
@@ -73,20 +73,20 @@ let AddColumnElement = AddColumnElement_1 = class AddColumnElement extends Class
             { label: 'Image', value: 'Image' },
             { label: 'etc.', value: 'etc.' },
         ]}
-                    @change=${(event) => {
+          @change=${(event) => {
             event.stopPropagation();
             this.columnType = event.value;
         }}
-                    @menu-selection=${(event) => {
+          @menu-selection=${(event) => {
             event.stopPropagation();
         }}
-                ></astra-input-menu>
-            </div>
+        ></astra-input-menu>
+      </div>
 
-            <button ?disabled="${this.columnName.length === 0}" class=${classMap(AddColumnElement_1.buttonClasses)} type="submit">
-                Create Column
-            </button>
-        </form>`;
+      <button ?disabled="${this.columnName.length === 0}" class=${classMap(AddColumnElement_1.buttonClasses)} type="submit">
+        Create Column
+      </button>
+    </form>`;
     }
 };
 AddColumnElement.labelClasses = {

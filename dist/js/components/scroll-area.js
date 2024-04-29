@@ -213,64 +213,60 @@ let ScrollArea = class ScrollArea extends ClassifiedElement {
             'overflow-y-scroll overflow-x-hidden': this.axis === Axis.vertical,
         };
         return html `<!-- this comment exists to force the next line onto the next line -->
-            <div
-                @mouseleave=${() => {
+      <div
+        @mouseleave=${() => {
             this.pendingMouseLeave = setTimeout(() => {
                 this.hasHoveringCursor = false;
                 delete this.pendingMouseLeave;
             }, 1000);
         }}
-                @mouseenter=${() => {
+        @mouseenter=${() => {
             this.hasHoveringCursor = true;
             clearTimeout(this.pendingMouseLeave);
             delete this.pendingMouseLeave;
         }}
-                class=${classMap({ dark: this.theme == Theme.dark })}
-            >
-                <div
-                    class=${classMap({ ...scrollTrackGutterClasses, 'top-0 w-1.5': true })}
-                    ${ref(this.rightScrollZone)}
-                    @click=${this.onClickVerticalScroller}
-                >
-                    <div
-                        style=${styleMap(verticalHandleStyles)}
-                        class=${classMap(scrollGrabHandleClasses)}
-                        ${ref(this.rightScrollHandle)}
-                    ></div>
-                </div>
+        class=${classMap({ dark: this.theme == Theme.dark })}
+      >
+        <div
+          class=${classMap({ ...scrollTrackGutterClasses, 'top-0 w-1.5': true })}
+          ${ref(this.rightScrollZone)}
+          @click=${this.onClickVerticalScroller}
+        >
+          <div style=${styleMap(verticalHandleStyles)} class=${classMap(scrollGrabHandleClasses)} ${ref(this.rightScrollHandle)}></div>
+        </div>
 
-                <div
-                    class=${classMap({ ...scrollTrackGutterClasses, 'left-0': true })}
-                    ${ref(this.bottomScrollZone)}
-                    @click=${this.onClickHorizontalScroller}
-                >
-                    <div
-                        style=${styleMap(horizontalHandleStyles)}
-                        class=${classMap({ ...scrollGrabHandleClasses, 'h-1.5': true })}
-                        ${ref(this.bottomScrollHandle)}
-                    ></div>
-                </div>
+        <div
+          class=${classMap({ ...scrollTrackGutterClasses, 'left-0': true })}
+          ${ref(this.bottomScrollZone)}
+          @click=${this.onClickHorizontalScroller}
+        >
+          <div
+            style=${styleMap(horizontalHandleStyles)}
+            class=${classMap({ ...scrollGrabHandleClasses, 'h-1.5': true })}
+            ${ref(this.bottomScrollHandle)}
+          ></div>
+        </div>
 
-                <div class=${classMap(scrollableClasses)} ${ref(this.scroller)}>
-                    <slot></slot>
-                </div>
-            </div>`;
+        <div class=${classMap(scrollableClasses)} ${ref(this.scroller)}>
+          <slot></slot>
+        </div>
+      </div>`;
     }
 };
 ScrollArea.styles = [
     ...ClassifiedElement.styles,
     css `
-            /* Hide scrollbar for Chrome, Safari and Opera */
-            ::-webkit-scrollbar {
-                display: none; /* for Chrome, Safari, and Opera */
-            }
+      /* Hide scrollbar for Chrome, Safari and Opera */
+      ::-webkit-scrollbar {
+        display: none; /* for Chrome, Safari, and Opera */
+      }
 
-            /* Hide scrollbar for IE, Edge, and Firefox */
-            :host {
-                -ms-overflow-style: none; /* for Internet Explorer and Edge */
-                scrollbar-width: none; /* for Firefox */
-            }
-        `,
+      /* Hide scrollbar for IE, Edge, and Firefox */
+      :host {
+        -ms-overflow-style: none; /* for Internet Explorer and Edge */
+        scrollbar-width: none; /* for Firefox */
+      }
+    `,
 ];
 __decorate([
     property()

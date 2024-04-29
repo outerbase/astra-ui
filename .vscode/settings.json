@@ -1,34 +1,34 @@
 {
-    "eslint.format.enable": true,
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.codeActionsOnSave": {
-        "source.organizeImports": "explicit"
-    },
+  "eslint.format.enable": true,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
 
-    "typescript.preferences.importModuleSpecifier": "non-relative",
-    "javascript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "javascript.preferences.importModuleSpecifier": "non-relative",
 
-    "files.insertFinalNewline": true,
-    "files.exclude": {
-        "**/node_modules": true,
-        ".prettierignore": true,
-        // ".prettierrc.json": true,
-        "pnpm-lock.yaml": true,
-        ".gitignore": true,
-        ".tmp": true
-    },
-    "files.watcherExclude": {
-        "**/node_modules": true,
-        "**/dist": true,
-        "**/.tmp": true
-    },
-    "search.exclude": {
-        "**/node_modules": true,
-        "**/.tmp": true,
-        "**/dist": true
-    },
-    "[astro]": {
-        "editor.defaultFormatter": "astro-build.astro-vscode"
-    }
+  "files.insertFinalNewline": true,
+  "files.exclude": {
+    "**/node_modules": true,
+    ".prettierignore": true,
+    // ".prettierrc.json": true,
+    "pnpm-lock.yaml": true,
+    ".gitignore": true,
+    ".tmp": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.tmp": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.tmp": true,
+    "**/dist": true
+  },
+  "[astro]": {
+    "editor.defaultFormatter": "astro-build.astro-vscode"
+  }
 }

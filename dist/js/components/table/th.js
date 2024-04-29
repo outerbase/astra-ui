@@ -61,8 +61,7 @@ let TH = class TH extends MutableElement {
             'bg-theme-cell-dirty dark:bg-theme-cell-dirty-dark': this.dirty,
             'select-none': this.hasMenu, // this is really about handling SSR without hydration; TODO use a better flag?
             // prevent double borders
-            'border-r': (!this.withResizer && this.isLastColumn && this.outerBorder) ||
-                (!this.withResizer && this.separateCells && !this.isLastColumn),
+            'border-r': (!this.withResizer && this.isLastColumn && this.outerBorder) || (!this.withResizer && this.separateCells && !this.isLastColumn),
         };
     }
     get value() {
@@ -297,27 +296,27 @@ let TH = class TH extends MutableElement {
                 })} @blur=${this.onBlur}></input>`
                 : this.hasMenu
                     ? html `<astra-th-menu theme=${this.theme} .options=${options} @menu-selection=${this.onMenuSelection}
-                        ><span class="font-normal">${this.value}</span></astra-th-menu
-                    >`
+              ><span class="font-normal">${this.value}</span></astra-th-menu
+            >`
                     : html `<span class="font-normal">${this.value}</span>`;
             return this.withResizer
                 ? html `<span class=${classMap(resultContainerClasses)}
-                      ><slot></slot>
-                      ${body}
-                      <column-resizer
-                          .column=${this}
-                          height="${ifDefined(this.tableHeight)}"
-                          theme=${this.theme}
-                          @resize-start=${() => {
+            ><slot></slot>
+            ${body}
+            <column-resizer
+              .column=${this}
+              height="${ifDefined(this.tableHeight)}"
+              theme=${this.theme}
+              @resize-start=${() => {
                     // remove the suffix `px` from width and convert to a number
                     // JOHNNY probably revert to storing the number??
                     this._previousWidth = this.width ? +this.width.slice(0, -2) : 0;
                 }}
-                          @resize=${({ delta }) => {
+              @resize=${({ delta }) => {
                     this.width = `${this._previousWidth + delta}px`;
                 }}
-                      ></column-resizer
-                  ></span>`
+            ></column-resizer
+          ></span>`
                 : html `<div class=${classMap(resultContainerClasses)}><slot></slot>${body}</div>`;
         }
     }

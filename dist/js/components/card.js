@@ -20,50 +20,50 @@ let AstraCard = class AstraCard extends LitElement {
     }
     render() {
         return html `
-            <section class="size-${this.size}">
-                <slot></slot>
-            </section>
-        `;
+      <section class="size-${this.size}">
+        <slot></slot>
+      </section>
+    `;
     }
 };
 AstraCard.styles = [
     baseStyles,
     css `
-            section {
-                display: flex;
-                flex-direction: column;
-                gap: 8px;
-                font-weight: 500;
-                font-family: var(--astra-font-family);
-                color: black;
-                background: var(--astra-neutral-100);
-                border: 1px solid var(--astra-neutral-200);
-                border-radius: 6px;
-            }
+      section {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        font-weight: 500;
+        font-family: var(--astra-font-family);
+        color: black;
+        background: var(--astra-neutral-100);
+        border: 1px solid var(--astra-neutral-200);
+        border-radius: 6px;
+      }
 
-            .size-base {
-                padding: 12px;
-                gap: 8px;
-            }
+      .size-base {
+        padding: 12px;
+        gap: 8px;
+      }
 
-            .size-small {
-                padding: 8px;
-                gap: 4px;
-            }
+      .size-small {
+        padding: 8px;
+        gap: 4px;
+      }
 
-            .size-compact {
-                padding: 4px;
-                gap: 2px;
-            }
+      .size-compact {
+        padding: 4px;
+        gap: 2px;
+      }
 
-            @media (prefers-color-scheme: dark) {
-                div {
-                    background: var(--astra-neutral-900);
-                    border: 1px solid var(--astra-neutral-800);
-                    color: white;
-                }
-            }
-        `,
+      @media (prefers-color-scheme: dark) {
+        div {
+          background: var(--astra-neutral-900);
+          border: 1px solid var(--astra-neutral-800);
+          color: white;
+        }
+      }
+    `,
 ];
 __decorate([
     property({ type: String })

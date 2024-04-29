@@ -51,10 +51,10 @@ export class Menu extends ClassifiedElement {
             'border border-neutral-200 dark:border-neutral-800': true,
         };
         return html `<ul class=${classMap(classes)} role="menu">
-            ${repeat(this.activeOptions, ({ label }) => label, ({ label, value, classes }) => html `<li
-                        @click=${this.onItemClick}
-                        data-value=${value}
-                        class=${classMapToClassName({
+      ${repeat(this.activeOptions, ({ label }) => label, ({ label, value, classes }) => html `<li
+            @click=${this.onItemClick}
+            data-value=${value}
+            class=${classMapToClassName({
             [classes ?? '']: !!classes,
             'text-ellipsis overflow-hidden': true,
             'rounded-md p-2.5': true,
@@ -62,12 +62,12 @@ export class Menu extends ClassifiedElement {
             'cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800': true,
             'bg-neutral-100 dark:bg-neutral-800 dark:hover:bg-neutral-800': this.focused === value,
         })}
-                        role="menuitem"
-                        ?selected=${this.selection === value}
-                    >
-                        ${label}
-                    </li>`)}
-        </ul>`;
+            role="menuitem"
+            ?selected=${this.selection === value}
+          >
+            ${label}
+          </li>`)}
+    </ul>`;
     }
     onTrigger(event) {
         this.open = !this.open;
@@ -204,20 +204,20 @@ export class Menu extends ClassifiedElement {
             'p-0.5 rounded-md': true,
         };
         return html `
-            <slot></slot>
-            <div
-                id="trigger"
-                class=${classMap(outerClasses)}
-                aria-haspopup="menu"
-                tabindex="0"
-                @click=${this.onTrigger}
-                @dblclick=${(e) => e.stopPropagation()}
-                @keydown=${this.onKeyDown}
-            >
-                <div class=${classMap(innerClasses)}>${CaretDown(16)}</div>
-                ${this.listElement}
-            </div>
-        `;
+      <slot></slot>
+      <div
+        id="trigger"
+        class=${classMap(outerClasses)}
+        aria-haspopup="menu"
+        tabindex="0"
+        @click=${this.onTrigger}
+        @dblclick=${(e) => e.stopPropagation()}
+        @keydown=${this.onKeyDown}
+      >
+        <div class=${classMap(innerClasses)}>${CaretDown(16)}</div>
+        ${this.listElement}
+      </div>
+    `;
     }
 }
 __decorate([

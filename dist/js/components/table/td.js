@@ -383,11 +383,9 @@ let TableData = TableData_1 = class TableData extends MutableElement {
                     label: typeof this.originalValue === 'object'
                         ? 'Revert'
                         : html `Revert to
-                                    <span class="pointer-events-none italic whitespace-nowrap"
-                                        >${this.originalValue !== null || this.originalValue !== undefined
-                            ? this.originalValue
-                            : 'NULL'}</span
-                                    >`,
+                    <span class="pointer-events-none italic whitespace-nowrap"
+                      >${this.originalValue !== null || this.originalValue !== undefined ? this.originalValue : 'NULL'}</span
+                    >`,
                     value: 'reset',
                 },
             ]
@@ -395,26 +393,24 @@ let TableData = TableData_1 = class TableData extends MutableElement {
         // note: contenteditable is all so we can get the `paste` event that an arbitrary htmleelement does not otherwise receive
         const menuEl = !this.isEditing && !this.blank
             ? html `<span
-                      class="outline-none caret-transparent"
-                      contenteditable="true"
-                      spellcheck="false"
-                      autocorrect="off"
-                      @paste=${TableData_1.onPaste}
-                      @keydown=${TableData_1.onContentEditableKeyDown}
-                      @dragover=${TableData_1.onDragOver}
-                      @drop=${TableData_1.onDrop}
-                      ><astra-td-menu
-                          theme=${this.theme}
-                          .options=${menuOptions}
-                          ?without-padding=${!!this.plugin}
-                          ?selectable-text=${!this.isInteractive}
-                          @menu-selection=${this.onMenuSelection}
-                          ><span class=${contentWrapperClass}>${cellContents}</span
-                          ><span id="plugin-editor" class="absolute top-8 caret-current cursor-auto"
-                              >${cellEditorContents}</span
-                          ></astra-td-menu
-                      ></span
-                  >`
+            class="outline-none caret-transparent"
+            contenteditable="true"
+            spellcheck="false"
+            autocorrect="off"
+            @paste=${TableData_1.onPaste}
+            @keydown=${TableData_1.onContentEditableKeyDown}
+            @dragover=${TableData_1.onDragOver}
+            @drop=${TableData_1.onDrop}
+            ><astra-td-menu
+              theme=${this.theme}
+              .options=${menuOptions}
+              ?without-padding=${!!this.plugin}
+              ?selectable-text=${!this.isInteractive}
+              @menu-selection=${this.onMenuSelection}
+              ><span class=${contentWrapperClass}>${cellContents}</span
+              ><span id="plugin-editor" class="absolute top-8 caret-current cursor-auto">${cellEditorContents}</span></astra-td-menu
+            ></span
+          >`
             : html ``;
         return this.isEditing ? inputEl : this.blank ? emptySlot : menuEl;
     }
@@ -422,11 +418,11 @@ let TableData = TableData_1 = class TableData extends MutableElement {
 TableData.styles = [
     ...MutableElement.styles,
     css `
-            .nbsp::after {
-                content: '.'; /* Non-breaking space */
-                visibility: hidden;
-            }
-        `,
+      .nbsp::after {
+        content: '.'; /* Non-breaking space */
+        visibility: hidden;
+      }
+    `,
 ];
 __decorate([
     property({ attribute: 'plugin-attributes', type: String })

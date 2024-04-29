@@ -4,9 +4,9 @@ import { Menu } from './index.js'
 
 @customElement('astra-th-menu')
 export class ColumnMenu extends Menu {
-    protected override get menuPositionClasses() {
-        const isRenderingInBrowser = typeof window !== 'undefined'
-        if (!isRenderingInBrowser) return ''
-        return 'right-0 top-8'
-    }
+  protected override get menuPositionClasses() {
+    const isRenderingInBrowser = typeof window !== 'undefined'
+    if (!isRenderingInBrowser) return ''
+    return 'right-0 top-8'
+  }
 }

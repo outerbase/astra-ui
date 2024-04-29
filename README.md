@@ -7,15 +7,15 @@
 ```html
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <title>Classified</title>
-        <script src="https://cdn.outerbase.com/astra/latest/astra.bundle.js"></script>
-    </head>
-    <body>
-        <astra-label variant="h1">Are you ready?</astra-label>
-        <astra-button>Yes!</astra-button>
-    </body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Classified</title>
+    <script src="https://cdn.outerbase.com/astra/latest/astra.bundle.js"></script>
+  </head>
+  <body>
+    <astra-label variant="h1">Are you ready?</astra-label>
+    <astra-button>Yes!</astra-button>
+  </body>
 </html>
 ```
 
@@ -25,10 +25,10 @@
 
 You do **not** have to build or compile this project in order to use it. You have the choice:
 
--   load directly from our CDN
--   host `astra.bundle.js` yourself
--   `npm install` into your project
--   `import` only the components you use; minimize and build to your liking
+- load directly from our CDN
+- host `astra.bundle.js` yourself
+- `npm install` into your project
+- `import` only the components you use; minimize and build to your liking
 
 TypeScript support is built-in, **not** required.
 
@@ -115,8 +115,8 @@ function ArbitraryComponent() {
 
 We do not force you to use/load the Inter font. If you'd like to use it, include the font `Inter` on your page. You can see examples of how to do this in the following files of this repo:
 
--   `example.html` via Google Fonts
--   `src/pages/index.astro` via the [@fontsource/inter](https://www.npmjs.com/package/@fontsource/inter) NPM module
+- `example.html` via Google Fonts
+- `src/pages/index.astro` via the [@fontsource/inter](https://www.npmjs.com/package/@fontsource/inter) NPM module
 
 ## Developing locally
 

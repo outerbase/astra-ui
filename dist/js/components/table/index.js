@@ -30,9 +30,7 @@ let AstraTable = class AstraTable extends ClassifiedElement {
         this.rows = data;
     }
     updateVisibleColumns() {
-        this.visibleColumns = this.columns.filter(({ name, status }) => status !== ColumnStatus.deleted &&
-            this.hiddenColumnNames.indexOf(name) === -1 &&
-            this.deletedColumnNames.indexOf(name) === -1);
+        this.visibleColumns = this.columns.filter(({ name, status }) => status !== ColumnStatus.deleted && this.hiddenColumnNames.indexOf(name) === -1 && this.deletedColumnNames.indexOf(name) === -1);
     }
     constructor() {
         super();
@@ -244,76 +242,76 @@ let AstraTable = class AstraTable extends ClassifiedElement {
         return html `${repeat(rows, ({ id }) => id, ({ id, values, originalValues, isNew }, rowIndex) => {
             return !this.removedRowUUIDs.has(id)
                 ? html `<astra-tr .selected=${this.selectedRowUUIDs.has(id)} ?new=${isNew} @on-selection=${this._onRowSelection}>
-                          <!-- checkmark cell -->
-                          ${this.selectableRows
+              <!-- checkmark cell -->
+              ${this.selectableRows
                     ? html `<astra-td
-                                    .position=${{
+                    .position=${{
                         row: id,
                         column: '__selected', // our own; not expected to exist in DB
                     }}
-                                    .type=${null}
-                                    theme=${this.theme}
-                                    ?separate-cells=${true}
-                                    ?draw-right-border=${true}
-                                    ?bottom-border=${true}
-                                    ?outer-border=${this.outerBorder}
-                                    ?blank=${true}
-                                    ?is-last-row=${rowIndex === this.rows.length - 1}
-                                    ?is-last-column=${false}
-                                    ?row-selector="${true}"
-                                    ?read-only=${true}
-                                    ?interactive=${true}
-                                    width="42px"
-                                >
-                                    <div class="absolute top-0 bottom-0 right-0 left-0 flex items-center justify-center h-full">
-                                        <check-box
-                                            ?checked="${this.selectedRowUUIDs.has(id)}"
-                                            @toggle-check="${() => this.toggleSelectedRow(id)}"
-                                            theme=${this.theme}
-                                        />
-                                    </div>
-                                </astra-td>`
+                    .type=${null}
+                    theme=${this.theme}
+                    ?separate-cells=${true}
+                    ?draw-right-border=${true}
+                    ?bottom-border=${true}
+                    ?outer-border=${this.outerBorder}
+                    ?blank=${true}
+                    ?is-last-row=${rowIndex === this.rows.length - 1}
+                    ?is-last-column=${false}
+                    ?row-selector="${true}"
+                    ?read-only=${true}
+                    ?interactive=${true}
+                    width="42px"
+                  >
+                    <div class="absolute top-0 bottom-0 right-0 left-0 flex items-center justify-center h-full">
+                      <check-box
+                        ?checked="${this.selectedRowUUIDs.has(id)}"
+                        @toggle-check="${() => this.toggleSelectedRow(id)}"
+                        theme=${this.theme}
+                      />
+                    </div>
+                  </astra-td>`
                     : null}
 
-                          <!-- render a TableCell for each column of data in the current row -->
-                          ${repeat(this.visibleColumns, ({ name }) => name, // use the column name as the unique identifier for each entry in this row
+              <!-- render a TableCell for each column of data in the current row -->
+              ${repeat(this.visibleColumns, ({ name }) => name, // use the column name as the unique identifier for each entry in this row
                 ({ name }, idx) => {
                     const installedPlugin = this.plugins?.find(({ pluginWorkspaceId }) => pluginWorkspaceId === this.installedPlugins?.[name]?.plugin_workspace_id);
                     const defaultPlugin = this.plugins?.find(({ id }) => id === this.installedPlugins?.[name]?.plugin_installation_id);
                     const plugin = installedPlugin ?? defaultPlugin;
                     return html `
-                                      <!-- TODO @johnny remove separate-cells and instead rely on css variables to suppress borders -->
-                                      <!-- TODO @caleb & johnny move plugins to support the new installedPlugins variable -->
-                                      <astra-td
-                                          .position=${{ row: id, column: name }}
-                                          .value=${values[name]}
-                                          .originalValue=${originalValues[name]}
-                                          width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
-                                          theme=${this.theme}
-                                          type=${this.columnTypes?.[name]}
-                                          .plugin=${plugin}
-                                          plugin-attributes=${this.installedPlugins?.[name]?.supportingAttributes ?? ''}
-                                          ?separate-cells=${true}
-                                          ?draw-right-border=${true}
-                                          ?bottom-border=${true}
-                                          ?outer-border=${this.outerBorder}
-                                          ?is-last-row=${rowIndex === this.rows.length - 1}
-                                          ?is-last-column=${idx === this.visibleColumns.length - 1}
-                                          ?is-first-row=${rowIndex === 0}
-                                          ?is-first-column=${idx === 0}
-                                          ?menu=${!this.isNonInteractive && !this.readonly}
-                                          ?selectable-text=${this.isNonInteractive}
-                                          ?interactive=${!this.isNonInteractive}
-                                          ?hide-dirt=${isNew}
-                                          ?read-only=${this.readonly}
-                                      >
-                                      </astra-td>
-                                  `;
+                    <!-- TODO @johnny remove separate-cells and instead rely on css variables to suppress borders -->
+                    <!-- TODO @caleb & johnny move plugins to support the new installedPlugins variable -->
+                    <astra-td
+                      .position=${{ row: id, column: name }}
+                      .value=${values[name]}
+                      .originalValue=${originalValues[name]}
+                      width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
+                      theme=${this.theme}
+                      type=${this.columnTypes?.[name]}
+                      .plugin=${plugin}
+                      plugin-attributes=${this.installedPlugins?.[name]?.supportingAttributes ?? ''}
+                      ?separate-cells=${true}
+                      ?draw-right-border=${true}
+                      ?bottom-border=${true}
+                      ?outer-border=${this.outerBorder}
+                      ?is-last-row=${rowIndex === this.rows.length - 1}
+                      ?is-last-column=${idx === this.visibleColumns.length - 1}
+                      ?is-first-row=${rowIndex === 0}
+                      ?is-first-column=${idx === 0}
+                      ?menu=${!this.isNonInteractive && !this.readonly}
+                      ?selectable-text=${this.isNonInteractive}
+                      ?interactive=${!this.isNonInteractive}
+                      ?hide-dirt=${isNew}
+                      ?read-only=${this.readonly}
+                    >
+                    </astra-td>
+                  `;
                 })}
-                          ${this.blankFill
+              ${this.blankFill
                     ? html `<astra-td ?outer-border=${false} ?read-only=${true} ?separate-cells=${false} ?bottom-border=${true} ?interactive=${false} ?menu=${false} ?blank=${true}></<astra-td>`
                     : ''}
-                      </astra-tr>`
+            </astra-tr>`
                 : null;
         })}`;
     }
@@ -421,12 +419,12 @@ let AstraTable = class AstraTable extends ClassifiedElement {
         };
         const selectAllCheckbox = this.rows.length > 0
             ? html `<check-box
-                      theme=${this.theme}
-                      ?checked=${this.allRowsSelected}
-                      @click=${(event) => {
+            theme=${this.theme}
+            ?checked=${this.allRowsSelected}
+            @click=${(event) => {
                 event.preventDefault();
             }}
-                      @toggle-check=${() => {
+            @toggle-check=${() => {
                 const everyRowIsChecked = this.rows.length === this.selectedRowUUIDs.size;
                 if (everyRowIsChecked) {
                     this.selectedRowUUIDs = new Set();
@@ -439,7 +437,7 @@ let AstraTable = class AstraTable extends ClassifiedElement {
                 //   dispatch event that row selection changed
                 this._onRowSelection();
             }}
-                  />`
+          />`
             : '';
         return html `
             <astra-scroll-area ${ref(this.scrollableEl)}
@@ -481,38 +479,38 @@ let AstraTable = class AstraTable extends ClassifiedElement {
                             ${repeat(this.visibleColumns, ({ name }, _idx) => name, ({ name }, idx) => {
             // omit column resizer on the last column because it's sort-of awkward
             return html `<astra-th
-                                        .options=${this.columnOptions || nothing}
-                                        .plugins="${this.plugins}"
-                                        installed-plugins=${JSON.stringify(this.installedPlugins)}
-                                        table-height=${ifDefined(this._height)}
-                                        theme=${this.theme}
-                                        value="${this.renamedColumnNames[name] ?? name}"
-                                        original-value="${name}"
-                                        width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
-                                        ?separate-cells=${true}
-                                        ?outer-border=${this.outerBorder}
-                                        ?menu=${!this.isNonInteractive && !this.readonly}
-                                        ?with-resizer=${!this.isNonInteractive}
-                                        ?is-first-column=${idx === 0}
-                                        ?is-last-column=${idx === this.visibleColumns.length - 1}
-                                        ?removable=${true}
-                                        ?interactive=${!this.isNonInteractive}
-                                        @column-hidden=${this._onColumnHidden}
-                                        @column-removed=${this._onColumnRemoved}
-                                        @column-plugin-deactivated=${this._onColumnPluginDeactivated}
-                                        @resize-start=${this._onColumnResizeStart}
-                                        @resize=${this._onColumnResized}
-                                        ?read-only=${this.readonly}
-                                    >
-                                    </astra-th>`;
+                                  .options=${this.columnOptions || nothing}
+                                  .plugins="${this.plugins}"
+                                  installed-plugins=${JSON.stringify(this.installedPlugins)}
+                                  table-height=${ifDefined(this._height)}
+                                  theme=${this.theme}
+                                  value="${this.renamedColumnNames[name] ?? name}"
+                                  original-value="${name}"
+                                  width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
+                                  ?separate-cells=${true}
+                                  ?outer-border=${this.outerBorder}
+                                  ?menu=${!this.isNonInteractive && !this.readonly}
+                                  ?with-resizer=${!this.isNonInteractive}
+                                  ?is-first-column=${idx === 0}
+                                  ?is-last-column=${idx === this.visibleColumns.length - 1}
+                                  ?removable=${true}
+                                  ?interactive=${!this.isNonInteractive}
+                                  @column-hidden=${this._onColumnHidden}
+                                  @column-removed=${this._onColumnRemoved}
+                                  @column-plugin-deactivated=${this._onColumnPluginDeactivated}
+                                  @resize-start=${this._onColumnResizeStart}
+                                  @resize=${this._onColumnResized}
+                                  ?read-only=${this.readonly}
+                                >
+                                </astra-th>`;
         })}
                             ${this.blankFill
             ? html `<astra-th ?outer-border=${this.outerBorder} ?read-only=${true} fill .value=${null} .originalValue=${null}>
                             ${this.isNonInteractive || !this.addableColumns
                 ? ''
                 : html `<span class="flex items-center absolute top-0 left-2 bottom-0 right-0">
-                                          <astra-add-column-trigger></astra-add-column-trigger>
-                                      </span>`}
+                                    <astra-add-column-trigger></astra-add-column-trigger>
+                                  </span>`}
                             </<astra-th>`
             : ''}
                         </astra-tr>

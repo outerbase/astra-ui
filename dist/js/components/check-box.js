@@ -45,18 +45,18 @@ let CustomCheckbox = CustomCheckbox_1 = class CustomCheckbox extends LitElement 
             dark: this.theme == Theme.dark,
         });
         return html `
-            <div class=${classes} @click="${this.toggleCheckbox}">
-                ${this.checked ? CustomCheckbox_1.checkedTemplate : CustomCheckbox_1.uncheckedTemplate}
-                <input type="checkbox" ?checked="${this.checked}" @change="${this.toggleCheckbox}" class="hidden" />
-            </div>
-        `;
+      <div class=${classes} @click="${this.toggleCheckbox}">
+        ${this.checked ? CustomCheckbox_1.checkedTemplate : CustomCheckbox_1.uncheckedTemplate}
+        <input type="checkbox" ?checked="${this.checked}" @change="${this.toggleCheckbox}" class="hidden" />
+      </div>
+    `;
     }
 };
 CustomCheckbox.styles = TWStyles;
 CustomCheckbox.checkedTemplate = html `<span
-        class="bg-black dark:bg-white text-white dark:text-black flex items-center justify-center w-4 h-4 p-0.5 rounded-md"
-        >${CheckMark(16)}</span
-    >`;
+    class="bg-black dark:bg-white text-white dark:text-black flex items-center justify-center w-4 h-4 p-0.5 rounded-md"
+    >${CheckMark(16)}</span
+  >`;
 CustomCheckbox.uncheckedTemplate = html `<span class="w-4 h-4 border border-neutral-500 rounded-md"></span>`;
 __decorate([
     property({ type: Boolean })

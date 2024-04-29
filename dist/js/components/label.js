@@ -28,60 +28,60 @@ let AstraLabel = class AstraLabel extends LitElement {
 AstraLabel.styles = [
     baseStyles,
     css `
-            label {
-                display: block;
-                font-weight: 500;
-                font-family: var(--astra-font-family);
-                color: black;
-                opacity: 0.8;
-                cursor: text;
-            }
+      label {
+        display: block;
+        font-weight: 500;
+        font-family: var(--astra-font-family);
+        color: black;
+        opacity: 0.8;
+        cursor: text;
+      }
 
-            .label {
-                font-weight: 700;
-                font-size: 12px;
-                font-family: var(--astra-font-family);
-                opacity: 0.6;
-            }
+      .label {
+        font-weight: 700;
+        font-size: 12px;
+        font-family: var(--astra-font-family);
+        opacity: 0.6;
+      }
 
-            .h1 {
-                opacity: 1;
-                font-size: 36px;
-                line-height: 40px;
-                font-weight: 600;
-                margin-bottom: 4px;
-            }
+      .h1 {
+        opacity: 1;
+        font-size: 36px;
+        line-height: 40px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
 
-            .h2 {
-                opacity: 1;
-                font-size: 24px;
-                line-height: 32px;
-                font-weight: 600;
-                margin-bottom: 4px;
-            }
+      .h2 {
+        opacity: 1;
+        font-size: 24px;
+        line-height: 32px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
 
-            .h3 {
-                opacity: 1;
-                font-size: 20px;
-                line-height: 28px;
-                font-weight: 600;
-                margin-bottom: 4px;
-            }
+      .h3 {
+        opacity: 1;
+        font-size: 20px;
+        line-height: 28px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
 
-            .h4 {
-                opacity: 1;
-                font-size: 16px;
-                line-height: 24px;
-                font-weight: 600;
-                margin-bottom: 4px;
-            }
+      .h4 {
+        opacity: 1;
+        font-size: 16px;
+        line-height: 24px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
 
-            @media (prefers-color-scheme: dark) {
-                label {
-                    color: white;
-                }
-            }
-        `,
+      @media (prefers-color-scheme: dark) {
+        label {
+          color: white;
+        }
+      }
+    `,
 ];
 __decorate([
     property({ attribute: 'variant' })

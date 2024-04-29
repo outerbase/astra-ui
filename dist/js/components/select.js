@@ -10,14 +10,14 @@ import { repeat } from 'lit/directives/repeat.js';
 import { TWStyles } from '../lib/.tw-styles.js';
 import baseStyles from '../lib/base-styles.js';
 const ToggleIcon = html `<svg
-    aria-hidden="true"
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    fill="currentColor"
-    viewBox="0 0 256 256"
+  aria-hidden="true"
+  xmlns="http://www.w3.org/2000/svg"
+  width="16"
+  height="16"
+  fill="currentColor"
+  viewBox="0 0 256 256"
 >
-    <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
+  <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
 </svg>`;
 let AstraSelect = class AstraSelect extends LitElement {
     shouldDisplayOptions(isOpen) {
@@ -59,14 +59,14 @@ let AstraSelect = class AstraSelect extends LitElement {
     }
     renderOption(text, value) {
         return html `<li
-            class="option"
-            tabindex="0"
-            @click=${() => {
+      class="option"
+      tabindex="0"
+      @click=${() => {
             this.value = value;
         }}
-        >
-            ${text}
-        </li>`;
+    >
+      ${text}
+    </li>`;
     }
     connectedCallback() {
         super.connectedCallback();
@@ -94,93 +94,93 @@ let AstraSelect = class AstraSelect extends LitElement {
         // TODO place a button in here that serves as the trigger instead of the container itself
         // and then put aria-haspopup="listbox" on it
         return html `
-            <div id="container" aria-haspopup="listbox" tabindex="0" @click=${this.onClickInside} role="listbox">
-                ${displayedValue} ${ToggleIcon}
+      <div id="container" aria-haspopup="listbox" tabindex="0" @click=${this.onClickInside} role="listbox">
+        ${displayedValue} ${ToggleIcon}
 
-                <ul id="options-list" aria-owns="container" role="menu">
-                    ${repeat(this.options, ({ label }) => label, ({ label, value }) => this.renderOption(label, value))}
-                </ul>
-            </div>
-        `;
+        <ul id="options-list" aria-owns="container" role="menu">
+          ${repeat(this.options, ({ label }) => label, ({ label, value }) => this.renderOption(label, value))}
+        </ul>
+      </div>
+    `;
     }
 };
 AstraSelect.styles = [
     TWStyles,
     baseStyles,
     css `
-            #container {
-                display: flex;
-                gap: 8px;
-                position: relative;
-                cursor: pointer;
-                padding: 10px 12px;
-                border: 1px solid var(--astra-neutral-200);
-                border-radius: 6px;
-                background: white;
-                font-family: var(--astra-font-family);
-                user-select: none;
-                -webkit-user-select: none;
-            }
+      #container {
+        display: flex;
+        gap: 8px;
+        position: relative;
+        cursor: pointer;
+        padding: 10px 12px;
+        border: 1px solid var(--astra-neutral-200);
+        border-radius: 6px;
+        background: white;
+        font-family: var(--astra-font-family);
+        user-select: none;
+        -webkit-user-select: none;
+      }
 
-            #container:focus-within {
-                outline: 1px solid var(--astra-accent, lime);
-                outline-offset: -1px; // 0px draws it _outside_ of the border, where as this covers the border
-            }
+      #container:focus-within {
+        outline: 1px solid var(--astra-accent, lime);
+        outline-offset: -1px; // 0px draws it _outside_ of the border, where as this covers the border
+      }
 
-            #options-list {
-                display: none;
-                position: absolute;
-                top: calc(100% + 6px);
-                left: 0;
-                width: 100%;
-                z-index: 1;
-                background: white;
-                border: 1px solid var(--astra-neutral-200);
-                border-radius: 6px;
-            }
+      #options-list {
+        display: none;
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        width: 100%;
+        z-index: 1;
+        background: white;
+        border: 1px solid var(--astra-neutral-200);
+        border-radius: 6px;
+      }
 
-            .option {
-                padding: 10px 12px;
-                cursor: pointer;
-                color: black;
-            }
+      .option {
+        padding: 10px 12px;
+        cursor: pointer;
+        color: black;
+      }
 
-            .option:hover {
-                background: var(--astra-neutral-200);
-            }
+      .option:hover {
+        background: var(--astra-neutral-200);
+      }
 
-            li {
-                list-style-type: none;
-            }
+      li {
+        list-style-type: none;
+      }
 
-            ul {
-                margin-block-start: 0px;
-                margin-block-end: 0px;
-                padding-inline-start: 0px;
-            }
+      ul {
+        margin-block-start: 0px;
+        margin-block-end: 0px;
+        padding-inline-start: 0px;
+      }
 
-            @media (prefers-color-scheme: dark) {
-                #container {
-                    background: var(--astra-neutral-900);
-                    border: 1px solid var(--astra-neutral-800);
-                    color: white;
-                }
+      @media (prefers-color-scheme: dark) {
+        #container {
+          background: var(--astra-neutral-900);
+          border: 1px solid var(--astra-neutral-800);
+          color: white;
+        }
 
-                #options-list {
-                    background: var(--astra-neutral-900);
-                    border: 1px solid var(--astra-neutral-800);
-                    border-radius: 6px;
-                }
+        #options-list {
+          background: var(--astra-neutral-900);
+          border: 1px solid var(--astra-neutral-800);
+          border-radius: 6px;
+        }
 
-                .option {
-                    color: white;
-                }
+        .option {
+          color: white;
+        }
 
-                .option:hover {
-                    background: var(--astra-neutral-800);
-                }
-            }
-        `,
+        .option:hover {
+          background: var(--astra-neutral-800);
+        }
+      }
+    `,
 ];
 __decorate([
     property({ attribute: 'aria-expanded', reflect: true })
