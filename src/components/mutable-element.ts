@@ -3,7 +3,7 @@ import { property } from 'lit/decorators.js'
 import { isEqual } from 'lodash-es'
 
 import { CellUpdateEvent } from '../lib/events.js'
-import type { Position, Serializable } from '../lib/types.js'
+import type { Position, Serializable } from '../types.js'
 import { ClassifiedElement } from './classified-element.js'
 
 export const NUMBER_TYPES = [

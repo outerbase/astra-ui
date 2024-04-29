@@ -4,7 +4,7 @@ import { classMap } from 'lit/directives/class-map.js'
 
 import { CaretDown } from '../../icons/caret-down.js'
 import { ChangeEvent, MenuSelectedEvent } from '../../lib/events.js'
-import { Theme } from '../../lib/types.js'
+import { Theme } from '../../types.js'
 import { Menu } from './index.js'
 
 @customElement('astra-input-menu')

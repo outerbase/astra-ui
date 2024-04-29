@@ -71,13 +71,13 @@ We recommend hosting all of your dependencies yourself. See `src/pages/index.ast
 _In your terminal, type_
 
 ```
-pnpm add @outerbase/astra
+npm add @outerbase/astra-ui
 ```
 
 _in your js/ts client-side file(s)_
 
 ```
-import '@outerbase/dist/web-components/astra.bundle.js'
+import '@outerbase/astra-ui/bundle'
 ```
 
 This will include/register all of the Astra copmonents on the page
@@ -87,14 +87,14 @@ This will include/register all of the Astra copmonents on the page
 _In your terminal, type_
 
 ```
-pnpm add @outerbase/astra
+npm add @outerbase/astra-ui
 ```
 
 _In your `.js`, `.mjs` and `.tsx` files_
 
 ```
-import  { AstraButton, AstraCard, AstraInput, AstraLabel, AstraSelect, AstraScrollArea }
-  from '@outerbase/astra'
+import  { Button, Card, Input, Label, ReactComponents, ScrollArea, Select, Table }
+  from '@outerbase/astra-ui/components'
 ```
 
 _Reference `src/pages/index.astro` for an example of using components in this way_
@@ -104,11 +104,10 @@ _Reference `src/pages/index.astro` for an example of using components in this wa
 We've also packaged Astra for React:
 
 ```js
-import { AstraReactComponents } from '@outerbase/astra'
-const AstraButton = AstraReactComponents.Button
+import { Select, Label, Input, Card, Button } from '@outerbase/astra-ui/react'
 
 function ArbitraryComponent() {
-    return <AstraButton>Click me</AstraButton>
+    return <Button>Click me</Button>
 }
 ```
 
@@ -122,6 +121,6 @@ We do not force you to use/load the Inter font. If you'd like to use it, include
 ## Developing locally
 
 ```
-pnpm install --frozen-lockfile
-pnpm dev
+npm install --frozen-lockfile
+npm dev
 ```

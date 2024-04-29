@@ -15,8 +15,8 @@ import {
     MenuSelectedEvent,
     ResizeEvent,
 } from '../../lib/events.js'
-import type { ColumnPlugin, HeaderMenuOptions, PluginWorkspaceInstallationId } from '../../lib/types.js'
-import { Theme } from '../../lib/types.js'
+import type { ColumnPlugin, HeaderMenuOptions, PluginWorkspaceInstallationId } from '../../types.js'
+import { Theme } from '../../types.js'
 import '../column-resizer-element.js'
 import '../menu/column-menu.js' // <astra-th-menu />
 import type { ColumnMenu } from '../menu/column-menu.js'

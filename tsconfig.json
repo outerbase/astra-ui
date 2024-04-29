@@ -4,5 +4,8 @@
         "experimentalDecorators": true,
         "useDefineForClassFields": false
     },
+    "paths": {
+        "@outerbase/astra-ui/*": ["./dist/js/*"]
+    },
     "exclude": ["dist/**"]
 }

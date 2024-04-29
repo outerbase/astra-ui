@@ -1,13 +1,18 @@
 {
-  "name": "@outerbase/astra",
+  "name": "@outerbase/astra-ui",
   "version": "0.0.1",
   "type": "module",
   "main": "dist/js/index.js",
   "module": "dist/js/index.js",
-  "types": "dist/js/index.d.ts",
+  "exports": {
+    "./types": "./dist/js/types.js",
+    "./components": "./dist/js/index.js",
+    "./bundle": "./dist/web-components/astra.bundle.js",
+    "./react": "./dist/js/react.js"
+  },
   "files": [
     "dist/js/*",
-    "dist/web-components/astra.bundle.js"
+    "dist/web-components/*"
   ],
   "scripts": {
     "tailwind:dev": "concurrently \"tailwindcss -c .build/tailwind/tailwind.config.distribute.mjs -i .build/tailwind/tailwindlib.css -o .build/tailwind/tailwind.css --watch\" \"node .build/tailwind/css-to-js.mjs --input .build/tailwind/tailwind.css --output ./src/lib/tailwind.ts --watch\"",

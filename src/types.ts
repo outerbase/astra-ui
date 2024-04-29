@@ -25,7 +25,7 @@ export {
     RowSelectedEvent,
     RowUpdatedEvent,
     RowsEvent,
-} from './events.js'
+} from './lib/events.js'
 
 // copied from dashboard
 export type TableColumnType = 'string' | 'integer' | 'enum' | 'uuid' | 'date' | 'dateonly'

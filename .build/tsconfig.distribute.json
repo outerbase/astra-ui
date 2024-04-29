@@ -2,7 +2,7 @@
     "compilerOptions": {
         "target": "ES2021",
         "module": "ES2015",
-        "moduleResolution": "node",
+        "moduleResolution": "Bundler",
         "lib": ["es2021", "dom"],
         "declaration": true,
         "declarationMap": true,

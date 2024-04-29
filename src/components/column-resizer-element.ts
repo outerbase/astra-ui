@@ -2,7 +2,7 @@ import { html, type PropertyValueMap } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { ResizeEndEvent, ResizeEvent, ResizeStartEvent } from '../lib/events.js'
-import { Theme } from '../lib/types.js'
+import { Theme } from '../types.js'
 import { ClassifiedElement } from './classified-element.js'
 import type { TH } from './table/th.js'
 

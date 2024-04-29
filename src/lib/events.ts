@@ -1,4 +1,4 @@
-import type { CellDetail, ColumnPlugin, PluginWorkspaceInstallationId, RowAsRecord, Serializable } from './types.js'
+import type { CellDetail, ColumnPlugin, PluginWorkspaceInstallationId, RowAsRecord, Serializable } from '../types'
 
 type ColumnAttributes = { name: string; data?: Record<string, Serializable> }
 class BubblyEvent extends Event {

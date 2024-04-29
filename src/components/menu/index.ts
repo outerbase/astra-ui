@@ -6,7 +6,7 @@ import { repeat } from 'lit/directives/repeat.js'
 import { CaretDown } from '../../icons/caret-down.js'
 import classMapToClassName from '../../lib/class-map-to-class-name.js'
 import { MenuOpenEvent, MenuSelectedEvent } from '../../lib/events.js'
-import { Theme, type HeaderMenuOptions } from '../../lib/types.js'
+import { Theme, type HeaderMenuOptions } from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
 
 export class Menu extends ClassifiedElement {

@@ -1,5 +1,6 @@
 # build output
 dist/js
+dist/types
 dist/web-site
 
 # generated components

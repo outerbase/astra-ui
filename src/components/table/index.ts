@@ -26,7 +26,7 @@ import {
     type RowAsRecord,
     type Schema,
     type TableColumn,
-} from '../../lib/types.js'
+} from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
 
 // import subcomponents

@@ -2,7 +2,7 @@ import { LitElement, html, type PropertyValueMap } from 'lit'
 import { property } from 'lit/decorators.js'
 import classMapToClassName from '../lib/class-map-to-class-name.js'
 import { TWStyles } from '../lib/tailwind.js'
-import { Theme } from '../lib/types.js'
+import { Theme } from '../types.js'
 
 // ClassifiedElement provides the `classMap` delegate for determining which classes to apply to the component
 // is propogated to the DOM and therefore it's CSS is applied

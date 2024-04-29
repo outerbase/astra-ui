@@ -6,7 +6,7 @@ import { UnsafeHTMLDirective, unsafeHTML } from 'lit/directives/unsafe-html.js'
 
 import { eventTargetIsPlugin, eventTargetIsPluginEditor } from '../../lib/event-target-is-plugin.js'
 import { type MenuSelectedEvent } from '../../lib/events.js'
-import { PluginEvent, Theme, type ColumnPlugin, type Serializable } from '../../lib/types.js'
+import { PluginEvent, Theme, type ColumnPlugin, type Serializable } from '../../types.js'
 import { JSON_TYPES, MutableElement } from '../mutable-element.js'
 
 import type { CellMenu } from '../menu/cell-menu.js'

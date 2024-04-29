@@ -5,7 +5,7 @@ import { classMap } from 'lit/directives/class-map.js'
 import { CheckMark } from '../icons/check-mark.js'
 import { CheckEvent } from '../lib/events.js'
 import { TWStyles } from '../lib/tailwind.js'
-import { Theme } from '../lib/types.js'
+import { Theme } from '../types.js'
 
 @customElement('check-box')
 export class CustomCheckbox extends LitElement {
