@@ -5,10 +5,10 @@ import { state } from 'lit/decorators/state.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { createRef, ref, type Ref } from 'lit/directives/ref.js'
 import { styleMap } from 'lit/directives/style-map.js'
-import debounce from 'lodash-es/debounce.js'
+import { debounce } from 'lodash-es'
 
-import { Axis, Theme } from '../types'
-import { ClassifiedElement } from './classified-element'
+import { Axis, Theme } from '../types.js'
+import { ClassifiedElement } from './classified-element.js'
 
 @customElement('astra-scroll-area')
 export default class ScrollArea extends ClassifiedElement {

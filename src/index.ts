@@ -1,10 +1,10 @@
-import Button from './components/button'
-import Card from './components/card'
-import Input from './components/input'
-import Label from './components/label'
-import ScrollArea from './components/scroll-area'
-import Select from './components/select'
-import Table from './components/table'
+import Button from './components/button.js'
+import Card from './components/card.js'
+import Input from './components/input.js'
+import Label from './components/label.js'
+import ScrollArea from './components/scroll-area.js'
+import Select from './components/select.js'
+import Table from './components/table/index.js'
 
 // export * as Types from './types'
 export { Button, Card, Input, Label, ScrollArea, Select, Table }

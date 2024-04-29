@@ -2,11 +2,11 @@
 
 // import { createComponent, type EventName } from '@lit/react'
 // import * as React from 'react'
-// import AstraButton from './components/button'
-// import AstraCard from './components/card'
-// import AstraInput from './components/input'
-// import AstraLabel from './components/label'
-// import AstraSelect from './components/select'
+// import AstraButton from './components/button.js'
+// import AstraCard from './components/card.js'
+// import AstraInput from './components/input.js'
+// import AstraLabel from './components/label.js'
+// import AstraSelect from './components/select.js'
 
 // export const Button = createComponent({
 //     tagName: 'astra-button',

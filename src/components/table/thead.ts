@@ -1,4 +1,5 @@
 import { customElement } from 'lit/decorators.js'
+
 import { ClassifiedElement } from '../classified-element.js'
 
 // tl;dr <thead/>, table-header-group

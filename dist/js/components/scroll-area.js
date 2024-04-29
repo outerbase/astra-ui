@@ -11,9 +11,9 @@ import { state } from 'lit/decorators/state.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { createRef, ref } from 'lit/directives/ref.js';
 import { styleMap } from 'lit/directives/style-map.js';
-import debounce from 'lodash-es/debounce.js';
-import { Axis, Theme } from '../types';
-import { ClassifiedElement } from './classified-element';
+import { debounce } from 'lodash-es';
+import { Axis, Theme } from '../types.js';
+import { ClassifiedElement } from './classified-element.js';
 let ScrollArea = class ScrollArea extends ClassifiedElement {
     constructor() {
         super();

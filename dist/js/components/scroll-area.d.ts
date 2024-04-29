@@ -1,7 +1,7 @@
 import { type PropertyValueMap } from 'lit';
 import { type Ref } from 'lit/directives/ref.js';
-import { Axis } from '../types';
-import { ClassifiedElement } from './classified-element';
+import { Axis } from '../types.js';
+import { ClassifiedElement } from './classified-element.js';
 export default class ScrollArea extends ClassifiedElement {
     static styles: import("lit").CSSResult[];
     onScroll?: () => void;
