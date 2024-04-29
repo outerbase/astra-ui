@@ -1,7 +1,14 @@
 ---
 // server-side code goes here and can be accessed below
 
-import { AstraButton, AstraCard, AstraInput, AstraLabel, AstraScrollArea, AstraSelect } from '../index'
+import { AstraButton, AstraCard, AstraInput, AstraLabel, AstraScrollArea, AstraSelect, AstraTable } from '../index'
+
+// test data
+import spaceballs from '../lib/sample-data.json'
+const rows = spaceballs
+    .map((d) => ({ ...d, traits: JSON.stringify(d.traits) }))
+    .map((values) => ({ id: crypto.randomUUID(), values, originalValues: values }))
+const columns = Object.keys(rows[0].values).map((name) => ({ name }))
 
 // include Inter font on the page
 import '@fontsource/inter' // Defaults to weight 400
@@ -16,15 +23,32 @@ const optionsArray = [
 ---
 
 <Layout title="Astra-UI">
-    <main>
-        <h2><pre>&lt;astra-input /&gt;</pre></h2>
-        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-        <AstraInput client:load placeholder="This is a placeholder" />
-        <main>
+    <script>
+        /* themes may also be set dynamically/programatically */
+        // document.documentElement.style.setProperty("--success-color", "lime");
+
+        addEventListener('menu-selection', console.info)
+        addEventListener('cell-updated', console.info)
+        addEventListener('row-selected', console.info)
+        addEventListener('row-added', console.info)
+        addEventListener('row-updated', console.info)
+        addEventListener('row-removed', console.info)
+        addEventListener('column-added', console.info)
+        addEventListener('column-updated', console.info)
+        addEventListener('column-removed', console.info)
+        addEventListener('column-renamed', console.info)
+        addEventListener('column-updated', console.info)
+        addEventListener('column-hidden', console.info)
+    </script>
+
+    <main class="flex flex-col gap-8">
+        <div>
             <h2><pre>&lt;astra-input /&gt;</pre></h2>
             <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-            <AstraInput client:load placeholder="This is a placeholder" label="demo input" id="inputter" />
+            <AstraInput client:load placeholder="This is a placeholder" label="demo input" />
+        </div>
 
+        <div>
             <h2><pre>&lt;astra-button /&gt;</pre></h2>
             <div class="flex gap-2 flex-col">
                 <div class="flex gap-2">
@@ -58,7 +82,9 @@ const optionsArray = [
                     <AstraButton client:load size="compact" disabled>size="compact" disabled</AstraButton>
                 </div>
             </div>
+        </div>
 
+        <div>
             <h2><pre>&lt;astra-card /&gt;</pre></h2>
             <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
             <AstraCard client:load id="arbitrary-button-id">
@@ -66,7 +92,9 @@ const optionsArray = [
                 <p>Paragraph tag</p>
                 <span>Span tag</span>
             </AstraCard>
+        </div>
 
+        <div>
             <h2><pre>&lt;astra-label /&gt;</pre></h2>
             <AstraLabel client:load>variant=undefined</AstraLabel>
             <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
@@ -79,36 +107,82 @@ const optionsArray = [
             <AstraLabel client:load variant="h3">variant=h3</AstraLabel>
             <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
             <AstraLabel client:load variant="h4">variant=h4</AstraLabel>
+        </div>
 
+        <div>
             <h2><pre>&lt;astra-select /&gt;</pre></h2>
             <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
             <AstraSelect client:load options={optionsArray} placeholder="Choose a fruit" />
+        </div>
 
+        <div>
+            <h2>&lt;astra-table theme="light" /&gt;</h2>
+            <div class="dark:bg-black w-full">
+                <div class="relative h-52">
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraTable
+                        client:load
+                        theme="light"
+                        schema={{ columns }}
+                        data={rows}
+                        keyboard-shortcuts
+                        selectable-rows
+                        outer-border
+                        blank-fill
+                    />
+                </div>
+            </div>
+
+            <h2>&lt;astra-table theme="dark" /&gt;</h2>
+            <div class="dark:bg-black w-full">
+                <div class="relative h-52">
+                    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+                    <AstraTable
+                        client:load
+                        theme="dark"
+                        schema={{ columns }}
+                        data={rows}
+                        keyboard-shortcuts
+                        selectable-rows
+                        outer-border
+                        blank-fill
+                    />
+                </div>
+            </div>
+        </div>
+
+        <div>
             <h2>&lt;astra-scroll-area /&gt;</h2>
             <div class="bg-white dark:bg-black">
                 <h3 class="text-xs black">axis unspecified</h3>
                 <div class="relative h-52 px-8">
-                    <AstraScrollArea client:load><div class="h-[1200px] w-[2400px] bg-blue-50"></div></AstraScrollArea>
+                    <AstraScrollArea client:load><div class="h-[1200px] w-[2400px] bg-blue-50 dark:bg-blue-950"></div></AstraScrollArea>
                 </div>
 
                 <h3 class="text-xs black">axis=horizontal</h3>
                 <div class="relative h-52 px-8">
                     <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-                    <AstraScrollArea client:load axis="horizontal"><div class="h-[1200px] w-[2400px] bg-yellow-50"></div></AstraScrollArea>
+                    <AstraScrollArea client:load axis="horizontal"
+                        ><div class="h-[1200px] w-[2400px] bg-yellow-50 dark:bg-yellow-950"></div></AstraScrollArea
+                    >
                 </div>
 
                 <h3 class="text-xs black">axis=vertical</h3>
                 <div class="relative h-52 px-8">
                     <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-                    <AstraScrollArea client:load axis="vertical"><div class="h-[1200px] w-[2400px] bg-green-50"></div></AstraScrollArea>
+                    <AstraScrollArea client:load axis="vertical"
+                        ><div class="h-[1200px] w-[2400px] bg-green-50 dark:bg-green-950"></div></AstraScrollArea
+                    >
                 </div>
 
                 <h3 class="text-xs black">axis=both</h3>
                 <div class="relative h-52 px-8">
                     <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-                    <AstraScrollArea client:load axis="both"><div class="h-[1200px] w-[2400px] bg-red-50"></div></AstraScrollArea>
+                    <AstraScrollArea client:load axis="both"
+                        ><div class="h-[1200px] w-[2400px] bg-red-50 dark:bg-red-950"></div></AstraScrollArea
+                    >
                 </div>
             </div>
-        </main>
+        </div>
     </main>
 </Layout>
