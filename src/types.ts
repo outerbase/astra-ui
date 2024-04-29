@@ -1,5 +1,7 @@
 import { type TemplateResult } from 'lit'
 
+export * from './lib/events.js'
+
 export enum Theme {
   light = 'light',
   dark = 'dark',
@@ -10,22 +12,6 @@ export enum Axis {
   'vertical' = 'vertical',
   'both' = 'both',
 }
-
-export {
-  CellUpdateEvent,
-  ColumnAddedEvent,
-  ColumnEvent,
-  ColumnRemovedEvent,
-  ColumnRenameEvent,
-  ColumnSelectedEvent,
-  ColumnUpdatedEvent,
-  MenuSelectedEvent,
-  RowAddedEvent,
-  RowRemovedEvent,
-  RowSelectedEvent,
-  RowUpdatedEvent,
-  RowsEvent,
-} from './lib/events.js'
 
 // copied from dashboard
 export type TableColumnType = 'string' | 'integer' | 'enum' | 'uuid' | 'date' | 'dateonly'

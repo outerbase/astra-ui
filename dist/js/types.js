@@ -1,3 +1,4 @@
+export * from './lib/events.js';
 export var Theme;
 (function (Theme) {
     Theme["light"] = "light";
@@ -9,7 +10,6 @@ export var Axis;
     Axis["vertical"] = "vertical";
     Axis["both"] = "both";
 })(Axis || (Axis = {}));
-export { CellUpdateEvent, ColumnAddedEvent, ColumnEvent, ColumnRemovedEvent, ColumnRenameEvent, ColumnSelectedEvent, ColumnUpdatedEvent, MenuSelectedEvent, RowAddedEvent, RowRemovedEvent, RowSelectedEvent, RowUpdatedEvent, RowsEvent, } from './lib/events.js';
 export var ColumnStatus;
 (function (ColumnStatus) {
     ColumnStatus[ColumnStatus["created"] = 0] = "created";

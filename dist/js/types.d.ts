@@ -1,4 +1,5 @@
 import { type TemplateResult } from 'lit';
+export * from './lib/events.js';
 export declare enum Theme {
     light = "light",
     dark = "dark"
@@ -8,7 +9,6 @@ export declare enum Axis {
     'vertical' = "vertical",
     'both' = "both"
 }
-export { CellUpdateEvent, ColumnAddedEvent, ColumnEvent, ColumnRemovedEvent, ColumnRenameEvent, ColumnSelectedEvent, ColumnUpdatedEvent, MenuSelectedEvent, RowAddedEvent, RowRemovedEvent, RowSelectedEvent, RowUpdatedEvent, RowsEvent, } from './lib/events.js';
 export type TableColumnType = 'string' | 'integer' | 'enum' | 'uuid' | 'date' | 'dateonly';
 export declare enum ColumnStatus {
     created = 0,
