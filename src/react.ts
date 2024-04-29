@@ -8,7 +8,7 @@ import AstraInput from './components/input'
 import AstraLabel from './components/label'
 import AstraSelect from './components/select'
 
-const Button = createComponent({
+export const Button = createComponent({
     tagName: 'astra-button',
     elementClass: AstraButton,
     react: React,
@@ -18,28 +18,26 @@ const Button = createComponent({
     },
 })
 
-const Card = createComponent({
+export const Card = createComponent({
     tagName: 'astra-card',
     elementClass: AstraCard,
     react: React,
 })
 
-const Input = createComponent({
+export const Input = createComponent({
     tagName: 'astra-input',
     elementClass: AstraInput,
     react: React,
 })
 
-const Label = createComponent({
+export const Label = createComponent({
     tagName: 'astra-label',
     elementClass: AstraLabel,
     react: React,
 })
 
-const Select = createComponent({
+export const Select = createComponent({
     tagName: 'astra-select',
     elementClass: AstraSelect,
     react: React,
 })
-
-export default { Select, Label, Input, Card, Button }

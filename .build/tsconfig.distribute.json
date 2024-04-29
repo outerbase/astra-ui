@@ -12,5 +12,5 @@
         "useDefineForClassFields": false,
         "allowSyntheticDefaultImports": true
     },
-    "include": ["../src/index.ts", "../src/bundle.ts"]
+    "include": ["../src/index.ts", "../src/bundle.ts", "../src/react.ts"]
 }
