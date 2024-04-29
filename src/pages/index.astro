@@ -2,6 +2,10 @@
 // server-side code goes here and can be accessed below
 
 import { AstraButton, AstraCard, AstraInput, AstraLabel, AstraScrollArea, AstraSelect, AstraTable } from '../index'
+import Layout from '../layouts/Layout.astro'
+
+// include Inter font on the page
+import '@fontsource/inter' // Defaults to weight 400
 
 // test data
 import spaceballs from '../lib/sample-data.json'
@@ -9,10 +13,6 @@ const rows = spaceballs
     .map((d) => ({ ...d, traits: JSON.stringify(d.traits) }))
     .map((values) => ({ id: crypto.randomUUID(), values, originalValues: values }))
 const columns = Object.keys(rows[0].values).map((name) => ({ name }))
-
-// include Inter font on the page
-import '@fontsource/inter' // Defaults to weight 400
-import Layout from '../layouts/Layout.astro'
 
 // options for <astra-select />
 const optionsArray = [

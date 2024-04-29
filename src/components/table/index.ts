@@ -46,7 +46,7 @@ const IS_SAFARI = typeof navigator !== 'undefined' && navigator.userAgent.includ
 const SCROLL_BUFFER_SIZE = IS_SAFARI ? 20 : 4
 
 @customElement('astra-table')
-export class AstraTable extends ClassifiedElement {
+export default class AstraTable extends ClassifiedElement {
     // STATE
     @property({ type: Boolean, attribute: 'selectable-rows' })
     public selectableRows = false

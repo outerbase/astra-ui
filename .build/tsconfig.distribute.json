@@ -9,7 +9,8 @@
         "outDir": "../dist/js",
         "strict": true,
         "experimentalDecorators": true,
-        "useDefineForClassFields": false
+        "useDefineForClassFields": false,
+        "allowSyntheticDefaultImports": true
     },
-    "include": ["../src/index.ts"]
+    "include": ["../src/index.ts", "../src/bundle.ts"]
 }
