@@ -56,9 +56,6 @@ importers:
       concurrently:
         specifier: ^8.2.2
         version: 8.2.2
-      husky:
-        specifier: ^9.0.11
-        version: 9.0.11
       lit:
         specifier: ^3.1.3
         version: 3.1.3
@@ -1464,11 +1461,6 @@ packages:
   human-signals@5.0.0:
     resolution: {integrity: sha512-AXcZb6vzzrFAUE61HnN4mpLqd/cSIwNQjtNWR0euPm6y0iqx3G4gOXaIDdtdDwZmhwe82LA6+zinmW4UBWVePQ==}
     engines: {node: '>=16.17.0'}
-
-  husky@9.0.11:
-    resolution: {integrity: sha512-AB6lFlbwwyIqMdHYhwPe+kjOC3Oc5P3nThEoW/AaO2BX3vJDjWPFxYLxokUZOo6RNX20He3AaT8sESs9NJcmEw==}
-    engines: {node: '>=18'}
-    hasBin: true
 
   ieee754@1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
@@ -4233,8 +4225,6 @@ snapshots:
   http-cache-semantics@4.1.1: {}
 
   human-signals@5.0.0: {}
-
-  husky@9.0.11: {}
 
   ieee754@1.2.1: {}
 
