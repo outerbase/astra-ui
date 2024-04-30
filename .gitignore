@@ -1,6 +1,7 @@
 # build output
 dist
 .tmp
+*.tgz
 
 # generated components
 .build/tailwind/tailwind.css
