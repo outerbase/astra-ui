@@ -13,7 +13,7 @@
   "files.exclude": {
     "**/node_modules": true,
     ".prettierignore": true,
-    // ".prettierrc.json": true,
+    ".prettierrc.json": true,
     "pnpm-lock.yaml": true,
     ".gitignore": true,
     ".tmp": true

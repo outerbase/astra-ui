@@ -1,9 +1,11 @@
 # build output
-dist/web-site
-**/.tmp
+dist
+.tmp
+*.tgz
 
 # generated components
 .build/tailwind/tailwind.css
+src/lib/.tw-styles.ts
 
 # generated types
 .astro/
