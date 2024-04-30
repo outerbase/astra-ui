@@ -106,15 +106,15 @@ export default class ScrollArea extends ClassifiedElement {
 
   protected onClickVerticalScroller(event: MouseEvent) {
     if (this.scroller.value) {
-      const clickedAtCoef = (event.clientY - this.getBoundingClientRect().top) / this.scroller.value?.clientHeight
-      this.scroller.value.scrollTop = clickedAtCoef * (this.scroller.value?.scrollHeight ?? 0) - this.verticalScrollSize
+      const clickedAtCoef = (event.clientY - this.getBoundingClientRect().top) / this.scroller.value.clientHeight
+      this.scroller.value.scrollTop = clickedAtCoef * (this.scroller.value.scrollHeight ?? 0) - this.verticalScrollSize
     }
   }
 
   protected onClickHorizontalScroller(event: MouseEvent) {
     if (this.scroller.value) {
-      const clickedAtCoef = (event.clientX - this.getBoundingClientRect().left) / this.scroller.value?.clientWidth
-      this.scroller.value.scrollLeft = clickedAtCoef * (this.scroller.value?.scrollWidth ?? 0) - this.horizontalScrollSize
+      const clickedAtCoef = (event.clientX - this.getBoundingClientRect().left) / this.scroller.value.clientWidth
+      this.scroller.value.scrollLeft = clickedAtCoef * (this.scroller.value.scrollWidth ?? 0) - this.horizontalScrollSize
     }
   }
 

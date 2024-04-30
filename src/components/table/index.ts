@@ -42,8 +42,7 @@ import './th.js'
 import './thead.js'
 import './tr.js'
 
-const IS_SAFARI = typeof navigator !== 'undefined' && navigator.userAgent.includes('Safari')
-const SCROLL_BUFFER_SIZE = IS_SAFARI ? 20 : 4
+const SCROLL_BUFFER_SIZE = 10
 
 @customElement('astra-table')
 export default class AstraTable extends ClassifiedElement {
@@ -559,7 +558,7 @@ export default class AstraTable extends ClassifiedElement {
 
     return html`
             <astra-scroll-area ${ref(this.scrollableEl)}
-                threshold=${(SCROLL_BUFFER_SIZE / 2) * this.rowHeight}
+                threshold=${SCROLL_BUFFER_SIZE * this.rowHeight * 0.8}
                 theme=${this.theme}
                 .onScroll=${this.updateTableView}
             >
