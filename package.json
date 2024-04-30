@@ -23,7 +23,7 @@
     "bundle": "rollup -c ./.build/rollup.config.js",
     "preview": "astro preview --config .build/astro.config.mjs",
     "prepack": "pnpm tailwind:build && pnpm compile && pnpm bundle",
-    "postinstall": "pnpm prepack"
+    "postinstall": "pnpm tailwind:build && pnpm compile && pnpm bundle"
   },
   "devDependencies": {
     "@astrojs/check": "^0.5.10",
