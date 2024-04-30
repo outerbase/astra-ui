@@ -1,6 +1,6 @@
 {
   "name": "@outerbase/astra-ui",
-  "version": "0.0.4",
+  "version": "0.0.8",
   "type": "module",
   "main": "dist/js/index.js",
   "module": "dist/js/index.js",
@@ -22,8 +22,7 @@
     "compile:watch": "node .build/compile-typescript-on-changes.mjs",
     "bundle": "rollup -c ./.build/rollup.config.js",
     "preview": "astro preview --config .build/astro.config.mjs",
-    "prepack": "pnpm tailwind:build && pnpm compile && pnpm bundle",
-    "postinstall": "pnpm tailwind:build && pnpm compile && pnpm bundle"
+    "prepack": "pnpm tailwind:build && pnpm compile && pnpm bundle"
   },
   "devDependencies": {
     "@astrojs/check": "^0.5.10",
