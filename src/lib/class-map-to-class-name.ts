@@ -4,8 +4,8 @@
 //
 // inspired by (but different than) Lit's [classMap](https://lit.dev/docs/templates/directives/#classmap) feature
 export default function classMapToClassName(classObj: Record<string, boolean>) {
-    return Object.entries(classObj)
-        .map(([c, isActive]) => (isActive ? c : false))
-        .filter(Boolean)
-        .join(' ')
+  return Object.entries(classObj)
+    .map(([c, isActive]) => (isActive ? c : false))
+    .filter(Boolean)
+    .join(' ')
 }

@@ -1,10 +1,10 @@
-import AstraButton from './components/button'
-import AstraCard from './components/card'
-import AstraInput from './components/input'
-import AstraLabel from './components/label'
-import AstraScrollArea from './components/scroll-area'
-import AstraSelect from './components/select'
-import AstraTable from './components/table'
-import AstraReactComponents from './react'
+import Button from './components/button.js'
+import Card from './components/card.js'
+import Input from './components/input.js'
+import Label from './components/label.js'
+import ScrollArea from './components/scroll-area.js'
+import Select from './components/select.js'
+import Table from './components/table/index.js'
 
-export { AstraButton, AstraCard, AstraInput, AstraLabel, AstraReactComponents, AstraScrollArea, AstraSelect, AstraTable }
+// export * as Types from './types'
+export { Button, Card, Input, Label, ScrollArea, Select, Table }

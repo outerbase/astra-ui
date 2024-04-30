@@ -1,92 +1,92 @@
 [
-    {
-        "character_name": "Dark Helmet",
-        "traits": ["short-tempered", "egotistical", "power-hungry"],
-        "most_popular_quote": "So, Lone Star, now you see that evil will always triumph because good is dumb!",
-        "favorite_color": "Black",
-        "intentionallyleftblank": null
-    },
-    {
-        "character_name": "Lone Star",
-        "traits": ["brave", "resourceful", "sardonic"],
-        "most_popular_quote": "I'm a mog. Half man, half dog. I'm my own best friend!",
-        "favorite_color": "Blue",
-        "intentionallyleftblank": null
-    },
-    {
-        "character_name": "Barf",
-        "traits": ["loyal", "fun-loving", "hungry"],
-        "most_popular_quote": "I ain't found poop!",
-        "favorite_color": "Brown",
-        "intentionallyleftblank": null
-    },
-    {
-        "character_name": "Princess Vespa",
-        "traits": ["headstrong", "impatient", "privileged"],
-        "most_popular_quote": "I am Princess Vespa, daughter of Roland, king of the Druids!",
-        "favorite_color": "Pink",
-        "intentionallyleftblank": null
-    },
-    {
-        "character_name": "Yogurt",
-        "traits": ["wise", "mysterious", "business-savvy"],
-        "most_popular_quote": "Merchandising! Where the real money from the movie is made.",
-        "favorite_color": "Gold",
-        "intentionallyleftblank": null
-    },
-    {
-        "character_name": "President Skroob",
-        "traits": ["incompetent", "self-absorbed", "short-sighted"],
-        "most_popular_quote": "I see your Schwartz is as big as mine.",
-        "favorite_color": "Red",
-        "intentionallyleftblank": null
-    },
-    {
-        "character_name": "Dot Matrix",
-        "traits": ["loyal", "sarcastic", "opinionated"],
-        "most_popular_quote": "Hey, I'm a maid! I'm not supposed to be funny.",
-        "favorite_color": "Silver",
-        "intentionallyleftblank": null
-    },
-    {
-        "character_name": "Colonel Sandurz",
-        "traits": ["loyal", "calculating", "compliant"],
-        "most_popular_quote": "We're closing in, sir. I've already got the bleeps, the sweeps, and the creeps.",
-        "favorite_color": "Green",
-        "intentionallyleftblank": null
-    },
-    {
-        "character_name": "Pizza the Hutt",
-        "traits": ["greedy", "gluttonous", "disgusting"],
-        "most_popular_quote": "I'm so rich, when I'm hungry, I have money!",
-        "favorite_color": "Brown",
-        "intentionallyleftblank": null
-    },
-    {
-        "character_name": "Prince Valium",
-        "traits": ["laid-back", "relaxed", "indifferent"],
-        "most_popular_quote": "I'm sorry, I'm just not getting enough oxygen.",
-        "favorite_color": "Purple",
-        "intentionallyleftblank": null
-    },
-    {
-        "character_name": "Commanderette Zircon",
-        "traits": ["authoritative", "efficient", "no-nonsense"],
-        "most_popular_quote": "I bet she gives great helmet.",
-        "favorite_color": "Blue",
-        "intentionallyleftblank": null
-    },
-    {
-        "character_name": "Spaceball One",
-        "traits": ["massive", "imposing", "technologically advanced"],
-        "most_popular_quote": "What's the matter, Colonel Sandurz? Chicken?",
-        "favorite_color": "Black",
-        "intentionallyleftblank": null
-    },
-    {
-        "character_name": "Dink",
-        "traits": ["small", "mischievous", "adorable"],
-        "most_popular_quote": "We ain't found... *bleep*!",
-        "favorite_color": "Yellow"
-    }
+  {
+    "character_name": "Dark Helmet",
+    "traits": ["short-tempered", "egotistical", "power-hungry"],
+    "most_popular_quote": "So, Lone Star, now you see that evil will always triumph because good is dumb!",
+    "favorite_color": "Black",
+    "intentionallyleftblank": null
+  },
+  {
+    "character_name": "Lone Star",
+    "traits": ["brave", "resourceful", "sardonic"],
+    "most_popular_quote": "I'm a mog. Half man, half dog. I'm my own best friend!",
+    "favorite_color": "Blue",
+    "intentionallyleftblank": null
+  },
+  {
+    "character_name": "Barf",
+    "traits": ["loyal", "fun-loving", "hungry"],
+    "most_popular_quote": "I ain't found poop!",
+    "favorite_color": "Brown",
+    "intentionallyleftblank": null
+  },
+  {
+    "character_name": "Princess Vespa",
+    "traits": ["headstrong", "impatient", "privileged"],
+    "most_popular_quote": "I am Princess Vespa, daughter of Roland, king of the Druids!",
+    "favorite_color": "Pink",
+    "intentionallyleftblank": null
+  },
+  {
+    "character_name": "Yogurt",
+    "traits": ["wise", "mysterious", "business-savvy"],
+    "most_popular_quote": "Merchandising! Where the real money from the movie is made.",
+    "favorite_color": "Gold",
+    "intentionallyleftblank": null
+  },
+  {
+    "character_name": "President Skroob",
+    "traits": ["incompetent", "self-absorbed", "short-sighted"],
+    "most_popular_quote": "I see your Schwartz is as big as mine.",
+    "favorite_color": "Red",
+    "intentionallyleftblank": null
+  },
+  {
+    "character_name": "Dot Matrix",
+    "traits": ["loyal", "sarcastic", "opinionated"],
+    "most_popular_quote": "Hey, I'm a maid! I'm not supposed to be funny.",
+    "favorite_color": "Silver",
+    "intentionallyleftblank": null
+  },
+  {
+    "character_name": "Colonel Sandurz",
+    "traits": ["loyal", "calculating", "compliant"],
+    "most_popular_quote": "We're closing in, sir. I've already got the bleeps, the sweeps, and the creeps.",
+    "favorite_color": "Green",
+    "intentionallyleftblank": null
+  },
+  {
+    "character_name": "Pizza the Hutt",
+    "traits": ["greedy", "gluttonous", "disgusting"],
+    "most_popular_quote": "I'm so rich, when I'm hungry, I have money!",
+    "favorite_color": "Brown",
+    "intentionallyleftblank": null
+  },
+  {
+    "character_name": "Prince Valium",
+    "traits": ["laid-back", "relaxed", "indifferent"],
+    "most_popular_quote": "I'm sorry, I'm just not getting enough oxygen.",
+    "favorite_color": "Purple",
+    "intentionallyleftblank": null
+  },
+  {
+    "character_name": "Commanderette Zircon",
+    "traits": ["authoritative", "efficient", "no-nonsense"],
+    "most_popular_quote": "I bet she gives great helmet.",
+    "favorite_color": "Blue",
+    "intentionallyleftblank": null
+  },
+  {
+    "character_name": "Spaceball One",
+    "traits": ["massive", "imposing", "technologically advanced"],
+    "most_popular_quote": "What's the matter, Colonel Sandurz? Chicken?",
+    "favorite_color": "Black",
+    "intentionallyleftblank": null
+  },
+  {
+    "character_name": "Dink",
+    "traits": ["small", "mischievous", "adorable"],
+    "most_popular_quote": "We ain't found... *bleep*!",
+    "favorite_color": "Yellow"
+  }
 ]

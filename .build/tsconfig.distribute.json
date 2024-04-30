@@ -1,16 +1,17 @@
 {
-    "compilerOptions": {
-        "target": "ES2021",
-        "module": "ES2015",
-        "moduleResolution": "node",
-        "lib": ["es2021", "dom"],
-        "declaration": true,
-        "declarationMap": true,
-        "outDir": "../dist/js",
-        "strict": true,
-        "experimentalDecorators": true,
-        "useDefineForClassFields": false,
-        "allowSyntheticDefaultImports": true
-    },
-    "include": ["../src/index.ts", "../src/bundle.ts"]
+  "compilerOptions": {
+    "target": "ES2021",
+    "module": "ES2015",
+    "moduleResolution": "Bundler",
+    "lib": ["es2021", "dom"],
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "../dist/js",
+    "strict": true,
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["../src/index.ts", "../src/bundle.ts"]
+  // "include": ["../src/index.ts", "../src/bundle.ts", "../src/react.ts"] // uncomment if/when react components work
 }

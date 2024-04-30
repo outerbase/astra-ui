@@ -7,15 +7,15 @@
 ```html
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <title>Classified</title>
-        <script src="https://cdn.outerbase.com/astra/latest/astra.bundle.js"></script>
-    </head>
-    <body>
-        <astra-label variant="h1">Are you ready?</astra-label>
-        <astra-button>Yes!</astra-button>
-    </body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Classified</title>
+    <script src="https://cdn.outerbase.com/astra/latest/astra.bundle.js"></script>
+  </head>
+  <body>
+    <astra-label variant="h1">Are you ready?</astra-label>
+    <astra-button>Yes!</astra-button>
+  </body>
 </html>
 ```
 
@@ -25,12 +25,12 @@
 
 You do **not** have to build or compile this project in order to use it. You have the choice:
 
--   load directly from our CDN
--   host `astra.bundle.js` yourself
--   `npm install` into your project
--   `import` only the components you use; minimize and build to your liking
+- load directly from our CDN
+- host `astra.bundle.js` yourself
+- `npm install` into your project
+- `import` only the components you use; minimize and build to your liking
 
-TypeScript and React support is built-in, **not** required.
+TypeScript support is built-in, **not** required.
 
 ### Web Components
 
@@ -71,13 +71,13 @@ We recommend hosting all of your dependencies yourself. See `src/pages/index.ast
 _In your terminal, type_
 
 ```
-pnpm add @outerbase/astra
+npm add @outerbase/astra-ui
 ```
 
 _in your js/ts client-side file(s)_
 
 ```
-import '@outerbase/dist/web-components/astra.bundle.js'
+import '@outerbase/astra-ui/bundle'
 ```
 
 This will include/register all of the Astra copmonents on the page
@@ -87,41 +87,40 @@ This will include/register all of the Astra copmonents on the page
 _In your terminal, type_
 
 ```
-pnpm add @outerbase/astra
+npm add @outerbase/astra-ui
 ```
 
 _In your `.js`, `.mjs` and `.tsx` files_
 
 ```
-import  { AstraButton, AstraCard, AstraInput, AstraLabel, AstraSelect, AstraScrollArea }
-  from '@outerbase/astra'
+import  { Button, Card, Input, Label, ScrollArea, Select, Table }
+  from '@outerbase/astra-ui/components'
 ```
 
 _Reference `src/pages/index.astro` for an example of using components in this way_
 
-## React Components
+<!-- ## React Components
 
 We've also packaged Astra for React:
 
 ```js
-import { AstraReactComponents } from '@outerbase/astra'
-const AstraButton = AstraReactComponents.Button
+import { Select, Label, Input, Card, Button } from '@outerbase/astra-ui/react'
 
 function ArbitraryComponent() {
-    return <AstraButton>Click me</AstraButton>
+    return <Button>Click me</Button>
 }
-```
+``` -->
 
 ## Missing font?
 
 We do not force you to use/load the Inter font. If you'd like to use it, include the font `Inter` on your page. You can see examples of how to do this in the following files of this repo:
 
--   `example.html` via Google Fonts
--   `src/pages/index.astro` via the [@fontsource/inter](https://www.npmjs.com/package/@fontsource/inter) NPM module
+- `example.html` via Google Fonts
+- `src/pages/index.astro` via the [@fontsource/inter](https://www.npmjs.com/package/@fontsource/inter) NPM module
 
 ## Developing locally
 
 ```
-pnpm install --frozen-lockfile
-pnpm dev
+npm install --frozen-lockfile
+npm dev
 ```

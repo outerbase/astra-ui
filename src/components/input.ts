@@ -5,103 +5,103 @@ import baseStyles from '../lib/base-styles.js'
 
 @customElement('astra-input')
 export default class AstraInput extends LitElement {
-    static styles = [
-        baseStyles,
-        css`
-            :host {
-                display: block;
-            }
+  static styles = [
+    baseStyles,
+    css`
+      :host {
+        display: block;
+      }
 
-            div {
-                display: flex;
-                gap: 8px;
-                border: 1px solid var(--astra-neutral-200);
-                border-radius: 6px;
-                overflow: hidden; // preserves border-radius from un-rounded children
-                background: white;
-                align-items: center;
-                font-family: var(--astra-font-family);
-            }
+      div {
+        display: flex;
+        gap: 8px;
+        border: 1px solid var(--astra-neutral-200);
+        border-radius: 6px;
+        overflow: hidden; // preserves border-radius from un-rounded children
+        background: white;
+        align-items: center;
+        font-family: var(--astra-font-family);
+      }
 
-            div:focus-within {
-                outline: 1px solid var(--astra-accent, lime);
-                outline-offset: -1px; // 0px draws it _outside_ of the border, where as this covers the border
-            }
+      div:focus-within {
+        outline: 1px solid var(--astra-accent, lime);
+        outline-offset: -1px; // 0px draws it _outside_ of the border, where as this covers the border
+      }
 
-            input {
-                flex: 1;
-                padding: 10px 12px;
-                background: transparent;
-                border: none;
-                color: var(--astra-neutral-900);
-                font-family: var(--astra-font-family);
-                font-size: 14px;
-                line-height: 20px;
-            }
+      input {
+        flex: 1;
+        padding: 10px 12px;
+        background: transparent;
+        border: none;
+        color: var(--astra-neutral-900);
+        font-family: var(--astra-font-family);
+        font-size: 14px;
+        line-height: 20px;
+      }
 
-            /* Removed outline:none; to preserve default focus indication */
-            input::placeholder {
-                color: var(--astra-neutral-500);
-                opacity: 1; /* Firefox */
-            }
+      /* Removed outline:none; to preserve default focus indication */
+      input::placeholder {
+        color: var(--astra-neutral-500);
+        opacity: 1; /* Firefox */
+      }
 
-            ::-ms-input-placeholder {
-                color: var(--astra-neutral-500);
-            }
+      ::-ms-input-placeholder {
+        color: var(--astra-neutral-500);
+      }
 
-            label {
-                position: absolute;
-                clip: rect(1px, 1px, 1px, 1px);
-                clip-path: inset(50%);
-                height: 1px;
-                width: 1px;
-                margin: -1px;
-                overflow: hidden;
-                padding: 0;
-                border: 0;
-            }
+      label {
+        position: absolute;
+        clip: rect(1px, 1px, 1px, 1px);
+        clip-path: inset(50%);
+        height: 1px;
+        width: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        border: 0;
+      }
 
-            @media (prefers-color-scheme: dark) {
-                div {
-                    background: var(--astra-neutral-900);
-                    border: 1px solid var(--astra-neutral-800);
-                }
+      @media (prefers-color-scheme: dark) {
+        div {
+          background: var(--astra-neutral-900);
+          border: 1px solid var(--astra-neutral-800);
+        }
 
-                input {
-                    color: var(--astra-neutral-100);
-                }
-            }
-        `,
-    ]
+        input {
+          color: var(--astra-neutral-100);
+        }
+      }
+    `,
+  ]
 
-    @property({ type: String }) public placeholder: string = ''
-    @property({ type: String }) public value: string = ''
-    @property({ type: String }) public label?: string
+  @property({ type: String }) public placeholder: string = ''
+  @property({ type: String }) public value: string = ''
+  @property({ type: String }) public label?: string
 
-    public onInput(event: Event) {
-        this.value = (event.target as HTMLInputElement).value
-    }
+  public onInput(event: Event) {
+    this.value = (event.target as HTMLInputElement).value
+  }
 
-    public override render() {
-        const labelIfSpecified = this.label ? html`<label id="input-label" for="input">${this.label}</label>` : undefined
-        return html`
-            <div>
-                <slot name="left"></slot>
+  public override render() {
+    const labelIfSpecified = this.label ? html`<label id="input-label" for="input">${this.label}</label>` : undefined
+    return html`
+      <div>
+        <slot name="left"></slot>
 
-                ${labelIfSpecified}
-                <input
-                    id="input"
-                    type="text"
-                    aria-labelledby="input-label"
-                    .placeholder=${this.placeholder}
-                    .value=${this.value}
-                    @input=${this.onInput}
-                />
+        ${labelIfSpecified}
+        <input
+          id="input"
+          type="text"
+          aria-labelledby="input-label"
+          .placeholder=${this.placeholder}
+          .value=${this.value}
+          @input=${this.onInput}
+        />
 
-                <slot name="right"></slot>
-            </div>
-        `
-    }
+        <slot name="right"></slot>
+      </div>
+    `
+  }
 }
 
 // Implementation notes
