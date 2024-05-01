@@ -107,6 +107,7 @@ export default class AstraTable extends ClassifiedElement {
   @state() protected scrollableEl: Ref<ScrollArea> = createRef()
   @state() public rows: Array<RowAsRecord> = []
   @state() public newRows: Array<RowAsRecord> = []
+  @state() public oldRows: Array<RowAsRecord> = []
   @state() protected existingVisibleRows: Array<RowAsRecord> = []
   @state() protected allRowsSelected = false
   @state() public columns: Columns = []
@@ -425,7 +426,7 @@ export default class AstraTable extends ClassifiedElement {
   }
 
   public updateVisibleRows(scrollTop: number): void {
-    const rows = this.rows.filter(({ isNew }) => !isNew)
+    const rows = this.oldRows
     const _startIndex = Math.max(Math.floor((scrollTop ?? 0) / this.rowHeight) - SCROLL_BUFFER_SIZE, 0)
     if (this.visibleStartIndex !== _startIndex) {
       this.visibleStartIndex = _startIndex
@@ -508,12 +509,15 @@ export default class AstraTable extends ClassifiedElement {
     }
 
     if (changedProperties.has('rows')) {
-      const m: Record<string, RowAsRecord | undefined> = {}
-      this.rows.forEach((r) => {
-        m[r.id] = r
+      this.fromIdToRowMap = {}
+      this.newRows = []
+      this.oldRows = []
+
+      this.rows.forEach((row) => {
+        row.isNew ? this.newRows.push(row) : this.oldRows.push(row)
+        this.fromIdToRowMap[row.id] = row
       })
-      this.fromIdToRowMap = m
-      this.newRows = this.rows.filter(({ isNew }) => isNew)
+
       this.updateTableView()
     }
   }
