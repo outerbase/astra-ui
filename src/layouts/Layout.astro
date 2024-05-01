@@ -1,28 +1,127 @@
 ---
 interface Props {
-    title: string
+  title: string
 }
 
 const { title } = Astro.props
+
+const instructions = [
+  {
+    label: 'Introduction',
+    href: '/i/intro',
+  },
+  {
+    label: 'Installation',
+    href: '/i/install',
+  },
+  {
+    label: 'Themeing',
+    href: '/i/theme',
+  },
+  {
+    label: 'Changelog',
+    href: '/i/changes',
+  },
+]
+const components = [
+  {
+    label: 'Button',
+    href: '/c/button',
+  },
+  {
+    label: 'Card',
+    href: '/c/card',
+  },
+  {
+    label: 'Input',
+    href: '/c/input',
+  },
+  {
+    label: 'Label',
+    href: '/c/label',
+  },
+  {
+    label: 'Scroll Area',
+    href: '/c/scroll-area',
+  },
+  //   {
+  //     label: 'Select',
+  //     href: 'select',
+  //   },
+  {
+    label: 'Table',
+    href: 'table',
+  },
+]
+const clickableClasses = 'hover:underline'
 ---
 
 <!doctype html>
-<html lang="en" class="h-full bg-neutral-50 dark:bg-neutral-950 text-black dark:text-white">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="description" content="" />
-        <meta name="viewport" content="width=device-width" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <meta name="generator" content={Astro.generator} />
-        <title>{title}</title>
+<html lang="en" class="h-full bg-neutral-100 dark:bg-neutral-900 text-black dark:text-white cursor-default">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <script defer>
+      function setActiveLinkStyle(isDarkMode) {
+        document.getElementById(window.location.pathname).style.color = isDarkMode ? 'white' : 'black'
+      }
 
-        <style>
-            body {
-                margin: 2rem;
+      document.addEventListener('DOMContentLoaded', () => {
+        const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        const element = document.getElementById(window.location.pathname)
+        if (element) {
+          setActiveLinkStyle(isDarkMode)
+        }
+
+        document.getElementById('page').classList.remove('opacity-0')
+        document.getElementById('page').classList.add('opacity-100')
+      })
+
+      // listen for color scheme changes
+      const darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+      darkMediaQuery.addEventListener('change', (e) => setActiveLinkStyle(e.matches))
+    </script>
+  </head>
+  <body>
+    <div id="page" class="flex opacity-0 transition-opacity">
+      <div
+        class="select-none w-72 border-r border-neutral-300 dark:border-neutral-700 overflow-auto p-10 flex-col gap-10 flex text-neutral-600 dark:text-neutral-400"
+      >
+        <a href="/"><h1 class="text-2xl">Astra UI</h1></a>
+        <div class="flex flex-col gap-4">
+          <h2 class="font-bold text-black dark:text-white">Getting Started</h2>
+          <ul class="flex flex-col gap-4">
+            {
+              instructions.map(({ label, href }) => (
+                <li id={href} class={clickableClasses}>
+                  <a href={href}>{label}</a>
+                </li>
+              ))
             }
-        </style>
-    </head>
-    <body>
-        <slot />
-    </body>
+            <li class="text-neutral-500">Figma - Coming Soon!</li>
+          </ul>
+        </div>
+
+        <h2 class="font-bold text-black dark:text-white">Components</h2>
+        <div class="flex flex-col gap-4">
+          <ul class="flex flex-col gap-4">
+            {
+              components.map(({ label, href }) => (
+                <li id={href} class={clickableClasses}>
+                  <a href={href}>{label}</a>
+                </li>
+              ))
+            }
+            <li class="text-neutral-500 dark:text-neutral-400">Figma - Coming Soon!</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flex-auto p-10"><slot /></div>
+    </div>
+  </body>
 </html>
