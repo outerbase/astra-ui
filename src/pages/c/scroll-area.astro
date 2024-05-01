@@ -1,0 +1,26 @@
+---
+import { Code } from 'astro/components'
+import AstraScrollArea from '../../components/scroll-area'
+import ComponentLayout from '../../layouts/Component.astro'
+import Layout from '../../layouts/Layout.astro'
+
+const usage = `\
+<div class="relative h-52 w-full px-8">
+  <astra-scroll-area>
+    <div class="h-[1200px] w-[2400px] bg-yellow-50 dark:bg-yellow-950"></div>
+  </astra-scroll-area>
+</div>
+`
+---
+
+<Layout title="Astra-UI">
+  <ComponentLayout title="Scroll Area" summary="This, _that_, and THE other." previewBg="bg-neutral-500">
+    <!-- <astra-scroll-area><div style="height: 1200px; width: 2400px; background: red;"></div></astra-scroll-area> -->
+    <!-- @ts-ignore -->
+    <div class="relative h-52 w-full px-8" slot="preview">
+      <AstraScrollArea client:load><div class="h-[1200px] w-[2400px] bg-yellow-50 dark:bg-yellow-950"></div></AstraScrollArea>
+    </div>
+    <!-- // TODO @Brandon pick a `theme` on the next line -->
+    <Code slot="usage" code={usage} lang="html" class="p-4 dark:bg-black bg-white" theme="ayu-dark" />
+  </ComponentLayout>
+</Layout>

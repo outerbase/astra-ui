@@ -50,14 +50,14 @@ const components = [
   //   },
   {
     label: 'Table',
-    href: 'table',
+    href: '/c/table',
   },
 ]
 const clickableClasses = 'hover:underline'
 ---
 
 <!doctype html>
-<html lang="en" class="h-full bg-neutral-100 dark:bg-neutral-900 text-black dark:text-white cursor-default">
+<html lang="en" class="h-screen dark:bg-neutral-900 text-black dark:text-white cursor-default">
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content="" />
@@ -67,7 +67,8 @@ const clickableClasses = 'hover:underline'
     <title>{title}</title>
     <script defer>
       function setActiveLinkStyle(isDarkMode) {
-        document.getElementById(window.location.pathname).style.color = isDarkMode ? 'white' : 'black'
+        const element = document.getElementById(window.location.pathname)
+        if (element) element.style.color = isDarkMode ? 'white' : 'black'
       }
 
       document.addEventListener('DOMContentLoaded', () => {
@@ -86,10 +87,10 @@ const clickableClasses = 'hover:underline'
       darkMediaQuery.addEventListener('change', (e) => setActiveLinkStyle(e.matches))
     </script>
   </head>
-  <body>
-    <div id="page" class="flex opacity-0 transition-opacity">
+  <body class="h-full">
+    <div id="page" class="h-full flex opacity-0 transition-opacity">
       <div
-        class="select-none w-72 border-r border-neutral-300 dark:border-neutral-700 overflow-auto p-10 flex-col gap-10 flex text-neutral-600 dark:text-neutral-400"
+        class="overflow-scroll h-100 select-none w-72 border-r border-neutral-300 dark:border-neutral-700 p-10 flex-col gap-10 flex text-neutral-600 dark:text-neutral-400"
       >
         <a href="/"><h1 class="text-2xl">Astra UI</h1></a>
         <div class="flex flex-col gap-4">
@@ -121,7 +122,7 @@ const clickableClasses = 'hover:underline'
         </div>
       </div>
 
-      <div class="flex-auto p-10"><slot /></div>
+      <div class="flex-auto p-10 overflow-scroll"><slot /></div>
     </div>
   </body>
 </html>

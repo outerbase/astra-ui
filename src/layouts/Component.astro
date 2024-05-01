@@ -2,10 +2,14 @@
 interface Props {
   title: string
   summary: string
+  previewBg?: string
 }
 import '../index'
 
-const { title, summary } = Astro.props
+const { title, summary, previewBg } = Astro.props
+const previewClass = previewBg
+  ? `flex items-center justify-center p-40 ${previewBg} rounded-lg`
+  : 'flex items-center justify-center p-40 bg-black dark:bg-white rounded-lg'
 ---
 
 <div class="flex flex-col gap-8">
@@ -15,11 +19,11 @@ const { title, summary } = Astro.props
 
   <!-- preview -->
   <h2 class="font-semibold">Preview</h2>
-  <slot name="preview" />
+  <div class={previewClass}><slot name="preview" /></div>
 
   <!-- usage -->
   <h1 class="text-2xl font-semibold">Usage</h1>
-  <p class="text-neutral-600 dark:text-neutral-400">{summary}</p>
+  <p class="text-neutral-600 dark:text-neutral-400">It’s a web component so it will work in any library.</p>
 
   <!-- answer here -->
   <slot name="usage" />
