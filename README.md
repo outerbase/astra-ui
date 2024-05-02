@@ -91,13 +91,13 @@ We recommend hosting all of your dependencies yourself. See `src/pages/index.ast
 
 _In your terminal, type_
 
-```
+```sh
 npm add @outerbase/astra-ui
 ```
 
 _in your js/ts client-side file(s)_
 
-```
+```ts
 import '@outerbase/astra-ui/bundle'
 ```
 
@@ -107,15 +107,14 @@ This will include/register all of the Astra copmonents on the page
 
 _In your terminal, type_
 
-```
+```sh
 npm add @outerbase/astra-ui
 ```
 
 _In your `.js`, `.mjs` and `.tsx` files_
 
-```
-import  { Button, Card, Input, Text, ScrollArea, Select, Table }
-  from '@outerbase/astra-ui/components'
+```ts
+import { Button, Card, Input, Text, ScrollArea, Select, Table } from '@outerbase/astra-ui/components'
 ```
 
 _Reference `src/pages/index.astro` for an example of using components in this way_
@@ -141,7 +140,7 @@ We do not force you to use/load the Inter font. If you'd like to use it, include
 
 ## Developing locally
 
-```
+```sh
 npm install --frozen-lockfile
 npm dev
 ```
