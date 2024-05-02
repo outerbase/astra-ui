@@ -18,7 +18,6 @@ export default class AstraInput extends LitElement {
         border: 1px solid var(--astra-neutral-200);
         border-radius: 6px;
         overflow: hidden; // preserves border-radius from un-rounded children
-        background: white;
         align-items: center;
         font-family: var(--astra-font-family);
       }
@@ -31,9 +30,9 @@ export default class AstraInput extends LitElement {
       input {
         flex: 1;
         padding: 10px 12px;
-        background: transparent;
-        border: none;
         color: var(--astra-neutral-900);
+        background: var(--astra-neutral-100);
+        border: none;
         font-family: var(--astra-font-family);
         font-size: 14px;
         line-height: 20px;
@@ -63,12 +62,12 @@ export default class AstraInput extends LitElement {
 
       @media (prefers-color-scheme: dark) {
         div {
-          background: var(--astra-neutral-900);
           border: 1px solid var(--astra-neutral-800);
         }
 
         input {
           color: var(--astra-neutral-100);
+          background: var(--astra-neutral-900);
         }
       }
     `,

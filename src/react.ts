@@ -31,7 +31,7 @@
 // })
 
 // export const Label = createComponent({
-//     tagName: 'astra-label',
+//     tagName: 'astra-text',
 //     elementClass: AstraLabel,
 //     react: React,
 // })

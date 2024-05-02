@@ -1,0 +1,18 @@
+---
+import { Code } from 'astro/components'
+import AstraButton from '../../components/button'
+import ComponentLayout from '../../layouts/Component.astro'
+import Layout from '../../layouts/Layout.astro'
+
+const usage = `\
+<astra-button>Button</astra-button>
+`
+---
+
+<Layout title="Astra-UI">
+  <ComponentLayout title="Button" summary="Ain't nothin' but button bustin'">
+    <AstraButton slot="preview">Button</AstraButton>
+    <!-- // TODO @Brandon pick a `theme` on the next line -->
+    <Code slot="usage" code={usage} lang="html" class="p-4 dark:bg-black bg-white" theme="ayu-dark" />
+  </ComponentLayout>
+</Layout>

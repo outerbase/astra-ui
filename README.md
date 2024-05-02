@@ -10,10 +10,10 @@
   <head>
     <meta charset="UTF-8" />
     <title>Classified</title>
-    <script src="https://cdn.outerbase.com/astra/latest/astra.bundle.js"></script>
+    <script src="https://cdn.outerbase.com/astra/latest/astra.js"></script>
   </head>
   <body>
-    <astra-label variant="h1">Are you ready?</astra-label>
+    <astra-text variant="h1">Are you ready?</astra-text>
     <astra-button>Yes!</astra-button>
   </body>
 </html>
@@ -26,7 +26,7 @@
 You do **not** have to build or compile this project in order to use it. You have the choice:
 
 - load directly from our CDN
-- host `astra.bundle.js` yourself
+- host `astra.js` yourself
 - `npm install` into your project
 - `import` only the components you use; minimize and build to your liking
 
@@ -45,15 +45,15 @@ TypeScript support is built-in, **not** required.
 We're making Astra available from our CDN. You may simply copy/paste the following snippet onto your site to include all of our components.
 
 ```html
-<script src="https://cdn.outerbase.com/astra/latest/astra.bundle.js"></script>
+<script src="https://cdn.outerbase.com/astra/latest/astra.js"></script>
 ```
 
 ##### Host it yourself
 
-Place `astra.bundle.js` (found in `dist/web-components/astra.bundle.js`) somewhere accessible to your website. Then update your HTML to include a script tag that references that location:
+Place `astra.js` (found in `dist/web-components/astra.js`) somewhere accessible to your website. Then update your HTML to include a script tag that references that location:
 
 ```html
-<script src="/your/path/to/astra.bundle.js"></script>
+<script src="/your/path/to/astra.js"></script>
 ```
 
 If you want to include our preferred font `Inter`, you can add it to your own site via Google Fonts with the following `style` tag:
@@ -93,7 +93,7 @@ npm add @outerbase/astra-ui
 _In your `.js`, `.mjs` and `.tsx` files_
 
 ```
-import  { Button, Card, Input, Label, ScrollArea, Select, Table }
+import  { Button, Card, Input, Text, ScrollArea, Select, Table }
   from '@outerbase/astra-ui/components'
 ```
 
@@ -104,7 +104,7 @@ _Reference `src/pages/index.astro` for an example of using components in this wa
 We've also packaged Astra for React:
 
 ```js
-import { Select, Label, Input, Card, Button } from '@outerbase/astra-ui/react'
+import { Select, Text, Input, Card, Button } from '@outerbase/astra-ui/react'
 
 function ArbitraryComponent() {
     return <Button>Click me</Button>

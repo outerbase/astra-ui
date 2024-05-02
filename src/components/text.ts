@@ -3,7 +3,7 @@ import { customElement, property } from 'lit/decorators.js'
 
 import baseStyles from '../lib/base-styles.js'
 
-enum LabelVariant {
+enum TextVariant {
   unspecified = '',
   label = 'label',
   h1 = 'h1',
@@ -12,7 +12,7 @@ enum LabelVariant {
   h4 = 'h4',
 }
 
-@customElement('astra-label')
+@customElement('astra-text')
 export default class AstraLabel extends LitElement {
   static styles = [
     baseStyles,
@@ -73,7 +73,7 @@ export default class AstraLabel extends LitElement {
     `,
   ]
 
-  @property({ attribute: 'variant' }) public variant: LabelVariant = LabelVariant.unspecified
+  @property({ attribute: 'variant' }) public variant: TextVariant = TextVariant.unspecified
 
   public override render() {
     return html`<label class=${this.variant}><slot></slot></label>`
