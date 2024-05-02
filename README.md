@@ -1,36 +1,57 @@
-# Astra
+<div align="center">
+    <h1>Astra UI</h1>
+    <a href="https://www.npmjs.com/package/@outerbase/astra-ui"><img src="https://img.shields.io/npm/v/@outerbase/astra-ui.svg?style=flat" /></a>
+    <a href="https://github.com/outerbase/astra-ui/blob/main/CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" /></a>
+    <a href="https://github.com/"><img src="https://img.shields.io/badge/license-MIT-blue" /></a>
+    <a href="https://discord.gg/4M6AXzGG84"><img alt="Discord" src="https://img.shields.io/discord/1123612147704934400?label=Discord"></a>
+    <br />
+    <br />
+    <a href="https://www.outerbase.com/">Website</a>
+    <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+    <a href="https://www.docs.outerbase.com/">Docs</a>
+    <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+    <a href="https://www.outerbase.com/blog/">Blog</a>
+    <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+    <a href="https://discord.gg/4M6AXzGG84">Discord</a>
+    <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+    <a href="https://twitter.com/outerbase">Twitter</a>
+    <br />
+    <hr />
+</div>
 
-![welcoming spaceballs movie frame](https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/8obJdqaaq4cDIkAFJqnL6NpwmemElk.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5)
+## What is Astra UI?
 
-## Copy + Paste = 🎉
+Universe is a lightweight, extensible code editor that can be used anywhere on the web.
 
-```html
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Classified</title>
-    <script src="https://cdn.outerbase.com/astra/latest/astra.bundle.js"></script>
-  </head>
-  <body>
-    <astra-label variant="h1">Are you ready?</astra-label>
-    <astra-button>Yes!</astra-button>
-  </body>
-</html>
-```
-
-![](https://github.com/outerbase/cdn/assets/368767/e2128f14-9fec-4f61-afa5-68265c260ca9)
+- [**Web Components**](#web-components): Using Astra UI as web components.
+- [**NPM Modules**](#npm-modules): Install as an NPM package.
 
 ## Usage
 
-You do **not** have to build or compile this project in order to use it. You have the choice:
+You do not need have to build or compile Universe yourself to use it.
 
-- load directly from our CDN
-- host `astra.bundle.js` yourself
+- Load directly from our CDN
+- Host the bundle.js yourself
 - `npm install` into your project
-- `import` only the components you use; minimize and build to your liking
+- Import only the components you use; minimize and build to your liking
 
 TypeScript support is built-in, **not** required.
+
+Declaring an instance of the editor in your HTML you can do the following:
+```html
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Classified</title>
+        <script src="https://cdn.outerbase.com/astra/latest/astra.bundle.js"></script>
+    </head>
+    <body>
+        <astra-label variant="h1">Are you ready?</astra-label>
+        <astra-button>Yes!</astra-button>
+    </body>
+</html>
+```
 
 ### Web Components
 
@@ -45,7 +66,7 @@ TypeScript support is built-in, **not** required.
 We're making Astra available from our CDN. You may simply copy/paste the following snippet onto your site to include all of our components.
 
 ```html
-<script src="https://cdn.outerbase.com/astra/latest/astra.bundle.js"></script>
+<script src="https://cdn.outerbase.com/astra/latest/index.bundle.js"></script>
 ```
 
 ##### Host it yourself
@@ -124,3 +145,19 @@ We do not force you to use/load the Inter font. If you'd like to use it, include
 npm install --frozen-lockfile
 npm dev
 ```
+
+## Contributing
+
+If you want to add contributions to this repository, please follow the instructions [here](contributing.md).
+
+## Support
+
+For support join our community on [Discord](https://discord.gg/4M6AXzGG84). For enterprise solutions contact us at [support@outerbase.com](mailto:support@outerbase.com)
+
+## License
+
+This project is licensed under the MIT license. See the [LICENSE](./LICENSE.txt) file for more info.
+
+## Our Contributors
+
+<img align="left" src="https://contributors-img.web.app/image?repo=outerbase/astra-ui"/>
