@@ -21,17 +21,17 @@
 
 ## What is Astra UI?
 
-Universe is a lightweight, extensible code editor that can be used anywhere on the web.
+Astra is a lightweight web component UI library usable with any frameworks or no framework at all.
 
 - [**Web Components**](#web-components): Using Astra UI as web components.
 - [**NPM Modules**](#npm-modules): Install as an NPM package.
 
 ## Usage
 
-You do not need have to build or compile Universe yourself to use it.
+You do not need have to build or compile Astra yourself to use it.
 
 - Load directly from our CDN
-- Host the bundle.js yourself
+- Host the astra.js yourself
 - `npm install` into your project
 - Import only the components you use; minimize and build to your liking
 
@@ -44,10 +44,10 @@ Declaring an instance of the editor in your HTML you can do the following:
     <head>
         <meta charset="UTF-8" />
         <title>Classified</title>
-        <script src="https://cdn.outerbase.com/astra/latest/astra.bundle.js"></script>
+        <script src="https://cdn.outerbase.com/astra/latest/astra.js"></script>
     </head>
     <body>
-        <astra-label variant="h1">Are you ready?</astra-label>
+        <astra-text variant="h1">Are you ready?</astra-text>
         <astra-button>Yes!</astra-button>
     </body>
 </html>
@@ -66,15 +66,15 @@ Declaring an instance of the editor in your HTML you can do the following:
 We're making Astra available from our CDN. You may simply copy/paste the following snippet onto your site to include all of our components.
 
 ```html
-<script src="https://cdn.outerbase.com/astra/latest/index.bundle.js"></script>
+<script src="https://cdn.outerbase.com/astra/latest/index.js"></script>
 ```
 
 ##### Host it yourself
 
-Place `astra.bundle.js` (found in `dist/web-components/astra.bundle.js`) somewhere accessible to your website. Then update your HTML to include a script tag that references that location:
+Place `astra.js` (found in `dist/web-components/astra.js`) somewhere accessible to your website. Then update your HTML to include a script tag that references that location:
 
 ```html
-<script src="/your/path/to/astra.bundle.js"></script>
+<script src="/your/path/to/astra.js"></script>
 ```
 
 If you want to include our preferred font `Inter`, you can add it to your own site via Google Fonts with the following `style` tag:
