@@ -37,8 +37,8 @@ const components = [
     href: '/c/input',
   },
   {
-    label: 'Label',
-    href: '/c/label',
+    label: 'Text',
+    href: '/c/text',
   },
   {
     label: 'Scroll Area',
@@ -65,7 +65,7 @@ const clickableClasses = 'hover:underline'
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
-    <script defer>
+    <script defer is:inline>
       function setActiveLinkStyle(isDarkMode) {
         const element = document.getElementById(window.location.pathname)
         if (element) element.style.color = isDarkMode ? 'white' : 'black'

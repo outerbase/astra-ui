@@ -1,7 +1,7 @@
 ---
 // server-side code goes here and can be accessed below
 
-import { Button, Card, Input, Label, ScrollArea, Select, Table } from '../index'
+import { Button, Card, Input, Text, ScrollArea, Select, Table } from '../index'
 import Layout from '../layouts/Layout.astro'
 
 // include Inter font on the page
@@ -95,18 +95,18 @@ const optionsArray = [
     </div>
 
     <div>
-      <h2><pre>&lt;astra-label /&gt;</pre></h2>
-      <Label client:load>variant=undefined</Label>
+      <h2><pre>&lt;astra-text /&gt;</pre></h2>
+      <Text client:load>variant=undefined</Text>
       <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-      <Label client:load variant="label">variant=label</Label>
+      <Text client:load variant="label">variant=label</Text>
       <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-      <Label client:load variant="h1">variant=h1</Label>
+      <Text client:load variant="h1">variant=h1</Text>
       <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-      <Label client:load variant="h2">variant=h2</Label>
+      <Text client:load variant="h2">variant=h2</Text>
       <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-      <Label client:load variant="h3">variant=h3</Label>
+      <Text client:load variant="h3">variant=h3</Text>
       <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-      <Label client:load variant="h4">variant=h4</Label>
+      <Text client:load variant="h4">variant=h4</Text>
     </div>
 
     <div>

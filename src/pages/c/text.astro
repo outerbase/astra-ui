@@ -1,18 +1,18 @@
 ---
 import { Code } from 'astro/components'
-import AstraLabel from '../../components/label'
+import AstraText from '../../components/text'
 import ComponentLayout from '../../layouts/Component.astro'
 import Layout from '../../layouts/Layout.astro'
 
 const usage = `\
-<astra-label variant="h1">Hello, world.</astra-label>
+<astra-text variant="h1">Hello, world.</astra-text>
 `
 ---
 
 <Layout title="Astra-UI">
   <ComponentLayout title="Label" summary="This, _that_, and THE other." previewBg="bg-neutral-500">
     <!-- @ts-ignore -->
-    <AstraLabel slot="preview" variant="h1">Content goes hither</AstraLabel>
+    <AstraText slot="preview" variant="h1">Hello, world.</AstraText>
     <!-- // TODO @Brandon pick a `theme` on the next line -->
     <Code slot="usage" code={usage} lang="html" class="p-4 dark:bg-black bg-white" theme="ayu-dark" />
   </ComponentLayout>
