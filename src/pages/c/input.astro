@@ -1,0 +1,19 @@
+---
+import { Code } from 'astro/components'
+import AstraInput from '../../components/input'
+import ComponentLayout from '../../layouts/Component.astro'
+import Layout from '../../layouts/Layout.astro'
+
+const usage = `\
+<astra-input>Hello, world.</astra-input>
+`
+---
+
+<Layout title="Astra-UI">
+  <ComponentLayout title="Card" summary="This, _that_, and THE other.">
+    <!-- // TODO @Brandon pick a `theme` on the next line -->
+    <!-- @ts-ignore -->
+    <AstraInput slot="preview" placeholder="Give me a hint" value="" label="tbd">Content goes hither</AstraInput>
+    <Code slot="usage" code={usage} lang="html" class="p-4 dark:bg-black bg-white" theme="ayu-dark" />
+  </ComponentLayout>
+</Layout>

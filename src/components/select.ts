@@ -47,7 +47,7 @@ export default class AstraSelect extends LitElement {
         top: calc(100% + 6px);
         left: 0;
         width: 100%;
-        z-index: 1;
+        z-index: 3;
         background: white;
         border: 1px solid var(--astra-neutral-200);
         border-radius: 6px;
@@ -172,9 +172,7 @@ export default class AstraSelect extends LitElement {
 
   public override render() {
     const displayedValue =
-      this.value.length > 0
-        ? html`<div class="flex-1 ">${this.value}</div>`
-        : html`<div class="flex-1 opacity-50">${this.placeholder}</div>`
+      this.value.length > 0 ? html`<div class="flex-1">${this.value}</div>` : html`<div class="flex-1 opacity-50">${this.placeholder}</div>`
     // TODO place a button in here that serves as the trigger instead of the container itself
     // and then put aria-haspopup="listbox" on it
     return html`

@@ -7,7 +7,7 @@ export default {
   input: 'dist/js/bundle.js',
   output: {
     name: 'Astra', // Name of the global variable to hold the module's default export
-    file: 'dist/web-components/astra.bundle.js',
+    file: 'dist/web-components/astra.js',
     format: 'iife', // "iife" format for a self-executing function, suitable for inclusion as a <script> tag
   },
   plugins: [

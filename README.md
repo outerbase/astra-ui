@@ -114,7 +114,7 @@ npm add @outerbase/astra-ui
 _In your `.js`, `.mjs` and `.tsx` files_
 
 ```
-import  { Button, Card, Input, Label, ScrollArea, Select, Table }
+import  { Button, Card, Input, Text, ScrollArea, Select, Table }
   from '@outerbase/astra-ui/components'
 ```
 
@@ -125,7 +125,7 @@ _Reference `src/pages/index.astro` for an example of using components in this wa
 We've also packaged Astra for React:
 
 ```js
-import { Select, Label, Input, Card, Button } from '@outerbase/astra-ui/react'
+import { Select, Text, Input, Card, Button } from '@outerbase/astra-ui/react'
 
 function ArbitraryComponent() {
     return <Button>Click me</Button>
