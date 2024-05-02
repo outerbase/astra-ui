@@ -10,7 +10,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>Classified</title>
-    <script src="https://cdn.outerbase.com/astra/latest/astra.bundle.js"></script>
+    <script src="https://cdn.outerbase.com/astra/latest/astra.js"></script>
   </head>
   <body>
     <astra-text variant="h1">Are you ready?</astra-text>
@@ -26,7 +26,7 @@
 You do **not** have to build or compile this project in order to use it. You have the choice:
 
 - load directly from our CDN
-- host `astra.bundle.js` yourself
+- host `astra.js` yourself
 - `npm install` into your project
 - `import` only the components you use; minimize and build to your liking
 
@@ -45,15 +45,15 @@ TypeScript support is built-in, **not** required.
 We're making Astra available from our CDN. You may simply copy/paste the following snippet onto your site to include all of our components.
 
 ```html
-<script src="https://cdn.outerbase.com/astra/latest/astra.bundle.js"></script>
+<script src="https://cdn.outerbase.com/astra/latest/astra.js"></script>
 ```
 
 ##### Host it yourself
 
-Place `astra.bundle.js` (found in `dist/web-components/astra.bundle.js`) somewhere accessible to your website. Then update your HTML to include a script tag that references that location:
+Place `astra.js` (found in `dist/web-components/astra.js`) somewhere accessible to your website. Then update your HTML to include a script tag that references that location:
 
 ```html
-<script src="/your/path/to/astra.bundle.js"></script>
+<script src="/your/path/to/astra.js"></script>
 ```
 
 If you want to include our preferred font `Inter`, you can add it to your own site via Google Fonts with the following `style` tag:

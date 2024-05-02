@@ -7,7 +7,7 @@ const htmlSrcExample = `<!doctype html>
   <head>
     <meta charset="UTF-8" />
     <title>Classified</title>
-    <script src="https://cdn.outerbase.com/astra/latest/astra.bundle.js"></script>
+    <script src="https://cdn.outerbase.com/astra/latest/astra.js"></script>
   </head>
   <body>
     <astra-text variant="h1">Are you ready?</astra-text>
@@ -15,8 +15,8 @@ const htmlSrcExample = `<!doctype html>
   </body>
 </html>`
 
-const htmlScriptAstraBundle = `<script src="https://cdn.outerbase.com/astra/latest/astra.bundle.js"></script>`
-const htmlAstraFromCDN = `<script src="/your/path/to/astra.bundle.js"></script>`
+const htmlScriptAstraBundle = `<script src="https://cdn.outerbase.com/astra/latest/astra.js"></script>`
+const htmlAstraFromCDN = `<script src="/your/path/to/astra.js"></script>`
 ---
 
 <Layout title="Add Astra-UI to your project">
@@ -47,7 +47,7 @@ const htmlAstraFromCDN = `<script src="/your/path/to/astra.bundle.js"></script>`
       <div class="flex flex-col gap-2">
         <h2 class="text-xl">Self-hosting</h2>
         <span
-          >Place astra.bundle.js (found in dist/web-components/astra.bundle.js) somewhere accessible to your website. Then update your HTML
+          >Place astra.js (found in dist/web-components/astra.js) somewhere accessible to your website. Then update your HTML
           to include a script tag that references that location:</span
         >
         <Code code={htmlAstraFromCDN} lang="html" class="p-4 dark:bg-black bg-white" theme="ayu-dark" />

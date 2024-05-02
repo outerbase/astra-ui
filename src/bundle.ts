@@ -1,4 +1,4 @@
-// these are the files that are bundled into `dist/web-components/astra.bundle.js`
+// these are the files that are bundled into `dist/web-components/astra.js`
 
 import AstraButton from './components/button.js'
 import AstraCard from './components/card.js'

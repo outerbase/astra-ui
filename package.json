@@ -7,7 +7,7 @@
   "exports": {
     "./types": "./dist/js/types.js",
     "./components": "./dist/js/index.js",
-    "./bundle": "./dist/web-components/astra.bundle.js"
+    "./bundle": "./dist/web-components/astra.js"
   },
   "files": [
     "dist/js/*",
