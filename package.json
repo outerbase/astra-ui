@@ -1,6 +1,6 @@
 {
   "name": "@outerbase/astra-ui",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "type": "module",
   "main": "dist/js/index.js",
   "module": "dist/js/index.js",
@@ -17,6 +17,7 @@
     "tailwind:dev": "[ -d .tmp ] && rm -r .tmp; concurrently \"tailwindcss -c .build/tailwind.config.distribute.mjs -i .build/base.css -o .tmp/tailwind.css --watch\" \"node .build/generate-twstyles.mjs --input=.tmp/tailwind.css --output=./src/lib/.tw-styles.ts --watch\"",
     "tailwind:build": "[ -d .tmp ] && rm -r .tmp; tailwindcss -c .build/tailwind.config.distribute.mjs -i .build/base.css -o .tmp/tailwind.css && node .build/generate-twstyles.mjs --input=.tmp/tailwind.css --output=./src/lib/.tw-styles.ts",
     "dev": "concurrently \"pnpm tailwind:dev\" \"astro dev --config .build/astro.config.mjs\"",
+    "dev:dashboard": "concurrently \"pnpm tailwind:dev\" \"node .build/compile-typescript-on-changes.mjs\"",
     "build": "pnpm tailwind:build && astro check --config .build/astro.config.mjs && astro build --config .build/astro.config.mjs",
     "compile": "tsc -p .build/tsconfig.distribute.json",
     "compile:watch": "node .build/compile-typescript-on-changes.mjs",

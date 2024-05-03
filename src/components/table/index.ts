@@ -60,6 +60,9 @@ export default class AstraTable extends ClassifiedElement {
   set data(data: Array<RowAsRecord>) {
     this.rows = data
   }
+  get data() {
+    return this.rows
+  }
 
   @property({ attribute: 'plugins', type: Array })
   public plugins?: Array<ColumnPlugin>
