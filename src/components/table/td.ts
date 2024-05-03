@@ -428,10 +428,13 @@ export class TableData extends MutableElement {
 
       if (this.isDisplayingPluginEditor) {
         cellEditorContents = unsafeHTML(
-          `<${tagName.replace(
-            'astra-plugin-cell',
-            'astra-plugin-editor'
-          )} cellvalue='${editorValue}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
+          `<${tagName
+            .replace('outerbase-plugin-cell', 'outerbase-plugin-editor') // state of affairs May 3 2024
+            .replace(
+              // possible future migration
+              'astra-plugin-cell',
+              'astra-plugin-editor'
+            )} cellvalue='${editorValue}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
         )
       }
     } else {
