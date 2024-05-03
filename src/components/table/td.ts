@@ -79,9 +79,9 @@ export class TableData extends MutableElement {
 
   static onDoubleClick(event: MouseEvent) {
     const self = event.currentTarget as TableData
-    if (self.isEditing) return // allow double-clicking to select text while editing
 
-    if (!eventTargetIsPlugin(event)) {
+    if (self.isEditing) return // allow double-clicking to select text while editing
+    if (!eventTargetIsPluginEditor(event)) {
       self.isEditing = true
       setTimeout(() => {
         const input = self.shadowRoot?.querySelector('input')
@@ -351,7 +351,7 @@ export class TableData extends MutableElement {
     // @ts-ignore insists on `Event` instead of `PluginActionEvent`
     this.addEventListener('plugin-change', this.onPluginChangeEvent)
 
-    if (this.isInteractive && !this.plugin) {
+    if (this.isInteractive) {
       this.addEventListener('dblclick', TableData.onDoubleClick)
     }
   }
