@@ -258,7 +258,7 @@ export class TableData extends MutableElement {
   @property({ attribute: 'row', type: Number })
   public row = undefined
 
-  @property({ attribute: 'column', type: Number })
+  @property({ attribute: 'column', type: String })
   public column = undefined
 
   @property({ attribute: 'hide-dirt', type: Boolean })
@@ -434,7 +434,7 @@ export class TableData extends MutableElement {
               // possible future migration
               'astra-plugin-cell',
               'astra-plugin-editor'
-            )} cellvalue='${editorValue}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
+            )} cellvalue='${editorValue}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
         )
       }
     } else {

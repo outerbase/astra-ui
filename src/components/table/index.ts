@@ -5,27 +5,27 @@ import { ifDefined } from 'lit/directives/if-defined.js'
 import { repeat } from 'lit/directives/repeat.js'
 import arrayToObject from '../../lib/array-to-object.js'
 import {
-  ColumnAddedEvent,
-  ColumnHiddenEvent,
-  ColumnPluginDeactivatedEvent,
-  ColumnRemovedEvent,
-  MenuOpenEvent,
-  ResizeEvent,
-  RowAddedEvent,
-  RowRemovedEvent,
-  RowSelectedEvent,
+    ColumnAddedEvent,
+    ColumnHiddenEvent,
+    ColumnPluginDeactivatedEvent,
+    ColumnRemovedEvent,
+    MenuOpenEvent,
+    ResizeEvent,
+    RowAddedEvent,
+    RowRemovedEvent,
+    RowSelectedEvent,
 } from '../../lib/events.js'
 import {
-  ColumnStatus,
-  DBType,
-  Theme,
-  type ColumnPlugin,
-  type Columns,
-  type HeaderMenuOptions,
-  type PluginWorkspaceInstallationId,
-  type RowAsRecord,
-  type Schema,
-  type TableColumn,
+    ColumnStatus,
+    DBType,
+    Theme,
+    type ColumnPlugin,
+    type Columns,
+    type HeaderMenuOptions,
+    type PluginWorkspaceInstallationId,
+    type RowAsRecord,
+    type Schema,
+    type TableColumn,
 } from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
 
@@ -387,6 +387,7 @@ export default class AstraTable extends ClassifiedElement {
                       .position=${{ row: id, column: name }}
                       .value=${values[name]}
                       .originalValue=${originalValues[name]}
+                      .column=${name}
                       width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
                       theme=${this.theme}
                       type=${this.columnTypes?.[name]}
