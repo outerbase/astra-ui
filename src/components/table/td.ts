@@ -28,6 +28,10 @@ const RW_OPTIONS = [
 
 const R_OPTIONS = [{ label: 'Copy', value: 'copy' }]
 
+if (customElements.get('astra-td')) {
+  // System has already registered `astra-td`
+}
+
 // tl;dr <td/>, table-cell
 @customElement('astra-td')
 export class TableData extends MutableElement {
@@ -423,7 +427,9 @@ export class TableData extends MutableElement {
 
     if (this.plugin) {
       const { config, tagName } = this.plugin
-      const pluginAsString = unsafeHTML(`<${tagName} cellvalue='${value}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`)
+      const pluginAsString = unsafeHTML(
+        `<${tagName} cellvalue='${value}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
+      )
       cellContents = html`${pluginAsString}`
 
       if (this.isDisplayingPluginEditor) {
