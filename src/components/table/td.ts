@@ -268,7 +268,7 @@ export class TableData extends MutableElement {
   @property({ attribute: 'hide-dirt', type: Boolean })
   public hideDirt = false
 
-  @property({ attribute: 'plugin', type: String })
+  @property({ attribute: 'plugin', type: Object })
   public plugin?: ColumnPlugin
 
   @property({ attribute: 'is-displaying-plugin-editor', type: Boolean })
@@ -313,8 +313,10 @@ export class TableData extends MutableElement {
       // TODO update our value to match the one from the editor
     } else if (eventName === PluginEvent.onCancelEdit) {
       this.isDisplayingPluginEditor = false
+      delete this._interstitialValue
     } else if (eventName === PluginEvent.updateCell) {
       this._interstitialValue = value
+      this.value = value
     }
   }
 

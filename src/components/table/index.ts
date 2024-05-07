@@ -5,27 +5,27 @@ import { ifDefined } from 'lit/directives/if-defined.js'
 import { repeat } from 'lit/directives/repeat.js'
 import arrayToObject from '../../lib/array-to-object.js'
 import {
-    ColumnAddedEvent,
-    ColumnHiddenEvent,
-    ColumnPluginDeactivatedEvent,
-    ColumnRemovedEvent,
-    MenuOpenEvent,
-    ResizeEvent,
-    RowAddedEvent,
-    RowRemovedEvent,
-    RowSelectedEvent,
+  ColumnAddedEvent,
+  ColumnHiddenEvent,
+  ColumnPluginDeactivatedEvent,
+  ColumnRemovedEvent,
+  MenuOpenEvent,
+  ResizeEvent,
+  RowAddedEvent,
+  RowRemovedEvent,
+  RowSelectedEvent,
 } from '../../lib/events.js'
 import {
-    ColumnStatus,
-    DBType,
-    Theme,
-    type ColumnPlugin,
-    type Columns,
-    type HeaderMenuOptions,
-    type PluginWorkspaceInstallationId,
-    type RowAsRecord,
-    type Schema,
-    type TableColumn,
+  ColumnStatus,
+  DBType,
+  PluginWorkspaceInstallationId,
+  Theme,
+  type ColumnPlugin,
+  type Columns,
+  type HeaderMenuOptions,
+  type RowAsRecord,
+  type Schema,
+  type TableColumn,
 } from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
 
@@ -69,6 +69,11 @@ export default class AstraTable extends ClassifiedElement {
 
   @property({ attribute: 'installed-plugins', type: Array })
   public installedPlugins?: Record<string, PluginWorkspaceInstallationId | undefined>
+
+  //// BRAYDEN DID THIS
+  @property({ attribute: 'real-installed-plugins', type: Array })
+  public realInstalledPlugins?: Array<any>
+  //// END BRAYDEN
 
   @property({ attribute: 'non-interactive', type: Boolean })
   public isNonInteractive = false
@@ -379,6 +384,14 @@ export default class AstraTable extends ClassifiedElement {
                   )
                   const defaultPlugin = this.plugins?.find(({ id }) => id === this.installedPlugins?.[name]?.plugin_installation_id)
                   const plugin = installedPlugin ?? defaultPlugin
+
+                  const realInstallation = this.realInstalledPlugins?.find(
+                    ({ plugin_workspace_id }) => plugin?.pluginWorkspaceId === plugin_workspace_id
+                  )
+
+                  if (plugin && realInstallation?.config) {
+                    plugin.config = JSON.stringify(realInstallation?.config)
+                  }
 
                   return html`
                     <!-- TODO @johnny remove separate-cells and instead rely on css variables to suppress borders -->
