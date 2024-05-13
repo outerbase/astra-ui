@@ -138,10 +138,10 @@ export class MutableElement extends ClassifiedElement {
         // setTimeout(this.dispatchChangedEvent.bind(this), 0) // unnecessary with the initial conditional check?
         this.dispatchChangedEvent()
       }
-
-      // allow change event on next change
-      this._didSetInitialValue = true
     }
+
+    // allow change event on next change
+    this._didSetInitialValue = true
   }
 
   protected _originalValue?: Serializable
