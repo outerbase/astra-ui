@@ -220,8 +220,6 @@ export default class AstraTable extends ClassifiedElement {
 
   protected _onColumnHidden({ name }: ColumnHiddenEvent) {
     this.hiddenColumnNames.push(name)
-    this.requestUpdate('columns')
-    this.updateVisibleColumns()
   }
 
   // TODO @johnny 'Select All' is firing this once for each row instead of just once
@@ -522,6 +520,10 @@ export default class AstraTable extends ClassifiedElement {
       })
 
       this.updateTableView()
+    }
+
+    if (changedProperties.has('hiddenColumnNames')) {
+      this.updateVisibleColumns()
     }
   }
 
