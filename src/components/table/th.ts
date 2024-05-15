@@ -209,7 +209,7 @@ export class TH extends MutableElement {
   }
 
   public hideColumn() {
-    if (!this.originalValue) throw new Error('missing OG value')
+    if (!this.originalValue) throw new Error('missing column name (i.e. this.originalValue)')
 
     this.dispatchEvent(
       new ColumnHiddenEvent({
