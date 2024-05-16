@@ -423,6 +423,9 @@ export class TableData extends MutableElement {
 
     if (this.plugin) {
       const { config, tagName } = this.plugin
+      // TODO the plugin receives `null` as a string 'null' since params are always stringified
+      //      we can resolve this by omitting `cellvalue` to represent null, but as of today, that renders `undefined` in our plugins
+      //      `<${tagName} ${value !== null ? `cellvalue='${value}` : ''} configuration='${config}' ${this.pluginAttributes}></${tagName}>`
       const pluginAsString = unsafeHTML(`<${tagName} cellvalue='${value}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`)
       cellContents = html`${pluginAsString}`
 
@@ -438,8 +441,8 @@ export class TableData extends MutableElement {
         )
       }
     } else {
-      cellContents = html`${html`<span class="nbsp">${value}</span>` ??
-      html`<span class="italic text-neutral-400 dark:text-neutral-500">NULL</span>`}`
+      const classes = value === null || value === undefined ? 'nbsp text-neutral-400 dark:text-neutral-600' : 'nbsp'
+      cellContents = html`<span class=${classes}>${value === null ? 'NULL' : value === undefined ? 'DEFAULT' : value}</span>`
     }
 
     const inputEl = this.isEditing // &nbsp; prevents the row from collapsing (in height) when there is only 1 column
@@ -460,11 +463,11 @@ export class TableData extends MutableElement {
           ...this.options,
           {
             label:
-              typeof this.originalValue === 'object'
+              this.originalValue !== null && typeof this.originalValue === 'object'
                 ? 'Revert'
                 : html`Revert to
                     <span class="pointer-events-none italic whitespace-nowrap"
-                      >${this.originalValue !== null || this.originalValue !== undefined ? this.originalValue : 'NULL'}</span
+                      >${this.originalValue === null ? 'NULL' : this.originalValue === undefined ? 'DEFAULT' : this.originalValue}</span
                     >`,
             value: 'reset',
           },
