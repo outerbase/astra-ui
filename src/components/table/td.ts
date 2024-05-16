@@ -273,9 +273,6 @@ export class TableData extends MutableElement {
   @property({ attribute: 'is-first-row', type: Boolean })
   public isFirstRow = false
 
-  @property({ attribute: 'is-new-row', type: Boolean })
-  public isNewRow = false
-
   // @property({ attribute: 'is-last-row', type: Boolean })
   // public isLastRow = false
 
@@ -445,7 +442,7 @@ export class TableData extends MutableElement {
       }
     } else {
       const classes = value === null || value === undefined ? 'nbsp text-neutral-400 dark:text-neutral-600' : 'nbsp'
-      cellContents = html`<span class=${classes}>${value ?? (this.isNewRow ? 'DEFAULT' : 'NULL')}</span>`
+      cellContents = html`<span class=${classes}>${value === null ? 'NULL' : value === undefined ? 'DEFAULT' : value}</span>`
     }
 
     const inputEl = this.isEditing // &nbsp; prevents the row from collapsing (in height) when there is only 1 column
@@ -470,7 +467,7 @@ export class TableData extends MutableElement {
                 ? 'Revert'
                 : html`Revert to
                     <span class="pointer-events-none italic whitespace-nowrap"
-                      >${this.originalValue ?? (this.isNewRow ? 'DEFAULT' : 'NULL')}</span
+                      >${this.originalValue === null ? 'NULL' : this.originalValue === undefined ? 'DEFAULT' : this.originalValue}</span
                     >`,
             value: 'reset',
           },
