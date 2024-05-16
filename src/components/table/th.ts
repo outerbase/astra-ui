@@ -190,7 +190,7 @@ export class TH extends MutableElement {
       this.dispatchEvent(
         new ColumnUpdatedEvent({
           name,
-          data: { action: 'sort:alphabetical:ascending' },
+          data: { action: 'sort' },
         })
       )
     } else {
