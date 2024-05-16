@@ -361,9 +361,9 @@ export class TH extends MutableElement {
           })} @blur=${this.onBlur}></input>`
         : this.hasMenu
           ? html`<astra-th-menu theme=${this.theme} .options=${options} @menu-selection=${this.onMenuSelection}
-              ><span class="font-normal">${this.value}</span></astra-th-menu
+              ><span class="font-normal truncate">${this.value}</span></astra-th-menu
             >`
-          : html`<span class="font-normal">${this.value}</span>`
+          : html`<span class="font-normal truncate">${this.value}</span>`
 
       return this.withResizer
         ? html`<span class=${classMap(resultContainerClasses)}
