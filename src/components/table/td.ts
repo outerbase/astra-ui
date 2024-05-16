@@ -441,7 +441,7 @@ export class TableData extends MutableElement {
         )
       }
     } else {
-      const classes = value === null ? 'nbsp italic text-neutral-400 dark:text-neutral-500' : 'nbsp'
+      const classes = value === null ? 'nbsp text-neutral-400 dark:text-neutral-600' : 'nbsp'
       cellContents = html`<span class=${classes}>${value ?? 'NULL'}</span>`
     }
 
