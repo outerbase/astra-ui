@@ -355,6 +355,7 @@ export default class AstraTable extends ClassifiedElement {
                     ?row-selector="${true}"
                     ?read-only=${true}
                     ?interactive=${true}
+                    ?is-new-row=${isNew}
                     width="42px"
                   >
                     <div class="absolute top-0 bottom-0 right-0 left-0 flex items-center justify-center h-full">
@@ -403,6 +404,7 @@ export default class AstraTable extends ClassifiedElement {
                       ?interactive=${!this.isNonInteractive}
                       ?hide-dirt=${isNew}
                       ?read-only=${this.readonly}
+                      ?is-new-row=${isNew}
                     >
                     </astra-td>
                   `
