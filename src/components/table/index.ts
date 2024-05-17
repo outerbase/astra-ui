@@ -315,12 +315,12 @@ export default class AstraTable extends ClassifiedElement {
 
     if (theme == Theme.dark) {
       document.documentElement.style.setProperty('--ob-background-color', '#0A0A0A')
-      document.documentElement.style.setProperty('--ob-text-color', '#D4D4D4')
+      document.documentElement.style.setProperty('--ob-text-color', '#FFFFFF')
       document.documentElement.style.setProperty('--ob-border-color', '#262626')
       document.documentElement.style.setProperty('--ob-null-text-color', '#959497')
     } else {
       document.documentElement.style.setProperty('--ob-background-color', '#FAFAFA')
-      document.documentElement.style.setProperty('--ob-text-color', '#525252')
+      document.documentElement.style.setProperty('--ob-text-color', '#000000')
       document.documentElement.style.setProperty('--ob-border-color', '#E5E5E5')
       document.documentElement.style.setProperty('--ob-null-text-color', '#D0D0D0')
     }
