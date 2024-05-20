@@ -155,9 +155,8 @@ export class TableData extends MutableElement {
       // toggle editing mode
       self.isEditing = true
 
-      // append this character
-      if (self.value === undefined || self.value === null) self.value = event.key
-      else self.value += event.key
+      // replace the contents
+      self.value = event.key
 
       // set the cursor input to the end
       setTimeout(() => {
