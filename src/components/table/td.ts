@@ -479,7 +479,7 @@ export class TableData extends MutableElement {
                 : null}
             </astra-td-menu>
           </span>`
-        : null
+        : html``
 
     return this.isEditing ? inputEl : this.blank ? emptySlot : menuEl
   }
