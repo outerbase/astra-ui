@@ -396,7 +396,10 @@ export class TableData extends MutableElement {
   public override render() {
     const value = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value) : this.value
     const editorValue = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value, null, 2) : this.value
-    const contentWrapperClass = classMap({ 'font-normal': true, dark: this.theme == Theme.dark })
+    const contentWrapperClass = classMap({
+      'font-normal': true,
+      dark: this.theme == Theme.dark,
+    })
 
     let cellContents: TemplateResult<1>
     let cellEditorContents: DirectiveResult<typeof UnsafeHTMLDirective> | undefined
@@ -460,7 +463,7 @@ export class TableData extends MutableElement {
       !this.isEditing && !this.blank
         ? html`<div
             ${ref(this.contentEditableWrapper)}
-            class="outline-none caret-transparent"
+            class="outline-none caret-transparent overflow-hidden text-ellipsis"
             contenteditable="true"
             spellcheck="false"
             autocorrect="off"
