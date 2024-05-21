@@ -12,9 +12,8 @@ import { ClassifiedElement } from '../classified-element.js'
 export class Menu extends ClassifiedElement {
   protected override classMap() {
     return {
-      'flex items-center justify-between gap-2': !this.withoutPadding,
-      'font-medium select-none whitespace-nowrap': true,
       ...super.classMap(),
+      'font-medium select-none whitespace-nowrap': true,
     }
   }
 
@@ -26,9 +25,6 @@ export class Menu extends ClassifiedElement {
 
   @property({ type: Array, attribute: 'options' })
   public options: HeaderMenuOptions = []
-
-  @property({ attribute: 'without-padding', type: Boolean })
-  public withoutPadding = false
 
   @state() protected activeOptions: HeaderMenuOptions = []
   @state() protected historyStack: Array<HeaderMenuOptions> = []
