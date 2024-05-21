@@ -426,14 +426,14 @@ export class TableData extends MutableElement {
     }
 
     const inputEl = this.isEditing // &nbsp; prevents the row from collapsing (in height) when there is only 1 column
-      ? html`<span class=${contentWrapperClass}>&nbsp;<input .value=${value ?? ''}
+      ? html`<div class=${contentWrapperClass}>&nbsp;<input .value=${value ?? ''}
                 ?readonly=${this.readonly}
                 @input=${this.onChange}
                 class=${classMap({
                   'z-[2] absolute top-0 bottom-0 right-0 left-0': true,
                   'bg-blue-50 dark:bg-blue-950 outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700': true,
                   'px-3 font-normal focus:rounded-[4px]': true,
-                })} @blur=${this.onBlur}></input></span>`
+                })} @blur=${this.onBlur}></input></div>`
       : html``
 
     const emptySlot = this.blank ? html`<slot></slot>` : html``
