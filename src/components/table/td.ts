@@ -470,7 +470,6 @@ export class TableData extends MutableElement {
             <astra-td-menu
               theme=${this.theme}
               .options=${menuOptions}
-              ?selectable-text=${!this.isInteractive}
               @menu-selection=${this.onMenuSelection}
               ><span class=${contentWrapperClass}>${cellContents}</span
               >${
