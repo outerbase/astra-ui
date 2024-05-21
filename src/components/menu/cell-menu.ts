@@ -26,7 +26,7 @@ export class CellMenu extends Menu {
     return html`
       <span
         class=${classMap({
-          'whitespace-nowrap text-ellipsis': true,
+          'whitespace-nowrap text-ellipsis pointer-events-none': true,
           'overflow-hidden w-full focus:z-[1] ': true,
         })}
         ><slot></slot
