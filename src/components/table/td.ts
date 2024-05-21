@@ -474,7 +474,11 @@ export class TableData extends MutableElement {
               ?selectable-text=${!this.isInteractive}
               @menu-selection=${this.onMenuSelection}
               ><span class=${contentWrapperClass}>${cellContents}</span
-              ><span id="plugin-editor" class="absolute top-8 caret-current cursor-auto">${cellEditorContents}</span></astra-td-menu
+              >${
+                this.isDisplayingPluginEditor
+                  ? html`<span id="plugin-editor" class="absolute top-8 caret-current cursor-auto">${cellEditorContents}</span>`
+                  : null
+              }</astra-td-menu
             ></span
           >`
         : html``
