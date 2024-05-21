@@ -454,7 +454,8 @@ export class TableData extends MutableElement {
         ]
       : this.options
 
-    // note: contenteditable is all so we can get the `paste` event that an arbitrary htmleelement does not otherwise receive
+    // the outer div is contenteditable, allowing us to get the `paste` event that an arbitrary element cannot otherwise receive
+    // astra-td-menu wraps our content and provides a right-click menu
     const menuEl =
       !this.isEditing && !this.blank
         ? html`<div
