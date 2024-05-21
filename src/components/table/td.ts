@@ -424,8 +424,9 @@ export class TableData extends MutableElement {
         )
       }
     } else {
-      const classes = value === null || value === undefined ? 'nbsp text-neutral-400 dark:text-neutral-600' : 'nbsp'
-      cellContents = html`<span class=${classes}>${value === null ? 'NULL' : value === undefined ? 'DEFAULT' : value}</span>`
+      const classes =
+        value === null || value === undefined ? 'nbsp text-neutral-400 dark:text-neutral-600' : 'nbsp overflow-hidden text-ellipsis'
+      cellContents = html`<div class=${classes}>${value === null ? 'NULL' : value === undefined ? 'DEFAULT' : value}</div>`
     }
 
     const inputEl = this.isEditing // &nbsp; prevents the row from collapsing (in height) when there is only 1 column
@@ -449,9 +450,9 @@ export class TableData extends MutableElement {
               this.originalValue !== null && typeof this.originalValue === 'object'
                 ? 'Revert'
                 : html`Revert to
-                    <span class="pointer-events-none italic whitespace-nowrap"
-                      >${this.originalValue === null ? 'NULL' : this.originalValue === undefined ? 'DEFAULT' : this.originalValue}</span
-                    >`,
+                    <span class="pointer-events-none italic whitespace-nowrap">
+                      ${this.originalValue === null ? 'NULL' : this.originalValue === undefined ? 'DEFAULT' : this.originalValue}
+                    </span>`,
             value: 'reset',
           },
         ]
@@ -461,9 +462,9 @@ export class TableData extends MutableElement {
     // astra-td-menu wraps our content and provides a right-click menu
     const menuEl =
       !this.isEditing && !this.blank
-        ? html`<div
+        ? html`<span
             ${ref(this.contentEditableWrapper)}
-            class="outline-none caret-transparent overflow-hidden text-ellipsis"
+            class="outline-none caret-transparent"
             contenteditable="true"
             spellcheck="false"
             autocorrect="off"
@@ -471,19 +472,14 @@ export class TableData extends MutableElement {
             @drop=${TableData.onDrop}
             @paste=${this.onPaste}
           >
-            <astra-td-menu
-              theme=${this.theme}
-              .options=${menuOptions}
-              @menu-selection=${this.onMenuSelection}
-              ><span class=${contentWrapperClass}>${cellContents}</span
-              >${
-                this.isDisplayingPluginEditor
-                  ? html`<span id="plugin-editor" class="absolute top-8 caret-current cursor-auto">${cellEditorContents}</span>`
-                  : null
-              }</astra-td-menu
-            ></span
-          >`
-        : html``
+            <astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
+              <span class=${contentWrapperClass}>${cellContents}</span>
+              ${this.isDisplayingPluginEditor
+                ? html`<span id="plugin-editor" class="absolute top-8 caret-current cursor-auto">${cellEditorContents}</span>`
+                : null}
+            </astra-td-menu>
+          </span>`
+        : null
 
     return this.isEditing ? inputEl : this.blank ? emptySlot : menuEl
   }
