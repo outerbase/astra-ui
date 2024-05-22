@@ -23,24 +23,26 @@ export class CellMenu extends Menu {
 
     // TODO @johnny add `tabindex` to #trigger to restore keyboard nav to the cell menu
     // it needs to be conditional whether the menu is open or not or else double tabbing occurs on the table
-    return html`
-      <span
-        class=${classMap({
-          'whitespace-nowrap text-ellipsis': true,
-          'overflow-hidden w-full focus:z-[1] ': true,
-        })}
-        ><slot></slot
-      ></span>
-      <span
-        id="trigger"
-        aria-haspopup="menu"
-        class=${darkClass}
-        @click=${this.onTrigger}
-        @dblclick=${(e: MouseEvent) => e.stopPropagation()}
-        @keydown=${this.onKeyDown}
-      >
-        ${this.listElement}</span
-      >
-    `
+    return this.open
+      ? html`
+          <span
+            class=${classMap({
+              'whitespace-nowrap text-ellipsis bg-red-50': true,
+              'overflow-hidden w-full focus:z-[1] ': true,
+            })}
+            ><slot></slot
+          ></span>
+          <span
+            id="trigger"
+            aria-haspopup="menu"
+            class=${darkClass}
+            @click=${this.onTrigger}
+            @dblclick=${(e: MouseEvent) => e.stopPropagation()}
+            @keydown=${this.onKeyDown}
+          >
+            ${this.listElement}</span
+          >
+        `
+      : html`<slot></slot>`
   }
 }

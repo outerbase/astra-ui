@@ -399,7 +399,6 @@ export default class AstraTable extends ClassifiedElement {
                       ?is-first-row=${rowIndex === 0}
                       ?is-first-column=${idx === 0}
                       ?menu=${!this.isNonInteractive && !this.readonly}
-                      ?selectable-text=${this.isNonInteractive}
                       ?interactive=${!this.isNonInteractive}
                       ?hide-dirt=${isNew}
                       ?read-only=${this.readonly}
