@@ -8,3 +8,17 @@ import Text from './components/text.js'
 
 // export * as Types from './types'
 export { Button, Card, Input, ScrollArea, Select, Table, Text }
+
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'astra-scroll-area': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
+      'astra-table': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
+      'astra-button': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
+      'astra-card': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
+      'astra-input': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
+      'astra-text': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
+      'astra-select': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
+    }
+  }
+}
