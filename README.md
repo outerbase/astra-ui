@@ -127,7 +127,7 @@ We've also packaged Astra for React:
 ```js
 import React from 'react'
 import Astra from '@outerbase/astra-ui/react'
-const { Select, Text, Input, Card, Button } = Astra(React)
+const { Select, Text, Input, Card, Button, ScrollArea, Table } = Astra(React)
 
 function ArbitraryComponent() {
   return <Button>Click me</Button>
