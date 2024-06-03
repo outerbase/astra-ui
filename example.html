@@ -14,6 +14,23 @@
         color: lime;
         margin: 1rem 0;
       }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          --background-color: black;
+          --text-color: white;
+          background-color: var(--background-color);
+          color: var(--text-color);
+        }
+      }
+      @media (prefers-color-scheme: light) {
+        body {
+          --background-color: white;
+          --text-color: black;
+          background-color: var(--background-color);
+          color: var(--text-color);
+        }
+      }
     </style>
 
     <!-- load Astra components -->
@@ -29,6 +46,25 @@
   </head>
 
   <body>
+    <div style="height: 320px">
+      <bar-chart
+        data='[
+      {"label": "Abraham", "value": 30, "note": "Note A", "color": "#FF6384"},
+      {"label": "Bobert", "value": 80, "note": "Note B", "color": "#36A2EB"},
+      {"label": "Cindy", "value": 45, "note": "Note C", "color": "#FFCE56"},
+      {"label": "Darlene", "value": 60, "note": "Note D"},
+      {"label": "Eugene", "value": 20, "note": "Note E", "color": "#4BC0C0"},
+      {"label": "Frink", "value": 90, "note": "Note F"},
+      {"label": "George", "value": 55, "note": "Note G"}
+    ]'
+        rounding="small"
+        label-orientation="slanted"
+        vertical-axis-label="Y-Axis Label"
+        rounded-bottoms
+        show-bar-labels
+        emphasize-labels-on-hover
+      />
+    </div>
     <astra-button>click click click</astra-button>
     <hr />
     <astra-card>arbitrary content</astra-card>
