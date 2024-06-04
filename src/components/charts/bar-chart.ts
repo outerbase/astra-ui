@@ -48,6 +48,7 @@ function getRandomContrastColor(bgColor: string): string {
 }
 
 type ChartType = 'bar-horizontal' | 'bar-vertical' | 'line'
+
 type Dataset = {
   data: { label: string; value: number }[]
   color?: string // hex
@@ -63,6 +64,7 @@ export class BarChart extends LitElement {
   @property({ type: Boolean }) percentage = false
   @property({ type: Number }) width = 500
   @property({ type: Number }) height = 500
+  @property({ type: Boolean, attribute: 'legend' }) showLegend = false
 
   updated(changedProperties: Map<string | number | symbol, unknown>) {
     if (changedProperties.has('data')) {
@@ -96,10 +98,16 @@ export class BarChart extends LitElement {
       options.y = { grid: true, percentage: this.percentage }
     }
 
+    // lines
     if (this.type === 'line') {
       this.chartData.forEach(({ data, color }) => {
         options.marks.push(lineY(data, { x: this.xKey, y: this.yKey, stroke: color ?? getRandomContrastColor('#fff') }))
       })
+    }
+
+    // legend
+    if (this.showLegend) {
+      options.color = { ...options.color, legend: true }
     }
 
     const _plot = plot(options)
