@@ -46,8 +46,8 @@
   </head>
 
   <body>
-    <div style="height: 320px">
-      <bar-chart
+    <div>
+      <!-- <bar-chart
         data='[
       {"label": "Abraham", "value": 30, "note": "Note A", "color": "#FF6384"},
       {"label": "Bobert", "value": 80, "note": "Note B", "color": "#36A2EB"},
@@ -63,7 +63,25 @@
         rounded-bottoms
         show-bar-labels
         emphasize-labels-on-hover
-      />
+      /> -->
+      <bar-chart
+        id="my-chart"
+        type="line"
+        data='[{"data":[{"label": "A", "value": 20}, {"label": "B", "value": 35 }, {"label": "C", "value": 40}]}, {"data":[{"label": "A", "value": 25}, {"label": "B", "value": 80 }, {"label": "C", "value": 70}]}]'
+        x-key="label"
+        y-key="value"
+        width="200"
+        height="200"
+      ></bar-chart>
+      <bar-chart
+        id="my-chart"
+        data='[{"data":[{"label": "A", "value": 20}, {"label": "B", "value": 35 }, {"label": "C", "value": 40}]}]'
+        type="bar-horizontal"
+        x-key="value"
+        y-key="label"
+        width="300"
+        height="300"
+      ></bar-chart>
     </div>
     <astra-button>click click click</astra-button>
     <hr />

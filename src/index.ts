@@ -1,6 +1,6 @@
+import { BarChart } from './bundle.js'
 import Button from './components/button.js'
 import Card from './components/card.js'
-import { BarChart } from './components/charts/bar-chart.js'
 import Input from './components/input.js'
 import ScrollArea from './components/scroll-area.js'
 import Select from './components/select.js'
