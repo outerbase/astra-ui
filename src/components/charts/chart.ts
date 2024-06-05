@@ -1,6 +1,8 @@
 import { barX, barY, lineY, plot } from '@observablehq/plot'
-import { LitElement, html } from 'lit'
-import { customElement, property, state } from 'lit/decorators.js'
+import { html } from 'lit'
+import { customElement, property } from 'lit/decorators.js'
+import { classMap } from 'lit/directives/class-map.js'
+import { ClassifiedElement } from '../classified-element'
 
 function getRandomContrastColor(bgColor: string): string {
   const lum = (r: number, g: number, b: number) => 0.2126 * r + 0.7152 * g + 0.0722 * b
@@ -54,21 +56,17 @@ type Dataset = {
   color?: string // hex
 }
 
-@customElement('bar-chart')
-export class BarChart extends LitElement {
+@customElement('astra-chart')
+export default class Chart extends ClassifiedElement {
   @property({ type: Array }) data: Dataset[] = []
-  @state() chartData: Dataset[] = []
   @property({ type: String, attribute: 'x-key' }) xKey?: string
   @property({ type: String, attribute: 'y-key' }) yKey?: string
-  @property({ type: String }) type?: ChartType
   @property({ type: Boolean }) percentage = false
-  @property({ type: Number }) width = 500
-  @property({ type: Number }) height = 500
   @property({ type: Boolean, attribute: 'legend' }) showLegend = false
+  @property({ type: String }) type: ChartType = 'bar-vertical'
 
   updated(changedProperties: Map<string | number | symbol, unknown>) {
     if (changedProperties.has('data')) {
-      this.chartData = this.data
       this.updateChart()
     }
   }
@@ -76,14 +74,12 @@ export class BarChart extends LitElement {
   private updateChart() {
     const options: Record<string, any> = {
       marks: [],
-      height: this.height,
-      width: this.width,
     }
 
     // add bars to bar charts
     if (this.type === 'bar-horizontal' || this.type === 'bar-vertical') {
       const bar = this.type === 'bar-horizontal' ? barX : barY
-      this.chartData.forEach(({ data, color }) => {
+      this.data.forEach(({ data, color }) => {
         options.marks.push(bar(data, { x: this.xKey, y: this.yKey, fill: color ?? getRandomContrastColor('#fff') }))
       })
     }
@@ -100,7 +96,7 @@ export class BarChart extends LitElement {
 
     // lines
     if (this.type === 'line') {
-      this.chartData.forEach(({ data, color }) => {
+      this.data.forEach(({ data, color }) => {
         options.marks.push(lineY(data, { x: this.xKey, y: this.yKey, stroke: color ?? getRandomContrastColor('#fff') }))
       })
     }
@@ -119,6 +115,6 @@ export class BarChart extends LitElement {
   }
 
   render() {
-    return html`<div id="chart"></div>`
+    return html`<div id="chart" class="${classMap({ dark: this.theme === 'dark' })}">1</div>`
   }
 }
