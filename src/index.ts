@@ -1,6 +1,6 @@
-import { BarChart } from './bundle.js'
 import Button from './components/button.js'
 import Card from './components/card.js'
+import Chart from './components/charts/chart.js'
 import ComposedChart from './components/charts/composed.js'
 import Input from './components/input.js'
 import ScrollArea from './components/scroll-area.js'
@@ -9,7 +9,7 @@ import Table from './components/table/index.js'
 import Text from './components/text.js'
 
 // export * as Types from './types'
-export { BarChart, Button, Card, ComposedChart, Input, ScrollArea, Select, Table, Text }
+export { Button, Card, Chart, ComposedChart, Input, ScrollArea, Select, Table, Text }
 
 declare global {
   namespace JSX {

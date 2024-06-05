@@ -1,7 +1,6 @@
 ---
 // server-side code goes here and can be accessed below
-
-import { Button, Card, Input, Text, ScrollArea, Select, Table, ComposedChart } from '../index'
+import { Button, Card, Chart, ComposedChart, Input, ScrollArea, Select, Table, Text } from '../index'
 import Layout from '../layouts/Layout.astro'
 
 // include Inter font on the page
@@ -20,6 +19,25 @@ const optionsArray = [
   { label: 'Oranges', value: 'oranges' },
   { label: 'Avocados', value: 'avocados' },
 ]
+
+const data = [
+  {
+    data: [
+      { label: 'A', value: 20 },
+      { label: 'B', value: 35 },
+      { label: 'C', value: 40 },
+    ],
+  },
+  {
+    data: [
+      { label: 'A', value: 25 },
+      { label: 'B', value: 80 },
+      { label: 'C', value: 70 },
+    ],
+  },
+]
+
+const widgets = [{ name: 'widget 1' }, { name: 'widget 2' }, { name: 'widget 3' }]
 ---
 
 <Layout title="Astra-UI">
@@ -44,11 +62,13 @@ const optionsArray = [
   <main class="flex flex-col gap-8">
     <div>
       <h2><pre>&lt;composed-chart /&gt;</pre></h2>
-      <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-      <ComposedChart theme="light" client:load />
-      <div class="h-2"></div>
-      <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-      <ComposedChart theme="dark" client:load />
+      <div class="flex flex-col gap-4">
+        <!-- @ts-ignore -->
+        <ComposedChart client:load header="With a header" subheader="and subheader" widgets={widgets}>
+          <!-- @ts-ignore -->
+          <Chart client:load type="bar-vertical" data={data} x-key="label" y-key="value" client:load />
+        </ComposedChart>
+      </div>
     </div>
 
     <div>

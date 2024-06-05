@@ -2,7 +2,7 @@
 
 import AstraButton from './components/button.js'
 import AstraCard from './components/card.js'
-import { BarChart } from './components/charts/bar-chart.js'
+import { BarChart } from './components/charts/chart.js'
 import AstraInput from './components/input.js'
 import AstraScrollArea from './components/scroll-area.js'
 import AstraSelect from './components/select.js'
