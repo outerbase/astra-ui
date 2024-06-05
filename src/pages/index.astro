@@ -1,7 +1,7 @@
 ---
 // server-side code goes here and can be accessed below
 
-import { Button, Card, Input, Text, ScrollArea, Select, Table } from '../index'
+import { Button, Card, Input, Text, ScrollArea, Select, Table, ComposedChart } from '../index'
 import Layout from '../layouts/Layout.astro'
 
 // include Inter font on the page
@@ -42,6 +42,15 @@ const optionsArray = [
   </script>
 
   <main class="flex flex-col gap-8">
+    <div>
+      <h2><pre>&lt;composed-chart /&gt;</pre></h2>
+      <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+      <ComposedChart theme="light" client:load />
+      <div class="h-2"></div>
+      <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+      <ComposedChart theme="dark" client:load />
+    </div>
+
     <div>
       <h2><pre>&lt;astra-input /&gt;</pre></h2>
       <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
