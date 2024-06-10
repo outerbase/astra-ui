@@ -11,6 +11,9 @@ dependencies:
   d3:
     specifier: ^7.9.0
     version: 7.9.0
+  lodash-es:
+    specifier: ^4.17.21
+    version: 4.17.21
 
 devDependencies:
   '@astrojs/check':
@@ -67,9 +70,6 @@ devDependencies:
   lit:
     specifier: ^3.1.3
     version: 3.1.3
-  lodash-es:
-    specifier: ^4.17.21
-    version: 4.17.21
   prettier:
     specifier: ^3.2.5
     version: 3.2.5
@@ -3191,7 +3191,7 @@ packages:
 
   /lodash-es@4.17.21:
     resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
-    dev: true
+    dev: false
 
   /lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
