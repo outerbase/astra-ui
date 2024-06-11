@@ -1,6 +1,6 @@
 {
   "name": "@outerbase/astra-ui",
-  "version": "0.0.22-chart.1",
+  "version": "0.0.22-chart.2",
   "type": "module",
   "main": "dist/js/index.js",
   "module": "dist/js/index.js",
