@@ -210,6 +210,9 @@ export class MutableElement extends ClassifiedElement {
   @property({ attribute: 'is-last-column', type: Boolean })
   public isLastColumn = false
 
+  @property({ attribute: 'is-active', type: Boolean })
+  public isActive = false
+
   public override updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps)
 

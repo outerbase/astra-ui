@@ -107,6 +107,9 @@ export default class AstraTable extends ClassifiedElement {
   @property({ attribute: 'addable-columns', type: Boolean })
   public addableColumns = false
 
+  @property({ attribute: 'active-column', type: String })
+  public activeColumn?: string
+
   @state() protected scrollableEl: Ref<ScrollArea> = createRef()
   @state() public rows: Array<RowAsRecord> = []
   @state() public newRows: Array<RowAsRecord> = []
@@ -402,6 +405,7 @@ export default class AstraTable extends ClassifiedElement {
                       ?interactive=${!this.isNonInteractive}
                       ?hide-dirt=${isNew}
                       ?read-only=${this.readonly}
+                      ?is-active=${name === this.activeColumn}
                     >
                     </astra-td>
                   `
@@ -625,6 +629,7 @@ export default class AstraTable extends ClassifiedElement {
                                   ?is-last-column=${idx === this.visibleColumns.length - 1}
                                   ?removable=${true}
                                   ?interactive=${!this.isNonInteractive}
+                                  ?is-active=${name === this.activeColumn}
                                   @column-hidden=${this._onColumnHidden}
                                   @column-removed=${this._onColumnRemoved}
                                   @column-plugin-deactivated=${this._onColumnPluginDeactivated}
