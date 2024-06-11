@@ -4,9 +4,9 @@ import { classMap } from 'lit/directives/class-map.js'
 import { map } from 'lit/directives/map.js'
 import { ClassifiedElement } from '../classified-element.js'
 
-@customElement('composed-chart')
-export default class ComposedChart extends ClassifiedElement {
-  @property({ type: Array }) widgets?: Record<string, { name: string }>[]
+@customElement('astra-composed-chart')
+export default class AstraComposedChart extends ClassifiedElement {
+  @property({ type: Array }) widgets?: Array<{ name: string }>
   @property({ type: String }) header?: string
   @property({ type: String }) subheader?: string
 

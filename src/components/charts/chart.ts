@@ -2,7 +2,7 @@ import { barX, barY, lineY, plot } from '@observablehq/plot'
 import { html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
-import { ClassifiedElement } from '../classified-element'
+import { ClassifiedElement } from '../classified-element.js'
 
 function getRandomContrastColor(bgColor: string): string {
   const lum = (r: number, g: number, b: number) => 0.2126 * r + 0.7152 * g + 0.0722 * b
@@ -57,7 +57,7 @@ type Dataset = {
 }
 
 @customElement('astra-chart')
-export default class Chart extends ClassifiedElement {
+export default class AstraChart extends ClassifiedElement {
   @property({ type: Array }) data: Dataset[] = []
   @property({ type: String, attribute: 'x-key' }) xKey?: string
   @property({ type: String, attribute: 'y-key' }) yKey?: string
