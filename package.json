@@ -1,13 +1,14 @@
 {
   "name": "@outerbase/astra-ui",
-  "version": "0.0.14",
+  "version": "0.0.22",
   "type": "module",
   "main": "dist/js/index.js",
   "module": "dist/js/index.js",
   "exports": {
     "./types": "./dist/js/types.js",
     "./components": "./dist/js/index.js",
-    "./bundle": "./dist/web-components/astra.js"
+    "./bundle": "./dist/web-components/astra.js",
+    "./react": "./dist/js/react.js"
   },
   "files": [
     "dist/js/*",

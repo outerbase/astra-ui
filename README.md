@@ -38,18 +38,19 @@ You do not need have to build or compile Astra yourself to use it.
 TypeScript support is built-in, **not** required.
 
 Declaring an instance of the editor in your HTML you can do the following:
+
 ```html
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <title>Classified</title>
-        <script src="https://cdn.outerbase.com/astra/latest/astra.js"></script>
-    </head>
-    <body>
-        <astra-text variant="h1">Are you ready?</astra-text>
-        <astra-button>Yes!</astra-button>
-    </body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Classified</title>
+    <script src="https://cdn.outerbase.com/astra/latest/astra.js"></script>
+  </head>
+  <body>
+    <astra-text variant="h1">Are you ready?</astra-text>
+    <astra-button>Yes!</astra-button>
+  </body>
 </html>
 ```
 
@@ -119,17 +120,19 @@ import { Button, Card, Input, Text, ScrollArea, Select, Table } from '@outerbase
 
 _Reference `src/pages/index.astro` for an example of using components in this way_
 
-<!-- ## React Components
+## React Components
 
 We've also packaged Astra for React:
 
 ```js
-import { Select, Text, Input, Card, Button } from '@outerbase/astra-ui/react'
+import React from 'react'
+import Astra from '@outerbase/astra-ui/react'
+const { Select, Text, Input, Card, Button, ScrollArea, Table } = Astra(React)
 
 function ArbitraryComponent() {
-    return <Button>Click me</Button>
+  return <Button>Click me</Button>
 }
-``` -->
+```
 
 ## Missing font?
 

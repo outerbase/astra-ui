@@ -1,43 +1,51 @@
 //  wraps LitElement components as React components for better DevEx
 
-// import { createComponent, type EventName } from '@lit/react'
-// import * as React from 'react'
-// import AstraButton from './components/button.js'
-// import AstraCard from './components/card.js'
-// import AstraInput from './components/input.js'
-// import AstraLabel from './components/label.js'
-// import AstraSelect from './components/select.js'
+import { createComponent } from '@lit/react'
 
-// export const Button = createComponent({
-//     tagName: 'astra-button',
-//     elementClass: AstraButton,
-//     react: React,
+import AstraButton from './components/button.js'
+import AstraCard from './components/card.js'
+import AstraInput from './components/input.js'
+import AstraScrollArea from './components/scroll-area.js'
+import AstraSelect from './components/select.js'
+import AstraTable from './components/table/index.js'
+import AstraText from './components/text.js'
 
-//     events: {
-//         onClick: 'click' as EventName<MouseEvent>,
-//     },
-// })
-
-// export const Card = createComponent({
-//     tagName: 'astra-card',
-//     elementClass: AstraCard,
-//     react: React,
-// })
-
-// export const Input = createComponent({
-//     tagName: 'astra-input',
-//     elementClass: AstraInput,
-//     react: React,
-// })
-
-// export const Label = createComponent({
-//     tagName: 'astra-text',
-//     elementClass: AstraLabel,
-//     react: React,
-// })
-
-// export const Select = createComponent({
-//     tagName: 'astra-select',
-//     elementClass: AstraSelect,
-//     react: React,
-// })
+export default function LitComponents(React: any) {
+  return {
+    Button: createComponent({
+      tagName: 'astra-button',
+      elementClass: AstraButton,
+      react: React,
+    }),
+    Card: createComponent({
+      tagName: 'astra-card',
+      elementClass: AstraCard,
+      react: React,
+    }),
+    Input: createComponent({
+      tagName: 'astra-input',
+      elementClass: AstraInput,
+      react: React,
+    }),
+    Text: createComponent({
+      tagName: 'astra-text',
+      elementClass: AstraText,
+      react: React,
+    }),
+    Select: createComponent({
+      tagName: 'astra-select',
+      elementClass: AstraSelect,
+      react: React,
+    }),
+    ScrollArea: createComponent({
+      tagName: 'astra-scroll-area',
+      elementClass: AstraScrollArea,
+      react: React,
+    }),
+    Table: createComponent({
+      tagName: 'astra-table',
+      elementClass: AstraTable,
+      react: React,
+    }),
+  }
+}

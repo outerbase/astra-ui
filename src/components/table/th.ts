@@ -33,7 +33,8 @@ export class TH extends MutableElement {
       'border-b border-theme-border dark:border-theme-border-dark': true,
       'first:border-l border-t': this.outerBorder,
       'px-cell-padding-x py-cell-padding-y': true,
-      'bg-theme-column dark:bg-theme-column-dark': !this.dirty,
+      'bg-theme-column dark:bg-theme-column-dark': !this.dirty && !this.isActive,
+      'bg-theme-row-selected dark:bg-theme-row-selected-dark': !this.dirty && this.isActive, // i.e. this is the column being sorted
       'bg-theme-cell-dirty dark:bg-theme-cell-dirty-dark': this.dirty,
       'select-none': this.hasMenu, // this is really about handling SSR without hydration; TODO use a better flag?
       // prevent double borders
@@ -190,7 +191,7 @@ export class TH extends MutableElement {
       this.dispatchEvent(
         new ColumnUpdatedEvent({
           name,
-          data: { action: 'sort:alphabetical:ascending' },
+          data: { action: 'sort' },
         })
       )
     } else {
@@ -209,7 +210,7 @@ export class TH extends MutableElement {
   }
 
   public hideColumn() {
-    if (!this.originalValue) throw new Error('missing OG value')
+    if (!this.originalValue) throw new Error('missing column name (i.e. this.originalValue)')
 
     this.dispatchEvent(
       new ColumnHiddenEvent({
@@ -361,9 +362,9 @@ export class TH extends MutableElement {
           })} @blur=${this.onBlur}></input>`
         : this.hasMenu
           ? html`<astra-th-menu theme=${this.theme} .options=${options} @menu-selection=${this.onMenuSelection}
-              ><span class="font-normal">${this.value}</span></astra-th-menu
+              ><span class="font-normal truncate">${this.value}</span></astra-th-menu
             >`
-          : html`<span class="font-normal">${this.value}</span>`
+          : html`<span class="font-normal truncate">${this.value}</span>`
 
       return this.withResizer
         ? html`<span class=${classMap(resultContainerClasses)}

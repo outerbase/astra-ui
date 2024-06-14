@@ -2,16 +2,15 @@ import { css, html, type PropertyValueMap, type TemplateResult } from 'lit'
 import type { DirectiveResult } from 'lit/async-directive.js'
 import { customElement, property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
+import { createRef, ref, type Ref } from 'lit/directives/ref.js'
 import { UnsafeHTMLDirective, unsafeHTML } from 'lit/directives/unsafe-html.js'
 
 import { eventTargetIsPlugin, eventTargetIsPluginEditor } from '../../lib/event-target-is-plugin.js'
 import { type MenuSelectedEvent } from '../../lib/events.js'
 import { PluginEvent, Theme, type ColumnPlugin, type Serializable } from '../../types.js'
-import { JSON_TYPES, MutableElement } from '../mutable-element.js'
-
-import type { CellMenu } from '../menu/cell-menu.js'
-
 import '../menu/cell-menu.js' // <astra-td-menu />
+import type { CellMenu } from '../menu/cell-menu.js'
+import { JSON_TYPES, MutableElement } from '../mutable-element.js'
 
 type PluginActionEvent = CustomEvent<{ action: PluginEvent.onEdit | PluginEvent.onStopEdit | PluginEvent.onCancelEdit; value: any }>
 
@@ -45,14 +44,6 @@ export class TableData extends MutableElement {
     `,
   ]
 
-  static onClick(event: MouseEvent) {
-    const el = event.currentTarget //as HTMLElement
-    if (el instanceof TableData && !el.isDisplayingPluginEditor) {
-      // only focus on click when NOT displaying a plugin's editor
-      el.focus()
-    }
-  }
-
   static onContextMenu(event: MouseEvent) {
     const isPluginEditor = eventTargetIsPluginEditor(event)
     if (isPluginEditor) return
@@ -63,14 +54,6 @@ export class TableData extends MutableElement {
       menu.focus()
       menu.open = true
     }
-  }
-
-  static onContentEditableKeyDown(event: KeyboardEvent) {
-    // our goal here is to prevent the user from engaging with the `contenteditable` component
-    const didNotOriginateInsidePluginEditor = event.composedPath().every((v) => {
-      return v instanceof HTMLElement && v.id !== 'plugin-editor'
-    })
-    if (didNotOriginateInsidePluginEditor) event.preventDefault()
   }
 
   static onDragOver(event: DragEvent) {
@@ -159,9 +142,8 @@ export class TableData extends MutableElement {
       // toggle editing mode
       self.isEditing = true
 
-      // append this character
-      if (self.value === undefined || self.value === null) self.value = event.key
-      else self.value += event.key
+      // replace the contents
+      self.value = event.key
 
       // set the cursor input to the end
       setTimeout(() => {
@@ -210,28 +192,30 @@ export class TableData extends MutableElement {
     }
   }
 
-  static onPaste(event: ClipboardEvent) {
-    const td = event.composedPath().find((t) => {
-      const el = t as HTMLElement
-      if (el.tagName?.toLowerCase() === 'astra-td') return true
-    }) as TableData | undefined
+  protected onClick(_event: MouseEvent) {
+    if (this.isDisplayingPluginEditor || this.plugin) return // yield to plugin
 
-    if (td) {
-      event.preventDefault()
-      td.value = event.clipboardData?.getData('text')
-    }
+    this.contentEditableWrapper.value?.focus()
+  }
+
+  protected onPaste(event: ClipboardEvent) {
+    if (this.isDisplayingPluginEditor || this.plugin) return // yield to plugin
+    event.preventDefault()
+    this.value = event.clipboardData?.getData('text')
   }
 
   protected override classMap() {
     return {
       ...super.classMap(),
       'table-cell relative focus:z-[1]': true,
-      'px-cell-padding-x py-cell-padding-y ': !this.plugin && !this.blank,
+      'px-cell-padding-x py-cell-padding-y': !this.plugin && !this.blank,
       'px-5': this.blank,
       'border-theme-border dark:border-theme-border-dark': true,
-      'bg-theme-cell dark:bg-theme-cell-dark text-theme-cell-text dark:text-theme-cell-text-dark': true,
+      'text-theme-cell-text dark:text-theme-cell-text-dark': true,
+      'bg-theme-cell dark:bg-theme-cell-dark': !this.isActive && (!this.dirty || this.hideDirt),
+      'bg-theme-row-selected dark:bg-theme-row-selected-dark': this.isActive && (!this.dirty || this.hideDirt), // i.e. this is the column being sorted
       'bg-theme-cell-dirty dark:bg-theme-cell-dirty-dark': this.dirty && !this.hideDirt, // dirty cells
-      'group-hover:bg-theme-row-hover dark:group-hover:bg-theme-row-hover-dark': !this.dirty || this.hideDirt,
+      'group-hover:bg-neutral-50 dark:group-hover:bg-neutral-950': !this.dirty || this.hideDirt,
       'focus:shadow-ringlet dark:focus:shadow-ringlet-dark focus:rounded-[4px] focus:ring-1 focus:ring-black dark:focus:ring-neutral-300 focus:outline-none':
         !this.isEditing && this.isInteractive,
       'border-r':
@@ -282,6 +266,7 @@ export class TableData extends MutableElement {
 
   @state() protected options = RW_OPTIONS
 
+  private contentEditableWrapper: Ref<HTMLDivElement> = createRef()
   private _interstitialValue: Serializable
 
   constructor() {
@@ -290,7 +275,8 @@ export class TableData extends MutableElement {
     this.onDisplayEditor = this.onDisplayEditor.bind(this)
     this.onPluginChangeEvent = this.onPluginChangeEvent.bind(this)
     this.onMenuSelection = this.onMenuSelection.bind(this)
-    this.focus = this.focus.bind(this)
+    this.onPaste = this.onPaste.bind(this)
+    this.onClick = this.onClick.bind(this)
   }
 
   protected onDisplayEditor(event: MouseEvent) {
@@ -341,16 +327,12 @@ export class TableData extends MutableElement {
     }
   }
 
-  public override focus() {
-    this.shadowRoot?.querySelector<HTMLElement>('[contenteditable]')?.focus()
-  }
-
   public override connectedCallback(): void {
     super.connectedCallback()
 
     this.addEventListener('contextmenu', TableData.onContextMenu)
+    this.addEventListener('click', this.onClick)
     this.addEventListener('keydown', TableData.onKeyDown)
-    this.addEventListener('click', TableData.onClick)
 
     // @ts-ignore insists on `Event` instead of `PluginActionEvent`
     this.addEventListener('custom-change', this.onPluginChangeEvent) // deprecated?
@@ -367,7 +349,7 @@ export class TableData extends MutableElement {
 
     this.removeEventListener('contextmenu', TableData.onContextMenu)
     this.removeEventListener('keydown', TableData.onKeyDown)
-    this.removeEventListener('click', TableData.onClick)
+    this.removeEventListener('click', this.onClick)
     this.removeEventListener('dblclick', TableData.onDoubleClick)
 
     // @ts-ignore insists on `Event` instead of `PluginActionEvent`
@@ -422,16 +404,22 @@ export class TableData extends MutableElement {
   public override render() {
     const value = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value) : this.value
     const editorValue = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value, null, 2) : this.value
-    const contentWrapperClass = classMap({ 'font-normal': true, dark: this.theme == Theme.dark })
+    const contentWrapperClass = classMap({
+      'font-normal': true,
+      dark: this.theme == Theme.dark,
+    })
 
     let cellContents: TemplateResult<1>
     let cellEditorContents: DirectiveResult<typeof UnsafeHTMLDirective> | undefined
 
     if (this.plugin) {
       const { config, tagName } = this.plugin
-      const pluginAsString = unsafeHTML(
-        `<${tagName} cellvalue='${value}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
-      )
+
+      // TODO the plugin receives `null` as a string 'null' since params are always stringified
+      //      we can resolve this by omitting `cellvalue` to represent null, but as of today, that renders `undefined` in our plugins
+      //      `<${tagName} ${value !== null ? `cellvalue='${value}` : ''} configuration='${config}' ${this.pluginAttributes}></${tagName}>`
+      const pluginAsString = unsafeHTML(`<${tagName} cellvalue='${value}' columnName='${this.column}'  configuration='${config}' ${this.pluginAttributes}></${tagName}>`)
+
       cellContents = html`${pluginAsString}`
 
       if (this.isDisplayingPluginEditor) {
@@ -446,19 +434,20 @@ export class TableData extends MutableElement {
         )
       }
     } else {
-      cellContents = html`${html`<span class="nbsp">${value}</span>` ??
-      html`<span class="italic text-neutral-400 dark:text-neutral-500">NULL</span>`}`
+      const classes =
+        value === null || value === undefined ? 'nbsp text-neutral-400 dark:text-neutral-600' : 'nbsp overflow-hidden text-ellipsis'
+      cellContents = html`<div class=${classes}>${value === null ? 'NULL' : value === undefined ? 'DEFAULT' : value}</div>`
     }
 
     const inputEl = this.isEditing // &nbsp; prevents the row from collapsing (in height) when there is only 1 column
-      ? html`<span class=${contentWrapperClass}>&nbsp;<input .value=${value ?? ''}
+      ? html`<div class=${contentWrapperClass}>&nbsp;<input .value=${value ?? ''}
                 ?readonly=${this.readonly}
                 @input=${this.onChange}
                 class=${classMap({
                   'z-[2] absolute top-0 bottom-0 right-0 left-0': true,
                   'bg-blue-50 dark:bg-blue-950 outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700': true,
                   'px-3 font-normal focus:rounded-[4px]': true,
-                })} @blur=${this.onBlur}></input></span>`
+                })} @blur=${this.onBlur}></input></div>`
       : html``
 
     const emptySlot = this.blank ? html`<slot></slot>` : html``
@@ -468,39 +457,38 @@ export class TableData extends MutableElement {
           ...this.options,
           {
             label:
-              typeof this.originalValue === 'object'
+              this.originalValue !== null && typeof this.originalValue === 'object'
                 ? 'Revert'
                 : html`Revert to
-                    <span class="pointer-events-none italic whitespace-nowrap"
-                      >${this.originalValue !== null || this.originalValue !== undefined ? this.originalValue : 'NULL'}</span
-                    >`,
+                    <span class="pointer-events-none italic whitespace-nowrap">
+                      ${this.originalValue === null ? 'NULL' : this.originalValue === undefined ? 'DEFAULT' : this.originalValue}
+                    </span>`,
             value: 'reset',
           },
         ]
       : this.options
 
-    // note: contenteditable is all so we can get the `paste` event that an arbitrary htmleelement does not otherwise receive
+    // the outer div is contenteditable, allowing us to get the `paste` event that an arbitrary element cannot otherwise receive
+    // astra-td-menu wraps our content and provides a right-click menu
     const menuEl =
       !this.isEditing && !this.blank
         ? html`<span
+            ${ref(this.contentEditableWrapper)}
             class="outline-none caret-transparent"
             contenteditable="true"
             spellcheck="false"
             autocorrect="off"
-            @paste=${TableData.onPaste}
-            @keydown=${TableData.onContentEditableKeyDown}
             @dragover=${TableData.onDragOver}
             @drop=${TableData.onDrop}
-            ><astra-td-menu
-              theme=${this.theme}
-              .options=${menuOptions}
-              ?without-padding=${!!this.plugin}
-              ?selectable-text=${!this.isInteractive}
-              @menu-selection=${this.onMenuSelection}
-              ><span class=${contentWrapperClass}>${cellContents}</span
-              ><span id="plugin-editor" class="absolute top-8 caret-current cursor-auto">${cellEditorContents}</span></astra-td-menu
-            ></span
-          >`
+            @paste=${this.onPaste}
+          >
+            <astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
+              <span class=${contentWrapperClass}>${cellContents}</span>
+              ${this.isDisplayingPluginEditor
+                ? html`<span id="plugin-editor" class="absolute top-8 caret-current cursor-auto">${cellEditorContents}</span>`
+                : null}
+            </astra-td-menu>
+          </span>`
         : html``
 
     return this.isEditing ? inputEl : this.blank ? emptySlot : menuEl

@@ -111,6 +111,9 @@ export default class AstraTable extends ClassifiedElement {
   @property({ attribute: 'addable-columns', type: Boolean })
   public addableColumns = false
 
+  @property({ attribute: 'active-column', type: String })
+  public activeColumn?: string
+
   @state() protected scrollableEl: Ref<ScrollArea> = createRef()
   @state() public rows: Array<RowAsRecord> = []
   @state() public newRows: Array<RowAsRecord> = []
@@ -224,8 +227,6 @@ export default class AstraTable extends ClassifiedElement {
 
   protected _onColumnHidden({ name }: ColumnHiddenEvent) {
     this.hiddenColumnNames.push(name)
-    this.requestUpdate('columns')
-    this.updateVisibleColumns()
   }
 
   // TODO @johnny 'Select All' is firing this once for each row instead of just once
@@ -321,12 +322,12 @@ export default class AstraTable extends ClassifiedElement {
 
     if (theme == Theme.dark) {
       document.documentElement.style.setProperty('--ob-background-color', '#0A0A0A')
-      document.documentElement.style.setProperty('--ob-text-color', '#D4D4D4')
+      document.documentElement.style.setProperty('--ob-text-color', '#FFFFFF')
       document.documentElement.style.setProperty('--ob-border-color', '#262626')
       document.documentElement.style.setProperty('--ob-null-text-color', '#959497')
     } else {
       document.documentElement.style.setProperty('--ob-background-color', '#FAFAFA')
-      document.documentElement.style.setProperty('--ob-text-color', '#525252')
+      document.documentElement.style.setProperty('--ob-text-color', '#000000')
       document.documentElement.style.setProperty('--ob-border-color', '#E5E5E5')
       document.documentElement.style.setProperty('--ob-null-text-color', '#D0D0D0')
     }
@@ -414,10 +415,10 @@ export default class AstraTable extends ClassifiedElement {
                       ?is-first-row=${rowIndex === 0}
                       ?is-first-column=${idx === 0}
                       ?menu=${!this.isNonInteractive && !this.readonly}
-                      ?selectable-text=${this.isNonInteractive}
                       ?interactive=${!this.isNonInteractive}
                       ?hide-dirt=${isNew}
                       ?read-only=${this.readonly}
+                      ?is-active=${name === this.activeColumn}
                     >
                     </astra-td>
                   `
@@ -536,6 +537,10 @@ export default class AstraTable extends ClassifiedElement {
 
       this.updateTableView()
     }
+
+    if (changedProperties.has('hiddenColumnNames')) {
+      this.updateVisibleColumns()
+    }
   }
 
   public override disconnectedCallback() {
@@ -637,6 +642,7 @@ export default class AstraTable extends ClassifiedElement {
                                   ?is-last-column=${idx === this.visibleColumns.length - 1}
                                   ?removable=${true}
                                   ?interactive=${!this.isNonInteractive}
+                                  ?is-active=${name === this.activeColumn}
                                   @column-hidden=${this._onColumnHidden}
                                   @column-removed=${this._onColumnRemoved}
                                   @column-plugin-deactivated=${this._onColumnPluginDeactivated}
