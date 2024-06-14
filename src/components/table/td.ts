@@ -27,6 +27,10 @@ const RW_OPTIONS = [
 
 const R_OPTIONS = [{ label: 'Copy', value: 'copy' }]
 
+if (customElements.get('astra-td')) {
+  // System has already registered `astra-td`
+}
+
 // tl;dr <td/>, table-cell
 @customElement('astra-td')
 export class TableData extends MutableElement {
@@ -242,13 +246,13 @@ export class TableData extends MutableElement {
   @property({ attribute: 'row', type: Number })
   public row = undefined
 
-  @property({ attribute: 'column', type: Number })
+  @property({ attribute: 'column', type: String })
   public column = undefined
 
   @property({ attribute: 'hide-dirt', type: Boolean })
   public hideDirt = false
 
-  @property({ attribute: 'plugin', type: String })
+  @property({ attribute: 'plugin', type: Object })
   public plugin?: ColumnPlugin
 
   @property({ attribute: 'is-displaying-plugin-editor', type: Boolean })
@@ -295,8 +299,10 @@ export class TableData extends MutableElement {
       // TODO update our value to match the one from the editor
     } else if (eventName === PluginEvent.onCancelEdit) {
       this.isDisplayingPluginEditor = false
+      delete this._interstitialValue
     } else if (eventName === PluginEvent.updateCell) {
       this._interstitialValue = value
+      this.value = value
     }
   }
 
@@ -408,10 +414,12 @@ export class TableData extends MutableElement {
 
     if (this.plugin) {
       const { config, tagName } = this.plugin
+
       // TODO the plugin receives `null` as a string 'null' since params are always stringified
       //      we can resolve this by omitting `cellvalue` to represent null, but as of today, that renders `undefined` in our plugins
       //      `<${tagName} ${value !== null ? `cellvalue='${value}` : ''} configuration='${config}' ${this.pluginAttributes}></${tagName}>`
-      const pluginAsString = unsafeHTML(`<${tagName} cellvalue='${value}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`)
+      const pluginAsString = unsafeHTML(`<${tagName} cellvalue='${value}' columnName='${this.column}'  configuration='${config}' ${this.pluginAttributes}></${tagName}>`)
+
       cellContents = html`${pluginAsString}`
 
       if (this.isDisplayingPluginEditor) {
@@ -422,7 +430,7 @@ export class TableData extends MutableElement {
               // possible future migration
               'astra-plugin-cell',
               'astra-plugin-editor'
-            )} cellvalue='${editorValue}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
+            )} cellvalue='${editorValue}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
         )
       }
     } else {

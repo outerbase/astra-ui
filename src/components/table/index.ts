@@ -70,6 +70,10 @@ export default class AstraTable extends ClassifiedElement {
   @property({ attribute: 'installed-plugins', type: Array })
   public installedPlugins?: Record<string, PluginWorkspaceInstallationId | undefined>
 
+  // @Brayden – this property represents the really array of installed plugins
+  @property({ attribute: 'real-installed-plugins', type: Array })
+  public realInstalledPlugins?: Array<any>
+
   @property({ attribute: 'non-interactive', type: Boolean })
   public isNonInteractive = false
 
@@ -381,6 +385,14 @@ export default class AstraTable extends ClassifiedElement {
                   const defaultPlugin = this.plugins?.find(({ id }) => id === this.installedPlugins?.[name]?.plugin_installation_id)
                   const plugin = installedPlugin ?? defaultPlugin
 
+                  const realInstallation = this.realInstalledPlugins?.find(
+                    ({ plugin_workspace_id }) => plugin?.pluginWorkspaceId === plugin_workspace_id
+                  )
+
+                  if (plugin && realInstallation?.config) {
+                    plugin.config = JSON.stringify(realInstallation?.config)
+                  }
+
                   return html`
                     <!-- TODO @johnny remove separate-cells and instead rely on css variables to suppress borders -->
                     <!-- TODO @caleb & johnny move plugins to support the new installedPlugins variable -->
@@ -388,6 +400,7 @@ export default class AstraTable extends ClassifiedElement {
                       .position=${{ row: id, column: name }}
                       .value=${values[name]}
                       .originalValue=${originalValues[name]}
+                      .column=${name}
                       width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
                       theme=${this.theme}
                       type=${this.columnTypes?.[name]}

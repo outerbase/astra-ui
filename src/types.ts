@@ -120,7 +120,7 @@ export type HeaderMenuOptions = Array<{
 
 export type ColumnPlugin = {
   columnName: string
-  config: string
+  config: any
   displayName: string
   metadata: string
   id: string
@@ -133,6 +133,7 @@ export type PluginWorkspaceInstallationId = {
   plugin_workspace_id: string
   plugin_installation_id: string
   isDefaultPlugin?: boolean
+  config?: any
   supportingAttributes: string
 }
 
