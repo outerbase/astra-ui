@@ -18,11 +18,11 @@ import {
 import {
   ColumnStatus,
   DBType,
-  PluginWorkspaceInstallationId,
   Theme,
   type ColumnPlugin,
   type Columns,
   type HeaderMenuOptions,
+  type PluginWorkspaceInstallationId,
   type RowAsRecord,
   type Schema,
   type TableColumn,
@@ -70,10 +70,9 @@ export default class AstraTable extends ClassifiedElement {
   @property({ attribute: 'installed-plugins', type: Array })
   public installedPlugins?: Record<string, PluginWorkspaceInstallationId | undefined>
 
-  //// BRAYDEN DID THIS
+  // @Brayden – this property represents the really array of installed plugins
   @property({ attribute: 'real-installed-plugins', type: Array })
   public realInstalledPlugins?: Array<any>
-  //// END BRAYDEN
 
   @property({ attribute: 'non-interactive', type: Boolean })
   public isNonInteractive = false
