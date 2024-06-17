@@ -6,7 +6,7 @@ import { ClassifiedElement } from '../classified-element.js'
 
 @customElement('astra-composed-chart')
 export default class AstraComposedChart extends ClassifiedElement {
-  @property({ type: Array }) widgets?: Array<{ name: string }>
+  @property({ type: Array }) highlights?: Array<{ name: string }>
   @property({ type: String }) header?: string
   @property({ type: String }) subheader?: string
 
@@ -25,10 +25,10 @@ export default class AstraComposedChart extends ClassifiedElement {
           </div>`
         : null
 
-    const widgetSetion = this.widgets
+    const highlightSection = this.highlights
       ? html`<div id="quickies" class="flex gap-2">
           ${map(
-            this.widgets,
+            this.highlights,
             ({ name }) => html`<span class="bg-neutral-200 dark:bg-neutral-800 p-4 border rounded-md flex-1">${name}</span>`
           )}
         </div>`
@@ -46,7 +46,7 @@ export default class AstraComposedChart extends ClassifiedElement {
         id="composed-chart"
         class="dark:text-neutral-50 text-neutral-950 flex flex-col p-4 gap-2 rounded-lg border bg-neutral-50 dark:bg-neutral-950 group"
       >
-        ${headerSection} ${widgetSetion} ${chartSection}
+        ${headerSection} ${highlightSection} ${chartSection}
       </div>
     </div>`
   }
