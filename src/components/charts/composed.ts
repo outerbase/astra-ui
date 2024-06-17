@@ -19,9 +19,7 @@ export default class AstraComposedChart extends ClassifiedElement {
               ${this.subheader ? html`<h2 class="text-md">${this.subheader}</h2>` : null}
             </div>
 
-            <div id="actions" class="hidden group-hover:block">
-              <a href="#" class="bg-neutral-100 dark:bg-neutral-900 rounded-md border p-1 text-xs">---</a>
-            </div>
+            <slot name="actions"></slot>
           </div>`
         : null
 
