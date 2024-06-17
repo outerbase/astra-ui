@@ -187,25 +187,9 @@ export interface SerializableRecord extends Record<string, Serializable> {}
 
 // CHARTS
 
-export type ChartType = 'bar-horizontal' | 'bar-vertical' | 'line'
-
 export type Dataset = {
   data: { label: string; value: number }[]
   color?: string // hex
-}
-
-export enum ChartTypeV3 {
-  column = 'column',
-  bar = 'bar',
-  pie = 'pie',
-  donut = 'donut',
-  line = 'line',
-  area = 'area',
-  singleValue = 'single_value',
-  table = 'table',
-  scatter = 'scatter',
-  heatmap = 'heatmap',
-  text = 'text',
 }
 
 export type Row = {
@@ -215,6 +199,13 @@ export type Row = {
   type: string
   include: boolean
 }
+
+export type ChartTypeV3 = 'column' | 'bar' | 'pie' | 'donut' | 'line' | 'area' | 'single_value' | 'table' | 'scatter' | 'heatmap' | 'text'
+export type DashboardV3ChartLegend = 'none' | 'top' | 'bottom' | 'left' | 'right'
+export type DashboardV3ChartLabelDisplayX = 'auto' | '0' | '45' | '90' | 'hidden'
+export type DashboardV3ChartLabelDisplayY = 'left' | 'right' | 'hidden'
+export type DashboardV3ChartSortOrder = 'default' | 'asc' | 'desc'
+export type DashboardV3HighlightType = 'total' | 'average' | 'percent_change'
 
 export type DashboardV3ChartQuery = {
   // SQL query to fetch the data for the chart
@@ -231,7 +222,7 @@ export type DashboardV3ChartQuery = {
 
 export type DashboardV3ChartOptions = {
   // The location of the legend on the chart
-  legend?: 'none' | 'top' | 'bottom' | 'left' | 'right'
+  legend?: DashboardV3ChartLegend
   // The X axis label for the chart
   xAxisLabel?: string
   // The Y axis label for the chart
@@ -241,17 +232,19 @@ export type DashboardV3ChartOptions = {
   // The Y axis column keys for the chart series
   yAxisKeys?: string[]
   // The display, or hidden, and angle degree of the X axis labels
-  xAxisLabelDisplay?: 'auto' | '0' | '45' | '90' | 'hidden'
+  xAxisLabelDisplay?: DashboardV3ChartLabelDisplayX
   // The position of the Y axis, or hidden
-  yAxisLabelDisplay?: 'left' | 'right' | 'hidden'
+  yAxisLabelDisplay?: DashboardV3ChartLabelDisplayY
   // Order the data in a specific order
-  sortOrder?: 'default' | 'asc' | 'desc'
+  sortOrder?: DashboardV3ChartSortOrder
   // The column to group the data by
   groupBy?: string
+  // indicate that we're using % values
+  percentage?: boolean
 }
 
-export type DashboardV3Callout = {
-  type: 'total' | 'average' | 'percent_change'
+export type DashboardV3Highlight = {
+  type: DashboardV3HighlightType
 }
 
 export type DashboardV3Chart = {
@@ -259,12 +252,13 @@ export type DashboardV3Chart = {
   id?: string
   // The name of the chart as provided by the user
   name: string
+  description?: string
   // An API key value that is used to fetch details of the chart
   apiKey: string
   // Array of queries that are used to render various charts on the widget
   layers: Array<DashboardV3ChartQuery>
   // highlights
-  highlights?: Array<DashboardV3Callout>
+  highlights?: Array<DashboardV3HighlightType>
   // Chart options
   options: DashboardV3ChartOptions
 }

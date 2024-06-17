@@ -2,6 +2,14 @@ import { barX, barY, lineY, plot } from '@observablehq/plot'
 import { html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
+import type {
+  ChartTypeV3,
+  DashboardV3ChartLabelDisplayX,
+  DashboardV3ChartLabelDisplayY,
+  DashboardV3ChartLegend,
+  DashboardV3ChartSortOrder,
+  Dataset,
+} from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
 
 function getRandomContrastColor(bgColor: string): string {
@@ -49,21 +57,24 @@ function getRandomContrastColor(bgColor: string): string {
   return newColor
 }
 
-type ChartType = 'bar-horizontal' | 'bar-vertical' | 'line'
-
-type Dataset = {
-  data: { label: string; value: number }[]
-  color?: string // hex
-}
-
 @customElement('astra-chart')
 export default class AstraChart extends ClassifiedElement {
   @property({ type: Array }) data: Dataset[] = []
+  @property({ type: String }) type?: ChartTypeV3 = 'bar'
+  @property({ type: String }) legend?: DashboardV3ChartLegend = 'top'
+  @property({ type: Boolean }) percentage? = false
   @property({ type: String, attribute: 'x-key' }) xKey?: string
+  @property({ type: String, attribute: 'x-axis-label' }) xAxisLabel?: string
+  @property({ type: String, attribute: 'x-axis-label-display' }) xAxisLabelDisplay?: DashboardV3ChartLabelDisplayX = 'auto'
   @property({ type: String, attribute: 'y-key' }) yKey?: string
-  @property({ type: Boolean }) percentage = false
-  @property({ type: Boolean, attribute: 'legend' }) showLegend = false
-  @property({ type: String }) type: ChartType = 'bar-vertical'
+  @property({ type: String, attribute: 'y-axis-label' }) yAxisLabel?: string
+  @property({ type: String, attribute: 'x-axis-label-display' }) yAxisLabelDisplay?: DashboardV3ChartLabelDisplayY = 'left'
+  @property({ type: String, attribute: 'sort-order' }) sortOrder?: DashboardV3ChartSortOrder = 'default'
+  @property({ type: String, attribute: 'group-by' }) groupBy?: string
+  @property({ type: Boolean, attribute: 'gridX' }) gridX = false
+  @property({ type: Boolean, attribute: 'gridY' }) gridY = false
+
+  // TODO add property that determines the size/style -- e.g. the smallest form would omit the header, subheader, etc while the largest would show the most
 
   updated(changedProperties: Map<string | number | symbol, unknown>) {
     if (changedProperties.has('data')) {
@@ -77,20 +88,28 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     // add bars to bar charts
-    if (this.type === 'bar-horizontal' || this.type === 'bar-vertical') {
-      const bar = this.type === 'bar-horizontal' ? barX : barY
+    if (this.type === 'bar') {
       this.data.forEach(({ data, color }) => {
-        options.marks.push(bar(data, { x: this.xKey, y: this.yKey, fill: color ?? getRandomContrastColor('#fff') }))
+        options.marks.push(barX(data, { x: this.xKey, y: this.yKey, fill: color ?? getRandomContrastColor('#fff') }))
       })
     }
 
-    // horizontal grid
-    if (this.type === 'bar-horizontal') {
+    if (this.type === 'column') {
+      this.data.forEach(({ data, color }) => {
+        options.marks.push(barY(data, { x: this.xKey, y: this.yKey, fill: color ?? getRandomContrastColor('#fff') }))
+      })
+    }
+
+    // TODO implement marks for other chart `type`s
+
+    // draw grid on bar charts
+    if (this.type === 'bar') {
       options.x = { grid: true, percentage: this.percentage }
     }
 
-    // vertical grid
-    if (this.type === 'bar-vertical') {
+    // draw grid on column charts
+
+    if (this.type === 'column') {
       options.y = { grid: true, percentage: this.percentage }
     }
 
@@ -101,10 +120,17 @@ export default class AstraChart extends ClassifiedElement {
       })
     }
 
-    // legend
-    if (this.showLegend) {
-      options.color = { ...options.color, legend: true }
+    if (this.xAxisLabel) {
+      options.x = { ...options.x, label: this.xAxisLabel }
     }
+
+    if (this.yAxisLabel) {
+      options.y = { ...options.y, label: this.yAxisLabel }
+    }
+
+    // grids
+    options.x = { ...options.x, grid: this.gridX }
+    options.y = { ...options.y, grid: this.gridY }
 
     const _plot = plot(options)
     const chartElement = this.shadowRoot?.getElementById('chart')
@@ -115,6 +141,7 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   render() {
-    return html`<div id="chart" class="${classMap({ dark: this.theme === 'dark' })}">1</div>`
+    return html`<slot name="actions"></slot>
+      <div id="chart" class="${classMap({ dark: this.theme === 'dark' })}">1</div> `
   }
 }
