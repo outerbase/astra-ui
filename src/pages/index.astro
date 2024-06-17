@@ -39,7 +39,7 @@ const data = [
   },
 ]
 
-const widgets = [{ name: 'widget 1' }, { name: 'widget 2' }, { name: 'widget 3' }]
+const highlights = [{ name: 'highlight 1' }, { name: 'highlight 2' }, { name: 'highlight 3' }]
 ---
 
 <Layout title="Astra-UI">
@@ -66,7 +66,7 @@ const widgets = [{ name: 'widget 1' }, { name: 'widget 2' }, { name: 'widget 3' 
       <h2><pre>&lt;composed-chart /&gt;</pre></h2>
       <div class="flex flex-col gap-4">
         <!-- @ts-ignore -->
-        <ComposedChart client:load header="With a header" subheader="and subheader" widgets={widgets}>
+        <ComposedChart client:load header="With a header" subheader="and subheader" highlights={highlights}>
           <!-- @ts-ignore -->
           <Chart client:load type="bar-vertical" data={data} x-key="label" y-key="value" client:load />
         </ComposedChart>
