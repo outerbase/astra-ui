@@ -142,7 +142,7 @@ export default class AstraChart extends ClassifiedElement {
 
     // TYPE: BAR
     if (this.type === 'bar') {
-      this.data.forEach(({ data, color }) => {
+      this.data.forEach(({ data }) => {
         options.marks.push(
           barX(data, {
             x: this.xKey,
@@ -157,7 +157,7 @@ export default class AstraChart extends ClassifiedElement {
 
     // TYPE: COLUMN
     if (this.type === 'column') {
-      this.data.forEach(({ data, color }) => {
+      this.data.forEach(({ data }) => {
         options.marks.push(
           barY(data, {
             x: this.xKey,
@@ -172,9 +172,9 @@ export default class AstraChart extends ClassifiedElement {
 
     // TYPE: LINE
     if (this.type === 'line') {
-      this.data.forEach(({ data, color }) => {
+      this.data.forEach(({ data }) => {
         options.marks.push(
-          lineY(data, { x: this.xKey, y: this.yKey, stroke: color ?? getRandomContrastingColor(this.theme === 'dark' ? '#000' : '#fff') })
+          lineY(data, { x: this.xKey, y: this.yKey, stroke: getRandomContrastingColor(this.theme === 'dark' ? '#000' : '#fff') })
         )
       })
     }
