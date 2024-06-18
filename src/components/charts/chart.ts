@@ -1,7 +1,6 @@
 import { barX, barY, gridX, gridY, lineY, plot } from '@observablehq/plot'
-import { html } from 'lit'
+import { html, type PropertyValueMap } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
-import { classMap } from 'lit/directives/class-map.js'
 import createGradient from '../../lib/create-gradient.js'
 import { getRandomContrastingColor } from '../../lib/random-contrasting-color.js'
 import type {
@@ -71,7 +70,7 @@ export default class AstraChart extends ClassifiedElement {
   // @property({ type: String }) legend: DashboardV3ChartLegend = 'top'
 
   // Tooltips
-  @property({ type: String, attribute: 'tooltip-fill' }) tooltipFill = 'RGBA(24,24,27,1)'
+  @property({ type: String, attribute: 'tooltip-fill' }) tooltipFill = 'RGBA(231,231,228,1)'
   @property({ type: String, attribute: 'tooltip-stroke' }) tooltipStroke = 'RGBA(255,255,255,0.1)'
   @property({ type: Number, attribute: 'tooltip-text-padding' }) tooltipTextPadding = 10
   @property({ type: Number, attribute: 'tooltip-line-height' }) tooltipLineHeight = 1.5
@@ -82,7 +81,7 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: Boolean }) zero = false // if true, extend the domain to include zero if needed
   @property({ type: Boolean }) percent = false // if true, transform proportions in [0, 1] to percents in [0, 100]
 
-  protected firstUpdated(changedProperties: Map<PropertyKey, this>): void {
+  override firstUpdated(changedProperties: PropertyValueMap<this>): void {
     super.firstUpdated(changedProperties)
 
     // create the gradient that is used to color a bar chart
@@ -97,7 +96,12 @@ export default class AstraChart extends ClassifiedElement {
     )
   }
 
-  protected updated(_changedProperties: Map<PropertyKey, this>) {
+  override willUpdate(changedProperties: PropertyValueMap<this>) {
+    super.willUpdate(changedProperties)
+    if (changedProperties.has('theme')) this.tooltipFill = this.theme === 'dark' ? 'RGBA(24,24,27,1)' : 'RGBA(231,231,228,1)'
+  }
+
+  protected updated(_changedProperties: PropertyValueMap<this>) {
     this.updateChart()
   }
 
@@ -201,6 +205,6 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   public render() {
-    return html`<div id="chart" class="${classMap({ dark: this.theme === 'dark' })}" />`
+    return html`<div id="chart" />`
   }
 }
