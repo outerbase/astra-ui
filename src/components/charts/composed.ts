@@ -9,22 +9,26 @@ export default class AstraComposedChart extends ClassifiedElement {
   @property({ type: Array }) highlights?: Array<{ name: string }>
   @property({ type: String }) header?: string
   @property({ type: String }) subheader?: string
+  // TODO add property that determines the layout desired (sm, md, lg)
 
-  render() {
-    const headerSection =
-      this.header || this.subheader
-        ? html`<div id="header" class=" flex justify-between w-full">
-            <div id="header-labels" class="flex flex-col gap-2">
-              ${this.header ? html`<h1 class="text-xl font-semibold">${this.header}</h1>` : null}
-              ${this.subheader ? html`<h2 class="text-md">${this.subheader}</h2>` : null}
-            </div>
+  public render() {
+    const headerSection = html`
+      <div id="header" class="flex justify-between w-full">
+        ${this.header || this.subheader
+          ? html`
+              <div id="header-labels" class="flex flex-col gap-2">
+                ${this.header ? html`<h1 class="text-xl font-semibold">${this.header}</h1>` : null}
+                ${this.subheader ? html`<h2 class="text-md">${this.subheader}</h2>` : null}
+              </div>
+            `
+          : null}
 
-            <slot name="actions"></slot>
-          </div>`
-        : null
+        <div class="hidden group-hover/actions:block"><slot name="actions"></slot></div>
+      </div>
+    `
 
     const highlightSection = this.highlights
-      ? html`<div id="quickies" class="flex gap-2">
+      ? html`<div id="highlights" class="flex gap-2">
           ${map(
             this.highlights,
             ({ name }) => html`<span class="bg-neutral-200 dark:bg-neutral-800 p-4 border rounded-md flex-1">${name}</span>`
@@ -39,13 +43,15 @@ export default class AstraComposedChart extends ClassifiedElement {
       <slot></slot>
     </div>`
 
-    return html`<div class="${classMap({ dark: this.theme === 'dark' })}">
-      <div
-        id="composed-chart"
-        class="dark:text-neutral-50 text-neutral-950 flex flex-col p-4 gap-2 rounded-lg border bg-neutral-50 dark:bg-neutral-950 group"
-      >
-        ${headerSection} ${highlightSection} ${chartSection}
+    return html`
+      <div class="${classMap({ dark: this.theme === 'dark' })}">
+        <div
+          id="composed-chart"
+          class="dark:text-neutral-50 text-neutral-950 flex flex-col p-4 gap-2 rounded-lg border bg-neutral-50 dark:bg-neutral-950 group/actions"
+        >
+          ${headerSection} ${highlightSection} ${chartSection}
+        </div>
       </div>
-    </div>`
+    `
   }
 }
