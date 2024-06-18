@@ -174,7 +174,7 @@ export default class AstraChart extends ClassifiedElement {
     if (this.type === 'line') {
       this.data.forEach(({ data }) => {
         options.marks.push(
-          lineY(data, { x: this.xKey, y: this.yKey, stroke: getRandomContrastingColor(this.theme === 'dark' ? '#000' : '#fff') })
+          lineY(data, { x: this.xKey, y: this.yKey, stroke: getRandomContrastingColor(this.theme === 'dark' ? '#000' : '#fff'), tip })
         )
       })
     }
