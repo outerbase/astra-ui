@@ -1,12 +1,10 @@
 import { html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
-import { map } from 'lit/directives/map.js'
 import { ClassifiedElement } from '../classified-element.js'
 
 @customElement('astra-composed-chart')
 export default class AstraComposedChart extends ClassifiedElement {
-  @property({ type: Array }) highlights?: Array<{ name: string }>
   @property({ type: String }) header?: string
   @property({ type: String }) subheader?: string
   // TODO add property that determines the layout desired (sm, md, lg)
@@ -27,19 +25,13 @@ export default class AstraComposedChart extends ClassifiedElement {
       </div>
     `
 
-    const highlightSection = this.highlights
-      ? html`<div id="highlights" class="flex gap-2">
-          ${map(
-            this.highlights,
-            ({ name }) => html`<span class="bg-neutral-200 dark:bg-neutral-800 p-4 border rounded-md flex-1">${name}</span>`
-          )}
-        </div>`
-      : null
+    const highlightSection = html`
+      <div id="highlights" class="flex gap-2">
+        <slot name="highlights" />
+      </div>
+    `
 
-    const chartSection = html`<div
-      id="chart"
-      class="bg-neutral-200 dark:bg-neutral-800 flex-1 p-2 flex items-center justify-center min-h-96 border-dashed border rounded-lg"
-    >
+    const chartSection = html`<div id="chart" class="flex-1 p-2 flex items-center justify-center min-h-96 ">
       <slot></slot>
     </div>`
 
@@ -47,11 +39,12 @@ export default class AstraComposedChart extends ClassifiedElement {
       <div class="${classMap({ dark: this.theme === 'dark' })}">
         <div
           id="composed-chart"
-          class="dark:text-neutral-50 text-neutral-950 flex flex-col p-4 gap-2 rounded-lg border bg-neutral-50 dark:bg-neutral-950 group/actions"
+          class="dark:text-neutral-50 text-neutral-950 flex flex-col p-4 gap-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-950 group/actions"
         >
           ${headerSection} ${highlightSection} ${chartSection}
         </div>
       </div>
     `
+    // return html``
   }
 }
