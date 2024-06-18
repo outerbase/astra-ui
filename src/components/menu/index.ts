@@ -6,7 +6,7 @@ import { repeat } from 'lit/directives/repeat.js'
 import { CaretDown } from '../../icons/caret-down.js'
 import classMapToClassName from '../../lib/class-map-to-class-name.js'
 import { MenuOpenEvent, MenuSelectedEvent } from '../../lib/events.js'
-import { Theme, type HeaderMenuOptions } from '../../types.js'
+import { type HeaderMenuOptions } from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
 
 export class Menu extends ClassifiedElement {
@@ -213,7 +213,7 @@ export class Menu extends ClassifiedElement {
 
     const outerClasses = {
       'relative -mr-1 cursor-pointer': true,
-      dark: this.theme == Theme.dark,
+      dark: this.theme === 'dark',
     }
 
     const innerClasses = {
