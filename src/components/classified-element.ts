@@ -13,7 +13,7 @@ export class ClassifiedElement extends LitElement {
   // if a property used in such a boolean expression changes, this value is recomputed
   protected classMap() {
     return {
-      dark: this.theme == 'dark',
+      dark: this.theme === 'dark',
     }
   }
 
