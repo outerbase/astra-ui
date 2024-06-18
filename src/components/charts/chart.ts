@@ -102,6 +102,7 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   protected updated(_changedProperties: PropertyValueMap<this>) {
+    super.updated(_changedProperties)
     this.updateChart()
   }
 
