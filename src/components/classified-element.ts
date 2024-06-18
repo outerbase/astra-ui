@@ -2,7 +2,6 @@ import { LitElement, html, type PropertyValueMap } from 'lit'
 import { property } from 'lit/decorators.js'
 import { TWStyles } from '../lib/.tw-styles.js'
 import classMapToClassName from '../lib/class-map-to-class-name.js'
-import { Theme } from '../types.js'
 
 // ClassifiedElement provides the `classMap` delegate for determining which classes to apply to the component
 // is propogated to the DOM and therefore it's CSS is applied
@@ -14,12 +13,12 @@ export class ClassifiedElement extends LitElement {
   // if a property used in such a boolean expression changes, this value is recomputed
   protected classMap() {
     return {
-      dark: this.theme == Theme.dark,
+      dark: this.theme == 'dark',
     }
   }
 
   @property({ attribute: 'theme', type: String })
-  public theme = Theme.light
+  public theme = 'light'
 
   @property({ reflect: true, attribute: 'class', type: String })
   public _class: string = this.theme

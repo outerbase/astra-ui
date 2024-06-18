@@ -2,11 +2,7 @@ import { type TemplateResult } from 'lit'
 
 export * from './lib/events.js'
 
-export enum Theme {
-  light = 'light',
-  dark = 'dark',
-}
-
+export type Theme = 'light' | 'dark'
 export enum Axis {
   'horizontal' = 'horizontal',
   'vertical' = 'vertical',
