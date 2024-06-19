@@ -188,14 +188,7 @@ export type Dataset = {
   color?: string // hex
 }
 
-export type Row = {
-  column: string
-  sampleData: any
-  columnName: string
-  type: string
-  include: boolean
-}
-
+export type Row = Record<string, Serializable>
 export type ChartTypeV3 = 'column' | 'bar' | 'pie' | 'donut' | 'line' | 'area' | 'single_value' | 'table' | 'scatter' | 'heatmap' | 'text'
 export type DashboardV3ChartLegend = 'none' | 'top' | 'bottom' | 'left' | 'right'
 export type DashboardV3ChartLabelDisplayX = 'auto' | '0' | '45' | '90' | 'hidden'

@@ -1,14 +1,13 @@
-import { barX, barY, gridX, gridY, lineY, plot } from '@observablehq/plot'
+import { areaY, barX, barY, crosshairX, gridX, gridY, lineY, plot } from '@observablehq/plot'
 import { html, type PropertyValueMap } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import createGradient from '../../lib/create-gradient.js'
-import { getRandomContrastingColor } from '../../lib/random-contrasting-color.js'
 import type {
   ChartTypeV3,
   DashboardV3ChartLabelDisplayX,
   DashboardV3ChartLabelDisplayY,
   DashboardV3ChartSortOrder,
-  Dataset,
+  Row,
 } from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
 
@@ -18,22 +17,34 @@ const gradients = [
     { offset: '15%', color: '#08595A' },
     { offset: '75%', color: '#08595A80' },
   ]),
+  createGradient('mist', [
+    { offset: '15%', color: '#707BFF' },
+    { offset: '75%', color: '#D8E8FF' },
+  ]),
+  createGradient('mistGradient', [
+    { offset: '15%', color: '#707BFF' },
+    { offset: '75%', color: '#707BFF00' },
+  ]),
 ]
 
 @customElement('astra-chart')
 export default class AstraChart extends ClassifiedElement {
-  @property({ type: Array }) data: Dataset[] = [] // TODO change to expect API response data
+  @property({ type: Array }) data: Array<Row> = [] // TODO change to expect API response data
   @property({ type: String }) type?: ChartTypeV3 = 'bar'
 
   // X-Axis
   @property({ type: String, attribute: 'x-key' }) xKey?: string
   @property({ type: String, attribute: 'x-axis-label' }) xAxisLabel?: string
   @property({ type: String, attribute: 'x-axis-label-display' }) xAxisLabelDisplay: DashboardV3ChartLabelDisplayX = 'auto'
+  @property({ type: String, attribute: 'x-ticks' }) xTicks?: string
+  @property({ type: Boolean, attribute: 'x-nice' }) xNice = false // if true (or a tick count), extend the domain to nice round values
 
   // Y-Axis
   @property({ type: String, attribute: 'y-key' }) yKey?: string
   @property({ type: String, attribute: 'y-axis-label' }) yAxisLabel?: string
   @property({ type: String, attribute: 'y-axis-label-display' }) yAxisLabelDisplay: DashboardV3ChartLabelDisplayY = 'left'
+  @property({ type: String, attribute: 'y-ticks' }) yTicks?: string
+  @property({ type: Boolean, attribute: 'y-nice' }) yNice?: boolean // if true (or a tick count), extend the domain to nice round values
 
   // Sorting & grouping
   @property({ type: String, attribute: 'sort-order' }) sortOrder: DashboardV3ChartSortOrder = 'default'
@@ -83,7 +94,6 @@ export default class AstraChart extends ClassifiedElement {
 
   // Quantitative scales
   @property({ type: Boolean }) clamp = false // if true, clamp input values to the scale’s domain
-  @property({ type: Boolean }) nice = false // if true (or a tick count), extend the domain to nice round values
   @property({ type: Boolean }) zero = false // if true, extend the domain to include zero if needed
   @property({ type: Boolean }) percent = false // if true, transform proportions in [0, 1] to percents in [0, 100]
 
@@ -95,6 +105,7 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   private getLatestPlot() {
+    const d = this.data
     const options: Record<string, any> = {
       // Layout options: https://observablehq.com/plot/features/plots#layout-options
       width: this.width,
@@ -129,59 +140,71 @@ export default class AstraChart extends ClassifiedElement {
       lineHeight: this.tooltipLineHeight,
     }
 
-    // TYPE: BAR
-    if (this.type === 'bar') {
-      this.data.forEach(({ data }) => {
-        options.marks.push(
-          barX(data, {
-            x: this.xKey,
-            y: this.yKey,
-            stroke: this.xKey,
-            fill: 'url(#teal)',
-            tip,
-          })
-        )
-      })
-    }
-
-    // TYPE: COLUMN
-    if (this.type === 'column') {
-      this.data.forEach(({ data }) => {
-        options.marks.push(
-          barY(data, {
-            x: this.xKey,
-            y: this.yKey,
-            stroke: this.yKey,
-            fill: 'url(#teal)',
-            tip,
-          })
-        )
-      })
-    }
-
-    // TYPE: LINE
-    if (this.type === 'line') {
-      this.data.forEach(({ data }) => {
-        options.marks.push(
-          lineY(data, { x: this.xKey, y: this.yKey, stroke: getRandomContrastingColor(this.theme === 'dark' ? '#000' : '#fff'), tip })
-        )
-      })
-    }
-
-    // LABELS
-    if (this.xAxisLabel) {
-      options.x = { ...options.x, label: this.xAxisLabel }
-    }
-    if (this.yAxisLabel) {
-      options.y = { ...options.y, label: this.yAxisLabel }
-    }
-
     // GRIDS
     if (this.gridX) {
       options.marks.push(gridX(defaultGridStyle))
     }
     if (this.gridY) {
       options.marks.push(gridY(defaultGridStyle))
+    }
+
+    // TYPE: BAR
+    if (this.type === 'bar') {
+      options.marks.push(
+        barX(d, {
+          x: this.xKey,
+          y: this.yKey,
+          stroke: this.xKey,
+          fill: 'url(#teal)',
+          tip,
+        })
+      )
+    }
+
+    // TYPE: COLUMN
+    if (this.type === 'column') {
+      options.marks.push(
+        barY(d, {
+          x: this.xKey,
+          y: this.yKey,
+          stroke: this.yKey,
+          fill: 'url(#teal)',
+          tip,
+        })
+      )
+    }
+
+    // TYPE: LINE
+    if (this.type === 'line') {
+      options.marks.push(
+        crosshairX(d, {
+          x: this.xKey,
+          y: this.yKey,
+          color: this.theme === 'dark' ? '#ffffff' : '#000000',
+          textStrokeOpacity: 0,
+          textFill: '#e4e4e7',
+        }),
+
+        areaY(d, {
+          x: this.xKey,
+          y: this.yKey,
+          fill: 'url(#mistGradient)',
+          fillOpacity: 0.2,
+        }),
+
+        lineY(d, { x: this.xKey, y: this.yKey, stroke: 'url(#mist)', tip })
+      )
+
+      // default to `nice` less explicitly set to false
+      if (this.yNice !== false) this.yNice = true
+    }
+
+    // LABELS
+    if (this.xAxisLabel) {
+      options.x = { ...options.x, label: this.xAxisLabel, ticks: this.xTicks, nice: this.xNice }
+    }
+    if (this.yAxisLabel) {
+      options.y = { ...options.y, label: this.yAxisLabel, ticks: this.yTicks, nice: this.yNice }
     }
 
     // render and append the plot
