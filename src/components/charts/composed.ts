@@ -45,6 +45,5 @@ export default class AstraComposedChart extends ClassifiedElement {
         </div>
       </div>
     `
-    // return html``
   }
 }
