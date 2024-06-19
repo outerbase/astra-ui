@@ -1,6 +1,6 @@
 import { areaY, barX, barY, crosshairX, gridX, gridY, lineY, plot } from '@observablehq/plot'
 import { html, type PropertyValueMap } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
+import { customElement, property, state } from 'lit/decorators.js'
 import createGradient from '../../lib/create-gradient.js'
 import type {
   ChartTypeV3,
@@ -38,6 +38,7 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: String, attribute: 'axis-label-display-x' }) axisLabelDisplayX: DashboardV3ChartLabelDisplayX = 'auto'
   @property({ type: String, attribute: 'ticks-x' }) ticksX?: string
   @property({ type: Boolean, attribute: 'nice-x' }) niceX = false // if true (or a tick count), extend the domain to nice round values
+  @property({ type: Boolean, attribute: 'grid-x' }) gridX?: boolean
 
   // Y-Axis
   @property({ type: String, attribute: 'key-y' }) keyY?: string
@@ -45,14 +46,11 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: String, attribute: 'axis-label-display-y' }) axisLabelDisplayY: DashboardV3ChartLabelDisplayY = 'left'
   @property({ type: String, attribute: 'ticks-y' }) ticksY?: string
   @property({ type: Boolean, attribute: 'nice-y' }) niceY?: boolean // if true (or a tick count), extend the domain to nice round values
+  @property({ type: Boolean, attribute: 'grid-y' }) gridY?: boolean
 
   // Sorting & grouping
   @property({ type: String, attribute: 'sort-order' }) sortOrder: DashboardV3ChartSortOrder = 'default'
   @property({ type: String, attribute: 'group-by' }) groupBy?: string
-
-  // Grids
-  @property({ type: Boolean, attribute: 'grid-x' }) gridX = false
-  @property({ type: Boolean, attribute: 'grid-y' }) gridY = false
 
   // Layout options: https://observablehq.com/plot/features/plots#layout-options
   // > The layout options determine the overall size of the plot; all are specified as numbers in pixels
@@ -87,10 +85,10 @@ export default class AstraChart extends ClassifiedElement {
   // @property({ type: String }) legend: DashboardV3ChartLegend = 'top'
 
   // Tooltips
-  @property({ type: String, attribute: 'tooltip-fill' }) tooltipFill = 'RGBA(231,231,228,1)'
-  @property({ type: String, attribute: 'tooltip-stroke' }) tooltipStroke = 'RGBA(255,255,255,0.1)'
-  @property({ type: Number, attribute: 'tooltip-text-padding' }) tooltipTextPadding = 10
-  @property({ type: Number, attribute: 'tooltip-line-height' }) tooltipLineHeight = 1.5
+  @state() tooltipFill = 'RGBA(231,231,228,1)'
+  @state() tooltipStroke = 'RGBA(255,255,255,0.1)'
+  @state() tooltipTextPadding = 10
+  @state() tooltipLineHeight = 1.5
 
   // Quantitative scales
   @property({ type: Boolean }) clamp = false // if true, clamp input values to the scale’s domain
@@ -106,6 +104,7 @@ export default class AstraChart extends ClassifiedElement {
 
   private getLatestPlot() {
     const d = this.data
+
     const options: Record<string, any> = {
       // Layout options: https://observablehq.com/plot/features/plots#layout-options
       width: this.width,
@@ -117,7 +116,6 @@ export default class AstraChart extends ClassifiedElement {
       marginLeft: this.marginLeft,
 
       round: this.round,
-      nice: this.nice,
 
       // Other options: https://observablehq.com/plot/features/plots#other-options
       title: this.mainTitle,
@@ -140,16 +138,13 @@ export default class AstraChart extends ClassifiedElement {
       lineHeight: this.tooltipLineHeight,
     }
 
-    // GRIDS
-    if (this.gridX) {
-      options.marks.push(gridX(defaultGridStyle))
-    }
-    if (this.gridY) {
-      options.marks.push(gridY(defaultGridStyle))
-    }
-
     // TYPE: BAR
     if (this.type === 'bar') {
+      // include grid along X-axis unless explicitly disabled
+      if (this.gridX !== false) {
+        options.marks.push(gridX(defaultGridStyle))
+      }
+
       options.marks.push(
         barX(d, {
           x: this.keyX,
@@ -163,6 +158,11 @@ export default class AstraChart extends ClassifiedElement {
 
     // TYPE: COLUMN
     if (this.type === 'column') {
+      // include grid along Y-axis unless explicitly disabled
+      if (this.gridY !== false) {
+        options.marks.push(gridY(defaultGridStyle))
+      }
+
       options.marks.push(
         barY(d, {
           x: this.keyX,
@@ -176,6 +176,11 @@ export default class AstraChart extends ClassifiedElement {
 
     // TYPE: LINE
     if (this.type === 'line') {
+      // include grid along X-axis unless explicitly disabled
+      if (this.gridX !== false) {
+        options.marks.push(gridX(defaultGridStyle))
+      }
+
       options.marks.push(
         crosshairX(d, {
           x: this.keyX,
@@ -197,6 +202,12 @@ export default class AstraChart extends ClassifiedElement {
 
       // default to `nice` less explicitly set to false
       if (this.niceY !== false) this.niceY = true
+
+      // default to legend unless explicitly disabled
+      if (this.legend !== false) {
+        options.color.legend = true
+        options.color.scheme = 'purples'
+      }
     }
 
     // LABELS
