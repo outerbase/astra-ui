@@ -47,41 +47,18 @@
 
   <body>
     <div>
-      <!-- <bar-chart
-        data='[
-      {"label": "Abraham", "value": 30, "note": "Note A", "color": "#FF6384"},
-      {"label": "Bobert", "value": 80, "note": "Note B", "color": "#36A2EB"},
-      {"label": "Cindy", "value": 45, "note": "Note C", "color": "#FFCE56"},
-      {"label": "Darlene", "value": 60, "note": "Note D"},
-      {"label": "Eugene", "value": 20, "note": "Note E", "color": "#4BC0C0"},
-      {"label": "Frink", "value": 90, "note": "Note F"},
-      {"label": "George", "value": 55, "note": "Note G"}
-    ]'
-        rounding="small"
-        label-orientation="slanted"
-        vertical-axis-label="Y-Axis Label"
-        rounded-bottoms
-        show-bar-labels
-        emphasize-labels-on-hover
-      /> -->
-      <bar-chart
-        id="my-chart"
+      <astra-chart
         type="line"
-        data='[{"data":[{"label": "A", "value": 20}, {"label": "B", "value": 35 }, {"label": "C", "value": 40}]}, {"data":[{"label": "A", "value": 25}, {"label": "B", "value": 80 }, {"label": "C", "value": 70}]}]'
-        x-key="label"
-        y-key="value"
-        width="200"
-        height="200"
-      ></bar-chart>
-      <bar-chart
-        id="my-chart"
-        data='[{"data":[{"label": "A", "value": 20}, {"label": "B", "value": 35 }, {"label": "C", "value": 40}]}]'
-        type="bar-horizontal"
-        x-key="value"
-        y-key="label"
-        width="300"
-        height="300"
-      ></bar-chart>
+        data='[{"label": "A", "value": 20}, {"label": "B", "value": 35 }, {"label": "C", "value": 40}]'
+        key-x="label"
+        key-y="value"
+      ></astra-chart>
+      <astra-chart
+        data='[{"label": "A", "value": 20}, {"label": "B", "value": 35 }, {"label": "C", "value": 40}]'
+        type="bar"
+        key-x="value"
+        key-y="label"
+      ></astra-chart>
     </div>
     <astra-button>click click click</astra-button>
     <hr />
