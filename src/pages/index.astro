@@ -54,9 +54,19 @@ const highlights = [{ name: 'highlight 1' }, { name: 'highlight 2' }, { name: 'h
       <h2><pre>&lt;composed-chart /&gt;</pre></h2>
       <div class="flex flex-col gap-4">
         <!-- @ts-ignore -->
-        <ComposedChart client:load header="With a header" subheader="and subheader" highlights={highlights}>
+        <ComposedChart client:load header="With a header" subheader="and subheader">
           <!-- @ts-ignore -->
-          <Chart client:only type="bar-vertical" data={data} key-x="label" key-y="value" />
+          <Chart client:only type="column" data={data} key-x="label" key-y="value" />
+        </ComposedChart>
+
+        <ComposedChart client:load>
+          <!-- @ts-ignore -->
+          <Chart client:only type="bar" data={data} key-y="label" key-x="value" />
+        </ComposedChart>
+
+        <ComposedChart client:load>
+          <!-- @ts-ignore -->
+          <Chart client:only type="line" data={data} key-x="label" key-y="value" />
         </ComposedChart>
       </div>
     </div>
