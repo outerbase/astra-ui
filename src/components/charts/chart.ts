@@ -33,18 +33,18 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: String }) type?: ChartTypeV3 = 'bar'
 
   // X-Axis
-  @property({ type: String, attribute: 'x-key' }) xKey?: string
-  @property({ type: String, attribute: 'x-axis-label' }) xAxisLabel?: string
-  @property({ type: String, attribute: 'x-axis-label-display' }) xAxisLabelDisplay: DashboardV3ChartLabelDisplayX = 'auto'
-  @property({ type: String, attribute: 'x-ticks' }) xTicks?: string
-  @property({ type: Boolean, attribute: 'x-nice' }) xNice = false // if true (or a tick count), extend the domain to nice round values
+  @property({ type: String, attribute: 'key-x' }) keyX?: string
+  @property({ type: String, attribute: 'axis-label-x' }) axisLabelX?: string
+  @property({ type: String, attribute: 'axis-label-display-x' }) axisLabelDisplayX: DashboardV3ChartLabelDisplayX = 'auto'
+  @property({ type: String, attribute: 'ticks-x' }) ticksX?: string
+  @property({ type: Boolean, attribute: 'nice-x' }) niceX = false // if true (or a tick count), extend the domain to nice round values
 
   // Y-Axis
-  @property({ type: String, attribute: 'y-key' }) yKey?: string
-  @property({ type: String, attribute: 'y-axis-label' }) yAxisLabel?: string
-  @property({ type: String, attribute: 'y-axis-label-display' }) yAxisLabelDisplay: DashboardV3ChartLabelDisplayY = 'left'
-  @property({ type: String, attribute: 'y-ticks' }) yTicks?: string
-  @property({ type: Boolean, attribute: 'y-nice' }) yNice?: boolean // if true (or a tick count), extend the domain to nice round values
+  @property({ type: String, attribute: 'key-y' }) keyY?: string
+  @property({ type: String, attribute: 'axis-label-y' }) axisLabelY?: string
+  @property({ type: String, attribute: 'axis-label-display-y' }) axisLabelDisplayY: DashboardV3ChartLabelDisplayY = 'left'
+  @property({ type: String, attribute: 'ticks-y' }) ticksY?: string
+  @property({ type: Boolean, attribute: 'nice-y' }) niceY?: boolean // if true (or a tick count), extend the domain to nice round values
 
   // Sorting & grouping
   @property({ type: String, attribute: 'sort-order' }) sortOrder: DashboardV3ChartSortOrder = 'default'
@@ -152,9 +152,9 @@ export default class AstraChart extends ClassifiedElement {
     if (this.type === 'bar') {
       options.marks.push(
         barX(d, {
-          x: this.xKey,
-          y: this.yKey,
-          stroke: this.xKey,
+          x: this.keyX,
+          y: this.keyY,
+          stroke: this.keyX,
           fill: 'url(#teal)',
           tip,
         })
@@ -165,9 +165,9 @@ export default class AstraChart extends ClassifiedElement {
     if (this.type === 'column') {
       options.marks.push(
         barY(d, {
-          x: this.xKey,
-          y: this.yKey,
-          stroke: this.yKey,
+          x: this.keyX,
+          y: this.keyY,
+          stroke: this.keyY,
           fill: 'url(#teal)',
           tip,
         })
@@ -178,33 +178,33 @@ export default class AstraChart extends ClassifiedElement {
     if (this.type === 'line') {
       options.marks.push(
         crosshairX(d, {
-          x: this.xKey,
-          y: this.yKey,
+          x: this.keyX,
+          y: this.keyY,
           color: this.theme === 'dark' ? '#ffffff' : '#000000',
           textStrokeOpacity: 0,
           textFill: '#e4e4e7',
         }),
 
         areaY(d, {
-          x: this.xKey,
-          y: this.yKey,
+          x: this.keyX,
+          y: this.keyY,
           fill: 'url(#mistGradient)',
           fillOpacity: 0.2,
         }),
 
-        lineY(d, { x: this.xKey, y: this.yKey, stroke: 'url(#mist)', tip })
+        lineY(d, { x: this.keyX, y: this.keyY, stroke: 'url(#mist)', tip })
       )
 
       // default to `nice` less explicitly set to false
-      if (this.yNice !== false) this.yNice = true
+      if (this.niceY !== false) this.niceY = true
     }
 
     // LABELS
-    if (this.xAxisLabel) {
-      options.x = { ...options.x, label: this.xAxisLabel, ticks: this.xTicks, nice: this.xNice }
+    if (this.axisLabelX) {
+      options.x = { ...options.x, label: this.axisLabelX, ticks: this.ticksX, nice: this.niceX }
     }
-    if (this.yAxisLabel) {
-      options.y = { ...options.y, label: this.yAxisLabel, ticks: this.yTicks, nice: this.yNice }
+    if (this.axisLabelY) {
+      options.y = { ...options.y, label: this.axisLabelY, ticks: this.ticksY, nice: this.niceY }
     }
 
     // render and append the plot
