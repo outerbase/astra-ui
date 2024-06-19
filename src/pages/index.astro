@@ -21,22 +21,11 @@ const optionsArray = [
 ]
 
 const data = [
-  {
-    data: [
-      { label: 'A', value: 20 },
-      { label: 'B', value: 35 },
-      { label: 'C', value: 40 },
-      { label: 'D', value: 60 },
-      { label: 'E', value: 10 },
-    ],
-  },
-  {
-    data: [
-      { label: 'A', value: 35 },
-      { label: 'B', value: 10 },
-      { label: 'C', value: 70 },
-    ],
-  },
+  { label: 'A', value: 20 },
+  { label: 'B', value: 35 },
+  { label: 'C', value: 40 },
+  { label: 'D', value: 60 },
+  { label: 'E', value: 10 },
 ]
 
 const highlights = [{ name: 'highlight 1' }, { name: 'highlight 2' }, { name: 'highlight 3' }]
@@ -45,7 +34,6 @@ const highlights = [{ name: 'highlight 1' }, { name: 'highlight 2' }, { name: 'h
 <Layout title="Astra-UI">
   <script>
     /* themes may also be set dynamically/programatically */
-    // document.documentElement.style.setProperty("--success-color", "lime");
 
     addEventListener('menu-selection', console.info)
     addEventListener('cell-updated', console.info)
@@ -68,7 +56,7 @@ const highlights = [{ name: 'highlight 1' }, { name: 'highlight 2' }, { name: 'h
         <!-- @ts-ignore -->
         <ComposedChart client:load header="With a header" subheader="and subheader" highlights={highlights}>
           <!-- @ts-ignore -->
-          <Chart client:load type="bar-vertical" data={data} x-key="label" y-key="value" client:load />
+          <Chart client:only type="bar-vertical" data={data} key-x="label" key-y="value" />
         </ComposedChart>
       </div>
     </div>
