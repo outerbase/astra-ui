@@ -13,6 +13,12 @@ import type {
 import { ClassifiedElement } from '../classified-element.js'
 
 const defaultGridStyle = { strokeDasharray: '2', strokeOpacity: 0.2 }
+const gradients = [
+  createGradient('teal', [
+    { offset: '15%', color: '#08595A' },
+    { offset: '75%', color: '#08595A80' },
+  ]),
+]
 
 @customElement('astra-chart')
 export default class AstraChart extends ClassifiedElement {
@@ -81,32 +87,14 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: Boolean }) zero = false // if true, extend the domain to include zero if needed
   @property({ type: Boolean }) percent = false // if true, transform proportions in [0, 1] to percents in [0, 100]
 
-  override firstUpdated(changedProperties: PropertyValueMap<this>): void {
-    super.firstUpdated(changedProperties)
-
-    // create the gradient that is used to color a bar chart
-    // TODO only run this if the type is bar or column?
-    createGradient(
-      'bar',
-      [
-        { offset: '15%', color: '#08595A' },
-        { offset: '75%', color: '#08595A80' },
-      ],
-      this.shadowRoot
-    )
-  }
-
   override willUpdate(changedProperties: PropertyValueMap<this>) {
     super.willUpdate(changedProperties)
+
+    // light/dark tooltips
     if (changedProperties.has('theme')) this.tooltipFill = this.theme === 'dark' ? 'RGBA(24,24,27,1)' : 'RGBA(231,231,228,1)'
   }
 
-  protected updated(_changedProperties: PropertyValueMap<this>) {
-    super.updated(_changedProperties)
-    this.updateChart()
-  }
-
-  private updateChart() {
+  private getLatestPlot() {
     const options: Record<string, any> = {
       // Layout options: https://observablehq.com/plot/features/plots#layout-options
       width: this.width,
@@ -149,7 +137,7 @@ export default class AstraChart extends ClassifiedElement {
             x: this.xKey,
             y: this.yKey,
             stroke: this.xKey,
-            fill: 'url(#bar)',
+            fill: 'url(#teal)',
             tip,
           })
         )
@@ -164,7 +152,7 @@ export default class AstraChart extends ClassifiedElement {
             x: this.xKey,
             y: this.yKey,
             stroke: this.yKey,
-            fill: 'url(#bar)',
+            fill: 'url(#teal)',
             tip,
           })
         )
@@ -197,15 +185,10 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     // render and append the plot
-    const _plot = plot(options)
-    const chartElement = this.shadowRoot?.getElementById('chart')
-    if (chartElement) {
-      chartElement.innerHTML = ''
-      chartElement.appendChild(_plot)
-    }
+    return plot(options)
   }
 
   public render() {
-    return html`<div id="chart" />`
+    return html`${gradients} ${this.getLatestPlot()}`
   }
 }
