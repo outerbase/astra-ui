@@ -1,5 +1,5 @@
 import { areaY, barX, barY, crosshairX, gridX, gridY, lineY, plot } from '@observablehq/plot'
-import { html, type PropertyValueMap } from 'lit'
+import { css, html, type PropertyValueMap } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import createGradient from '../../lib/create-gradient.js'
@@ -30,6 +30,134 @@ const gradients = [
 
 @customElement('astra-chart')
 export default class AstraChart extends ClassifiedElement {
+  static override styles = [
+    ...ClassifiedElement.styles,
+    css`
+      * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      .fade {
+        opacity: 0;
+
+        @media (prefers-reduced-motion) {
+          opacity: 1;
+          animation: none;
+        }
+      }
+
+      .gridDots {
+        background-image: radial-gradient(RGBA(255, 255, 255, 0.2) 1px, transparent 0);
+        background-size: 24px 24px;
+        background-position: 0px 0px;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 0.5;
+        }
+      }
+
+      @keyframes drawLine {
+        from {
+          opacity: 0;
+          stroke-dashoffset: 3600;
+        }
+        to {
+          opacity: 1;
+          stroke-dashoffset: 0;
+        }
+      }
+
+      figure {
+        div {
+          span {
+            svg {
+              border-radius: 24px;
+              width: 20px;
+              overflow: hidden;
+            }
+          }
+        }
+      }
+
+      svg {
+        font-size: 12px;
+
+        g[aria-label='line'] {
+          opacity: 0;
+          stroke-dasharray: 4000;
+          transition-property: stroke-width;
+          transition: 0.3s ease;
+          animation: 1.5s ease-out 0s drawLine forwards;
+        }
+
+        g[aria-label='area'] {
+          opacity: 0;
+          transition: 0.4s ease-out;
+        }
+
+        [aria-label='y-axis tick label'],
+        [aria-label='y-axis tick'],
+        [aria-label='x-axis tick label'],
+        [aria-label='x-axis tick'] {
+          transition: 0.5s ease;
+        }
+
+        g[aria-label='crosshair rule'] {
+          stroke-opacity: 0.3;
+        }
+
+        &:hover {
+          /* [aria-label='line'] {
+            stroke-width: 4;
+          } */
+
+          [aria-label='area'] {
+            opacity: 0.5;
+          }
+
+          [aria-label='y-axis tick label'],
+          [aria-label='y-axis tick'],
+          [aria-label='x-axis tick label'],
+          [aria-label='x-axis tick'] {
+            opacity: 0.5;
+          }
+        }
+
+        [aria-label='line']:hover {
+          stroke-width: 4;
+        }
+      }
+
+      @keyframes scaleIn {
+        from {
+          opacity: 0;
+          transform: scaleY(0.6) translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: scaleY(1) translateY(0px);
+        }
+      }
+
+      .barY {
+        g[aria-label='bar'] {
+          rect {
+            transform-origin: bottom;
+            transform: scaleY(0.6) translateY(-20px);
+            opacity: 0;
+            animation: scaleIn 0.4s cubic-bezier(0.5, 0, 0, 1.1) forwards;
+          }
+        }
+      }
+    `,
+  ]
+
   protected static async getChartData(apiKey: string, chartId: string): Promise<DashboardV3Chart> {
     if (!apiKey) throw new Error('Missing API key')
     if (!chartId) throw new Error('Missing chart ID')
@@ -251,10 +379,21 @@ export default class AstraChart extends ClassifiedElement {
     return plot(options)
   }
 
+  protected updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
+    const elements = this.shadowRoot!.querySelectorAll('rect')
+    for (let i = 0; i < elements.length; i++) {
+      elements[i].style.animationDelay = `${i / 50}s`
+    }
+  }
+
   public render() {
     const plot = this.getLatestPlot()
-    const decoratedPlot = html`<div class="text-black dark:text-white bg-neutral-50 dark:bg-neutral-950">${plot}</div>`
-    const themedPlot = html`<div class="${classMap({ dark: this.theme === 'dark' })}">${decoratedPlot}</div>`
+    const decoratedPlot = html`<div class="bg-zinc-50 selection:bg-violet-500/20 dark:bg-zinc-950 text-zinc-400 dark:text-zinc-600">
+      ${plot}
+    </div>`
+    const themedPlot = html`<div class="${classMap({ dark: this.theme === 'dark', '*:fade barY  *:animate-fade': true })}">
+      ${decoratedPlot}
+    </div>`
 
     return html`${gradients} ${themedPlot}`
   }
