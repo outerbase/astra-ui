@@ -10,6 +10,8 @@ export default class AstraComposedChart extends AstraChart {
   @property({ type: String }) size: 'small' | 'medium' | 'large' = 'large'
 
   public willUpdate(changedProperties: PropertyValueMap<this>): void {
+    super.willUpdate(changedProperties)
+
     if (changedProperties.has('data')) {
       this.header = this.data?.name
       this.subheader = this.data?.description
