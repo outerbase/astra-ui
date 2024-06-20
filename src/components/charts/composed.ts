@@ -1,4 +1,4 @@
-import { html } from 'lit'
+import { html, type PropertyValueMap } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import AstraChart from './chart.js'
@@ -8,6 +8,13 @@ export default class AstraComposedChart extends AstraChart {
   @property({ type: String }) header?: string
   @property({ type: String }) subheader?: string
   @property({ type: String }) size: 'small' | 'medium' | 'large' = 'large'
+
+  public willUpdate(changedProperties: PropertyValueMap<this>): void {
+    if (changedProperties.has('data')) {
+      this.header = this.data?.name
+      this.subheader = this.data?.description
+    }
+  }
 
   public render() {
     // include header when large

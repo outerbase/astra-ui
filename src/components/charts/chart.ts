@@ -1,14 +1,14 @@
 import { areaY, barX, barY, crosshairX, gridX, gridY, lineY, plot } from '@observablehq/plot'
-import { html } from 'lit'
+import { html, type PropertyValueMap } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import createGradient from '../../lib/create-gradient.js'
 import type {
   ChartTypeV3,
+  DashboardV3Chart,
   DashboardV3ChartLabelDisplayX,
   DashboardV3ChartLabelDisplayY,
   DashboardV3ChartSortOrder,
-  Row,
 } from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
 
@@ -30,8 +30,27 @@ const gradients = [
 
 @customElement('astra-chart')
 export default class AstraChart extends ClassifiedElement {
-  @property({ type: Array }) data: Array<Row> = [] // TODO change to expect API response data
-  @property({ type: String }) type: ChartTypeV3 = 'bar'
+  protected static async getChartData(apiKey: string, chartId: string): Promise<DashboardV3Chart> {
+    if (!apiKey) throw new Error('Missing API key')
+    if (!chartId) throw new Error('Missing chart ID')
+
+    return fetch(`https://app.outerbase.com/api/v1/chart/${chartId}`, {
+      method: 'POST',
+      headers: {
+        'x-chart-api-key': apiKey,
+        'content-type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .catch((err) => {
+        console.error('Outerbase Chart Error: Could not retrieve chart information. ', err)
+      })
+  }
+
+  @property({ type: String, attribute: 'api-key' }) apiKey: string | undefined
+  @property({ type: String, attribute: 'chart-id' }) chartId: string | undefined
+  @property({ type: Array }) data?: DashboardV3Chart
+  @property({ type: String }) type?: ChartTypeV3
 
   // X-Axis
   @property({ type: String, attribute: 'key-x' }) keyX?: string
@@ -89,8 +108,31 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: Boolean }) zero?: boolean // if true, extend the domain to include zero if needed
   @property({ type: Boolean }) percent?: boolean // if true, transform proportions in [0, 1] to percents in [0, 100]
 
+  public override willUpdate(changedProperties: PropertyValueMap<this>): void {
+    super.willUpdate(changedProperties)
+
+    // when apiKey or chartId change
+    if (changedProperties.has('apiKey') || changedProperties.has('chartId')) {
+      // when both values are present
+      ;(async () => {
+        if (this.apiKey && this.chartId) {
+          this.data = await AstraChart.getChartData(this.apiKey, this.chartId)
+        }
+      })()
+    }
+
+    if (changedProperties.has('data')) {
+      // update chart type
+      this.type = this.data?.layers?.[0]?.type
+    }
+  }
+
   private getLatestPlot() {
-    const d = this.data
+    const layer = this.data?.layers?.[0]
+    if (!layer) return null
+
+    const d = layer.result
+    if (!d) return null
 
     const options: Record<string, any> = {
       // Layout options: https://observablehq.com/plot/features/plots#layout-options

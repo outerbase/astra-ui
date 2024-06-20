@@ -20,13 +20,24 @@ const optionsArray = [
   { label: 'Avocados', value: 'avocados' },
 ]
 
-const data = [
-  { label: 'A', value: 20 },
-  { label: 'B', value: 35 },
-  { label: 'C', value: 40 },
-  { label: 'D', value: 60 },
-  { label: 'E', value: 10 },
-]
+const data = {
+  name: 'wubbalubbadubdub',
+  description: 'this that and the other',
+  apiKey: 'asdf-1234',
+  layers: [
+    {
+      type: 'column',
+      result: [
+        { label: 'A', value: 20 },
+        { label: 'B', value: 35 },
+        { label: 'C', value: 40 },
+        { label: 'D', value: 60 },
+        { label: 'E', value: 10 },
+      ],
+    },
+  ],
+  highlights: ['total', 'average', 'percent_change'],
+}
 ---
 
 <Layout title="Astra-UI">
@@ -61,27 +72,9 @@ const data = [
     <div>
       <h2><pre>&lt;astra-composed-chart /&gt;</pre></h2>
       <!-- @ts-ignore -->
-      <ComposedChart
-        client:only="lit"
-        header="With a header"
-        subheader="and subheader"
-        type="column"
-        data={data}
-        key-x="label"
-        key-y="value"
-        theme="light"
-      />
+      <ComposedChart client:only="lit" data={data} key-x="label" key-y="value" theme="light" />
       <!-- @ts-ignore -->
-      <ComposedChart
-        client:only="lit"
-        header="With a header"
-        subheader="and subheader"
-        type="column"
-        data={data}
-        key-x="label"
-        key-y="value"
-        theme="dark"
-      />
+      <ComposedChart client:only="lit" data={data} key-x="label" key-y="value" theme="dark" />
     </div>
 
     <div>

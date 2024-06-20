@@ -182,12 +182,6 @@ export interface SerializableArray extends Array<Serializable> {}
 export interface SerializableRecord extends Record<string, Serializable> {}
 
 // CHARTS
-
-export type Dataset = {
-  data: { label: string; value: number }[]
-  color?: string // hex
-}
-
 export type Row = Record<string, Serializable>
 export type ChartTypeV3 = 'column' | 'bar' | 'pie' | 'donut' | 'line' | 'area' | 'single_value' | 'table' | 'scatter' | 'heatmap' | 'text'
 export type DashboardV3ChartLegend = 'none' | 'top' | 'bottom' | 'left' | 'right'
