@@ -1,10 +1,10 @@
 import { html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
-import { ClassifiedElement } from '../classified-element.js'
+import AstraChart from './chart.js'
 
 @customElement('astra-composed-chart')
-export default class AstraComposedChart extends ClassifiedElement {
+export default class AstraComposedChart extends AstraChart {
   @property({ type: String }) header?: string
   @property({ type: String }) subheader?: string
   // TODO add property that determines the layout desired (sm, md, lg)
@@ -24,17 +24,30 @@ export default class AstraComposedChart extends ClassifiedElement {
         <div class="hidden group-hover/actions:block"><slot name="actions"></slot></div>
       </div>
     `
-
     const highlightSection = html`
-      <div id="highlights" class="flex gap-2">
-        <slot name="highlights" />
+      <div class="flex w-full items-center justify-between gap-8">
+        <div
+          class="flex flex-auto items-center justify-center rounded bg-neutral-100 py-3 text-xl text-black dark:bg-neutral-900 dark:text-white"
+        >
+          27%
+        </div>
+
+        <div
+          class="flex flex-auto items-center  justify-center rounded bg-neutral-100 py-3 text-xl text-black dark:bg-neutral-900 dark:text-white"
+        >
+          17 hours
+        </div>
+
+        <div
+          class="flex flex-auto items-center  justify-center rounded bg-neutral-100 py-3 text-xl text-black dark:bg-neutral-900 dark:text-white"
+        >
+          🏎️
+        </div>
       </div>
     `
-
-    const chartSection = html`<div id="chart" class="flex-1 p-2 flex items-center justify-center min-h-96 ">
-      <slot></slot>
-    </div>`
-
+    const chart = super.render()
+    const chartSection = html`<div id="chart" class="flex-1 p-2 flex items-center justify-center min-h-96 ">${chart}</div>`
+    console.log('composed theme', this.theme)
     return html`
       <div class="${classMap({ dark: this.theme === 'dark' })}">
         <div
