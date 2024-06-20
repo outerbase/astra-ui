@@ -306,8 +306,8 @@ export default class AstraChart extends ClassifiedElement {
         barX(d, {
           x: this.keyX,
           y: this.keyY,
-          stroke: this.keyX,
-          fill: 'url(#teal)',
+          // stroke: this.keyX,
+          // fill: 'url(#teal)',
           tip,
         })
       )
@@ -324,8 +324,9 @@ export default class AstraChart extends ClassifiedElement {
         barY(d, {
           x: this.keyX,
           y: this.keyY,
-          stroke: this.keyY,
-          fill: 'url(#teal)',
+          // stroke: this.keyY,
+          // fill: 'url(#teal)',
+          fill: 'white',
           tip,
         })
       )
@@ -350,8 +351,8 @@ export default class AstraChart extends ClassifiedElement {
         areaY(d, {
           x: this.keyX,
           y: this.keyY,
-          fill: 'url(#mistGradient)',
-          fillOpacity: 0.2,
+          // fill: 'url(#mistGradient)',
+          // fillOpacity: 0.2,
         }),
 
         lineY(d, { x: this.keyX, y: this.keyY, stroke: 'url(#mist)', tip })
