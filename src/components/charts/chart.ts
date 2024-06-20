@@ -1,6 +1,6 @@
 import { areaY, barX, barY, crosshairX, gridX, gridY, lineY, plot } from '@observablehq/plot'
-import { html, type PropertyValueMap } from 'lit'
-import { customElement, property, state } from 'lit/decorators.js'
+import { html } from 'lit'
+import { customElement, property } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import createGradient from '../../lib/create-gradient.js'
 import type {
@@ -31,7 +31,7 @@ const gradients = [
 @customElement('astra-chart')
 export default class AstraChart extends ClassifiedElement {
   @property({ type: Array }) data: Array<Row> = [] // TODO change to expect API response data
-  @property({ type: String }) type?: ChartTypeV3 = 'bar'
+  @property({ type: String }) type: ChartTypeV3 = 'bar'
 
   // X-Axis
   @property({ type: String, attribute: 'key-x' }) keyX?: string
@@ -55,9 +55,9 @@ export default class AstraChart extends ClassifiedElement {
 
   // Layout options: https://observablehq.com/plot/features/plots#layout-options
   // > The layout options determine the overall size of the plot; all are specified as numbers in pixels
-  @property({ type: Number }) width = 820
-  @property({ type: Number }) height = 440
-  @property({ type: Number }) margin = 0
+  @property({ type: Number }) width?: number
+  @property({ type: Number }) height?: number
+  @property({ type: Number }) margin?: number
   @property({ type: Number, attribute: 'margin-top' }) marginTop = 0
   @property({ type: Number, attribute: 'margin-right' }) marginRight = 0
   @property({ type: Number, attribute: 'margin-bottom' }) marginBottom = 0
@@ -70,38 +70,24 @@ export default class AstraChart extends ClassifiedElement {
 
   // Position scale options: https://observablehq.com/plot/features/scales#position-scale-options
   // > The inset scale options can provide “breathing room” to separate marks from axes or the plot’s edge.
-  @property({ type: Boolean }) round = false // round the output value to the nearest integer (whole pixel)
-  @property({ type: Number }) inset = 0 // inset the default range by the specified amount in pixels
-  @property({ type: Number, attribute: 'inset-top' }) insetTop = 0 //  insets the top of the default range by the specified number of pixels
-  @property({ type: Number, attribute: 'inset-right' }) insetRight = 0 // insets the end of the default range by the specified number of pixels
-  @property({ type: Number, attribute: 'inset-bottom' }) insetBottom = 0 //  insets the bottom of the default range by the specified number of pixels
-  @property({ type: Number, attribute: 'inset-left' }) insetLeft = 0 // insets the start of the default range by the specified number of pixels
+  @property({ type: Boolean }) round?: number // round the output value to the nearest integer (whole pixel)
+  @property({ type: Number }) inset?: number // inset the default range by the specified amount in pixels
+  @property({ type: Number, attribute: 'inset-top' }) insetTop?: number //  insets the top of the default range by the specified number of pixels
+  @property({ type: Number, attribute: 'inset-right' }) insetRight?: number // insets the end of the default range by the specified number of pixels
+  @property({ type: Number, attribute: 'inset-bottom' }) insetBottom?: number //  insets the bottom of the default range by the specified number of pixels
+  @property({ type: Number, attribute: 'inset-left' }) insetLeft?: number // insets the start of the default range by the specified number of pixels
 
   // Other options: https://observablehq.com/plot/features/plots#other-options
   // > If the plot includes a title, subtitle, legend, or caption, plot wraps the SVG element with an HTML figure element.
   @property({ type: String, attribute: 'title' }) mainTitle?: string // `mainTitle` because `title` is a core HTML/JS attribute
   @property({ type: String }) subtitle?: string
   @property({ type: String }) caption?: string
-  @property({ type: Boolean }) legend = false
-  // @property({ type: String }) legend: DashboardV3ChartLegend = 'top'
-
-  // Tooltips
-  @state() tooltipFill = 'RGBA(231,231,228,1)'
-  @state() tooltipStroke = 'RGBA(255,255,255,0.1)'
-  @state() tooltipTextPadding = 10
-  @state() tooltipLineHeight = 1.5
+  @property({ type: Boolean }) legend?: boolean
 
   // Quantitative scales
-  @property({ type: Boolean }) clamp = false // if true, clamp input values to the scale’s domain
-  @property({ type: Boolean }) zero = false // if true, extend the domain to include zero if needed
-  @property({ type: Boolean }) percent = false // if true, transform proportions in [0, 1] to percents in [0, 100]
-
-  override willUpdate(changedProperties: PropertyValueMap<this>) {
-    super.willUpdate(changedProperties)
-
-    // light/dark tooltips
-    if (changedProperties.has('theme')) this.tooltipFill = this.theme === 'dark' ? 'RGBA(24,24,27,1)' : 'RGBA(231,231,228,1)'
-  }
+  @property({ type: Boolean }) clamp?: boolean // if true, clamp input values to the scale’s domain
+  @property({ type: Boolean }) zero?: boolean // if true, extend the domain to include zero if needed
+  @property({ type: Boolean }) percent?: boolean // if true, transform proportions in [0, 1] to percents in [0, 100]
 
   private getLatestPlot() {
     const d = this.data
@@ -133,10 +119,10 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     const tip = {
-      fill: this.tooltipFill,
-      stroke: this.tooltipStroke,
-      textPadding: this.tooltipTextPadding,
-      lineHeight: this.tooltipLineHeight,
+      fill: this.theme === 'dark' ? 'RGBA(24,24,27,1)' : 'RGBA(231,231,228,1)',
+      stroke: 'RGBA(255,255,255,0.1)',
+      textPadding: 10,
+      lineHeight: 1.5,
     }
 
     // TYPE: BAR
