@@ -205,10 +205,10 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: Number }) width?: number
   @property({ type: Number }) height?: number
   @property({ type: Number }) margin?: number
-  @property({ type: Number, attribute: 'margin-top' }) marginTop = 0
-  @property({ type: Number, attribute: 'margin-right' }) marginRight = 0
-  @property({ type: Number, attribute: 'margin-bottom' }) marginBottom = 0
-  @property({ type: Number, attribute: 'margin-left' }) marginLeft = 0
+  @property({ type: Number, attribute: 'margin-top' }) marginTop?: number
+  @property({ type: Number, attribute: 'margin-right' }) marginRight?: number
+  @property({ type: Number, attribute: 'margin-bottom' }) marginBottom?: number
+  @property({ type: Number, attribute: 'margin-left' }) marginLeft?: number
 
   // Color scales: https://observablehq.com/plot/features/scales#color-scales
   // > The default quantitative color scale type is linear, and the default scheme is turbo.

@@ -20,23 +20,70 @@ const optionsArray = [
   { label: 'Avocados', value: 'avocados' },
 ]
 
+const foo = await (
+  await fetch('https://app.outerbase.com/api/v1/ezql/raw', {
+    body: '{"query":"SELECT aapl.date, aapl.close FROM aapl ","params":{},"run":true}',
+    cache: 'default',
+    credentials: 'omit',
+    headers: {
+      Accept: '*/*',
+      'Accept-Language': 'en-US,en;q=0.9',
+      'Cache-Control': 'no-cache',
+      'Content-Type': 'application/json',
+      Pragma: 'no-cache',
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15',
+      'X-Source-Token': 'kzt7ip4y5wkzhr9ncnueyirnytficdlnx1qpphyflhh8qezlxwiv5143411kh3ps',
+    },
+    method: 'POST',
+    mode: 'cors',
+    redirect: 'follow',
+    referrer: 'https://ficus.pages.dev/',
+    referrerPolicy: 'strict-origin-when-cross-origin',
+  })
+).json()
+
 const data = {
   name: 'wubbalubbadubdub',
   description: 'this that and the other',
   apiKey: 'asdf-1234',
   layers: [
     {
-      type: 'column',
-      result: [
-        { label: 'A', value: 20 },
-        { label: 'B', value: 35 },
-        { label: 'C', value: 40 },
-        { label: 'D', value: 60 },
-        { label: 'E', value: 10 },
-      ],
+      type: 'line',
+      result: foo.response.results.items.map((v: any) => ({ close: Number(v.close), date: new Date(v.date) })),
     },
   ],
-  highlights: ['total', 'average', 'percent_change'],
+}
+
+const alphabet = await (
+  await fetch('https://app.outerbase.com/api/v1/ezql/query/6eacc1c5-4f67-4ccc-a892-dca9d793063c', {
+    cache: 'default',
+    credentials: 'omit',
+    headers: {
+      Accept: '*/*',
+      'Accept-Language': 'en-US,en;q=0.9',
+      'Cache-Control': 'no-cache',
+      'Content-Type': 'application/json',
+      Pragma: 'no-cache',
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15',
+      'X-Source-Token': 'kzt7ip4y5wkzhr9ncnueyirnytficdlnx1qpphyflhh8qezlxwiv5143411kh3ps',
+    },
+    method: 'POST',
+    mode: 'cors',
+    redirect: 'follow',
+    referrer: 'https://ficus.pages.dev/',
+    referrerPolicy: 'strict-origin-when-cross-origin',
+  })
+).json()
+const data2 = {
+  name: 'wubbalubbadubdub',
+  description: 'this that and the other',
+  apiKey: 'asdf-1234',
+  layers: [
+    {
+      type: 'column',
+      result: alphabet.response.results.items.map((v: any) => ({ frequency: Number(v.frequency), starting_letter: v.starting_letter })),
+    },
+  ],
 }
 ---
 
@@ -63,18 +110,20 @@ const data = {
       <h2><pre>&lt;astra-chart /&gt;</pre></h2>
       <div class="flex flex-col gap-4">
         <!-- @ts-ignore -->
-        <Chart client:only="lit" type="column" data={data} key-x="label" key-y="value" theme="light" />
+        <Chart client:only="lit" data={data} key-x="date" key-y="close" theme="light" />
         <!-- @ts-ignore -->
-        <Chart client:only="lit" type="column" data={data} key-x="label" key-y="value" theme="dark" />
+        <Chart client:only="lit" data={data2} key-x="starting_letter" key-y="frequency" theme="light" />
+        <!-- @ts-ignore -->
+        <Chart client:only="lit" data={data} key-x="date" key-y="close" theme="dark" />
       </div>
     </div>
 
     <div>
       <h2><pre>&lt;astra-composed-chart /&gt;</pre></h2>
       <!-- @ts-ignore -->
-      <ComposedChart client:only="lit" data={data} key-x="label" key-y="value" theme="light" />
+      <ComposedChart client:only="lit" data={data} key-x="date" key-y="close" theme="light" />
       <!-- @ts-ignore -->
-      <ComposedChart client:only="lit" data={data} key-x="label" key-y="value" theme="dark" />
+      <ComposedChart client:only="lit" data={data} key-x="date" key-y="close" theme="dark" />
     </div>
 
     <div>
