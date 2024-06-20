@@ -1,6 +1,7 @@
 import { areaY, barX, barY, crosshairX, gridX, gridY, lineY, plot } from '@observablehq/plot'
 import { html, type PropertyValueMap } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
+import { classMap } from 'lit/directives/class-map.js'
 import createGradient from '../../lib/create-gradient.js'
 import type {
   ChartTypeV3,
@@ -223,6 +224,10 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   public render() {
-    return html`${gradients} ${this.getLatestPlot()}`
+    const plot = this.getLatestPlot()
+    const decoratedPlot = html`<div class="text-black dark:text-white bg-neutral-50 dark:bg-neutral-950">${plot}</div>`
+    const themedPlot = html`<div class="${classMap({ dark: this.theme === 'dark' })}">${decoratedPlot}</div>`
+
+    return html`${gradients} ${themedPlot}`
   }
 }

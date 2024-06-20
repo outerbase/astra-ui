@@ -49,70 +49,39 @@ const data = [
 
   <main class="flex flex-col gap-8">
     <div>
-      <h2><pre>&lt;composed-chart /&gt;</pre></h2>
+      <h2><pre>&lt;astra-chart /&gt;</pre></h2>
       <div class="flex flex-col gap-4">
         <!-- @ts-ignore -->
-        <ComposedChart client:load header="With a header" subheader="and subheader">
-          <!-- HIGHLIGHTS -->
-          <div slot="highlights" class="flex w-full items-center justify-between gap-8">
-            <div
-              class="flex flex-auto items-center justify-center rounded bg-neutral-100 py-3 text-xl text-black dark:bg-neutral-900 dark:text-white"
-            >
-              27%
-            </div>
-
-            <div
-              class="flex flex-auto items-center justify-center rounded bg-neutral-100 py-3 text-xl text-black dark:bg-neutral-900 dark:text-white"
-            >
-              17 hours
-            </div>
-
-            <div
-              class="flex flex-auto items-center justify-center rounded bg-neutral-100 py-3 text-xl text-black dark:bg-neutral-900 dark:text-white"
-            >
-              🏎️
-            </div>
-          </div>
-          <!-- @ts-ignore -->
-          <Chart client:only type="column" data={data} key-x="label" key-y="value" />
-        </ComposedChart>
-
+        <Chart client:only="lit" type="column" data={data} key-x="label" key-y="value" theme="light" />
         <!-- @ts-ignore -->
-        <ComposedChart client:load header="With a header" subheader="and subheader" theme="dark">
-          <!-- HIGHLIGHTS -->
-          <div slot="highlights" class="dark flex w-full items-center justify-between gap-8">
-            <div
-              class="flex flex-auto items-center justify-center rounded bg-neutral-100 py-3 text-xl text-black dark:bg-neutral-900 dark:text-white"
-            >
-              27%
-            </div>
-
-            <div
-              class="flex flex-auto items-center justify-center rounded bg-neutral-100 py-3 text-xl text-black dark:bg-neutral-900 dark:text-white"
-            >
-              17 hours
-            </div>
-
-            <div
-              class="flex flex-auto items-center justify-center rounded bg-neutral-100 py-3 text-xl text-black dark:bg-neutral-900 dark:text-white"
-            >
-              🏎️
-            </div>
-          </div>
-          <!-- @ts-ignore -->
-          <Chart client:only type="column" data={data} key-x="label" key-y="value" />
-        </ComposedChart>
-
-        <ComposedChart client:load>
-          <!-- @ts-ignore -->
-          <Chart client:only type="bar" data={data} key-y="label" key-x="value" />
-        </ComposedChart>
-
-        <ComposedChart client:load>
-          <!-- @ts-ignore -->
-          <Chart client:only type="line" data={data} key-x="label" key-y="value" />
-        </ComposedChart>
+        <Chart client:only="lit" type="column" data={data} key-x="label" key-y="value" theme="dark" />
       </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-composed-chart /&gt;</pre></h2>
+      <!-- @ts-ignore -->
+      <ComposedChart
+        client:only="lit"
+        header="With a header"
+        subheader="and subheader"
+        type="column"
+        data={data}
+        key-x="label"
+        key-y="value"
+        theme="light"
+      />
+      <!-- @ts-ignore -->
+      <ComposedChart
+        client:only="lit"
+        header="With a header"
+        subheader="and subheader"
+        type="column"
+        data={data}
+        key-x="label"
+        key-y="value"
+        theme="dark"
+      />
     </div>
 
     <div>
