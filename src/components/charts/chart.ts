@@ -26,6 +26,10 @@ const gradients = [
     { offset: '15%', color: '#707BFF' },
     { offset: '75%', color: '#707BFF00' },
   ]),
+  createGradient('bar', [
+    { offset: '15%', color: '#e4e4e7' },
+    { offset: '75%', color: '#d4d4d8' },
+  ]),
 ]
 
 @customElement('astra-chart')
@@ -325,8 +329,8 @@ export default class AstraChart extends ClassifiedElement {
           x: this.keyX,
           y: this.keyY,
           // stroke: this.keyY,
-          // fill: 'url(#teal)',
-          fill: 'white',
+          fill: 'url(#bar)',
+          inset: 0.5,
           tip,
         })
       )
@@ -351,8 +355,8 @@ export default class AstraChart extends ClassifiedElement {
         areaY(d, {
           x: this.keyX,
           y: this.keyY,
-          // fill: 'url(#mistGradient)',
-          // fillOpacity: 0.2,
+          fill: 'url(#mistGradient)',
+          fillOpacity: 0.2,
         }),
 
         lineY(d, { x: this.keyX, y: this.keyY, stroke: 'url(#mist)', tip })
@@ -370,7 +374,7 @@ export default class AstraChart extends ClassifiedElement {
 
     // LABELS
     if (this.axisLabelX) {
-      options.x = { ...options.x, label: this.axisLabelX, ticks: this.ticksX, nice: this.niceX }
+      options.x = { ...options.x, label: this.axisLabelX, ticks: this.ticksX, nice: this.niceX, padding: 0.3 }
     }
     if (this.axisLabelY) {
       options.y = { ...options.y, label: this.axisLabelY, ticks: this.ticksY, nice: this.niceY }
