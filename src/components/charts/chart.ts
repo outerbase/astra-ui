@@ -374,12 +374,8 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     // LABELS
-    if (this.axisLabelX) {
-      options.x = { ...options.x, label: this.axisLabelX, ticks: this.ticksX, nice: this.niceX, padding: 0.3 }
-    }
-    if (this.axisLabelY) {
-      options.y = { ...options.y, label: this.axisLabelY, ticks: this.ticksY, nice: this.niceY }
-    }
+    options.x = { ...options.x, label: this.axisLabelX ?? null, ticks: this.ticksX, nice: this.niceX, padding: 0.3 }
+    options.y = { ...options.y, label: this.axisLabelY ?? null, ticks: this.ticksY, nice: this.niceY }
 
     // render and append the plot
     return plot(options)
