@@ -12,7 +12,6 @@ import type {
 } from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
 
-const defaultGridStyle = { strokeDasharray: '2', strokeOpacity: 0.2 }
 const gradients = [
   createGradient('teal', [
     { offset: '15%', color: '#08595A' },
@@ -94,7 +93,7 @@ export default class AstraChart extends ClassifiedElement {
 
         g[aria-label='line'] {
           opacity: 0;
-          stroke-dasharray: 4000;
+          // stroke-dasharray: 4000; // not working as intended; this is needed for the fancy loading animation tho
           transition-property: stroke-width;
           transition: 0.3s ease;
           animation: 1.5s ease-out 0s drawLine forwards;
@@ -221,7 +220,7 @@ export default class AstraChart extends ClassifiedElement {
 
   // Position scale options: https://observablehq.com/plot/features/scales#position-scale-options
   // > The inset scale options can provide “breathing room” to separate marks from axes or the plot’s edge.
-  @property({ type: Boolean }) round?: number // round the output value to the nearest integer (whole pixel)
+  @property({ type: Boolean }) round?: boolean // round the output value to the nearest integer (whole pixel)
   @property({ type: Number }) inset?: number // inset the default range by the specified amount in pixels
   @property({ type: Number, attribute: 'inset-top' }) insetTop?: number //  insets the top of the default range by the specified number of pixels
   @property({ type: Number, attribute: 'inset-right' }) insetRight?: number // insets the end of the default range by the specified number of pixels
@@ -265,6 +264,8 @@ export default class AstraChart extends ClassifiedElement {
 
     const d = layer.result
     if (!d) return null
+
+    const defaultGridStyle = { strokeDasharray: '2', strokeOpacity: 0.2, stroke: this.theme === 'light' ? 'black' : 'white' }
 
     const options: Record<string, any> = {
       // Layout options: https://observablehq.com/plot/features/plots#layout-options
@@ -346,7 +347,7 @@ export default class AstraChart extends ClassifiedElement {
       options.marks.push(
         crosshairX(d, {
           x: this.keyX,
-          y: this.keyY,
+          // y: this.keyY, // omitted in Ficus
           color: this.theme === 'dark' ? '#ffffff' : '#000000',
           textStrokeOpacity: 0,
           textFill: '#e4e4e7',
