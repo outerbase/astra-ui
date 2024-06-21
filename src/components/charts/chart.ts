@@ -8,7 +8,9 @@ import type {
   DashboardV3Chart,
   DashboardV3ChartLabelDisplayX,
   DashboardV3ChartLabelDisplayY,
+  DashboardV3ChartLegend,
   DashboardV3ChartSortOrder,
+  DashboardV3HighlightType,
 } from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
 
@@ -182,6 +184,7 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: String, attribute: 'chart-id' }) chartId: string | undefined
   @property({ type: Array }) data?: DashboardV3Chart
   @property({ type: String }) type?: ChartTypeV3
+  @property({ type: String }) highlights?: Array<DashboardV3HighlightType>
 
   // X-Axis
   @property({ type: String, attribute: 'key-x' }) keyX?: string
@@ -194,13 +197,13 @@ export default class AstraChart extends ClassifiedElement {
   // Y-Axis
   @property({ type: String, attribute: 'key-y' }) keyY?: string
   @property({ type: String, attribute: 'axis-label-y' }) axisLabelY?: string
-  @property({ type: String, attribute: 'axis-label-display-y' }) axisLabelDisplayY: DashboardV3ChartLabelDisplayY = 'left'
+  @property({ type: String, attribute: 'axis-label-display-y' }) axisLabelDisplay?: DashboardV3ChartLabelDisplayY = 'left'
   @property({ type: String, attribute: 'ticks-y' }) ticksY?: string
   @property({ type: Boolean, attribute: 'nice-y' }) niceY?: boolean // if true (or a tick count), extend the domain to nice round values
   @property({ type: Boolean, attribute: 'grid-y' }) gridY?: boolean
 
   // Sorting & grouping
-  @property({ type: String, attribute: 'sort-order' }) sortOrder: DashboardV3ChartSortOrder = 'default'
+  @property({ type: String, attribute: 'sort-order' }) sortOrder?: DashboardV3ChartSortOrder
   @property({ type: String, attribute: 'group-by' }) groupBy?: string
 
   // Layout options: https://observablehq.com/plot/features/plots#layout-options
@@ -232,12 +235,13 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: String, attribute: 'title' }) mainTitle?: string // `mainTitle` because `title` is a core HTML/JS attribute
   @property({ type: String }) subtitle?: string
   @property({ type: String }) caption?: string
-  @property({ type: Boolean }) legend?: boolean
+  @property({ type: String }) legend?: DashboardV3ChartLegend
 
   // Quantitative scales
   @property({ type: Boolean }) clamp?: boolean // if true, clamp input values to the scale’s domain
   @property({ type: Boolean }) zero?: boolean // if true, extend the domain to include zero if needed
   @property({ type: Boolean }) percent?: boolean // if true, transform proportions in [0, 1] to percents in [0, 100]
+  // TODO does percent apply to `x` or `y`?
 
   public override willUpdate(changedProperties: PropertyValueMap<this>): void {
     super.willUpdate(changedProperties)
@@ -254,12 +258,26 @@ export default class AstraChart extends ClassifiedElement {
 
     if (changedProperties.has('data')) {
       // update chart type
-      this.type = this.data?.layers?.[0]?.type
+      this.type = this.data?.layers?.[0]?.type // TODO don't assume 1 layer
+      this.highlights = this.data?.highlights
+      // this.apiKey = this.data?.apiKey // <-- this will switch from using passed-in data to making API requests
+
+      const options = this.data?.options
+      if (options) {
+        this.legend = options.legend
+        this.axisLabelX = options.xAxisLabel
+        this.axisLabelY = options.yAxisLabel
+        this.keyX = options.xAxisKey
+        this.keyY = options.yAxisKeys?.[0] // TODO don't assume 1
+        this.sortOrder = options.sortOrder
+        this.percent = options.percentage
+        // TODO xAxisLabelDisplay, yAxisLabelDisplay, groupBy
+      }
     }
   }
 
   private getLatestPlot() {
-    const layer = this.data?.layers?.[0]
+    const layer = this.data?.layers?.[0] // TODO don't assume 1 layer
     if (!layer) return null
 
     const d = layer.result
