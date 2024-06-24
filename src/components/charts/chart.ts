@@ -101,10 +101,10 @@ export default class AstraChart extends ClassifiedElement {
           animation: 1.5s ease-out 0s drawLine forwards;
         }
 
-        g[aria-label='area'] {
-          opacity: 0;
-          transition: 0.4s ease-out;
-        }
+        // g[aria-label='area'] {
+        //   opacity: 0;
+        //   transition: 0.4s ease-out;
+        // }
 
         [aria-label='y-axis tick label'],
         [aria-label='y-axis tick'],
@@ -371,12 +371,12 @@ export default class AstraChart extends ClassifiedElement {
           textFill: '#e4e4e7',
         }),
 
-        areaY(d, {
-          x: this.keyX,
-          y: this.keyY,
-          fill: 'url(#mistGradient)',
-          fillOpacity: 0.2,
-        }),
+        // areaY(d, {
+        //   x: this.keyX,
+        //   y: this.keyY,
+        //   fill: 'url(#mistGradient)',
+        //   fillOpacity: 0.2,
+        // }),
 
         lineY(d, { x: this.keyX, y: this.keyY, stroke: 'url(#mist)', tip })
       )
@@ -388,12 +388,22 @@ export default class AstraChart extends ClassifiedElement {
       options.color.scheme = 'purples'
     }
 
-    console.log('this.type', this.type)
     if (this.type === 'scatter') {
       options.marks.push(
         dot(d, {
           x: this.keyX,
           y: this.keyY,
+        })
+      )
+    }
+
+    if (this.type === 'area') {
+      options.marks.push(
+        areaY(d, {
+          x: this.keyX,
+          y: this.keyY,
+          fill: 'url(#mistGradient)',
+          // fillOpacity: 0.2,
         })
       )
     }
@@ -414,11 +424,34 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   public render() {
-    const plot = this.getLatestPlot()
+    let plot: any
+
+    if (this.type === 'table') {
+      const firstRecord = this.data?.layers?.[0].result?.[0]?.originalValues
+      let schema
+      if (firstRecord) {
+        schema = { columns: Object.keys(firstRecord).map((k) => ({ name: k })) }
+      }
+
+      plot = html`<astra-table
+        schema=${JSON.stringify(schema)}
+        data="${JSON.stringify(this.data?.layers?.[0].result)}"
+        theme="light"
+        keyboard-shortcuts
+        selectable-rows
+        outer-border
+        blank-fill
+      ></astra-table>`
+    } else if (this.type === 'single_value') {
+      plot = html`<astra-text variant="h1">single_value</astra-text>`
+    } else if (this.type === 'text') {
+      plot = html`<astra-text variant="h1">text</astra-text>`
+    } else plot = this.getLatestPlot()
+
     const decoratedPlot = html`<div class="bg-zinc-50 selection:bg-violet-500/20 dark:bg-zinc-950 text-zinc-400 dark:text-zinc-600">
       ${plot}
     </div>`
-    const themedPlot = html`<div class="${classMap({ dark: this.theme === 'dark', '*:fade barY  *:animate-fade': true })}">
+    const themedPlot = html`<div class="${classMap({ dark: this.theme === 'dark', '*:fade barY *:animate-fade': true })}">
       ${decoratedPlot}
     </div>`
 
