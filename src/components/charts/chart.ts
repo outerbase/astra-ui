@@ -1,4 +1,4 @@
-import { areaY, barX, barY, crosshairX, gridX, gridY, lineY, plot } from '@observablehq/plot'
+import { areaY, barX, barY, crosshairX, dot, gridX, gridY, lineY, plot } from '@observablehq/plot'
 import { css, html, type PropertyValueMap } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
@@ -384,11 +384,18 @@ export default class AstraChart extends ClassifiedElement {
       // default to `nice` less explicitly set to false
       if (this.niceY !== false) this.niceY = true
 
-      // default to legend unless explicitly disabled
-      if (this.legend !== false) {
-        options.color.legend = true
-        options.color.scheme = 'purples'
-      }
+      options.color.legend = true
+      options.color.scheme = 'purples'
+    }
+
+    console.log('this.type', this.type)
+    if (this.type === 'scatter') {
+      options.marks.push(
+        dot(d, {
+          x: this.keyX,
+          y: this.keyY,
+        })
+      )
     }
 
     // LABELS
