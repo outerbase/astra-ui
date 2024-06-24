@@ -8,6 +8,7 @@ import '@fontsource/inter' // Defaults to weight 400
 
 // test data
 import spaceballs from '../lib/sample-data.json'
+import type { DashboardV3Chart } from '../types'
 const rows = spaceballs
   .map((d) => ({ ...d, traits: JSON.stringify(d.traits) }))
   .map((values) => ({ id: crypto.randomUUID(), values, originalValues: values }))
@@ -20,7 +21,7 @@ const optionsArray = [
   { label: 'Avocados', value: 'avocados' },
 ]
 
-const foo = await (
+const stockQuotes = await (
   await fetch('https://app.outerbase.com/api/v1/ezql/raw', {
     body: '{"query":"SELECT aapl.date, aapl.close FROM aapl ","params":{},"run":true}',
     cache: 'default',
@@ -42,30 +43,6 @@ const foo = await (
   })
 ).json()
 
-const data = {
-  name: 'wubbalubbadubdub',
-  description: 'this that and the other',
-  apiKey: 'asdf-1234',
-  layers: [
-    {
-      type: 'line',
-      result: foo.response.results.items.map((v: any) => ({ close: Number(v.close), date: new Date(v.date) })),
-    },
-  ],
-}
-
-const dataDots = {
-  name: 'wubbalubbadubdub',
-  description: 'this that and the other',
-  apiKey: 'asdf-1234',
-  layers: [
-    {
-      type: 'scatter',
-      result: foo.response.results.items.map((v: any) => ({ close: Number(v.close), date: new Date(v.date) })),
-    },
-  ],
-}
-
 const alphabet = await (
   await fetch('https://app.outerbase.com/api/v1/ezql/query/6eacc1c5-4f67-4ccc-a892-dca9d793063c', {
     cache: 'default',
@@ -86,13 +63,132 @@ const alphabet = await (
     referrerPolicy: 'strict-origin-when-cross-origin',
   })
 ).json()
-const data2 = {
+
+const lineData: DashboardV3Chart = {
   name: 'wubbalubbadubdub',
   description: 'this that and the other',
   apiKey: 'asdf-1234',
+  options: {
+    xAxisKey: 'date',
+    yAxisKeys: ['close'],
+  },
+  layers: [
+    {
+      type: 'line',
+      result: stockQuotes.response.results.items.map((v: any) => ({ close: Number(v.close), date: new Date(v.date) })),
+    },
+  ],
+}
+
+const areaData: DashboardV3Chart = {
+  name: 'wubbalubbadubdub',
+  description: 'this that and the other',
+  apiKey: 'asdf-1234',
+  options: {
+    xAxisKey: 'date',
+    yAxisKeys: ['close'],
+  },
+  layers: [
+    {
+      type: 'area',
+      result: stockQuotes.response.results.items.map((v: any) => ({ close: Number(v.close), date: new Date(v.date) })),
+    },
+  ],
+}
+
+const barData: DashboardV3Chart = {
+  name: 'wubbalubbadubdub',
+  description: 'this that and the other',
+  apiKey: 'asdf-1234',
+  options: {
+    yAxisKeys: ['starting_letter'],
+    xAxisKey: 'frequency',
+  },
+  layers: [
+    {
+      type: 'bar',
+      result: alphabet.response.results.items.map((v: any) => ({ frequency: Number(v.frequency), starting_letter: v.starting_letter })),
+    },
+  ],
+}
+
+const tableData: DashboardV3Chart = {
+  name: 'wubbalubbadubdub',
+  description: 'this that and the other',
+  apiKey: 'asdf-1234',
+  options: {
+    xAxisKey: 'date',
+    yAxisKeys: ['close'],
+  },
+  layers: [
+    {
+      type: 'table',
+      result: alphabet.response.results.items
+        .map((v: any) => ({ frequency: Number(v.frequency), starting_letter: v.starting_letter }))
+        .map((values: any) => ({ id: crypto.randomUUID(), values, originalValues: values })),
+    },
+  ],
+}
+
+const dotsData: DashboardV3Chart = {
+  name: 'wubbalubbadubdub',
+  description: 'this that and the other',
+  apiKey: 'asdf-1234',
+  options: {
+    xAxisKey: 'date',
+    yAxisKeys: ['close'],
+  },
+  layers: [
+    {
+      type: 'scatter',
+      result: stockQuotes.response.results.items.map((v: any) => ({ close: Number(v.close), date: new Date(v.date) })),
+    },
+  ],
+}
+
+const alphabetData: DashboardV3Chart = {
+  name: 'wubbalubbadubdub',
+  description: 'this that and the other',
+  apiKey: 'asdf-1234',
+  options: {
+    xAxisKey: 'starting_letter',
+    yAxisKeys: ['frequency'],
+  },
   layers: [
     {
       type: 'column',
+      result: alphabet.response.results.items.map((v: any) => ({ frequency: Number(v.frequency), starting_letter: v.starting_letter })),
+    },
+  ],
+}
+
+const singleData: DashboardV3Chart = {
+  name: 'wubbalubbadubdub',
+  description: 'this that and the other',
+  apiKey: 'asdf-1234',
+  options: {
+    xAxisKey: 'starting_letter',
+    yAxisKeys: ['frequency'],
+  },
+  layers: [
+    {
+      type: 'single_value',
+      result: alphabet.response.results.items.map((v: any) => ({ frequency: Number(v.frequency), starting_letter: v.starting_letter })),
+    },
+  ],
+}
+
+const textData: DashboardV3Chart = {
+  name: 'wubbalubbadubdub',
+  description: 'this that and the other',
+  apiKey: 'asdf-1234',
+  options: {
+    xAxisKey: 'starting_letter',
+    yAxisKeys: ['frequency'],
+  },
+  layers: [
+    {
+      type: 'text',
       result: alphabet.response.results.items.map((v: any) => ({ frequency: Number(v.frequency), starting_letter: v.starting_letter })),
     },
   ],
@@ -119,146 +215,257 @@ const data2 = {
 
   <main class="flex flex-col gap-8">
     <div>
-      <h2><pre>&lt;astra-chart /&gt;</pre></h2>
+      <h2><pre>&lt;astra-chart /&gt; as column</pre></h2>
       <div class="flex flex-col gap-4">
-        <!-- @ts-ignore -->
-        <Chart client:only="lit" data={dataDots} key-x="date" key-y="close" theme="light" />
-        <!-- @ts-ignore -->
-        <Chart client:only="lit" data={data} key-x="date" key-y="close" theme="light" />
-        <!-- @ts-ignore -->
-        <Chart client:only="lit" data={data2} key-x="starting_letter" key-y="frequency" theme="light" />
-        <!-- @ts-ignore -->
-        <Chart client:only="lit" data={data} key-x="date" key-y="close" theme="dark" />
-        <!-- @ts-ignore -->
-        <Chart client:only="lit" data={data} key-x="date" key-y="close" theme="dark" />
+        <Chart client:only="lit" data={alphabetData} theme="light" />
       </div>
     </div>
 
     <div>
-      <h2><pre>&lt;astra-composed-chart /&gt;</pre></h2>
-      <!-- @ts-ignore -->
-      <ComposedChart client:only="lit" data={data} key-x="date" key-y="close" theme="light" />
-      <!-- @ts-ignore -->
-      <ComposedChart client:only="lit" data={data} key-x="date" key-y="close" theme="dark" />
-    </div>
-
-    <div>
-      <h2><pre>&lt;astra-input /&gt;</pre></h2>
-      <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-      <Input client:load placeholder="This is a placeholder" label="demo input" />
-    </div>
-
-    <div>
-      <h2><pre>&lt;astra-button /&gt;</pre></h2>
-      <div class="flex gap-2 flex-col">
-        <div class="flex gap-2">
-          <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-          <Button disabled>primary + disabled</Button>
-          <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-          <Button variant="primary">primary</Button>
-          <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-          <Button variant="secondary">secondary</Button>
-          <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-          <Button variant="secondary" disabled>secondary disabled</Button>
-          <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-          <Button variant="transparent">transparent</Button>
-          <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-          <Button variant="transparent" disabled>transparent disabled</Button>
-        </div>
-        <div class="flex gap-2">
-          <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-          <Button client:load size="base">size="base"</Button>
-          <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-          <Button client:load size="small">size="small"</Button>
-          <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-          <Button client:load size="compact">size="compact"</Button>
-        </div>
-        <div class="flex gap-2">
-          <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-          <Button client:load size="base" disabled>size="base" disabled</Button>
-          <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-          <Button client:load size="small" disabled>size="small" disabled</Button>
-          <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-          <Button client:load size="compact" disabled>size="compact" disabled</Button>
-        </div>
+      <h2><pre>&lt;astra-chart /&gt; as bar</pre></h2>
+      <div class="flex flex-col gap-4">
+        <Chart client:only="lit" data={barData} theme="light" />
       </div>
     </div>
 
     <div>
-      <h2><pre>&lt;astra-card /&gt;</pre></h2>
-      <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-      <Card client:load id="arbitrary-button-id">
-        <div>Div tag</div>
-        <p>Paragraph tag</p>
-        <span>Span tag</span>
-      </Card>
-    </div>
-
-    <div>
-      <h2><pre>&lt;astra-text /&gt;</pre></h2>
-      <Text client:load>variant=undefined</Text>
-      <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-      <Text client:load variant="label">variant=label</Text>
-      <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-      <Text client:load variant="h1">variant=h1</Text>
-      <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-      <Text client:load variant="h2">variant=h2</Text>
-      <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-      <Text client:load variant="h3">variant=h3</Text>
-      <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-      <Text client:load variant="h4">variant=h4</Text>
-    </div>
-
-    <div>
-      <h2><pre>&lt;astra-select /&gt;</pre></h2>
-      <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-      <Select client:load options={optionsArray} placeholder="Choose a fruit" />
-    </div>
-
-    <div>
-      <h2>&lt;astra-table theme="light" /&gt;</h2>
-      <div class="dark:bg-black w-full">
-        <div class="relative h-52">
-          <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-          <Table client:load theme="light" schema={{ columns }} data={rows} keyboard-shortcuts selectable-rows outer-border blank-fill />
-        </div>
-      </div>
-
-      <h2>&lt;astra-table theme="dark" /&gt;</h2>
-      <div class="dark:bg-black w-full">
-        <div class="relative h-52">
-          <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-          <Table client:load theme="dark" schema={{ columns }} data={rows} keyboard-shortcuts selectable-rows outer-border blank-fill />
-        </div>
+      <h2><pre>&lt;astra-chart /&gt; as line</pre></h2>
+      <div class="flex flex-col gap-4">
+        <Chart client:only="lit" data={lineData} theme="light" />
       </div>
     </div>
 
     <div>
-      <h2>&lt;astra-scroll-area /&gt;</h2>
-      <div class="bg-white dark:bg-black">
-        <h3 class="text-xs black">axis unspecified</h3>
-        <div class="relative h-52 px-8">
-          <ScrollArea client:load><div class="h-[1200px] w-[2400px] bg-blue-50 dark:bg-blue-950"></div></ScrollArea>
-        </div>
-
-        <h3 class="text-xs black">axis=horizontal</h3>
-        <div class="relative h-52 px-8">
-          <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-          <ScrollArea client:load axis="horizontal"><div class="h-[1200px] w-[2400px] bg-yellow-50 dark:bg-yellow-950"></div></ScrollArea>
-        </div>
-
-        <h3 class="text-xs black">axis=vertical</h3>
-        <div class="relative h-52 px-8">
-          <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-          <ScrollArea client:load axis="vertical"><div class="h-[1200px] w-[2400px] bg-green-50 dark:bg-green-950"></div></ScrollArea>
-        </div>
-
-        <h3 class="text-xs black">axis=both</h3>
-        <div class="relative h-52 px-8">
-          <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-          <ScrollArea client:load axis="both"><div class="h-[1200px] w-[2400px] bg-red-50 dark:bg-red-950"></div></ScrollArea>
-        </div>
+      <h2><pre>&lt;astra-chart /&gt; as area</pre></h2>
+      <div class="flex flex-col gap-4">
+        <Chart client:only="lit" data={areaData} theme="light" />
       </div>
     </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as dots</pre></h2>
+      <div class="flex flex-col gap-4">
+        <Chart client:only="lit" data={dotsData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as table</pre></h2>
+      <h3>
+        Tables require the container of the Chart to be relatively positioned with an explicit height/width -- because of how virtualized
+        scrolling works in the table
+      </h3>
+      <div class="flex flex-col gap-4 relative w-full h-96">
+        <Chart client:only="lit" data={tableData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as single_value</pre></h2>
+      <h3>
+        Tables require the container of the Chart to be relatively positioned with an explicit height/width -- because of how virtualized
+        scrolling works in the table
+      </h3>
+      <div class="flex flex-col gap-4 relative w-full h-96">
+        <Chart client:only="lit" data={singleData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as text</pre></h2>
+      <h3>
+        Tables require the container of the Chart to be relatively positioned with an explicit height/width -- because of how virtualized
+        scrolling works in the table
+      </h3>
+      <div class="flex flex-col gap-4 relative w-full h-96">
+        <Chart client:only="lit" data={textData} theme="light" />
+      </div>
+    </div>
+
+    <hr />
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as column</pre></h2>
+      <div class="flex flex-col gap-4">
+        <ComposedChart client:only="lit" data={alphabetData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as bar</pre></h2>
+      <div class="flex flex-col gap-4">
+        <ComposedChart client:only="lit" data={barData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as line</pre></h2>
+      <div class="flex flex-col gap-4">
+        <ComposedChart client:only="lit" data={lineData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as area</pre></h2>
+      <div class="flex flex-col gap-4">
+        <ComposedChart client:only="lit" data={areaData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as dots</pre></h2>
+      <div class="flex flex-col gap-4">
+        <ComposedChart client:only="lit" data={dotsData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as table</pre></h2>
+      <h3>
+        Tables require the container of the Chart to be relatively positioned with an explicit height/width -- because of how virtualized
+        scrolling works in the table
+      </h3>
+      <div class="flex flex-col gap-4 relative w-full h-96">
+        <Chart client:only="lit" data={tableData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as single_value</pre></h2>
+      <h3>
+        Tables require the container of the Chart to be relatively positioned with an explicit height/width -- because of how virtualized
+        scrolling works in the table
+      </h3>
+      <div class="flex flex-col gap-4 relative w-full h-96">
+        <Chart client:only="lit" data={singleData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as text</pre></h2>
+      <h3>
+        Tables require the container of the Chart to be relatively positioned with an explicit height/width -- because of how virtualized
+        scrolling works in the table
+      </h3>
+      <div class="flex flex-col gap-4 relative w-full h-96">
+        <Chart client:only="lit" data={textData} theme="light" />
+      </div>
+    </div>
+    <hr <div />
+    <h2><pre>&lt;astra-input /&gt;</pre></h2>
+    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+    <Input client:load placeholder="This is a placeholder" label="demo input" />
   </main>
+
+  <div>
+    <h2><pre>&lt;astra-button /&gt;</pre></h2>
+    <div class="flex gap-2 flex-col">
+      <div class="flex gap-2">
+        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+        <Button disabled>primary + disabled</Button>
+        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+        <Button variant="primary">primary</Button>
+        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+        <Button variant="secondary">secondary</Button>
+        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+        <Button variant="secondary" disabled>secondary disabled</Button>
+        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+        <Button variant="transparent">transparent</Button>
+        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+        <Button variant="transparent" disabled>transparent disabled</Button>
+      </div>
+      <div class="flex gap-2">
+        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+        <Button client:load size="base">size="base"</Button>
+        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+        <Button client:load size="small">size="small"</Button>
+        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+        <Button client:load size="compact">size="compact"</Button>
+      </div>
+      <div class="flex gap-2">
+        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+        <Button client:load size="base" disabled>size="base" disabled</Button>
+        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+        <Button client:load size="small" disabled>size="small" disabled</Button>
+        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+        <Button client:load size="compact" disabled>size="compact" disabled</Button>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <h2><pre>&lt;astra-card /&gt;</pre></h2>
+    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+    <Card client:load id="arbitrary-button-id">
+      <div>Div tag</div>
+      <p>Paragraph tag</p>
+      <span>Span tag</span>
+    </Card>
+  </div>
+
+  <div>
+    <h2><pre>&lt;astra-text /&gt;</pre></h2>
+    <Text client:load>variant=undefined</Text>
+    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+    <Text client:load variant="label">variant=label</Text>
+    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+    <Text client:load variant="h1">variant=h1</Text>
+    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+    <Text client:load variant="h2">variant=h2</Text>
+    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+    <Text client:load variant="h3">variant=h3</Text>
+    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+    <Text client:load variant="h4">variant=h4</Text>
+  </div>
+
+  <div>
+    <h2><pre>&lt;astra-select /&gt;</pre></h2>
+    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+    <Select client:load options={optionsArray} placeholder="Choose a fruit" />
+  </div>
+
+  <div>
+    <h2>&lt;astra-table theme="light" /&gt;</h2>
+    <div class="dark:bg-black w-full">
+      <div class="relative h-52">
+        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+        <Table client:load theme="light" schema={{ columns }} data={rows} keyboard-shortcuts selectable-rows outer-border blank-fill />
+      </div>
+    </div>
+
+    <h2>&lt;astra-table theme="dark" /&gt;</h2>
+    <div class="dark:bg-black w-full">
+      <div class="relative h-52">
+        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+        <Table client:load theme="dark" schema={{ columns }} data={rows} keyboard-shortcuts selectable-rows outer-border blank-fill />
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <h2>&lt;astra-scroll-area /&gt;</h2>
+    <div class="bg-white dark:bg-black">
+      <h3 class="text-xs black">axis unspecified</h3>
+      <div class="relative h-52 px-8">
+        <ScrollArea client:load><div class="h-[1200px] w-[2400px] bg-blue-50 dark:bg-blue-950"></div></ScrollArea>
+      </div>
+
+      <h3 class="text-xs black">axis=horizontal</h3>
+      <div class="relative h-52 px-8">
+        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+        <ScrollArea client:load axis="horizontal"><div class="h-[1200px] w-[2400px] bg-yellow-50 dark:bg-yellow-950"></div></ScrollArea>
+      </div>
+
+      <h3 class="text-xs black">axis=vertical</h3>
+      <div class="relative h-52 px-8">
+        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+        <ScrollArea client:load axis="vertical"><div class="h-[1200px] w-[2400px] bg-green-50 dark:bg-green-950"></div></ScrollArea>
+      </div>
+
+      <h3 class="text-xs black">axis=both</h3>
+      <div class="relative h-52 px-8">
+        <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
+        <ScrollArea client:load axis="both"><div class="h-[1200px] w-[2400px] bg-red-50 dark:bg-red-950"></div></ScrollArea>
+      </div>
+    </div>
+  </div>
 </Layout>
