@@ -54,6 +54,18 @@ const data = {
   ],
 }
 
+const dataDots = {
+  name: 'wubbalubbadubdub',
+  description: 'this that and the other',
+  apiKey: 'asdf-1234',
+  layers: [
+    {
+      type: 'scatter',
+      result: foo.response.results.items.map((v: any) => ({ close: Number(v.close), date: new Date(v.date) })),
+    },
+  ],
+}
+
 const alphabet = await (
   await fetch('https://app.outerbase.com/api/v1/ezql/query/6eacc1c5-4f67-4ccc-a892-dca9d793063c', {
     cache: 'default',
@@ -110,9 +122,13 @@ const data2 = {
       <h2><pre>&lt;astra-chart /&gt;</pre></h2>
       <div class="flex flex-col gap-4">
         <!-- @ts-ignore -->
+        <Chart client:only="lit" data={dataDots} key-x="date" key-y="close" theme="light" />
+        <!-- @ts-ignore -->
         <Chart client:only="lit" data={data} key-x="date" key-y="close" theme="light" />
         <!-- @ts-ignore -->
         <Chart client:only="lit" data={data2} key-x="starting_letter" key-y="frequency" theme="light" />
+        <!-- @ts-ignore -->
+        <Chart client:only="lit" data={data} key-x="date" key-y="close" theme="dark" />
         <!-- @ts-ignore -->
         <Chart client:only="lit" data={data} key-x="date" key-y="close" theme="dark" />
       </div>
