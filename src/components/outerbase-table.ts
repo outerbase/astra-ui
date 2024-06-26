@@ -1,8 +1,9 @@
 import { css, html, type PropertyValueMap } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
+import { isEqual } from 'lodash-es'
 import { ArrowsClockwise } from '../icons/arrows-clockwise.js'
-import type { APIResponse, Fields, Rows, SourceSchema, Table } from '../types.js'
+import type { APIResponse, CellUpdateEvent, Fields, MenuSelectedEvent, Rows, SourceSchema, Table } from '../types.js'
 import './button.js' // Ensure the button component is imported
 import AstraTable from './table/index.js'
 
@@ -29,6 +30,14 @@ export default class OuterbaseTable extends AstraTable {
   @state() fields?: Fields
   @state() sourceSchema?: SourceSchema
   @state() table?: Table
+  @state() hasSelectedRows = false
+  @state() hasChanges = false
+
+  constructor() {
+    super()
+    this.onCellUpdated = this.onCellUpdated.bind(this)
+    this.onMenuSelection = this.onMenuSelection.bind(this)
+  }
 
   protected async fetchSchema() {
     if (!(this.apiKey && this.sourceId && this.workspaceId)) {
@@ -65,14 +74,29 @@ export default class OuterbaseTable extends AstraTable {
       )
     ).json()
 
-    return data.response
+    // stringify all the values so user modifications are consistent with the "OG" data
+    // i.e. +46 <=> "46"
+    const stringifiedData: Record<string, string>[] = []
+    data.response.items.forEach((row) => {
+      const _row: Record<string, string> = {}
+      Object.entries(row).forEach(([key, value]) => {
+        const _key = key.toString()
+        if (!_key || !value) return
+
+        _row[_key] = value?.toString()
+      })
+
+      stringifiedData.push(_row)
+    })
+
+    return { ...data.response, items: stringifiedData }
   }
 
-  protected onClickAddRow(_event: MouseEvent) {
+  protected onAddRow(_event: MouseEvent) {
     this.addNewRow()
   }
 
-  protected async onRefresh(_event?: MouseEvent) {
+  protected async onRefresh() {
     // fetch new rows
     const data = await this.fetchData()
     this.data = data.items.map((r) => ({
@@ -84,10 +108,44 @@ export default class OuterbaseTable extends AstraTable {
     this.total = data.count
   }
 
+  protected onDeleteRows() {
+    // TODO submit request to delete rows
+    console.debug('onDeleteRows')
+    this.clearSelection()
+  }
+
+  protected onSaveRows() {
+    // TODO submit request to save changes
+    console.debug('onSaveRows')
+  }
+
+  protected onCellUpdated(event: Event) {
+    const cellUpdateEvent = event as CellUpdateEvent
+    const { column, row: rowId } = cellUpdateEvent.detail.position
+
+    // find this row in our collection
+    const row = this.rows.find((r) => r.id === rowId)
+
+    if (!row) throw new Error(`Failed to find row with ID = ${rowId}`)
+
+    // update it's value to reflect the change
+    row.values[column] = cellUpdateEvent.detail.value
+
+    // update the table to reflect whether something is dirty
+    this.hasChanges = this.rows.some((r) => !isEqual(r.originalValues, r.values))
+  }
+
+  protected onMenuSelection(event: Event) {
+    const cellUpdateEvent = event as MenuSelectedEvent
+    if (cellUpdateEvent.value === 'reset') {
+      this.hasChanges = this.rows.some((r) => !isEqual(r.originalValues, r.values))
+    }
+  }
+
   override async willUpdate(changedProperties: PropertyValueMap<this>) {
     super.willUpdate(changedProperties)
-
     const has = changedProperties.has.bind(changedProperties)
+
     if (
       (has('apiKey') || has('sourceId') || has('workspaceId') || has('schemaName') || has('tableName')) &&
       this.apiKey &&
@@ -109,17 +167,39 @@ export default class OuterbaseTable extends AstraTable {
     ) {
       this.onRefresh()
     }
+
+    this.hasSelectedRows = this.selectedRowUUIDs.size > 0
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback()
+    this.addEventListener('cell-updated', this.onCellUpdated)
+    this.addEventListener('menu-selection', this.onMenuSelection)
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback
+    this.removeEventListener('cell-updated', this.onCellUpdated)
+    this.removeEventListener('menu-selection', this.onMenuSelection)
   }
 
   public override render() {
     const table = super.render()
+
+    const deleteBtn = this.hasSelectedRows
+      ? html`<astra-button size="compact" theme="${this.theme}" @click=${this.onDeleteRows}>Delete Rows</astra-button>`
+      : null
+
+    const saveBtn = this.hasChanges
+      ? html`<astra-button size="compact" theme="${this.theme}" @click=${this.onSaveRows}>Save</astra-button>`
+      : null
+
     return html`
       <div class=${classMap({ dark: this.theme === 'dark', 'flex flex-col h-full': true, 'bg-black': this.theme === 'dark' })}>
         <div class="flex flex-col h-full text-black dark:text-white">
           <div id="action-bar" class="h-12 font-medium dark:bg-neutral-950 items-center justify-end flex gap-2.5 text-sm p-2 rounded-t">
-            <!-- TODO add 'Delete X Record(s)' -->
-            <!-- TODO add 'Save changes' -->
-            <astra-button size="compact" theme="${this.theme}" @click=${this.onClickAddRow}>Add Row</astra-button>
+            ${deleteBtn} ${saveBtn}
+            <astra-button size="compact" theme="${this.theme}" @click=${this.onAddRow}>Add Row</astra-button>
             <astra-button size="compact" theme="${this.theme}" @click=${this.onRefresh}>${ArrowsClockwise(16)}</astra-button>
           </div>
 
