@@ -485,7 +485,7 @@ export class TableData extends MutableElement {
             <astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
               <span class=${contentWrapperClass}>${cellContents}</span>
               ${this.isDisplayingPluginEditor
-                ? html`<span id="plugin-editor" class="absolute top-8 caret-current cursor-auto">${cellEditorContents}</span>`
+                ? html`<span id="plugin-editor" class="absolute top-8 caret-current cursor-auto z-10">${cellEditorContents}</span>`
                 : null}
             </astra-td-menu>
           </span>`
