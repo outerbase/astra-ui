@@ -554,6 +554,7 @@ export default class AstraTable extends ClassifiedElement {
       'text-theme-text dark:text-theme-text-dark text-sm': true,
       'min-w-full': true,
       relative: true,
+      dark: this.theme === 'dark',
     }
 
     const selectAllCheckbox =
