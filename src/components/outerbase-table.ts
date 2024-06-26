@@ -72,6 +72,18 @@ export default class OuterbaseTable extends AstraTable {
     this.addNewRow()
   }
 
+  protected async onRefresh(_event?: MouseEvent) {
+    // fetch new rows
+    const data = await this.fetchData()
+    this.data = data.items.map((r) => ({
+      id: self.crypto.randomUUID(),
+      values: { ...r },
+      originalValues: r,
+      isNew: false,
+    }))
+    this.total = data.count
+  }
+
   override async willUpdate(changedProperties: PropertyValueMap<this>) {
     super.willUpdate(changedProperties)
 
@@ -95,15 +107,7 @@ export default class OuterbaseTable extends AstraTable {
       this.workspaceId &&
       this.fields
     ) {
-      // fetch new rows
-      const data = await this.fetchData()
-      this.data = data.items.map((r) => ({
-        id: self.crypto.randomUUID(),
-        values: { ...r },
-        originalValues: r,
-        isNew: false,
-      }))
-      this.total = data.count
+      this.onRefresh()
     }
   }
 
@@ -116,7 +120,7 @@ export default class OuterbaseTable extends AstraTable {
             <!-- TODO add 'Delete X Record(s)' -->
             <!-- TODO add 'Save changes' -->
             <astra-button size="compact" @click=${this.onClickAddRow} theme="dark">Add Row</astra-button>
-            <astra-button size="compact" theme="dark">${ArrowsClockwise(16)}</astra-button>
+            <astra-button size="compact" theme="${this.theme}" @click=${this.onRefresh}>${ArrowsClockwise(16)}</astra-button>
           </div>
 
           <div class="relative flex-1">${table}</div>
