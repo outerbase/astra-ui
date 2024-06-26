@@ -119,7 +119,7 @@ export default class OuterbaseTable extends AstraTable {
           <div id="action-bar" class="h-12 font-medium dark:bg-neutral-950 items-center justify-end flex gap-2.5 text-sm p-2 rounded-t">
             <!-- TODO add 'Delete X Record(s)' -->
             <!-- TODO add 'Save changes' -->
-            <astra-button size="compact" @click=${this.onClickAddRow} theme="dark">Add Row</astra-button>
+            <astra-button size="compact" theme="${this.theme}" @click=${this.onClickAddRow}>Add Row</astra-button>
             <astra-button size="compact" theme="${this.theme}" @click=${this.onRefresh}>${ArrowsClockwise(16)}</astra-button>
           </div>
 
