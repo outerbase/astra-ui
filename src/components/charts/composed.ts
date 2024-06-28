@@ -63,14 +63,14 @@ export default class AstraComposedChart extends AstraChart {
 
     // render chart
     const chart = super.render()
-    const chartSection = html`<div id="chart" class="flex-1 p-2 flex items-center justify-center min-h-96 ">${chart}</div>`
+    const chartSection = html`<div id="chart" class="flex-1 p-2 flex items-center justify-center">${chart}</div>`
 
     // render result
     return html`
-      <div class="${classMap({ dark: this.theme === 'dark' })}">
+      <div class="${classMap({ dark: this.theme === 'dark' })} h-full">
         <div
           id="composed-chart"
-          class="dark:text-neutral-50 text-neutral-950 flex flex-col p-4 gap-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-950 group/actions"
+          class="dark:text-neutral-50 text-neutral-950 h-full flex flex-col p-4 gap-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-950 group/actions"
         >
           ${headerSection} ${highlightSection} ${chartSection}
         </div>

@@ -234,16 +234,21 @@ export type DashboardV3Chart = {
   // The unique identifier for the chart
   id?: string
   // The name of the chart as provided by the user
-  name: string
+  name?: string
+  // Description of the chart, optional
   description?: string
   // An API key value that is used to fetch details of the chart
   apiKey: string
   // Array of queries that are used to render various charts on the widget
   layers: Array<DashboardV3ChartQuery>
-  // highlights
+  // callouts
+  // callouts?: Array<DashboardV3Callout>
   highlights?: Array<DashboardV3HighlightType>
   // Chart options
   options: DashboardV3ChartOptions
+
+  params?: {}
+  type?: ChartTypeV3
 }
 
 export enum DashboardFilterType {
