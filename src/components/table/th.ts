@@ -242,9 +242,8 @@ export class TH extends MutableElement {
     super.willUpdate(changedProperties)
 
     if (changedProperties.has('plugins')) {
-      const withoutDefault = this.plugins?.filter((p) => !p.isDefault) ?? []
       this._pluginOptions =
-        withoutDefault.map((plugin) => ({
+        this.plugins?.map((plugin) => ({
           label: plugin.displayName,
           value: plugin.tagName,
         })) ?? []
