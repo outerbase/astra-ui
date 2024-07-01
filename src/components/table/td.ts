@@ -402,12 +402,22 @@ export class TableData extends MutableElement {
   }
 
   public override render() {
-    const value = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value) : this.value
-    const editorValue = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value, null, 2) : this.value
+    let value = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value) : this.value
+    let editorValue = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value, null, 2) : this.value
     const contentWrapperClass = classMap({
       'font-normal': true,
       dark: this.theme === 'dark',
     })
+
+    if (value && typeof value === 'string') {
+      // Replace single, double, and backticks with their HTML entity equivalents
+      value = value.replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/`/g, '&#96;')
+    }
+
+    if (editorValue && typeof editorValue === 'string') {
+      // Replace single, double, and backticks with their HTML entity equivalents
+      editorValue = editorValue.replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/`/g, '&#96;')
+    }
 
     let cellContents: TemplateResult<1>
     let cellEditorContents: DirectiveResult<typeof UnsafeHTMLDirective> | undefined
