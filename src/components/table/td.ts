@@ -7,7 +7,7 @@ import { UnsafeHTMLDirective, unsafeHTML } from 'lit/directives/unsafe-html.js'
 
 import { eventTargetIsPlugin, eventTargetIsPluginEditor } from '../../lib/event-target-is-plugin.js'
 import { type MenuSelectedEvent } from '../../lib/events.js'
-import { PluginEvent, Theme, type ColumnPlugin, type Serializable } from '../../types.js'
+import { PluginEvent, type ColumnPlugin, type Serializable } from '../../types.js'
 import '../menu/cell-menu.js' // <astra-td-menu />
 import type { CellMenu } from '../menu/cell-menu.js'
 import { JSON_TYPES, MutableElement } from '../mutable-element.js'
@@ -406,30 +406,31 @@ export class TableData extends MutableElement {
     let editorValue = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value, null, 2) : this.value
     const contentWrapperClass = classMap({
       'font-normal': true,
-      dark: this.theme == Theme.dark,
+      dark: this.theme === 'dark',
     })
-
-    if (value && typeof value === 'string') {
-      // Replace single, double, and backticks with their HTML entity equivalents
-      value = value.replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/`/g, '&#96;')
-    }
-
-    if (editorValue && typeof editorValue === 'string') {
-      // Replace single, double, and backticks with their HTML entity equivalents
-      editorValue = editorValue.replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/`/g, '&#96;')
-    }
 
     let cellContents: TemplateResult<1>
     let cellEditorContents: DirectiveResult<typeof UnsafeHTMLDirective> | undefined
 
     if (this.plugin) {
+      let pluginValue = value
+      if (value && typeof value === 'string') {
+        // Replace single, double, and backticks with their HTML entity equivalents
+        pluginValue = value.replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/`/g, '&#96;')
+      }
+
+      if (editorValue && typeof editorValue === 'string') {
+        // Replace single, double, and backticks with their HTML entity equivalents
+        editorValue = editorValue.replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/`/g, '&#96;')
+      }
+
       const { config, tagName } = this.plugin
 
       // TODO the plugin receives `null` as a string 'null' since params are always stringified
       //      we can resolve this by omitting `cellvalue` to represent null, but as of today, that renders `undefined` in our plugins
       //      `<${tagName} ${value !== null ? `cellvalue='${value}` : ''} configuration='${config}' ${this.pluginAttributes}></${tagName}>`
       const pluginAsString = unsafeHTML(
-        `<${tagName} cellvalue='${value}' columnName='${this.column}'  configuration='${config}' ${this.pluginAttributes}></${tagName}>`
+        `<${tagName} cellvalue='${pluginValue}' columnName='${this.column}'  configuration='${config}' ${this.pluginAttributes}></${tagName}>`
       )
 
       cellContents = html`${pluginAsString}`

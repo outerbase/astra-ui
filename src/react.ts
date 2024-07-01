@@ -4,6 +4,8 @@ import { createComponent } from '@lit/react'
 
 import AstraButton from './components/button.js'
 import AstraCard from './components/card.js'
+import AstraChart from './components/charts/chart.js'
+import AstraComposedChart from './components/charts/composed.js'
 import AstraInput from './components/input.js'
 import AstraScrollArea from './components/scroll-area.js'
 import AstraSelect from './components/select.js'
@@ -45,6 +47,16 @@ export default function LitComponents(React: any) {
     Table: createComponent({
       tagName: 'astra-table',
       elementClass: AstraTable,
+      react: React,
+    }),
+    ComposedChart: createComponent({
+      tagName: 'astra-composed-chart',
+      elementClass: AstraComposedChart,
+      react: React,
+    }),
+    Chart: createComponent({
+      tagName: 'astra-chart',
+      elementClass: AstraChart,
       react: React,
     }),
   }

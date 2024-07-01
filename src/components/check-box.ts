@@ -4,7 +4,6 @@ import { classMap } from 'lit/directives/class-map.js'
 import { CheckMark } from '../icons/check-mark.js'
 import { TWStyles } from '../lib/.tw-styles.js'
 import { CheckEvent } from '../lib/events.js'
-import { Theme } from '../types.js'
 
 @customElement('check-box')
 export class CustomCheckbox extends LitElement {
@@ -16,7 +15,7 @@ export class CustomCheckbox extends LitElement {
   static uncheckedTemplate = html`<span class="w-4 h-4 border border-neutral-500 rounded-md"></span>`
 
   @property({ type: Boolean }) checked = false
-  @property({ type: String }) theme = Theme.light
+  @property({ type: String }) theme = 'light'
 
   toggleCheckbox(event: Event) {
     event.preventDefault()
@@ -49,7 +48,7 @@ export class CustomCheckbox extends LitElement {
   render() {
     const classes = classMap({
       'flex items-center cursor-pointer': true,
-      dark: this.theme == Theme.dark,
+      dark: this.theme === 'dark',
     })
 
     return html`

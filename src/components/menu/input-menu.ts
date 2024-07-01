@@ -4,7 +4,6 @@ import { classMap } from 'lit/directives/class-map.js'
 
 import { CaretDown } from '../../icons/caret-down.js'
 import { ChangeEvent, MenuSelectedEvent } from '../../lib/events.js'
-import { Theme } from '../../types.js'
 import { Menu } from './index.js'
 
 @customElement('astra-input-menu')
@@ -82,7 +81,7 @@ export class InputMenu extends Menu {
             }}
                 class=${classMap({
                   'relative w-full': true,
-                  dark: this.theme == Theme.dark,
+                  dark: this.theme === 'dark',
                   ...this._classMap,
                 })}
                 tabindex="0"

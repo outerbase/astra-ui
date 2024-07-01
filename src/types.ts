@@ -2,24 +2,21 @@ import { type TemplateResult } from 'lit'
 
 export * from './lib/events.js'
 
-export enum Theme {
-  light = 'light',
-  dark = 'dark',
-}
-
+export type Theme = 'light' | 'dark'
 export enum Axis {
   'horizontal' = 'horizontal',
   'vertical' = 'vertical',
   'both' = 'both',
 }
 
-// copied from dashboard
 export type TableColumnType = 'string' | 'integer' | 'enum' | 'uuid' | 'date' | 'dateonly'
+
 export enum ColumnStatus {
   created,
   updated,
   deleted,
 }
+
 export enum DBType {
   REAL = 'REAL',
   INTEGER = 'INTEGER',
@@ -64,6 +61,7 @@ export enum DBType {
   TSQUERY = 'TSQUERY',
   VARYING = 'CHARACTER VARYING',
 }
+
 export type TableColumn = {
   model?: 'column'
   type?: string
@@ -84,7 +82,9 @@ export type TableColumn = {
 export type Schema = {
   columns: Columns
 }
+
 export type Columns = Array<TableColumn>
+
 export type RowAsRecord = {
   id: string
   values: Record<string, Serializable>
@@ -180,3 +180,113 @@ export type Serializable =
   | SerializableRecord
 export interface SerializableArray extends Array<Serializable> {}
 export interface SerializableRecord extends Record<string, Serializable> {}
+
+// CHARTS
+export type Row = Record<string, Serializable>
+export type ChartTypeV3 = 'column' | 'bar' | 'line' | 'area' | 'single_value' | 'table' | 'scatter' | 'heatmap' | 'text'
+export type DashboardV3ChartLegend = 'none' | 'top' | 'bottom' | 'left' | 'right'
+export type DashboardV3ChartLabelDisplayX = 'auto' | '0' | '45' | '90' | 'hidden'
+export type DashboardV3ChartLabelDisplayY = 'left' | 'right' | 'hidden'
+export type DashboardV3ChartSortOrder = 'default' | 'asc' | 'desc'
+export type DashboardV3HighlightType = 'total' | 'average' | 'percent_change'
+
+export type DashboardV3ChartQuery = {
+  // SQL query to fetch the data for the chart
+  sql?: string
+  // If the source of the SQL is from an attached saved query, this is the ID of the saved query
+  queryId?: string
+  // The type of chart to render
+  type: ChartTypeV3
+  // The data result of the query being executed
+  result: Row[] | null | undefined
+  // Indicates if this queries results should be hidden from the user
+  hidden?: boolean
+}
+
+export type DashboardV3ChartOptions = {
+  // The location of the legend on the chart
+  legend?: DashboardV3ChartLegend
+  // The X axis label for the chart
+  xAxisLabel?: string
+  // The Y axis label for the chart
+  yAxisLabel?: string
+  // The X axis column key for the chart
+  xAxisKey?: string
+  // The Y axis column keys for the chart series
+  yAxisKeys?: string[]
+  // The display, or hidden, and angle degree of the X axis labels
+  xAxisLabelDisplay?: DashboardV3ChartLabelDisplayX
+  // The position of the Y axis, or hidden
+  yAxisLabelDisplay?: DashboardV3ChartLabelDisplayY
+  // Order the data in a specific order
+  sortOrder?: DashboardV3ChartSortOrder
+  // The column to group the data by
+  groupBy?: string
+  // indicate that we're using % values
+  percentage?: boolean
+}
+
+export type DashboardV3Highlight = {
+  type: DashboardV3HighlightType
+}
+
+export type DashboardV3Chart = {
+  // The unique identifier for the chart
+  id?: string
+  // The name of the chart as provided by the user
+  name?: string
+  // Description of the chart, optional
+  description?: string
+  // An API key value that is used to fetch details of the chart
+  apiKey: string
+  // Array of queries that are used to render various charts on the widget
+  layers: Array<DashboardV3ChartQuery>
+  // callouts
+  // callouts?: Array<DashboardV3Callout>
+  highlights?: Array<DashboardV3HighlightType>
+  // Chart options
+  options: DashboardV3ChartOptions
+
+  params?: {}
+  type?: ChartTypeV3
+}
+
+export enum DashboardFilterType {
+  enum = 'enum',
+  sql = 'sql',
+  search = 'search',
+}
+
+export type DashboardV3Filters = {
+  type: DashboardFilterType
+  name: string
+  value: string
+  sql?: string
+  options?: Array<string>
+}
+
+export type DashboardV3 = {
+  id: string
+  name: string
+  // Specify a version of the chart to allow for backwards compatibility
+  version?: number
+  charts: Array<DashboardV3Chart>
+  chart_ids: Array<string>
+  layout: Array<{
+    // Unique identifier of the item in this layout position
+    i: string
+    // The X value where the item starts in the layout grid
+    x: number
+    // The Y value where the item starts in the layout grid
+    y: number
+    // The width of the item in the layout grid
+    w: number
+    // The height of the item in the layout grid
+    h: number
+    // The maximum height of the item in the layout grid
+    maxH: number
+    // The maximum width of the item in the layout grid
+    maxW: number
+  }>
+  filters?: Array<DashboardV3Filters>
+}

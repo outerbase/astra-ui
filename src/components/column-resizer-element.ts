@@ -2,7 +2,6 @@ import { html, type PropertyValueMap } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { ResizeEndEvent, ResizeEvent, ResizeStartEvent } from '../lib/events.js'
-import { Theme } from '../types.js'
 import { ClassifiedElement } from './classified-element.js'
 import type { TH } from './table/th.js'
 
@@ -72,7 +71,7 @@ export class ColumnResizer extends ClassifiedElement {
       'absolute z-[1] top-0 bottom-0 -right-[7px] w-4': true,
       'flex justify-center': true,
       'cursor-col-resize group': true,
-      dark: this.theme == Theme.dark,
+      dark: this.theme === 'dark',
     })
 
     // the reason for nested div's here is to increase the click/draggable area while preserving a smaller visual element
