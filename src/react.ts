@@ -3,6 +3,7 @@
 import { createComponent } from '@lit/react'
 
 import AstraButton from './components/button.js'
+import AstraCalendar from './components/calendar/calendar.js'
 import AstraCard from './components/card.js'
 import AstraChart from './components/charts/chart.js'
 import AstraComposedChart from './components/charts/composed.js'
@@ -57,6 +58,11 @@ export default function LitComponents(React: any) {
     Chart: createComponent({
       tagName: 'astra-chart',
       elementClass: AstraChart,
+      react: React,
+    }),
+    Calendar: createComponent({
+      tagName: 'astra-calendar',
+      elementClass: AstraCalendar,
       react: React,
     }),
   }
