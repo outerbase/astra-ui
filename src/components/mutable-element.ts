@@ -59,7 +59,7 @@ export class MutableElement extends ClassifiedElement {
 
       // abort changes
       self.isEditing = false
-      self.focus()
+      self.blur()
     }
 
     if (event.code === 'Enter' && self.isEditing && event.target instanceof HTMLElement) {
@@ -67,8 +67,7 @@ export class MutableElement extends ClassifiedElement {
 
       // without this setTimeout, something sets `isEditing` back and re-renders immediately, negating the effect entirely
       setTimeout(() => {
-        self.isEditing = false
-        self.focus()
+        self.blur()
 
         // wait until the prev commands have processed
         setTimeout(() => {
