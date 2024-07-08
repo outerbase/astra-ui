@@ -103,7 +103,7 @@ export default class OuterbaseTable extends AstraTable {
     this.data = data.items.map((r) => ({
       id: self.crypto.randomUUID(),
       values: { ...r },
-      originalValues: r,
+      originalValues: { ...r },
       isNew: false,
     }))
     this.total = data.count
