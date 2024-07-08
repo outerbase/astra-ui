@@ -3,6 +3,7 @@ import { customElement, property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { isEqual } from 'lodash-es'
 import { ArrowsClockwise } from '../icons/arrows-clockwise.js'
+import { normalizeKeys } from '../lib/normalize-object-keys.js'
 import type { APIResponse, CellUpdateEvent, Fields, MenuSelectedEvent, Rows, SourceSchema, Table } from '../types.js'
 import './button.js' // Ensure the button component is imported
 import AstraTable from './table/index.js'
@@ -138,7 +139,12 @@ export default class OuterbaseTable extends AstraTable {
     // update it's value to reflect the change
     row.values[column] = cellUpdateEvent.detail.value
 
-    // update the table to reflect whether something is dirty
+    // update hasChanges if this cell is now dirty
+    this.hasChanges = this.hasChanges || row.values[column] !== row.originalValues[column]
+  }
+
+  protected onCellBlurred(_event: Event) {
+    // hasChanges if any cells are dirty
     this.hasChanges = this.rows.some((r) => !isEqual(r.originalValues, r.values))
   }
 
@@ -146,7 +152,13 @@ export default class OuterbaseTable extends AstraTable {
     const cellUpdateEvent = event as MenuSelectedEvent
 
     if (cellUpdateEvent.value === 'reset') {
-      this.hasChanges = this.rows.some((r) => !isEqual(r.originalValues, r.values))
+      this.hasChanges = this.rows.some((r) => {
+        const [normalizedOriginalValue, normalizedValues] = normalizeKeys(r.originalValues, r.values)
+        return !isEqual(normalizedOriginalValue, normalizedValues)
+      })
+    }
+  }
+
   override async updated(changedProperties: PropertyValueMap<this>) {
     const has = changedProperties.has.bind(changedProperties)
 
@@ -191,6 +203,7 @@ export default class OuterbaseTable extends AstraTable {
   override connectedCallback(): void {
     super.connectedCallback()
     this.addEventListener('cell-updated', this.onCellUpdated)
+    this.addEventListener('cell-blurred', this.onCellBlurred)
     this.addEventListener('menu-selection', this.onMenuSelection)
   }
 
