@@ -18,9 +18,10 @@ export default class OuterbaseTable extends AstraTable {
     `,
   ]
 
+  @property({ attribute: 'starlink', type: String }) starlink?: string // contains api-key, workspace-id and base-id as query-params
   @property({ attribute: 'api-key', type: String }) apiKey?: string
   @property({ attribute: 'workspace-id', type: String }) workspaceId?: string
-  @property({ attribute: 'source-id', type: String }) sourceId?: string
+  @property({ attribute: 'base-id', type: String }) baseId?: string
   @property({ attribute: 'schema-name', type: String }) schemaName?: string
   @property({ attribute: 'table-name', type: String }) tableName?: string
 
@@ -40,12 +41,12 @@ export default class OuterbaseTable extends AstraTable {
   }
 
   protected async fetchSchema() {
-    if (!(this.apiKey && this.sourceId && this.workspaceId)) {
-      throw new Error('Fetching data requires an auth token, api key, base id, source id, and workspace id.')
+    if (!(this.apiKey && this.baseId && this.workspaceId)) {
+      throw new Error('Fetching data requires an auth-token/api-key, base-id, and workspace id.')
     }
 
     const data: APIResponse<SourceSchema> = await (
-      await fetch(`https://app.dev.outerbase.com/api/v1/workspace/${this.workspaceId}/source/${this.sourceId}/schema`, {
+      await fetch(`https://app.dev.outerbase.com/api/v1/workspace/${this.workspaceId}/base/${this.baseId}/schema`, {
         headers: {
           'content-type': 'application/json',
           'x-auth-token': this.apiKey,
@@ -62,7 +63,7 @@ export default class OuterbaseTable extends AstraTable {
 
     const data: APIResponse<Rows> = await (
       await fetch(
-        `https://app.dev.outerbase.com/api/v1/workspace/${this.workspaceId}/source/${this.sourceId}/table/${this.schemaName}/${this.tableName}/rows`,
+        `https://app.dev.outerbase.com/api/v1/workspace/${this.workspaceId}/base/${this.baseId}/table/${this.schemaName}/${this.tableName}/rows`,
         {
           body: `{"fields":${JSON.stringify(this.fields)},"filters":[],"include_count":true,"limit":${this.limit},"offset":${this.offset},"order":[]}`,
           headers: {
@@ -137,8 +138,18 @@ export default class OuterbaseTable extends AstraTable {
 
   protected onMenuSelection(event: Event) {
     const cellUpdateEvent = event as MenuSelectedEvent
+
     if (cellUpdateEvent.value === 'reset') {
       this.hasChanges = this.rows.some((r) => !isEqual(r.originalValues, r.values))
+  override async updated(changedProperties: PropertyValueMap<this>) {
+    const has = changedProperties.has.bind(changedProperties)
+
+    // extract and set props from starlink url
+    if (has('starlink') && this.starlink) {
+      const params = new URLSearchParams(this.starlink.split('?')[1])
+      this.apiKey = params.get('auth_token') ?? undefined
+      this.baseId = params.get('base_id') ?? undefined
+      this.workspaceId = params.get('workspace_id') ?? undefined
     }
   }
 
@@ -147,9 +158,9 @@ export default class OuterbaseTable extends AstraTable {
     const has = changedProperties.has.bind(changedProperties)
 
     if (
-      (has('apiKey') || has('sourceId') || has('workspaceId') || has('schemaName') || has('tableName')) &&
+      (has('apiKey') || has('baseId') || has('workspaceId') || has('schemaName') || has('tableName')) &&
       this.apiKey &&
-      this.sourceId &&
+      this.baseId &&
       this.workspaceId &&
       this.schemaName &&
       this.tableName
@@ -159,9 +170,9 @@ export default class OuterbaseTable extends AstraTable {
       if (this.table) this.schema = { columns: this.table.columns }
       this.fields = this.table?.columns.map(({ name }) => ({ field: name, alias: name }))
     } else if (
-      (has('apiKey') || has('sourceId') || has('workspaceId') || has('fields')) &&
+      (has('apiKey') || has('baseId') || has('workspaceId') || has('fields')) &&
       this.apiKey &&
-      this.sourceId &&
+      this.baseId &&
       this.workspaceId &&
       this.fields
     ) {
