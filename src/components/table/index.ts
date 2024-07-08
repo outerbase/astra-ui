@@ -197,6 +197,11 @@ export default class AstraTable extends ClassifiedElement {
     })
   }
 
+  public resetValues() {
+    // replace values with a copy of original values (otherwise they share state and are always equal!!)
+    this.rows = this.rows.map((r) => ({ ...r, values: { ...r.originalValues } }))
+  }
+
   public deleteSelectedRows() {
     this.selectedRowUUIDs.forEach((uuid) => this.removedRowUUIDs.add(uuid))
 

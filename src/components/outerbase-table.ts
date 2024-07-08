@@ -120,6 +120,12 @@ export default class OuterbaseTable extends AstraTable {
     console.debug('onSaveRows')
   }
 
+  protected onDiscardChanges() {
+    // this.clearSelection()
+    this.resetValues()
+    this.hasChanges = false
+  }
+
   protected onCellUpdated(event: Event) {
     const cellUpdateEvent = event as CellUpdateEvent
     const { column, row: rowId } = cellUpdateEvent.detail.position
@@ -205,11 +211,15 @@ export default class OuterbaseTable extends AstraTable {
       ? html`<astra-button size="compact" theme="${this.theme}" @click=${this.onSaveRows}>Save</astra-button>`
       : null
 
+    const discardBtn = this.hasChanges
+      ? html`<astra-button size="compact" theme="${this.theme}" @click=${this.onDiscardChanges}>Discard</astra-button>`
+      : null
+
     return html`
       <div class=${classMap({ dark: this.theme === 'dark', 'flex flex-col h-full': true, 'bg-black': this.theme === 'dark' })}>
         <div class="flex flex-col h-full text-black dark:text-white">
           <div id="action-bar" class="h-12 font-medium dark:bg-neutral-950 items-center justify-end flex gap-2.5 text-sm p-2 rounded-t">
-            ${deleteBtn} ${saveBtn}
+            ${discardBtn} ${deleteBtn} ${saveBtn}
             <astra-button size="compact" theme="${this.theme}" @click=${this.onAddRow}>Add Row</astra-button>
             <astra-button size="compact" theme="${this.theme}" @click=${this.onRefresh}>${ArrowsClockwise(16)}</astra-button>
           </div>
