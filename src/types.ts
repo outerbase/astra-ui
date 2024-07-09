@@ -90,6 +90,7 @@ export type RowAsRecord = {
   values: Record<string, Serializable>
   originalValues: Record<string, Serializable>
   isNew: boolean
+  isDeleted: boolean
 }
 
 // API Response:

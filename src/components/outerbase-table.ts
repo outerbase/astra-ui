@@ -94,6 +94,14 @@ export default class OuterbaseTable extends AstraTable {
     return { ...data.response, items: stringifiedData }
   }
 
+  protected detectChanges() {
+    this.hasChanges =
+      this.rows.some((r) => {
+        const [normalizedOriginalValue, normalizedValues] = normalizeKeys(r.originalValues, r.values)
+        return !isEqual(normalizedOriginalValue, normalizedValues)
+      }) || this.newRows.length > 0
+  }
+
   protected onAddRow(_event: MouseEvent) {
     this.addNewRow()
   }
@@ -106,13 +114,16 @@ export default class OuterbaseTable extends AstraTable {
       values: { ...r },
       originalValues: { ...r },
       isNew: false,
+      isDeleted: false,
     }))
     this.total = data.count
   }
 
-  protected onDeleteRows() {
-    // TODO submit request to delete rows
-    console.debug('onDeleteRows')
+  protected onDeleteRows(_event: Event) {
+    // TODO reveal save/discard buttons when there are pending deletes
+    const rowsToBeDeleted = this.rows.filter((r) => this.selectedRowUUIDs.has(r.id)) // non-new selected rows
+    rowsToBeDeleted.forEach((r) => (r.isDeleted = true)) // mark for deletion
+    this.requestUpdate('rows')
     this.clearSelection()
   }
 
@@ -145,17 +156,19 @@ export default class OuterbaseTable extends AstraTable {
 
   protected onCellBlurred(_event: Event) {
     // hasChanges if any cells are dirty
-    this.hasChanges = this.rows.some((r) => !isEqual(r.originalValues, r.values))
+    this.detectChanges()
+  }
+
+  protected onRowAdded(_event: Event) {
+    this.detectChanges()
+    // TODO this could just set it to true since there is a new row?
   }
 
   protected onMenuSelection(event: Event) {
     const cellUpdateEvent = event as MenuSelectedEvent
 
     if (cellUpdateEvent.value === 'reset') {
-      this.hasChanges = this.rows.some((r) => {
-        const [normalizedOriginalValue, normalizedValues] = normalizeKeys(r.originalValues, r.values)
-        return !isEqual(normalizedOriginalValue, normalizedValues)
-      })
+      this.detectChanges()
     }
   }
 
@@ -204,6 +217,7 @@ export default class OuterbaseTable extends AstraTable {
     super.connectedCallback()
     this.addEventListener('cell-updated', this.onCellUpdated)
     this.addEventListener('cell-blurred', this.onCellBlurred)
+    this.addEventListener('row-added', this.onRowAdded)
     this.addEventListener('menu-selection', this.onMenuSelection)
   }
 

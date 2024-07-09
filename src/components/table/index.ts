@@ -154,10 +154,13 @@ export default class AstraTable extends ClassifiedElement {
       values: row?.values ?? {},
       originalValues: row?.originalValues ?? {},
       isNew: row?.isNew ?? true,
+      isDeleted: false,
     }
 
-    this.rows = [...this.rows, _row]
+    this.rows.push(_row)
+    this.requestUpdate('rows')
     this.dispatchEvent(new RowAddedEvent(_row))
+
     return _row
   }
 
@@ -199,7 +202,9 @@ export default class AstraTable extends ClassifiedElement {
 
   public resetValues() {
     // replace values with a copy of original values (otherwise they share state and are always equal!!)
-    this.rows = this.rows.map((r) => ({ ...r, values: { ...r.originalValues } }))
+    this.rows = this.rows
+      .filter(({ isNew }) => !isNew) // remove new rows
+      .map((r) => ({ ...r, values: { ...r.originalValues }, isDeleted: false })) // reset values
   }
 
   public deleteSelectedRows() {
@@ -536,7 +541,14 @@ export default class AstraTable extends ClassifiedElement {
       this.oldRows = []
 
       this.rows.forEach((row) => {
-        row.isNew ? this.newRows.push(row) : this.oldRows.push(row)
+        if (row.isNew && !row.isDeleted) {
+          this.newRows.push(row)
+        }
+
+        if (!row.isDeleted) {
+          this.oldRows.push(row)
+        }
+
         this.fromIdToRowMap[row.id] = row
       })
 
