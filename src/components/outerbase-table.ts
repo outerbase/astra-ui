@@ -3,8 +3,9 @@ import { customElement, property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { isEqual } from 'lodash-es'
 import { ArrowsClockwise } from '../icons/arrows-clockwise.js'
+import { diffObjects } from '../lib/diff-objects.js'
 import { normalizeKeys } from '../lib/normalize-object-keys.js'
-import type { APIResponse, CellUpdateEvent, Fields, MenuSelectedEvent, Rows, SourceSchema, Table } from '../types.js'
+import type { APIResponse, CellUpdateEvent, Fields, MenuSelectedEvent, RowAsRecord, Rows, SourceSchema, Table } from '../types.js'
 import './button.js' // Ensure the button component is imported
 import AstraTable from './table/index.js'
 
@@ -124,7 +125,6 @@ export default class OuterbaseTable extends AstraTable {
   }
 
   protected onDeleteRows(_event: Event) {
-    // TODO reveal save/discard buttons when there are pending deletes
     const rowsToBeDeleted = this.rows.filter((r) => this.selectedRowUUIDs.has(r.id)) // non-new selected rows
     rowsToBeDeleted.forEach((r) => (r.isDeleted = true)) // mark for deletion
     this.requestUpdate('rows')
@@ -132,9 +132,49 @@ export default class OuterbaseTable extends AstraTable {
     this.detectChanges()
   }
 
-  protected onSaveRows() {
-    // TODO submit request to save changes
-    console.debug('onSaveRows')
+  protected async onSaveRows() {
+    if (!(this.apiKey && this.baseId && this.workspaceId)) {
+      throw new Error('Saving data requires an auth-token/api-key, base-id, and workspace id.')
+    }
+
+    const created: Array<RowAsRecord> = []
+    const deleted: Array<RowAsRecord> = []
+    const modified: Array<RowAsRecord> = []
+
+    // determine which rows are created/deleted/modified
+    this.rows.forEach((r) => {
+      if (r.isNew && !r.isDeleted) created.push(r)
+      else if (r.isDeleted && !r.isNew) deleted.push(r)
+      else if (!r.isDeleted && !r.isNew) {
+        // check if modified
+        const [normalizedOriginalValue, normalizedValues] = normalizeKeys(r.originalValues, r.values)
+        if (!isEqual(normalizedOriginalValue, normalizedValues)) modified.push(r)
+      }
+    })
+
+    const primaryColumn = this.table?.constraints.find(({ type }) => type?.toLowerCase().includes('primary'))?.column
+    const body = {
+      create: created.map((r) => r.values),
+      update: modified.map((r) => ({
+        where: primaryColumn ? { [primaryColumn]: r.originalValues[primaryColumn] } : r.originalValues, // single primary key, OR all original values
+        set: diffObjects(r.values, r.originalValues), // only values that are different from the original
+      })),
+      remove: deleted.map((r) => (primaryColumn ? { [primaryColumn]: r.originalValues[primaryColumn] } : r.originalValues)),
+    }
+
+    const result = await fetch(
+      `https://app.dev.outerbase.com/api/v1/workspace/${this.workspaceId}/base/${this.baseId}/table/${this.schemaName}/${this.tableName}/rows`,
+      {
+        method: 'PUT',
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json',
+          'x-auth-token': this.apiKey,
+        },
+      }
+    )
+
+    this.onRefresh()
   }
 
   protected onDiscardChanges() {
@@ -165,8 +205,7 @@ export default class OuterbaseTable extends AstraTable {
   }
 
   protected onRowAdded(_event: Event) {
-    this.detectChanges()
-    // TODO this could just set it to true since there is a new row?
+    this.hasChanges = true
   }
 
   protected onMenuSelection(event: Event) {
@@ -203,6 +242,7 @@ export default class OuterbaseTable extends AstraTable {
     ) {
       this.sourceSchema = await this.fetchSchema()
       this.table = this.sourceSchema[this.schemaName]?.find(({ name }) => name === this.tableName)
+
       if (this.table) this.schema = { columns: this.table.columns }
       this.fields = this.table?.columns.map(({ name }) => ({ field: name, alias: name }))
     } else if (
