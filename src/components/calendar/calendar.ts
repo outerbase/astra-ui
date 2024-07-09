@@ -262,6 +262,14 @@ export default class AstraCalendar extends LitElement {
     if (this.singleMonthView) {
       this.startDate = date
       this.endDate = null
+
+      this.dispatchEvent(
+        new CustomEvent('date-selected', {
+          detail: { date },
+          bubbles: true,
+          composed: true,
+        })
+      )
     } else {
       if (!this.startDate || date < this.startDate) {
         this.startDate = date
@@ -269,6 +277,14 @@ export default class AstraCalendar extends LitElement {
       } else {
         this.endDate = date
       }
+
+      this.dispatchEvent(
+        new CustomEvent('date-selected', {
+          detail: { startDate: this.startDate, endDate: this.endDate },
+          bubbles: true,
+          composed: true,
+        })
+      )
     }
   }
 

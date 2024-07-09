@@ -1,6 +1,6 @@
 {
   "name": "@outerbase/astra-ui",
-  "version": "0.0.23-chart.7",
+  "version": "0.0.23-chart.10",
   "type": "module",
   "main": "dist/js/index.js",
   "module": "dist/js/index.js",
@@ -24,7 +24,8 @@
     "compile:watch": "node .build/compile-typescript-on-changes.mjs",
     "bundle": "rollup -c ./.build/rollup.config.js",
     "preview": "astro preview --config .build/astro.config.mjs",
-    "prepack": "pnpm tailwind:build && pnpm compile && pnpm bundle"
+    "prepack": "pnpm tailwind:build && pnpm compile && pnpm bundle",
+    "publish-npm-module": "npm publish --access public"
   },
   "devDependencies": {
     "@astrojs/check": "^0.5.10",
@@ -55,8 +56,10 @@
     "lit": "^3.1.2"
   },
   "dependencies": {
-    "@observablehq/plot": "^0.6.14",
+    "@observablehq/plot": "^0.6.15",
     "d3": "^7.9.0",
+    "d3-time": "^3.1.0",
+    "d3-time-format": "^4.1.0",
     "lodash-es": "^4.17.21"
   }
 }
