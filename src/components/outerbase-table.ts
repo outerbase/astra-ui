@@ -9,6 +9,9 @@ import type { APIResponse, CellUpdateEvent, Fields, MenuSelectedEvent, RowAsReco
 import './button.js' // Ensure the button component is imported
 import AstraTable from './table/index.js'
 
+// const OUTERBASE_API_DOMAIN = 'app.outerbase.com'
+const OUTERBASE_API_DOMAIN = 'app.dev.outerbase.com'
+
 @customElement('outerbase-table')
 export default class OuterbaseTable extends AstraTable {
   static override styles = [
@@ -48,7 +51,7 @@ export default class OuterbaseTable extends AstraTable {
     }
 
     const data: APIResponse<SourceSchema> = await (
-      await fetch(`https://app.dev.outerbase.com/api/v1/workspace/${this.workspaceId}/base/${this.baseId}/schema`, {
+      await fetch(`https://${OUTERBASE_API_DOMAIN}/api/v1/workspace/${this.workspaceId}/base/${this.baseId}/schema`, {
         headers: {
           'content-type': 'application/json',
           'x-auth-token': this.apiKey,
@@ -65,7 +68,7 @@ export default class OuterbaseTable extends AstraTable {
 
     const data: APIResponse<Rows> = await (
       await fetch(
-        `https://app.dev.outerbase.com/api/v1/workspace/${this.workspaceId}/base/${this.baseId}/table/${this.schemaName}/${this.tableName}/rows`,
+        `https://${OUTERBASE_API_DOMAIN}/api/v1/workspace/${this.workspaceId}/base/${this.baseId}/table/${this.schemaName}/${this.tableName}/rows`,
         {
           body: `{"fields":${JSON.stringify(this.fields)},"filters":[],"include_count":true,"limit":${this.limit},"offset":${this.offset},"order":[]}`,
           headers: {
@@ -164,7 +167,7 @@ export default class OuterbaseTable extends AstraTable {
     }
 
     const response = await fetch(
-      `https://app.dev.outerbase.com/api/v1/workspace/${this.workspaceId}/base/${this.baseId}/table/${this.schemaName}/${this.tableName}/rows`,
+      `https://${OUTERBASE_API_DOMAIN}/api/v1/workspace/${this.workspaceId}/base/${this.baseId}/table/${this.schemaName}/${this.tableName}/rows`,
       {
         method: 'PUT',
         body: JSON.stringify(body),
