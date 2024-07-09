@@ -97,6 +97,10 @@ export default class OuterbaseTable extends AstraTable {
   protected detectChanges() {
     this.hasChanges =
       this.rows.some((r) => {
+        // true when a new or deleted row
+        if (r.isDeleted || r.isNew) return true
+
+        // true when the current/original values differ
         const [normalizedOriginalValue, normalizedValues] = normalizeKeys(r.originalValues, r.values)
         return !isEqual(normalizedOriginalValue, normalizedValues)
       }) || this.newRows.length > 0
@@ -125,6 +129,7 @@ export default class OuterbaseTable extends AstraTable {
     rowsToBeDeleted.forEach((r) => (r.isDeleted = true)) // mark for deletion
     this.requestUpdate('rows')
     this.clearSelection()
+    this.detectChanges()
   }
 
   protected onSaveRows() {
