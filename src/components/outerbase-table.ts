@@ -122,6 +122,7 @@ export default class OuterbaseTable extends AstraTable {
       isDeleted: false,
     }))
     this.total = data.count
+    this.hasChanges = false
   }
 
   protected onDeleteRows(_event: Event) {
@@ -162,7 +163,7 @@ export default class OuterbaseTable extends AstraTable {
       remove: deleted.map((r) => (primaryColumn ? { [primaryColumn]: r.originalValues[primaryColumn] } : r.originalValues)),
     }
 
-    const result = await fetch(
+    const response = await fetch(
       `https://app.dev.outerbase.com/api/v1/workspace/${this.workspaceId}/base/${this.baseId}/table/${this.schemaName}/${this.tableName}/rows`,
       {
         method: 'PUT',
@@ -174,7 +175,8 @@ export default class OuterbaseTable extends AstraTable {
       }
     )
 
-    this.onRefresh()
+    if (response.status === 200) this.onRefresh()
+    else console.error(response)
   }
 
   protected onDiscardChanges() {
