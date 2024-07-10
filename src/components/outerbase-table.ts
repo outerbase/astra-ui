@@ -304,20 +304,46 @@ export default class OuterbaseTable extends AstraTable {
       ? html`<astra-button size="compact" theme="${this.theme}" @click=${this.onDiscardChanges}>Discard</astra-button>`
       : null
 
+    const defaultPaginationBtnMap = {
+      'mx-3': true,
+      'w-8': true,
+      'h-8': true,
+      'rounded-md': true,
+      flex: true,
+      'items-center': true,
+      'justify-center': true,
+    }
+
+    const canGoBack = this.offset > 0
+    const canGoForward = this.offset + this.limit < this.total
     const prevBtnClasses = {
-      'mx-3 w-8 h-8 rounded-md flex items-center justify-center bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-50':
-        true,
-      'cursor-pointer': this.offset > 0,
-      // 'pointer-events-none': this.offset === 0, // this breaks for ???? reasons
-      'cursor-not-allowed': this.offset === 0,
+      ...defaultPaginationBtnMap,
+      'cursor-pointer': canGoBack,
+      'bg-neutral-200': canGoBack,
+      'dark:bg-neutral-700': canGoBack,
+      'text-neutral-900': canGoBack,
+      'dark:text-neutral-100': canGoBack,
+
+      'cursor-not-allowed': !canGoBack,
+      'bg-neutral-100': !canGoBack,
+      'dark:bg-neutral-900': !canGoBack,
+      'text-neutral-300': !canGoBack,
+      'dark:text-neutral-700': !canGoBack,
     }
 
     const nextBtnClasses = {
-      'mx-3 w-8 h-8 rounded-md flex items-center justify-center bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-50':
-        true,
-      'cursor-pointer': this.offset + this.limit < this.total,
-      // 'pointer-events-none': this.offset + this.limit >= this.total, // this breaks for ???? reasons
-      'cursor-not-allowed': this.offset + this.limit >= this.total,
+      ...defaultPaginationBtnMap,
+      'cursor-pointer': canGoForward,
+      'bg-neutral-200': canGoForward,
+      'dark:bg-neutral-700': canGoForward,
+      'text-neutral-900': canGoForward,
+      'dark:text-neutral-100': canGoForward,
+
+      'cursor-not-allowed': !canGoForward,
+      'bg-neutral-100': !canGoForward,
+      'dark:bg-neutral-900': !canGoForward,
+      'text-neutral-300': !canGoForward,
+      'dark:text-neutral-700': !canGoForward,
     }
 
     return html`
@@ -336,7 +362,7 @@ export default class OuterbaseTable extends AstraTable {
             Viewing ${this.offset + 1}-${Math.min(this.offset + this.limit, this.total)} of ${this.total}
             <div class="select-none flex items-center">
               <span class=${classMap(prevBtnClasses)} @click=${this.onClickPreviousPage}>${CaretLeft(16)}</span>
-              ${this.total ? this.offset / this.limit + 1 : 1}
+              <span class="w-4 text-center">${this.total ? this.offset / this.limit + 1 : 1}</span>
               <span class=${classMap(nextBtnClasses)} @click=${this.onClickNextPage}>${CaretRight(16)}</span>
             </div>
           </div>
