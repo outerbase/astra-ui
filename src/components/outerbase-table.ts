@@ -305,7 +305,6 @@ export default class OuterbaseTable extends AstraTable {
       : null
 
     const defaultPaginationBtnMap = {
-      'mx-3': true,
       'w-8': true,
       'h-8': true,
       'rounded-md': true,
@@ -349,7 +348,7 @@ export default class OuterbaseTable extends AstraTable {
     return html`
       <div class=${classMap({ dark: this.theme === 'dark', 'flex flex-col h-full': true, 'bg-black': this.theme === 'dark' })}>
         <div class="flex flex-col h-full text-black dark:text-white">
-          <div id="action-bar" class="h-12 font-medium dark:bg-neutral-950 items-center justify-end flex gap-2.5 text-sm p-2 rounded-t">
+          <div id="action-bar" class="h-12 font-medium dark:bg-neutral-950 items-center justify-end flex gap-2.5 text-sm py-2 rounded-t">
             ${discardBtn} ${deleteBtn} ${saveBtn}
             <astra-button size="compact" theme="${this.theme}" @click=${this.onAddRow}>Add Row</astra-button>
             <astra-button size="compact" theme="${this.theme}" @click=${this.onRefresh}>${ArrowsClockwise(16)}</astra-button>
@@ -358,11 +357,11 @@ export default class OuterbaseTable extends AstraTable {
           <div class="relative flex-1">${table}</div>
 
           <!-- pagination -->
-          <div id="footer" class="h-12 font-medium dark:bg-neutral-950 items-center justify-end flex gap-2.5 text-sm p-2 rounded-b">
+          <div id="footer" class="h-12 font-medium dark:bg-neutral-950 items-center justify-end flex gap-2.5 text-sm py-2 rounded-b">
             Viewing ${this.offset + 1}-${Math.min(this.offset + this.limit, this.total)} of ${this.total}
             <div class="select-none flex items-center">
               <span class=${classMap(prevBtnClasses)} @click=${this.onClickPreviousPage}>${CaretLeft(16)}</span>
-              <span class="w-4 text-center">${this.total ? this.offset / this.limit + 1 : 1}</span>
+              <span class="w-8 text-center">${this.total ? this.offset / this.limit + 1 : 1}</span>
               <span class=${classMap(nextBtnClasses)} @click=${this.onClickNextPage}>${CaretRight(16)}</span>
             </div>
           </div>
