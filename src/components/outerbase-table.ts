@@ -3,6 +3,8 @@ import { customElement, property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { isEqual } from 'lodash-es'
 import { ArrowsClockwise } from '../icons/arrows-clockwise.js'
+import { CaretLeft } from '../icons/caret-left.js'
+import { CaretRight } from '../icons/caret-right.js'
 import { diffObjects } from '../lib/diff-objects.js'
 import { normalizeKeys } from '../lib/normalize-object-keys.js'
 import type { APIResponse, CellUpdateEvent, Fields, MenuSelectedEvent, RowAsRecord, Rows, SourceSchema, Table } from '../types.js'
@@ -31,8 +33,8 @@ export default class OuterbaseTable extends AstraTable {
   @property({ attribute: 'table-name', type: String }) tableName?: string
 
   @state() offset = 0
-  @state() limit?: number = 50
-  @state() total?: number
+  @state() limit = 50
+  @state() total = 0
   @state() fields?: Fields
   @state() sourceSchema?: SourceSchema
   @state() table?: Table
@@ -188,6 +190,16 @@ export default class OuterbaseTable extends AstraTable {
     this.hasChanges = false
   }
 
+  protected onClickNextPage() {
+    if (this.offset + this.limit > this.total) return
+    this.offset += this.limit
+  }
+
+  protected onClickPreviousPage() {
+    if (this.offset === 0) return
+    this.offset -= this.limit
+  }
+
   protected onCellUpdated(event: Event) {
     const cellUpdateEvent = event as CellUpdateEvent
     const { column, row: rowId } = cellUpdateEvent.detail.position
@@ -251,7 +263,7 @@ export default class OuterbaseTable extends AstraTable {
       if (this.table) this.schema = { columns: this.table.columns }
       this.fields = this.table?.columns.map(({ name }) => ({ field: name, alias: name }))
     } else if (
-      (has('apiKey') || has('baseId') || has('workspaceId') || has('fields')) &&
+      (has('apiKey') || has('baseId') || has('workspaceId') || has('fields') || has('offset')) &&
       this.apiKey &&
       this.baseId &&
       this.workspaceId &&
@@ -292,6 +304,22 @@ export default class OuterbaseTable extends AstraTable {
       ? html`<astra-button size="compact" theme="${this.theme}" @click=${this.onDiscardChanges}>Discard</astra-button>`
       : null
 
+    const prevBtnClasses = {
+      'mx-3 w-8 h-8 rounded-md flex items-center justify-center bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-50':
+        true,
+      'cursor-pointer': this.offset > 0,
+      // 'pointer-events-none': this.offset === 0, // this breaks for ???? reasons
+      'cursor-not-allowed': this.offset === 0,
+    }
+
+    const nextBtnClasses = {
+      'mx-3 w-8 h-8 rounded-md flex items-center justify-center bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-50':
+        true,
+      'cursor-pointer': this.offset + this.limit < this.total,
+      // 'pointer-events-none': this.offset + this.limit >= this.total, // this breaks for ???? reasons
+      'cursor-not-allowed': this.offset + this.limit >= this.total,
+    }
+
     return html`
       <div class=${classMap({ dark: this.theme === 'dark', 'flex flex-col h-full': true, 'bg-black': this.theme === 'dark' })}>
         <div class="flex flex-col h-full text-black dark:text-white">
@@ -303,9 +331,14 @@ export default class OuterbaseTable extends AstraTable {
 
           <div class="relative flex-1">${table}</div>
 
+          <!-- pagination -->
           <div id="footer" class="h-12 font-medium dark:bg-neutral-950 items-center justify-end flex gap-2.5 text-sm p-2 rounded-b">
-            <!-- TODO support pagination -->
-            Viewing 1-${this.data.length} of ${this.data.length}
+            Viewing ${this.offset + 1}-${Math.min(this.offset + this.limit, this.total)} of ${this.total}
+            <div class="select-none flex items-center">
+              <span class=${classMap(prevBtnClasses)} @click=${this.onClickPreviousPage}>${CaretLeft(16)}</span>
+              ${this.total ? this.offset / this.limit + 1 : 1}
+              <span class=${classMap(nextBtnClasses)} @click=${this.onClickNextPage}>${CaretRight(16)}</span>
+            </div>
           </div>
         </div>
       </div>

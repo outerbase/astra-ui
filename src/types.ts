@@ -184,7 +184,7 @@ export interface SerializableRecord extends Record<string, Serializable> {}
 export type Row = Record<string, Serializable>
 export type Rows = {
   items: Array<Row>
-  count?: number
+  count: number
   query?: string
   name?: string
 }
