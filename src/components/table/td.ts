@@ -139,18 +139,20 @@ export class TableData extends MutableElement {
     if (isInputTriggering && noMetaKeys && typeIsNotJSON) {
       event.preventDefault()
 
-      // toggle editing mode
-      self.isEditing = true
+      if (!self.readonly) {
+        // toggle editing mode
+        self.isEditing = true
 
-      // replace the contents
-      self.value = event.key
+        // replace the contents
+        self.value = event.key
 
-      // set the cursor input to the end
-      setTimeout(() => {
-        const input = self.shadowRoot?.querySelector('input')
-        input?.focus()
-        input?.setSelectionRange(input.value.length, input.value.length)
-      }, 0)
+        // set the cursor input to the end
+        setTimeout(() => {
+          const input = self.shadowRoot?.querySelector('input')
+          input?.focus()
+          input?.setSelectionRange(input.value.length, input.value.length)
+        }, 0)
+      }
     }
 
     // navigating around the table
