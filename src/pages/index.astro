@@ -43,21 +43,36 @@ const optionsArray = [
   <main class="flex flex-col gap-8">
     <div>
       <h2><pre>&lt;outerbase-table /&gt; </pre></h2>
-      <div class="flex flex-col gap-4 h-96">
-        <!-- @ts-ignore -->
-        <OuterbaseTable
-          client:only="lit"
-          theme="light"
-          outer-border
-          selectable-rows
-          schema-name="public"
-          table-name="person"
-          starlink="https://app.dev.outerbase.com/starlink?auth_token=maqhd2i5uta7arbf3q9knhbz56e9v7361lchqcxman1b9pdc1wvltpq61yib7vnd&base_id=f9b49e86-10ef-4cf9-be9a-9bab1d9225a9&workspace_id=ce4ad5d4-f7dd-4d8c-a1aa-43b01325480b"
-        />
-      </div>
-      <div class="flex flex-col gap-4 h-96">
-        <!-- @ts-ignore -->
-        <OuterbaseTable client:only="lit" schema={{ columns }} data={rows} theme="light" outer-border theme="dark" selectable-rows />
+      <div class="flex flex-col gap-8">
+        <div class="h-[300px]">
+          <!-- @ts-ignore -->
+          <OuterbaseTable
+            client:only="lit"
+            side-bar
+            theme="light"
+            outer-border
+            selectable-rows
+            schema-name="public"
+            table-name="person"
+            starlink="https://app.dev.outerbase.com/starlink?auth_token=maqhd2i5uta7arbf3q9knhbz56e9v7361lchqcxman1b9pdc1wvltpq61yib7vnd&base_id=f9b49e86-10ef-4cf9-be9a-9bab1d9225a9&workspace_id=ce4ad5d4-f7dd-4d8c-a1aa-43b01325480b"
+          />
+        </div>
+        <div class="flex flex-none flex-col h-96">
+          <!-- @ts-ignore -->
+          <OuterbaseTable
+            client:only="lit"
+            theme="light"
+            outer-border
+            selectable-rows
+            schema-name="public"
+            table-name="person"
+            starlink="https://app.dev.outerbase.com/starlink?auth_token=maqhd2i5uta7arbf3q9knhbz56e9v7361lchqcxman1b9pdc1wvltpq61yib7vnd&base_id=f9b49e86-10ef-4cf9-be9a-9bab1d9225a9&workspace_id=ce4ad5d4-f7dd-4d8c-a1aa-43b01325480b"
+          />
+        </div>
+        <div class="flex flex-none flex-col h-96">
+          <!-- @ts-ignore -->
+          <OuterbaseTable client:only="lit" schema={{ columns }} data={rows} theme="light" outer-border theme="dark" selectable-rows />
+        </div>
       </div>
     </div>
 

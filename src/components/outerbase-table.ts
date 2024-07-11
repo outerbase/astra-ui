@@ -31,6 +31,7 @@ export default class OuterbaseTable extends AstraTable {
   @property({ attribute: 'base-id', type: String }) baseId?: string
   @property({ attribute: 'schema-name', type: String }) schemaName?: string
   @property({ attribute: 'table-name', type: String }) tableName?: string
+  @property({ attribute: 'side-bar', type: Boolean }) showSidebar = false
 
   @state() offset = 0
   @state() limit = 50
@@ -289,6 +290,37 @@ export default class OuterbaseTable extends AstraTable {
     this.removeEventListener('menu-selection', this.onMenuSelection)
   }
 
+  protected onTableSelection(schemaName: string, tableName: string) {
+    this.schemaName = schemaName
+    this.tableName = tableName
+  }
+
+  protected renderSidebar() {
+    const schema = this.sourceSchema
+    if (!schema) return null
+    const schemaTables = Object.entries(schema)
+
+    return html`<div class="w-48 overflow-y-auto overflow-x-clip px-2 border-r">
+      <ul>
+        ${schemaTables.map(
+          ([schema, tables]) =>
+            html`<span class="underline">${schema}</span> ${tables?.map(
+                (t) =>
+                  html`<li
+                    class="truncate ml-2 cursor-pointer ${classMap({
+                      'text-blue-500': this.tableName === t.name,
+                      'font-semibold': this.tableName === t.name,
+                    })}"
+                    @click=${() => this.onTableSelection(schema, t.name)}
+                  >
+                    ${t.name}
+                  </li>`
+              )}`
+        )}
+      </ul>
+    </div>`
+  }
+
   public override render() {
     const table = super.render()
 
@@ -345,27 +377,34 @@ export default class OuterbaseTable extends AstraTable {
       'dark:text-neutral-700': !canGoForward,
     }
 
-    return html`
-      <div class=${classMap({ dark: this.theme === 'dark', 'flex flex-col h-full': true, 'bg-black': this.theme === 'dark' })}>
-        <div class="flex flex-col h-full text-black dark:text-white">
-          <div id="action-bar" class="h-12 font-medium dark:bg-neutral-950 items-center justify-end flex gap-2.5 text-sm py-2 rounded-t">
-            ${discardBtn} ${deleteBtn} ${saveBtn}
-            <astra-button size="compact" theme="${this.theme}" @click=${this.onAddRow}>Add Row</astra-button>
-            <astra-button size="compact" theme="${this.theme}" @click=${this.onRefresh}>${ArrowsClockwise(16)}</astra-button>
-          </div>
+    const sidebar = this.showSidebar ? this.renderSidebar() : null
+    const tableWithHeaderFooter = html`
+      <div class="flex flex-col flex-1">
+        <!-- header; action bar -->
+        <div id="action-bar" class="h-12 font-medium dark:bg-neutral-950 items-center justify-end flex gap-2.5 text-sm py-2 rounded-t">
+          ${discardBtn} ${deleteBtn} ${saveBtn}
+          <astra-button size="compact" theme="${this.theme}" @click=${this.onAddRow}>Add Row</astra-button>
+          <astra-button size="compact" theme="${this.theme}" @click=${this.onRefresh}>${ArrowsClockwise(16)}</astra-button>
+        </div>
 
-          <div class="relative flex-1">${table}</div>
+        <!-- data -->
+        <div class="relative flex-1">${table}</div>
 
-          <!-- pagination -->
-          <div id="footer" class="h-12 font-medium dark:bg-neutral-950 items-center justify-end flex gap-2.5 text-sm py-2 rounded-b">
-            Viewing ${this.offset + 1}-${Math.min(this.offset + this.limit, this.total)} of ${this.total}
-            <div class="select-none flex items-center">
-              <span class=${classMap(prevBtnClasses)} @click=${this.onClickPreviousPage}>${CaretLeft(16)}</span>
-              <span class="w-8 text-center">${this.total ? this.offset / this.limit + 1 : 1}</span>
-              <span class=${classMap(nextBtnClasses)} @click=${this.onClickNextPage}>${CaretRight(16)}</span>
-            </div>
+        <!-- footer; pagination -->
+        <div id="footer" class="h-12 font-medium dark:bg-neutral-950 items-center justify-end flex gap-2.5 text-sm py-2 rounded-b border-t">
+          Viewing ${this.offset + 1}-${Math.min(this.offset + this.limit, this.total)} of ${this.total}
+          <div class="select-none flex items-center">
+            <span class=${classMap(prevBtnClasses)} @click=${this.onClickPreviousPage}>${CaretLeft(16)}</span>
+            <span class="w-8 text-center">${this.total ? this.offset / this.limit + 1 : 1}</span>
+            <span class=${classMap(nextBtnClasses)} @click=${this.onClickNextPage}>${CaretRight(16)}</span>
           </div>
         </div>
+      </div>
+    `
+
+    return html`
+      <div class="flex flex-row h-full ${classMap({ dark: this.theme === 'dark', 'bg-black': this.theme === 'dark' })}">
+        ${sidebar} ${tableWithHeaderFooter}
       </div>
     `
   }
