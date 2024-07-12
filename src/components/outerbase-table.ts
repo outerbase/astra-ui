@@ -36,7 +36,7 @@ export default class OuterbaseTable extends AstraTable {
   @property({ attribute: 'side-bar', type: Boolean }) showSidebar = false
 
   @state() offset = 0
-  @state() limit = 50
+  @state() limit = 20
   @state() total = 0
   @state() fields?: Fields
   @state() sourceSchema?: SourceSchema
@@ -245,6 +245,11 @@ export default class OuterbaseTable extends AstraTable {
       this.apiKey = params.get('auth_token') ?? undefined
       this.baseId = params.get('base_id') ?? undefined
       this.workspaceId = params.get('workspace_id') ?? undefined
+    }
+
+    // reset `offset` when changing tables
+    if (has('tableName') || (has('schemaName') && this.tableName && this.schemaName)) {
+      this.offset = 0
     }
   }
 
