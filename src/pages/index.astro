@@ -42,15 +42,26 @@ const optionsArray = [
 
   <main class="flex flex-col gap-8">
     <div>
-      <h2><pre>&lt;outerbase-table /&gt; </pre></h2>
+      <h2 class="bg-green-50 mb-2 rounded p-2">
+        <pre>
+&lt;OuterbaseTable
+  theme="light"
+  schema-name="public"
+  table-name="person"
+  starlink="https://app.dev.outerbase.com/starlink?..."
+  selectable-rows
+  side-bar
+/&gt;
+</pre>
+      </h2>
+
       <div class="flex flex-col gap-8">
-        <div class="h-[300px]">
+        <div class="h-[800px]">
           <!-- @ts-ignore -->
           <OuterbaseTable
             client:only="lit"
             side-bar
             theme="light"
-            outer-border
             selectable-rows
             schema-name="public"
             table-name="person"

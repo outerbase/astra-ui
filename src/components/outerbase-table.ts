@@ -3,8 +3,10 @@ import { customElement, property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { isEqual } from 'lodash-es'
 import { ArrowsClockwise } from '../icons/arrows-clockwise.js'
+import { CaretDown } from '../icons/caret-down.js'
 import { CaretLeft } from '../icons/caret-left.js'
 import { CaretRight } from '../icons/caret-right.js'
+import { Table as TableIcon } from '../icons/table.js'
 import { diffObjects } from '../lib/diff-objects.js'
 import { normalizeKeys } from '../lib/normalize-object-keys.js'
 import type { APIResponse, CellUpdateEvent, Fields, MenuSelectedEvent, RowAsRecord, Rows, SourceSchema, Table } from '../types.js'
@@ -300,20 +302,26 @@ export default class OuterbaseTable extends AstraTable {
     if (!schema) return null
     const schemaTables = Object.entries(schema)
 
-    return html`<div class="w-48 overflow-y-auto overflow-x-clip px-2 border-r">
-      <ul>
+    return html`<div class="w-48 overflow-y-auto overflow-x-clip border rounded-tl rounded-bl">
+      <!-- TODO why does this need 47px while the action bar is 48px to get the border to align? -->
+      <h2 class="text-xl font-semibold h-[47px] flex items-center pl-2 border-b">Tables</h2>
+      <ul class="">
         ${schemaTables.map(
           ([schema, tables]) =>
-            html`<span class="underline">${schema}</span> ${tables?.map(
+            html`<div class="py-2 px-2 flex items-center gap-1">${schema} ${CaretDown(16)}</div>
+              ${tables?.map(
                 (t) =>
                   html`<li
-                    class="truncate ml-2 cursor-pointer ${classMap({
-                      'text-blue-500': this.tableName === t.name,
-                      'font-semibold': this.tableName === t.name,
-                    })}"
+                    class="py-2 flex flex-row pl-5 pr-2 items-center gap-2 cursor-pointer focus:outline-none focus-visible:ring focus-visible:ring-blue-600  text-neutral-950 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-800 ${classMap(
+                      {
+                        'text-blue-500': this.tableName === t.name,
+                        'font-semibold': this.tableName === t.name,
+                      }
+                    )}"
                     @click=${() => this.onTableSelection(schema, t.name)}
                   >
-                    ${t.name}
+                    <span class="flex-none">${TableIcon(16)}</span>
+                    <span class="truncate text-sm">${t.name}</span>
                   </li>`
               )}`
         )}
@@ -381,17 +389,23 @@ export default class OuterbaseTable extends AstraTable {
     const tableWithHeaderFooter = html`
       <div class="flex flex-col flex-1">
         <!-- header; action bar -->
-        <div id="action-bar" class="h-12 font-medium dark:bg-neutral-950 items-center justify-end flex gap-2.5 text-sm py-2 rounded-t">
+        <div
+          id="action-bar"
+          class="h-12 font-medium dark:bg-neutral-950 items-center justify-end flex gap-2.5 text-sm p-2 rounded-tr border-t border-b border-r"
+        >
           ${discardBtn} ${deleteBtn} ${saveBtn}
           <astra-button size="compact" theme="${this.theme}" @click=${this.onAddRow}>Add Row</astra-button>
           <astra-button size="compact" theme="${this.theme}" @click=${this.onRefresh}>${ArrowsClockwise(16)}</astra-button>
         </div>
 
         <!-- data -->
-        <div class="relative flex-1">${table}</div>
+        <div class="relative flex-1 border-r">${table}</div>
 
         <!-- footer; pagination -->
-        <div id="footer" class="h-12 font-medium dark:bg-neutral-950 items-center justify-end flex gap-2.5 text-sm py-2 rounded-b border-t">
+        <div
+          id="footer"
+          class="h-12 font-medium dark:bg-neutral-950 items-center justify-end flex gap-2.5 text-sm py-2 rounded-br border-t border-b border-r p-2"
+        >
           Viewing ${this.offset + 1}-${Math.min(this.offset + this.limit, this.total)} of ${this.total}
           <div class="select-none flex items-center">
             <span class=${classMap(prevBtnClasses)} @click=${this.onClickPreviousPage}>${CaretLeft(16)}</span>
