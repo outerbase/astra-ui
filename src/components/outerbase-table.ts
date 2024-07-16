@@ -307,17 +307,25 @@ export default class OuterbaseTable extends AstraTable {
     if (!schema) return null
     const schemaTables = Object.entries(schema)
 
-    return html`<div class="w-48 overflow-y-auto overflow-x-clip border rounded-tl rounded-bl">
+    return html`<div
+      class="w-48 overflow-y-auto overflow-x-clip border rounded-tl rounded-bl bg-theme-table border-theme-border dark:border-theme-border-dark"
+    >
       <!-- TODO why does this need 47px while the action bar is 48px to get the border to align? -->
-      <h2 class="text-xl font-semibold h-[47px] flex items-center pl-2 border-b">Tables</h2>
+      <h2
+        class="text-xl font-semibold h-[47px] flex items-center pl-2 border-b border-theme-border dark:border-theme-border-dark text-theme-header-text dark:text-theme-header-text-dark"
+      >
+        Tables
+      </h2>
       <ul class="">
         ${schemaTables.map(
           ([schema, tables]) =>
-            html`<div class="py-2 px-2 flex items-center gap-1">${schema} ${CaretDown(16)}</div>
+            html`<div class="py-2 px-2 flex items-center gap-1 text-theme-header-text dark:text-theme-header-text-dark">
+                ${schema} ${CaretDown(16)}
+              </div>
               ${tables?.map(
                 (t) =>
                   html`<li
-                    class="py-2 flex flex-row pl-5 pr-2 items-center gap-2 cursor-pointer focus:outline-none focus-visible:ring focus-visible:ring-blue-600  text-neutral-950 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-800 ${classMap(
+                    class="py-2 flex flex-row pl-5 pr-2 items-center gap-2 cursor-pointer focus:outline-none focus-visible:ring focus-visible:ring-blue-600  text-theme-table-li-text dark:text-theme-table-li-text-dark hover:bg-theme-table-li-hover dark:bg-theme-table-li-hover-dark dark:text-white dark:hover:bg-neutral-800 ${classMap(
                       {
                         'text-blue-500': this.tableName === t.name,
                         'font-semibold': this.tableName === t.name,
@@ -396,7 +404,7 @@ export default class OuterbaseTable extends AstraTable {
         <!-- header; action bar -->
         <div
           id="action-bar"
-          class="h-12 font-medium dark:bg-neutral-950 items-center justify-end flex gap-2.5 text-sm p-2 rounded-tr border-t border-b border-r"
+          class="h-12 font-medium bg-theme-table dark:bg-theme-table-dark items-center justify-end flex gap-2.5 text-sm p-2 rounded-tr border-t border-b border-r border-theme-border dark:border-theme-border-dark"
         >
           ${discardBtn} ${deleteBtn} ${saveBtn}
           <astra-button size="compact" theme="${this.theme}" @click=${this.onAddRow}>Add Row</astra-button>
@@ -404,12 +412,12 @@ export default class OuterbaseTable extends AstraTable {
         </div>
 
         <!-- data -->
-        <div class="relative flex-1 border-r">${table}</div>
+        <div class="relative flex-1 border-r border-theme-border dark:border-theme-border-dark">${table}</div>
 
         <!-- footer; pagination -->
         <div
           id="footer"
-          class="h-12 font-medium dark:bg-neutral-950 items-center justify-end flex gap-2.5 text-sm py-2 rounded-br border-t border-b border-r p-2"
+          class="h-12 font-medium bg-theme-table dark:bg-theme-table-dark items-center justify-end flex gap-2.5 text-sm py-2 rounded-br border-t border-b border-r border-theme-border dark:border-theme-border-dark p-2"
         >
           Viewing ${this.offset + 1}-${Math.min(this.offset + this.limit, this.total)} of ${this.total}
           <div class="select-none flex items-center">

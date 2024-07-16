@@ -76,6 +76,14 @@ export default {
           // dirty cells
           'cell-dirty': 'var(--cell-dirty-background-color, rgb(253 230 138))',
           'cell-dirty-dark': 'var(--cell-dirty-background-color, rgba(234, 179, 8, .6))',
+
+          // outerbase-table list
+          'table-li-hover': 'var(--hover-table-li-background-color, rgba(0,0,0,0.03))',
+          'table-li-hover-dark': 'var(--hover-table-li-background-color-dark, rgba(255,255,255,0.03))',
+          'table-li-text': 'var(--table-li-text-color, #000000)',
+          'table-li-text-dark': 'var(--table-li-text-color-dark, #ffffff)',
+          'header-text': 'var(--header-text-color, #000000)',
+          'header-text-dark': 'var(--header-text-color-dark, #000000)',
         },
 
         light: {

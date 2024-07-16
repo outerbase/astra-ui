@@ -21,6 +21,44 @@ const optionsArray = [
 ]
 ---
 
+<style>
+  * {
+    margin: 0;
+
+    --border-color: #293945;
+    /* --border-color-dark: #293945; */
+    --text-color: white;
+    --header-text-color: white;
+    /* --text-color-dark: white; */
+    --table-li-text-color: white;
+    /* --table-li-text-color-dark: white; */
+
+    --table-background-color: #141b21;
+    /* --table-background-color-dark: green; */
+    --table-row-even-background-color: #141b21;
+    /* --table-row-even-background-color-dark: #141b21; */
+    --table-row-odd-background-color: #141b21;
+    /* --table-row-odd-background-color-dark: #141b21; */
+    --table-row-selected-background-color: #252e35;
+    /* --table-row-selected-background-color-dark: #252e35; */
+
+    --hover-background-color: #252e35;
+    /* --hover-background-color-dark: #252e35; */
+    --hover-table-li-background-color: #252e35;
+    /* --hover-table-li-background-color-dark: #252e35; */
+
+    --column-header-background-color: #141b21;
+    /* --column-header-background-color-dark: #141b21; */
+    --column-header-text-color: #c5cace;
+    /* --column-header-text-color-dark: #c5cace; */
+  }
+
+  [outerbase-table] {
+    display: table;
+    height: 100%;
+    width: 100%;
+  }
+</style>
 <Layout title="Astra-UI">
   <script>
     /* themes may also be set dynamically/programatically */
@@ -65,7 +103,7 @@ const optionsArray = [
             selectable-rows
             schema-name="public"
             table-name="person"
-            starlink="https://app.dev.outerbase.com/starlink?auth_token=maqhd2i5uta7arbf3q9knhbz56e9v7361lchqcxman1b9pdc1wvltpq61yib7vnd&base_id=f9b49e86-10ef-4cf9-be9a-9bab1d9225a9&workspace_id=ce4ad5d4-f7dd-4d8c-a1aa-43b01325480b"
+            starlink="https://app.dev.outerbase.com/starlink?auth_token=lry9qyjbsugzflpmh2di7g28ckj14c2z8h5b99g8kcdc86gj67wu4y859f2stke8&base_id=663c3cec-8519-49be-ac16-c14faa07d951&workspace_id=778935ab-04ed-4919-81cc-3d74d9dd6ead"
           />
         </div>
         <div class="flex flex-none flex-col h-96">
