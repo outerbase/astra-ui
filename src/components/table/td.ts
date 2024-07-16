@@ -217,7 +217,7 @@ export class TableData extends MutableElement {
       'bg-theme-cell dark:bg-theme-cell-dark': !this.isActive && (!this.dirty || this.hideDirt),
       'bg-theme-row-selected dark:bg-theme-row-selected-dark': this.isActive && (!this.dirty || this.hideDirt), // i.e. this is the column being sorted
       'bg-theme-cell-dirty dark:bg-theme-cell-dirty-dark': this.dirty && !this.hideDirt, // dirty cells
-      'group-hover:bg-neutral-50 dark:group-hover:bg-neutral-950': !this.dirty || this.hideDirt,
+      'group-hover:bg-theme-row-hover dark:group-hover:bg-theme-row-hover-dark': !this.dirty || this.hideDirt,
       'focus:shadow-ringlet dark:focus:shadow-ringlet-dark focus:rounded-[4px] focus:ring-1 focus:ring-black dark:focus:ring-neutral-300 focus:outline-none':
         !this.isEditing && this.isInteractive,
       'border-r':
