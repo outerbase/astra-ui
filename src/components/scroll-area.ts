@@ -262,7 +262,8 @@ export default class ScrollArea extends ClassifiedElement {
     }
     const scrollableClasses = {
       'absolute bottom-0 left-0 right-0 top-0': true,
-      'overflow-scroll bg-theme-table dark:bg-theme-table-dark': this.axis === Axis.both,
+      'bg-theme-table dark:bg-theme-table-dark': true,
+      'overflow-scroll': this.axis === Axis.both,
       'overflow-x-scroll overflow-y-hidden': this.axis === Axis.horizontal,
       'overflow-y-scroll overflow-x-hidden': this.axis === Axis.vertical,
     }
