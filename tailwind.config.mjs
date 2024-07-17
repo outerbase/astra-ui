@@ -33,8 +33,8 @@ export default {
           'table-dark': 'var(--astra-table-background-color, rgba(10,10,10, 0))',
 
           // text
-          'table-content': 'var(--astra-table-text-color, #000000)',
-          'table-content-dark': 'var(--astra-table-text-color-dark, #ffffff)',
+          'table-content': 'var(--astra-table-content-color, #000000)',
+          'table-content-dark': 'var(--astra-table-content-color-dark, #ffffff)',
 
           // borders
           'table-border': 'var(--astra-table-border-color, #e5e7eb)',
@@ -43,8 +43,8 @@ export default {
           // column headers
           'table-column': 'var(--astra-table-column-header-background-color, rgba(255,255,255,0.9))',
           'table-column-dark': 'var(--astra-table-column-header-background-color-dark, rgba(0,0,0,0.9))',
-          'table-column-content': 'var(--astra-table-column-header-text-color, #000000)',
-          'table-column-content-dark': 'var(--astra-table-column-header-text-color-dark, #ffffff)',
+          'table-column-content': 'var(--astra-table-column-header-content-color, #000000)',
+          'table-column-content-dark': 'var(--astra-table-column-header-content-color-dark, #ffffff)',
 
           // rows
           'table-row-even': 'var(--astra-table-row-even-background-color, rgba(255,255,255))',
@@ -64,16 +64,17 @@ export default {
           'table-cell-dirty': 'var(--astra-cell-dirty-background-color, rgb(253 230 138))',
           'table-cell-dirty-dark': 'var(--astra-cell-dirty-background-color, rgba(234, 179, 8, .6))',
 
-          //  TODO rename to sidebar-li...
-          // outerbase-table list
-          'sidebar-li-active': 'var(--astra-sidebar-li-active-text-color, rgb(59 130 246))',
-          'sidebar-li-active-dark': 'var(--astra-sidebar-li-active-text-color-dark, pink)',
+          // sidebar
+          'sidebar-li-active': 'var(--astra-sidebar-li-active-content-color, rgb(59 130 246))',
+          'sidebar-li-active-dark': 'var(--astra-sidebar-li-active-content-color-dark, pink)',
           'sidebar-li-hover': 'var(--astra-hover-sidebar-li-background-color, rgba(0,0,0,0.03))',
           'sidebar-li-hover-dark': 'var(--astra-hover-sidebar-li-background-color-dark, rgba(255,255,255,0.03))',
-          'sidebar-li-text': 'var(--astra-sidebar-li-text-color, #000000)',
-          'sidebar-li-text-dark': 'var(--astra-sidebar-li-text-color-dark, #ffffff)',
-          'sidebar-li-header-text': 'var(--astra-header-text-color, #000000)',
-          'sidebar-li-header-text-dark': 'var(--astra-header-text-color-dark, #ffffff)',
+          'sidebar-li-content': 'var(--astra-sidebar-li-content-color, #000000)',
+          'sidebar-li-content-dark': 'var(--astra-sidebar-li-content-color-dark, #ffffff)',
+          'sidebar-header-content': 'var(--astra-header-content-color, #000000)',
+          'sidebar-header-content-dark': 'var(--astra-header-content-color-dark, #ffffff)',
+          'sidebar-subheader-content': 'var(--astra-sidebar-subheader-content-color, #eeeee)',
+          'sidebar-subheader-content-dark': 'var(--astra-sidebar-subheader-content-color-dark, #eeeeee)',
         },
 
         light: {

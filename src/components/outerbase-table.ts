@@ -310,21 +310,26 @@ export default class OuterbaseTable extends AstraTable {
     return html`<div
       class="w-48 overflow-y-auto overflow-x-clip border rounded-tl rounded-bl text-theme-table-content dark:text-theme-table-content-dark bg-theme-table dark:bg-theme-table-dark border-theme-table-border dark:border-theme-table-border-dark"
     >
-      <h2
-        class="text-xl font-semibold h-[47px] flex items-center pl-2 border-b border-theme-table-border dark:border-theme-table-border-dark"
+      <h1
+        class="text-xl font-semibold h-[47px] flex items-center pl-2 border-b text-theme-sidebar-header-content border-theme-table-border dark:border-theme-table-border-dark"
       >
         Tables
-      </h2>
+      </h1>
       <ul class="">
         ${schemaTables.map(
           ([schema, tables]) =>
-            html`<div class="py-2 px-2 flex items-center gap-1">${schema} ${CaretDown(16)}</div>
+            html`<div
+                class="py-2 px-2 flex items-center gap-1 text-theme-sidebar-subheader-content dark:text-theme-sidebar-subheader-content-dark"
+              >
+                ${schema} ${CaretDown(16)}
+              </div>
               ${tables?.map(
                 (t) =>
                   html`<li
-                    class="py-2 flex flex-row pl-5 pr-2 items-center gap-2 cursor-pointer focus:outline-none focus-visible:ring focus-visible:ring-blue-600  text-theme-sidebar-li-text dark:text-theme-sidebar-li-text-dark hover:bg-theme-sidebar-li-hover dark:bg-theme-sidebar-li-hover-dark dark:text-white dark:hover:bg-neutral-800 ${classMap(
+                    class="py-2 flex flex-row pl-5 pr-2 items-center gap-2 cursor-pointer focus:outline-none focus-visible:ring focus-visible:ring-blue-600  hover:bg-theme-sidebar-li-hover dark:bg-theme-sidebar-li-hover-dark dark:text-white dark:hover:bg-neutral-800 ${classMap(
                       {
-                        '!text-theme-sidebar-li-active': this.tableName === t.name,
+                        'text-theme-sidebar-li-active': this.tableName === t.name,
+                        'text-theme-sidebar-li-content dark:text-theme-sidebar-li-content-dark': this.tableName !== t.name,
                         'font-semibold': this.tableName === t.name,
                       }
                     )}"
