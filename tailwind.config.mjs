@@ -28,6 +28,11 @@ export default {
           warning: 'var(--astra-warning-color, yellow)',
           error: 'var(--astra-error-color, red)',
 
+          // SECONDARY
+          'secondary-content': 'var(--astra-secondary-content-color, rgb(42, 42, 42))',
+          'secondary-content-dark': 'var(--astra-secondary-content-color, rgb(213, 213, 213))',
+
+          // TABLE
           // background
           table: 'var(--astra-table-background-color, rgba(255,255,255, 0))',
           'table-dark': 'var(--astra-table-background-color, rgba(10,10,10, 0))',
@@ -64,7 +69,7 @@ export default {
           'table-cell-dirty': 'var(--astra-cell-dirty-background-color, rgb(253 230 138))',
           'table-cell-dirty-dark': 'var(--astra-cell-dirty-background-color, rgba(234, 179, 8, .6))',
 
-          // sidebar
+          // SIDEBAR
           'sidebar-li-active': 'var(--astra-sidebar-li-active-content-color, rgb(59 130 246))',
           'sidebar-li-active-dark': 'var(--astra-sidebar-li-active-content-color-dark, pink)',
           'sidebar-li-hover': 'var(--astra-hover-sidebar-li-background-color, rgba(0,0,0,0.03))',

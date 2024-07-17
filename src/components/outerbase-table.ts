@@ -373,41 +373,36 @@ export default class OuterbaseTable extends AstraTable {
     const prevBtnClasses = {
       ...defaultPaginationBtnMap,
       'cursor-pointer': canGoBack,
-      'bg-neutral-200': canGoBack,
-      'dark:bg-neutral-700': canGoBack,
-      'text-neutral-900': canGoBack,
-      'dark:text-neutral-100': canGoBack,
+      'bg-neutral-300/30': canGoBack,
+      'dark:bg-neutral-500/30': canGoBack,
 
       'cursor-not-allowed': !canGoBack,
-      'bg-neutral-100': !canGoBack,
+      'opacity-60': !canGoBack,
+      'bg-neutral-500/10': !canGoBack,
       'dark:bg-neutral-900': !canGoBack,
-      'text-neutral-300': !canGoBack,
-      'dark:text-neutral-700': !canGoBack,
     }
 
     const nextBtnClasses = {
       ...defaultPaginationBtnMap,
       'cursor-pointer': canGoForward,
-      'bg-neutral-200': canGoForward,
-      'dark:bg-neutral-700': canGoForward,
-      'text-neutral-900': canGoForward,
-      'dark:text-neutral-100': canGoForward,
+      'bg-neutral-300/30': canGoForward,
+      'dark:bg-neutral-500/30': canGoForward,
 
       'cursor-not-allowed': !canGoForward,
-      'bg-neutral-100': !canGoForward,
+      'opacity-60': !canGoForward,
+      'bg-neutral-500/10': !canGoForward,
       'dark:bg-neutral-900': !canGoForward,
-      'text-neutral-300': !canGoForward,
-      'dark:text-neutral-700': !canGoForward,
     }
 
     const sidebar = this.showSidebar ? this.renderSidebar() : null
     const tableWithHeaderFooter = html`
-      <div class="flex flex-col flex-1">
+      <div class="flex flex-col flex-1 text-theme-secondary-content dark:text-theme-secondary-content-dark">
         <!-- header; action bar -->
         <div
           id="action-bar"
           class="h-12 font-medium bg-theme-table dark:bg-theme-table-dark items-center justify-end flex gap-2.5 text-sm p-2 rounded-tr border-t border-b border-r border-theme-table-border dark:border-theme-table-border-dark"
         >
+          <div class="flex items-center justify-center flex-auto font-bold text-xl">${this.tableName}</div>
           ${discardBtn} ${deleteBtn} ${saveBtn}
           <astra-button size="compact" theme="${this.theme}" @click=${this.onAddRow}>Add Row</astra-button>
           <astra-button size="compact" theme="${this.theme}" @click=${this.onRefresh}>${ArrowsClockwise(16)}</astra-button>
@@ -419,7 +414,7 @@ export default class OuterbaseTable extends AstraTable {
         <!-- footer; pagination -->
         <div
           id="footer"
-          class="h-12 font-medium bg-theme-table dark:bg-theme-table-dark items-center justify-end flex gap-2.5 text-sm py-2 rounded-br border-t border-b border-r border-theme-border dark:border-theme-table-border-dark p-2"
+          class="h-12 font-medium bg-theme-table dark:bg-theme-table-dark items-center justify-end flex gap-2.5 text-sm py-2 rounded-br border-t border-b border-r border-theme-table-border dark:border-theme-table-border-dark p-2"
         >
           Viewing ${this.offset + 1}-${Math.min(this.offset + this.limit, this.total)} of ${this.total}
           <div class="select-none flex items-center">
