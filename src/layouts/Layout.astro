@@ -65,10 +65,10 @@ const clickableClasses = 'hover:underline'
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
-    <script defer is:inline>
-      function setActiveLinkStyle(isDarkMode) {
+    <script>
+      function setActiveLinkStyle(isDarkMode: boolean) {
         const element = document.getElementById(window.location.pathname)
-        if (element) element.style.color = !!isDarkMode ? 'white' : 'black'
+        if (element) element.style.color = isDarkMode ? 'white' : 'black'
       }
 
       document.addEventListener('DOMContentLoaded', () => {
