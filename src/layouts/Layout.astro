@@ -68,7 +68,7 @@ const clickableClasses = 'hover:underline'
     <script defer is:inline>
       function setActiveLinkStyle(isDarkMode) {
         const element = document.getElementById(window.location.pathname)
-        if (element) element.style.color = isDarkMode ? 'white' : 'black'
+        if (element) element.style.color = !!isDarkMode ? 'white' : 'black'
       }
 
       document.addEventListener('DOMContentLoaded', () => {
@@ -78,8 +78,11 @@ const clickableClasses = 'hover:underline'
           setActiveLinkStyle(isDarkMode)
         }
 
-        document.getElementById('page').classList.remove('opacity-0')
-        document.getElementById('page').classList.add('opacity-100')
+        const page = document.getElementById('page')
+        if (page) {
+          page.classList.remove('opacity-0')
+          page.classList.add('opacity-100')
+        }
       })
 
       // listen for color scheme changes
