@@ -22,22 +22,20 @@ const optionsArray = [
 ---
 
 <style>
-  * {
-    --border-color: #293945;
-    --text-color: white;
-    --header-text-color: white;
-    --table-li-text-color: white;
-
-    --table-background-color: #141b21;
-    --table-row-even-background-color: #141b21;
-    --table-row-odd-background-color: #141b21;
-    --table-row-selected-background-color: #252e35;
-
-    --hover-background-color: #252e35;
-    --hover-table-li-background-color: #252e35;
-
-    --column-header-background-color: #141b21;
-    --column-header-text-color: #c5cace;
+  /* Turso Theme */
+  .turso-theme * {
+    --astra-table-border-color: #293945;
+    --astra-table-text-color: white;
+    --astra-header-text-color: white;
+    --astra-sidebar-li-text-color: white;
+    --astra-table-background-color: #141b21;
+    --astra-table-row-even-background-color: #141b21;
+    --astra-table-row-odd-background-color: #141b21;
+    --astra-table-row-selected-background-color: #252e35;
+    --astra-table-row-hover-background-color: #252e35;
+    --astra-hover-sidebar-li-background-color: #252e35;
+    --astra-table-column-header-background-color: #141b21;
+    --astra-table-column-header-text-color: #c5cace;
   }
 </style>
 <Layout title="Astra-UI">
@@ -61,21 +59,8 @@ const optionsArray = [
 
   <main class="flex flex-col gap-8">
     <div>
-      <h2 class="bg-green-50 mb-2 rounded p-2">
-        <pre>
-&lt;OuterbaseTable
-  theme="light"
-  schema-name="public"
-  table-name="person"
-  starlink="https://app.dev.outerbase.com/starlink?..."
-  selectable-rows
-  side-bar
-/&gt;
-</pre>
-      </h2>
-
       <div class="flex flex-col gap-8">
-        <div class="h-[800px]">
+        <div class="turso-theme h-[800px]">
           <!-- @ts-ignore -->
           <OuterbaseTable
             client:only="lit"
@@ -87,21 +72,15 @@ const optionsArray = [
             starlink="https://app.dev.outerbase.com/starlink?auth_token=ni7nj32cnw4lhsvywnyl8psjnkar4s6j8mm2ida11s22zkzdvyz4dnirmwajk8uu&base_id=fa333bc5-4312-4b16-a3da-64fe3b9930b6&workspace_id=07c1482b-5870-464c-b708-1dda88672c6d"
           />
         </div>
-        <div class="flex flex-none flex-col h-96">
-          <!-- @ts-ignore -->
-          <OuterbaseTable
-            client:only="lit"
-            theme="light"
-            outer-border
-            selectable-rows
-            schema-name="public"
-            table-name="person"
-            starlink="https://app.dev.outerbase.com/starlink?auth_token=ni7nj32cnw4lhsvywnyl8psjnkar4s6j8mm2ida11s22zkzdvyz4dnirmwajk8uu&base_id=fa333bc5-4312-4b16-a3da-64fe3b9930b6&workspace_id=07c1482b-5870-464c-b708-1dda88672c6d"
-          />
-        </div>
+
         <div class="flex flex-none flex-col h-96">
           <!-- @ts-ignore -->
           <OuterbaseTable client:only="lit" schema={{ columns }} data={rows} theme="light" outer-border theme="dark" selectable-rows />
+        </div>
+
+        <div class="flex flex-none flex-col h-96">
+          <!-- @ts-ignore -->
+          <OuterbaseTable client:only="lit" schema={{ columns }} data={rows} theme="light" outer-border theme="light" selectable-rows />
         </div>
       </div>
     </div>

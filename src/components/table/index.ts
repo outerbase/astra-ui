@@ -568,7 +568,7 @@ export default class AstraTable extends ClassifiedElement {
   public override render() {
     const tableClasses = {
       'table table-fixed bg-theme-table dark:bg-theme-table-dark': true,
-      'text-theme-text dark:text-theme-text-dark text-sm': true,
+      'text-theme-table-content dark:text-theme-table-content-dark text-sm': true,
       'min-w-full': true,
       relative: true,
       dark: this.theme === 'dark',

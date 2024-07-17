@@ -79,7 +79,7 @@ export class ColumnResizer extends ClassifiedElement {
     return html`
       <div class=${classes}>
         <div
-          class="h-full ml-[1px] w-[1px] group-hover:w-1 group-active:w-1 bg-theme-border dark:bg-theme-border-dark group-hover:bg-blue-400 group-active:bg-blue-500 dark:group-hover:bg-blue-900 dark:group-active:bg-blue-800"
+          class="h-full ml-[1px] w-[1px] group-hover:w-1 group-active:w-1 bg-theme-table-border dark:bg-theme-table-border-dark group-hover:bg-blue-400 group-active:bg-blue-500 dark:group-hover:bg-blue-900 dark:group-active:bg-blue-800"
         ></div>
       </div>
     `
