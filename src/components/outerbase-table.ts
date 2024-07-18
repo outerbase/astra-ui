@@ -333,7 +333,8 @@ export default class OuterbaseTable extends AstraTable {
                         class="py-2 flex flex-row pl-5 pr-2 items-center gap-2 cursor-pointer focus:outline-none focus-visible:ring focus-visible:ring-blue-600  hover:bg-theme-sidebar-li-hover dark:bg-theme-sidebar-li-hover-dark dark:text-white dark:hover:bg-neutral-800 ${classMap(
                           {
                             'text-theme-sidebar-li-active': this.tableName === t.name,
-                            'text-theme-sidebar-li-content dark:text-theme-sidebar-li-content-dark': this.tableName !== t.name,
+                            'text-theme-sidebar-li-content': this.tableName !== t.name,
+                            'dark:text-theme-sidebar-li-content-dark': this.tableName !== t.name,
                             'font-semibold': this.tableName === t.name,
                           }
                         )}"
