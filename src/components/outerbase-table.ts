@@ -119,11 +119,9 @@ export default class OuterbaseTable extends AstraTable {
     this.addNewRow()
   }
 
-  protected async onRefresh() {
-    // fetch new rows
-    const [data, schema] = await Promise.all([this.fetchData(), this.fetchSchema()])
+  protected async refreshData() {
+    const data = await this.fetchData()
 
-    this.sourceSchema = schema
     this.data = data.items.map((r) => ({
       id: self.crypto.randomUUID(),
       values: { ...r },
@@ -133,6 +131,12 @@ export default class OuterbaseTable extends AstraTable {
     }))
     this.total = data.count
     this.hasChanges = false
+  }
+
+  protected async onRefresh() {
+    // fetch data and schema
+    const [_, schema] = await Promise.all([this.refreshData(), this.fetchSchema()])
+    this.sourceSchema = schema
   }
 
   protected onDeleteRows(_event: Event) {
@@ -253,11 +257,11 @@ export default class OuterbaseTable extends AstraTable {
     if (has('tableName') || (has('schemaName') && this.tableName && this.schemaName)) {
       this.offset = 0
     }
-  }
 
-  override async willUpdate(changedProperties: PropertyValueMap<this>) {
-    super.willUpdate(changedProperties)
-    const has = changedProperties.has.bind(changedProperties)
+    // fetch latest schema
+    if (has('apiKey') || has('baseId') || has('workspaceId')) {
+      this.sourceSchema = await this.fetchSchema()
+    }
 
     if (
       (has('apiKey') || has('baseId') || has('workspaceId') || has('schemaName') || has('tableName')) &&
@@ -265,22 +269,27 @@ export default class OuterbaseTable extends AstraTable {
       this.baseId &&
       this.workspaceId &&
       this.schemaName &&
-      this.tableName
+      this.tableName &&
+      this.sourceSchema
     ) {
-      // TODO prevent refetching schema all the time
-      this.sourceSchema = await this.fetchSchema()
       this.table = this.sourceSchema[this.schemaName]?.find(({ name }) => name === this.tableName)
 
-      if (this.table) this.schema = { columns: this.table.columns }
-      this.fields = this.table?.columns.map(({ name }) => ({ field: name, alias: name }))
-    } else if (
+      // update columns (<th/>) & fields (api params)
+      if (this.table) {
+        this.schema = { columns: this.table.columns }
+        this.fields = this.table.columns.map(({ name }) => ({ field: name, alias: name }))
+      }
+    }
+
+    // fetch data when any params change
+    if (
       (has('apiKey') || has('baseId') || has('workspaceId') || has('fields') || has('offset')) &&
       this.apiKey &&
       this.baseId &&
       this.workspaceId &&
       this.fields
     ) {
-      this.onRefresh()
+      this.refreshData()
     }
 
     this.hasSelectedRows = this.selectedRowUUIDs.size > 0
