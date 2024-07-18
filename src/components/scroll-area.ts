@@ -240,18 +240,9 @@ export default class ScrollArea extends ClassifiedElement {
   }
 
   public override render() {
-    const scrollGrabHandleClasses = {
-      'w-full rounded-md': true,
-      'bg-neutral-200/60 dark:bg-neutral-700/50': true,
-      'hover:bg-neutral-300 dark:hover:bg-neutral-700': true,
-      'active:bg-neutral-300 dark:active:bg-neutral-700': true,
-    }
-    const scrollTrackGutterClasses = {
-      'z-50 absolute right-0 bottom-0 m-0.5': true,
-      'transition-opacity duration-300': true,
-      'opacity-0': !this.hasHoveringCursor,
-      'opacity-100': this.hasHoveringCursor,
-    }
+    const scrollGrabHandleClasses = `w-full rounded-md bg-neutral-200/60 dark:bg-neutral-700/50 hover:bg-neutral-300 dark:hover:bg-neutral-700 active:bg-neutral-300 dark:active:bg-neutral-700`
+    const scrollTrackGutterClasses = `z-50 absolute right-0 bottom-0 m-0.5 transition-opacity duration-300 ${this.hasHoveringCursor ? 'opacity-100' : 'opacity-0'}`
+
     const verticalHandleStyles = {
       transform: `translateY(${this.verticalScrollPosition}px)`,
       height: `${this.verticalScrollSize}px`,
@@ -260,13 +251,10 @@ export default class ScrollArea extends ClassifiedElement {
       transform: `translateX(${this.horizontalScrollPosition}px)`,
       width: `${this.horizontalScrollSize}px`,
     }
-    const scrollableClasses = {
-      'absolute bottom-0 left-0 right-0 top-0': true,
-      'bg-theme-table dark:bg-theme-table-dark': true,
-      'overflow-scroll': this.axis === Axis.both,
-      'overflow-x-scroll overflow-y-hidden': this.axis === Axis.horizontal,
-      'overflow-y-scroll overflow-x-hidden': this.axis === Axis.vertical,
-    }
+    let scrollableClasses = `absolute bottom-0 left-0 right-0 top-0 bg-theme-table dark:bg-theme-table-dark`
+    if (this.axis === Axis.both) scrollableClasses += ' overflow-scroll'
+    if (this.axis === Axis.horizontal) scrollableClasses += ' overflow-scroll'
+    if (this.axis === Axis.vertical) scrollableClasses += ' overflow-y-scroll overflow-x-hidden'
 
     return html`<!-- this comment exists to force the next line onto the next line -->
       <div
@@ -283,27 +271,15 @@ export default class ScrollArea extends ClassifiedElement {
         }}
         class=${classMap({ dark: this.theme == Theme.dark })}
       >
-        <div
-          class=${classMap({ ...scrollTrackGutterClasses, 'top-0 w-1.5': true })}
-          ${ref(this.rightScrollZone)}
-          @click=${this.onClickVerticalScroller}
-        >
-          <div style=${styleMap(verticalHandleStyles)} class=${classMap(scrollGrabHandleClasses)} ${ref(this.rightScrollHandle)}></div>
+        <div class="top-0 w-1.5 ${scrollTrackGutterClasses}" } ${ref(this.rightScrollZone)} @click=${this.onClickVerticalScroller}>
+          <div style=${styleMap(verticalHandleStyles)} class=${scrollGrabHandleClasses} ${ref(this.rightScrollHandle)}></div>
         </div>
 
-        <div
-          class=${classMap({ ...scrollTrackGutterClasses, 'left-0': true })}
-          ${ref(this.bottomScrollZone)}
-          @click=${this.onClickHorizontalScroller}
-        >
-          <div
-            style=${styleMap(horizontalHandleStyles)}
-            class=${classMap({ ...scrollGrabHandleClasses, 'h-1.5': true })}
-            ${ref(this.bottomScrollHandle)}
-          ></div>
+        <div class="left-0 ${scrollTrackGutterClasses}" ${ref(this.bottomScrollZone)} @click=${this.onClickHorizontalScroller}>
+          <div style=${styleMap(horizontalHandleStyles)} class="h-1.5 ${scrollGrabHandleClasses}" ${ref(this.bottomScrollHandle)}></div>
         </div>
 
-        <div class=${classMap(scrollableClasses)} ${ref(this.scroller)}>
+        <div class=${scrollableClasses} ${ref(this.scroller)}>
           <slot></slot>
         </div>
       </div>`
