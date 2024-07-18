@@ -17,6 +17,8 @@ const isAlphanumericOrSpecial = (key: string): boolean => {
   // Regular expression to match alphanumeric characters and specified special characters
   return /^[a-zA-Z0-9 \.,]+$/.test(key)
 }
+const returnCharacterPlaceholderRead = '↩'
+
 const RW_OPTIONS = [
   { label: 'Edit', value: 'edit' },
   { label: 'Copy', value: 'copy' },
@@ -437,12 +439,12 @@ export class TableData extends MutableElement {
     } else {
       const classes =
         value === null || value === undefined ? 'nbsp text-neutral-400 dark:text-neutral-600' : 'nbsp overflow-hidden text-ellipsis'
-      cellContents = html`<div class=${classes}>${value === null ? 'NULL' : value === undefined ? 'DEFAULT' : value}</div>`
+      /* prettier-ignore */ cellContents = html`<div class=${classes}>${ value === null ? 'NULL' : value === undefined ? 'DEFAULT' : typeof value === 'string' ? value.replace(/\n/g, returnCharacterPlaceholderRead) : value}</div>`;
     }
 
     const themeClass = this.theme === Theme.dark ? 'dark' : ''
     const inputEl = this.isEditing // &nbsp; prevents the row from collapsing (in height) when there is only 1 column
-      ? html`<div class="${themeClass}">&nbsp;<input .value=${value ?? ''} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
+      ? html`<div class="${themeClass}">&nbsp;<input .value=${typeof value === 'string' ? value : (value ?? '')} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
       : html``
     const emptySlot = this.blank ? html`<slot></slot>` : html``
     const menuOptions = this.dirty
