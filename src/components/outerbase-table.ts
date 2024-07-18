@@ -34,10 +34,10 @@ export default class OuterbaseTable extends AstraTable {
   @property({ attribute: 'schema-name', type: String }) schemaName?: string
   @property({ attribute: 'table-name', type: String }) tableName?: string
   @property({ attribute: 'side-bar', type: Boolean }) showSidebar = false
+  @property({ type: Number }) offset = 0
+  @property({ type: Number }) limit = 50
+  @property({ type: Number }) total = 0
 
-  @state() offset = 0
-  @state() limit = 20
-  @state() total = 0
   @state() fields?: Fields
   @state() sourceSchema?: SourceSchema
   @state() table?: Table
