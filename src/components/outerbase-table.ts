@@ -435,7 +435,7 @@ export default class OuterbaseTable extends AstraTable {
           id="footer"
           class="h-12 font-medium bg-theme-table dark:bg-theme-table-dark items-center justify-end flex gap-2.5 text-sm py-2 rounded-br border-t border-b border-r border-theme-table-border dark:border-theme-table-border-dark p-2"
         >
-          Viewing ${this.offset + 1}-${Math.min(this.offset + this.limit, this.total)} of ${this.total}
+          Viewing ${Math.min(this.offset + 1, this.total)}-${Math.min(this.offset + this.limit, this.total)} of ${this.total}
           <div class="select-none flex items-center">
             <span class=${classMap(prevBtnClasses)} @click=${this.onClickPreviousPage}>${CaretLeft(16)}</span>
             <span class="w-8 text-center">${this.total ? this.offset / this.limit + 1 : 1}</span>
