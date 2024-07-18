@@ -545,7 +545,7 @@ export default class AstraTable extends ClassifiedElement {
           this.newRows.push(row)
         }
 
-        if (!row.isDeleted) {
+        if (!row.isNew && !row.isDeleted) {
           this.oldRows.push(row)
         }
 
