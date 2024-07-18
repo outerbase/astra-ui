@@ -402,16 +402,10 @@ export class TableData extends MutableElement {
 
   public override render() {
     let value = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value) : this.value
-    let editorValue = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value, null, 2) : this.value
 
-    if (value && typeof value === 'string') {
+    if (this.plugin && value && typeof value === 'string') {
       // Replace single, double, and backticks with their HTML entity equivalents
       value = value.replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/`/g, '&#96;')
-    }
-
-    if (editorValue && typeof editorValue === 'string') {
-      // Replace single, double, and backticks with their HTML entity equivalents
-      editorValue = editorValue.replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/`/g, '&#96;')
     }
 
     let cellContents: TemplateResult<1>
@@ -437,7 +431,7 @@ export class TableData extends MutableElement {
               // possible future migration
               'astra-plugin-cell',
               'astra-plugin-editor'
-            )} cellvalue='${editorValue}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
+            )} cellvalue='${value}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
         )
       }
     } else {
@@ -446,15 +440,11 @@ export class TableData extends MutableElement {
       cellContents = html`<div class=${classes}>${value === null ? 'NULL' : value === undefined ? 'DEFAULT' : value}</div>`
     }
 
+    const themeClass = this.theme === Theme.dark ? 'dark' : ''
     const inputEl = this.isEditing // &nbsp; prevents the row from collapsing (in height) when there is only 1 column
-      ? html`<div class="font-normal ${this.theme === Theme.dark ? 'dark' : ''}">&nbsp;<input .value=${value ?? ''}
-                ?readonly=${this.readonly}
-                @input=${this.onChange}
-                class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 font-normal focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
+      ? html`<div class="${themeClass}">&nbsp;<input .value=${value ?? ''} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
       : html``
-
     const emptySlot = this.blank ? html`<slot></slot>` : html``
-
     const menuOptions = this.dirty
       ? [
           ...this.options,
@@ -486,7 +476,7 @@ export class TableData extends MutableElement {
             @paste=${this.onPaste}
           >
             <astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
-              <span class="font-normal ${this.theme === Theme.dark ? 'dark' : ''}">${cellContents}</span>
+              <span class="whitespace-pre ${this.theme === Theme.dark ? 'dark' : ''}">${cellContents}</span>
               ${this.isDisplayingPluginEditor
                 ? html`<span id="plugin-editor" class="absolute top-8 caret-current cursor-auto z-10">${cellEditorContents}</span>`
                 : null}
