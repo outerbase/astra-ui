@@ -121,7 +121,9 @@ export default class OuterbaseTable extends AstraTable {
 
   protected async onRefresh() {
     // fetch new rows
-    const data = await this.fetchData()
+    const [data, schema] = await Promise.all([this.fetchData(), this.fetchSchema()])
+
+    this.sourceSchema = schema
     this.data = data.items.map((r) => ({
       id: self.crypto.randomUUID(),
       values: { ...r },
@@ -265,7 +267,7 @@ export default class OuterbaseTable extends AstraTable {
       this.schemaName &&
       this.tableName
     ) {
-      this.sourceSchema = await this.fetchSchema()
+      this.sourceSchema = this.sourceSchema ?? (await this.fetchSchema())
       this.table = this.sourceSchema[this.schemaName]?.find(({ name }) => name === this.tableName)
 
       if (this.table) this.schema = { columns: this.table.columns }
