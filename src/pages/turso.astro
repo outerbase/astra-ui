@@ -1,0 +1,55 @@
+---
+// server-side code goes here and can be accessed below
+import { OuterbaseTable } from '../index'
+
+// include Inter font on the page
+import '@fontsource/inter' // Defaults to weight 400
+---
+
+<style>
+  *,
+  html,
+  body {
+    --brand: rgb(78, 240, 204);
+    --dirty-yellow: rgb(240, 204, 78);
+  }
+
+  html,
+  body {
+    height: 100vh;
+    background-color: var(--brand);
+  }
+  .turso-theme * {
+    --astra-secondary-content-color: var(--brand);
+    --astra-sidebar-li-active-content-color: var(--brand);
+    --astra-table-row-new-background-color: var(--brand);
+    --astra-cell-mutating-background-color: var(--brand);
+    --astra-cell-dirty-background-color: var(--dirty-yellow);
+    --astra-table-border-color: #293945;
+    --astra-table-content-color: white;
+    --astra-header-content-color: rgb(250, 250, 250);
+    --astra-sidebar-li-content-color: rgb(250, 250, 250);
+    --astra-sidebar-header-color: rgb(100, 116, 139);
+    --astra-sidebar-subheader-content-color: rgb(100, 116, 139);
+    --astra-table-background-color: #141b21;
+    --astra-table-row-even-background-color: #141b21;
+    --astra-table-row-odd-background-color: #141b21;
+    --astra-table-row-selected-background-color: #252e35;
+    --astra-table-row-hover-background-color: #252e35;
+    --astra-hover-sidebar-li-background-color: #252e35;
+    --astra-table-column-header-background-color: #141b21;
+    --astra-table-column-header-content-color: #c5cace;
+  }
+</style>
+<main class="turso-theme flex flex-col gap-8 absolute top-0 right-0 left-0 bottom-0">
+  <!-- @ts-ignore -->
+  <OuterbaseTable
+    client:only="lit"
+    side-bar
+    limit={30}
+    selectable-rows
+    schema-name="public"
+    table-name="person"
+    starlink="https://app.dev.outerbase.com/starlink?auth_token=ni7nj32cnw4lhsvywnyl8psjnkar4s6j8mm2ida11s22zkzdvyz4dnirmwajk8uu&base_id=fa333bc5-4312-4b16-a3da-64fe3b9930b6&workspace_id=07c1482b-5870-464c-b708-1dda88672c6d"
+  />
+</main>
