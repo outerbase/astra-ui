@@ -199,7 +199,7 @@ export default class OuterbaseTable extends AstraTable {
   }
 
   protected onClickPreviousPage() {
-    if (this.offset === 0) return
+    if (this.offset < 1) return
     this.offset -= this.limit
   }
 
