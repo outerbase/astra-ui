@@ -1,7 +1,6 @@
 import { css, html, type PropertyValueMap, type TemplateResult } from 'lit'
 import type { DirectiveResult } from 'lit/async-directive.js'
 import { customElement, property, state } from 'lit/decorators.js'
-import { classMap } from 'lit/directives/class-map.js'
 import { createRef, ref, type Ref } from 'lit/directives/ref.js'
 import { UnsafeHTMLDirective, unsafeHTML } from 'lit/directives/unsafe-html.js'
 
@@ -404,10 +403,6 @@ export class TableData extends MutableElement {
   public override render() {
     let value = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value) : this.value
     let editorValue = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value, null, 2) : this.value
-    const contentWrapperClass = classMap({
-      'font-normal': true,
-      dark: this.theme == Theme.dark,
-    })
 
     if (value && typeof value === 'string') {
       // Replace single, double, and backticks with their HTML entity equivalents
@@ -452,7 +447,7 @@ export class TableData extends MutableElement {
     }
 
     const inputEl = this.isEditing // &nbsp; prevents the row from collapsing (in height) when there is only 1 column
-      ? html`<div class=${contentWrapperClass}>&nbsp;<input .value=${value ?? ''}
+      ? html`<div class="font-normal ${this.theme === Theme.dark ? 'dark' : ''}">&nbsp;<input .value=${value ?? ''}
                 ?readonly=${this.readonly}
                 @input=${this.onChange}
                 class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 font-normal focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
@@ -491,7 +486,7 @@ export class TableData extends MutableElement {
             @paste=${this.onPaste}
           >
             <astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
-              <span class=${contentWrapperClass}>${cellContents}</span>
+              <span class="font-normal ${this.theme === Theme.dark ? 'dark' : ''}">${cellContents}</span>
               ${this.isDisplayingPluginEditor
                 ? html`<span id="plugin-editor" class="absolute top-8 caret-current cursor-auto z-10">${cellEditorContents}</span>`
                 : null}

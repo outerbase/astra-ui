@@ -269,7 +269,7 @@ export default class ScrollArea extends ClassifiedElement {
           clearTimeout(this.pendingMouseLeave)
           delete this.pendingMouseLeave
         }}
-        class=${classMap({ dark: this.theme == Theme.dark })}
+        class=${classMap({ dark: this.theme === Theme.dark })}
       >
         <div class="top-0 w-1.5 ${scrollTrackGutterClasses}" } ${ref(this.rightScrollZone)} @click=${this.onClickVerticalScroller}>
           <div style=${styleMap(verticalHandleStyles)} class=${scrollGrabHandleClasses} ${ref(this.rightScrollHandle)}></div>
