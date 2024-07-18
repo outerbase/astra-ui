@@ -267,7 +267,8 @@ export default class OuterbaseTable extends AstraTable {
       this.schemaName &&
       this.tableName
     ) {
-      this.sourceSchema = this.sourceSchema ?? (await this.fetchSchema())
+      // TODO prevent refetching schema all the time
+      this.sourceSchema = await this.fetchSchema()
       this.table = this.sourceSchema[this.schemaName]?.find(({ name }) => name === this.tableName)
 
       if (this.table) this.schema = { columns: this.table.columns }
