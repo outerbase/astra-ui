@@ -223,7 +223,6 @@ export class TH extends MutableElement {
   public override connectedCallback(): void {
     super.connectedCallback()
     this.addEventListener('contextmenu', this.onContextMenu)
-
     this.addEventListener('click', this.onClick)
   }
 

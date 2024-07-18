@@ -625,9 +625,9 @@ export default class AstraTable extends ClassifiedElement {
                               this.selectableRows
                                 ? html`<astra-th
                               theme=${this.theme}
-                              table-height=${ifDefined(this._height)}                              width="42px"
+                              table-height=${ifDefined(this._height)}
+                              width="42px"
                               .value=${null} .originalValue=${null}
-                              
                               ?separate-cells=${true}
                               ?outer-border=${this.outerBorder}
                               ?is-last-column=${0 === this.visibleColumns.length}
