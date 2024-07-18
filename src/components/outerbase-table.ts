@@ -9,6 +9,7 @@ import { CaretRight } from '../icons/caret-right.js'
 import { Table as TableIcon } from '../icons/table.js'
 import { diffObjects } from '../lib/diff-objects.js'
 import { normalizeKeys } from '../lib/normalize-object-keys.js'
+import stringifyWithoutNewLines from '../lib/stringify-without-new-lines.js'
 import type { APIResponse, CellUpdateEvent, Fields, MenuSelectedEvent, RowAsRecord, Rows, SourceSchema, Table } from '../types.js'
 import './button.js' // Ensure the button component is imported
 import AstraTable from './table/index.js'
@@ -94,7 +95,7 @@ export default class OuterbaseTable extends AstraTable {
         const _key = key.toString()
         if (!_key || !value) return
 
-        _row[_key] = value?.toString()
+        _row[_key] = typeof value === 'object' ? stringifyWithoutNewLines(value) : value?.toString()
       })
 
       stringifiedData.push(_row)
