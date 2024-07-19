@@ -3,7 +3,7 @@ import { customElement, property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { ifDefined } from 'lit/directives/if-defined.js'
 import { repeat } from 'lit/directives/repeat.js'
-import arrayToObject from '../../lib/array-to-object.js'
+import arrayToObject from '../../../lib/array-to-object.js'
 import {
   ColumnAddedEvent,
   ColumnHiddenEvent,
@@ -14,11 +14,10 @@ import {
   RowAddedEvent,
   RowRemovedEvent,
   RowSelectedEvent,
-} from '../../lib/events.js'
+} from '../../../lib/events.js'
 import {
   ColumnStatus,
   DBType,
-  Theme,
   type ColumnPlugin,
   type Columns,
   type HeaderMenuOptions,
@@ -26,15 +25,16 @@ import {
   type RowAsRecord,
   type Schema,
   type TableColumn,
-} from '../../types.js'
-import { ClassifiedElement } from '../classified-element.js'
+  type Theme,
+} from '../../../types.js'
+import { ClassifiedElement } from '../../classified-element.js'
 
 // import subcomponents
 import { createRef, ref, type Ref } from 'lit/directives/ref.js'
 import { styleMap } from 'lit/directives/style-map.js'
+import type ScrollArea from '../../scroll-area.js'
+import '../add-column.js'
 import '../check-box.js'
-import type ScrollArea from '../scroll-area.js'
-import '../widgets/add-column.js'
 import './tbody.js'
 import './td.js'
 import type { TableData } from './td.js'
@@ -330,7 +330,7 @@ export default class AstraTable extends ClassifiedElement {
   private setCssVariablesForPlugin(theme: Theme) {
     if (typeof document === 'undefined') return
 
-    if (theme == Theme.dark) {
+    if (theme == 'dark') {
       document.documentElement.style.setProperty('--ob-background-color', '#0A0A0A')
       document.documentElement.style.setProperty('--ob-text-color', '#FFFFFF')
       document.documentElement.style.setProperty('--ob-border-color', '#262626')
