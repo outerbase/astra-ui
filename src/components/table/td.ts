@@ -17,7 +17,8 @@ const isAlphanumericOrSpecial = (key: string): boolean => {
   // Regular expression to match alphanumeric characters and specified special characters
   return /^[a-zA-Z0-9 \.,]+$/.test(key)
 }
-const returnCharacterPlaceholderRead = '↩'
+// const returnCharacterPlaceholderRead = '↩'
+const returnCharacterPlaceholderRead = ' '
 
 const RW_OPTIONS = [
   { label: 'Edit', value: 'edit' },
