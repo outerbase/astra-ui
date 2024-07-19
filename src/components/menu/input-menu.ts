@@ -9,15 +9,6 @@ import { Menu } from './index.js'
 
 @customElement('astra-input-menu')
 export class InputMenu extends Menu {
-  @property({ type: Object })
-  protected _classMap = {
-    'focus:ring-1 focus:ring-neutral-950 dark:focus:ring-neutral-50 focus:outline-none ': true,
-    'px-2 py-1.5': true,
-    'bg-neutral-50 dark:bg-neutral-950 text-neutral-950 dark:text-neutral-50': true,
-    'placeholder-neutral-400 dark:placeholder-neutral-600': true,
-    'rounded-md border border-neutral-400 dark:border-neutral-600': true,
-  }
-
   @property({ type: String })
   public value = ''
 
@@ -80,11 +71,7 @@ export class InputMenu extends Menu {
               const { value } = event.target as HTMLInputElement
               this.value = value
             }}
-                class=${classMap({
-                  'relative w-full': true,
-                  dark: this.theme == Theme.dark,
-                  ...this._classMap,
-                })}
+                class="relative w-full focus:ring-1 focus:ring-neutral-950 dark:focus:ring-neutral-50 focus:outline-none px-2 py-1.5 bg-neutral-50 dark:bg-neutral-950 text-neutral-950 dark:text-neutral-50 placeholder-neutral-400 dark:placeholder-neutral-600 rounded-md border border-neutral-400 dark:border-neutral-600 ${this.theme === Theme.dark ? 'dark' : ''}"
                 tabindex="0"
                 type="text"
                 autocomplete="off"

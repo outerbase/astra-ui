@@ -30,12 +30,13 @@ export class TH extends MutableElement {
       ...super.classMap(),
       'table-cell relative whitespace-nowrap h-[38px]': true, // h-[38px] was added to preserve the height when toggling to <input />
       'cursor-pointer': true,
-      'border-b border-theme-border dark:border-theme-border-dark': true,
+      'border-b border-theme-table-border dark:border-theme-table-border-dark': true,
       'first:border-l border-t': this.outerBorder,
       'px-cell-padding-x py-cell-padding-y': true,
-      'bg-theme-column dark:bg-theme-column-dark': !this.dirty && !this.isActive,
-      'bg-theme-row-selected dark:bg-theme-row-selected-dark': !this.dirty && this.isActive, // i.e. this is the column being sorted
-      'bg-theme-cell-dirty dark:bg-theme-cell-dirty-dark': this.dirty,
+      'text-theme-table-column-content dark:text-theme-table-column-content-dark': true,
+      'bg-theme-table-column dark:bg-theme-table-column-dark': !this.dirty && !this.isActive,
+      'bg-theme-table-row-selected dark:bg-theme-table-row-selected-dark': !this.dirty && this.isActive, // i.e. this is the column being sorted
+      'bg-theme-table-cell-dirty dark:bg-theme-table-cell-dirty-dark': this.dirty,
       'select-none': this.hasMenu, // this is really about handling SSR without hydration; TODO use a better flag?
       // prevent double borders
       'border-r':
@@ -222,7 +223,6 @@ export class TH extends MutableElement {
   public override connectedCallback(): void {
     super.connectedCallback()
     this.addEventListener('contextmenu', this.onContextMenu)
-
     this.addEventListener('click', this.onClick)
   }
 
@@ -354,11 +354,7 @@ export class TH extends MutableElement {
       return html`<div class=${classMap(blankElementClasses)}><slot></slot></div> `
     } else {
       const body = this.isEditing
-        ? html`<input .value=${this.value} @input=${this.onChange} @keydown=${MutableElement.onKeyDown} class=${classMap({
-            'z-[1] absolute top-0 bottom-0 right-0 left-0': true,
-            'bg-blue-50 dark:bg-blue-950 outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700': true,
-            'px-cell-padding-x font-normal': true,
-          })} @blur=${this.onBlur}></input>`
+        ? html`<input .value=${this.value} @input=${this.onChange} @keydown=${MutableElement.onKeyDown} class="z-[1] absolute top-0 bottom-0 right-0 left-0 bg-blue-50 dark:bg-blue-950 outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-cell-padding-x font-normal" @blur=${this.onBlur}></input>`
         : this.hasMenu
           ? html`<astra-th-menu theme=${this.theme} .options=${options} @menu-selection=${this.onMenuSelection}
               ><span class="font-normal truncate">${this.value}</span></astra-th-menu

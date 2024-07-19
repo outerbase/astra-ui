@@ -17,6 +17,15 @@ export class CellUpdateEvent extends BubblyEvent {
   }
 }
 
+export class CellBlurEvent extends BubblyEvent {
+  public detail: CellDetail
+
+  constructor(detail: CellDetail) {
+    super('cell-blurred')
+    this.detail = detail
+  }
+}
+
 // COLUMNS
 export class ColumnEvent extends BubblyEvent {
   public data?: Record<string, Serializable>
