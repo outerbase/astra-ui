@@ -1,9 +1,9 @@
 import { LitElement, html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
-import { CheckMark } from '../icons/check-mark.js'
-import { TWStyles } from '../lib/.tw-styles.js'
-import { CheckEvent } from '../lib/events.js'
-import { Theme } from '../types.js'
+import { CheckMark } from '../../icons/check-mark.js'
+import { TWStyles } from '../../lib/.tw-styles.js'
+import { CheckEvent } from '../../lib/events.js'
+import { Theme } from '../../types.js'
 
 @customElement('check-box')
 export class CustomCheckbox extends LitElement {

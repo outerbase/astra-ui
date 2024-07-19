@@ -11,12 +11,12 @@
 
   "files.insertFinalNewline": true,
   "files.exclude": {
-    "**/node_modules": true,
-    ".prettierignore": true,
-    ".prettierrc.json": true,
-    "pnpm-lock.yaml": true,
-    ".gitignore": true,
-    ".tmp": true
+    // "**/node_modules": true,
+    // ".prettierignore": true,
+    // ".prettierrc.json": true,
+    // "pnpm-lock.yaml": true,
+    // ".gitignore": true,
+    // ".tmp": true
   },
   "files.watcherExclude": {
     "**/node_modules": true,

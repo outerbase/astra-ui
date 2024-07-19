@@ -2,7 +2,7 @@ import { html } from 'lit'
 import { customElement } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 
-import { Theme } from '../../types.js'
+import { Theme } from '../../../types.js'
 import { Menu } from './index.js'
 
 @customElement('astra-td-menu')

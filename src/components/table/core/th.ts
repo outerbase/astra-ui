@@ -4,7 +4,7 @@ import { classMap } from 'lit/directives/class-map.js'
 import { ifDefined } from 'lit/directives/if-defined.js'
 
 // import subcomponents
-import { CaretRight } from '../../icons/caret-right.js'
+import { CaretRight } from '../../../icons/caret-right.js'
 import {
   ColumnHiddenEvent,
   ColumnPluginActivatedEvent,
@@ -14,11 +14,11 @@ import {
   ColumnUpdatedEvent,
   MenuSelectedEvent,
   ResizeEvent,
-} from '../../lib/events.js'
-import type { ColumnPlugin, HeaderMenuOptions, PluginWorkspaceInstallationId } from '../../types.js'
-import { Theme } from '../../types.js'
+} from '../../../lib/events.js'
+import type { ColumnPlugin, HeaderMenuOptions, PluginWorkspaceInstallationId } from '../../../types.js'
+import { Theme } from '../../../types.js'
+import '../../table/menu/column-menu.js' // <astra-th-menu />
 import '../column-resizer-element.js'
-import '../menu/column-menu.js' // <astra-th-menu />
 import type { ColumnMenu } from '../menu/column-menu.js'
 import { MutableElement } from '../mutable-element.js'
 

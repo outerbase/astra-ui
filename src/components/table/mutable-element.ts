@@ -2,9 +2,9 @@ import type { PropertyValueMap, PropertyValues } from 'lit'
 import { property } from 'lit/decorators.js'
 import { isEqual } from 'lodash-es'
 
-import { CellBlurEvent, CellUpdateEvent } from '../lib/events.js'
-import type { Position, Serializable } from '../types.js'
-import { ClassifiedElement } from './classified-element.js'
+import { CellBlurEvent, CellUpdateEvent } from '../../lib/events.js'
+import type { Position, Serializable } from '../../types.js'
+import { ClassifiedElement } from '../classified-element.js'
 
 export const NUMBER_TYPES = [
   'Int',

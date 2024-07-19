@@ -1,7 +1,7 @@
 import type { PropertyValueMap } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 
-import { ClassifiedElement } from '../classified-element.js'
+import { ClassifiedElement } from '../../classified-element.js'
 
 // tl;dr <tr/>, table-row
 @customElement('astra-tr')

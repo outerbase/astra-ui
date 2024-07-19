@@ -2,9 +2,9 @@ import { html, type PropertyValueMap } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 
-import { CaretDown } from '../../icons/caret-down.js'
-import { ChangeEvent, MenuSelectedEvent } from '../../lib/events.js'
-import { Theme } from '../../types.js'
+import { CaretDown } from '../../../icons/caret-down.js'
+import { ChangeEvent, MenuSelectedEvent } from '../../../lib/events.js'
+import { Theme } from '../../../types.js'
 import { Menu } from './index.js'
 
 @customElement('astra-input-menu')

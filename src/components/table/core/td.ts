@@ -4,11 +4,11 @@ import { customElement, property, state } from 'lit/decorators.js'
 import { createRef, ref, type Ref } from 'lit/directives/ref.js'
 import { UnsafeHTMLDirective, unsafeHTML } from 'lit/directives/unsafe-html.js'
 
-import { eventTargetIsPlugin, eventTargetIsPluginEditor } from '../../lib/event-target-is-plugin.js'
-import { type MenuSelectedEvent } from '../../lib/events.js'
-import { PluginEvent, Theme, type ColumnPlugin, type Serializable } from '../../types.js'
-import '../menu/cell-menu.js' // <astra-td-menu />
-import type { CellMenu } from '../menu/cell-menu.js'
+import { eventTargetIsPlugin, eventTargetIsPluginEditor } from '../../../lib/event-target-is-plugin.js'
+import { type MenuSelectedEvent } from '../../../lib/events.js'
+import { PluginEvent, Theme, type ColumnPlugin, type Serializable } from '../../../types.js'
+import '../../table/menu/cell-menu.js' // <astra-td-menu />
+import type { CellMenu } from '../../table/menu/cell-menu.js'
 import { JSON_TYPES, MutableElement } from '../mutable-element.js'
 
 type PluginActionEvent = CustomEvent<{ action: PluginEvent.onEdit | PluginEvent.onStopEdit | PluginEvent.onCancelEdit; value: any }>
