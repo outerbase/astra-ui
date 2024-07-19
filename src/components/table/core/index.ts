@@ -521,7 +521,6 @@ export default class AstraTable extends ClassifiedElement {
     }
 
     if (changedProperties.has('theme')) {
-      if (this.theme !== 'light' && this.theme !== 'dark') throw new Error(`Invalid value for theme: ${this.theme}`)
       this.setCssVariablesForPlugin(this.theme)
     }
 
