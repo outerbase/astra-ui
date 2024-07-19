@@ -1,0 +1,43 @@
+---
+import { UniverseEditor } from '../../components/universe'
+import Layout from '../../layouts/Layout.astro'
+---
+
+<style>
+  #container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+
+  #layout-container {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+  }
+
+  #left {
+    position: relative;
+    display: flex;
+  }
+
+  #center {
+    display: flex;
+    flex: 1;
+    position: relative;
+  }
+
+  #right {
+    position: relative;
+    display: flex;
+  }
+</style>
+
+<Layout title="Astra-UI">
+  <div class="bg-blue-50"><UniverseEditor client:only="lit" /></div>
+</Layout>
