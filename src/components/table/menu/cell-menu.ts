@@ -2,7 +2,6 @@ import { html } from 'lit'
 import { customElement } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 
-import { Theme } from '../../../types.js'
 import { Menu } from './index.js'
 
 @customElement('astra-td-menu')
@@ -15,7 +14,7 @@ export class CellMenu extends Menu {
   }
 
   public override render() {
-    const darkClass = classMap({ dark: this.theme === Theme.dark })
+    const darkClass = classMap({ dark: this.theme === 'dark' })
 
     // @click shows/hides the menu
     // @dblclick prevents parent's dblclick

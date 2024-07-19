@@ -6,7 +6,7 @@ import { UnsafeHTMLDirective, unsafeHTML } from 'lit/directives/unsafe-html.js'
 
 import { eventTargetIsPlugin, eventTargetIsPluginEditor } from '../../../lib/event-target-is-plugin.js'
 import { type MenuSelectedEvent } from '../../../lib/events.js'
-import { PluginEvent, Theme, type ColumnPlugin, type Serializable } from '../../../types.js'
+import { PluginEvent, type ColumnPlugin, type Serializable } from '../../../types.js'
 import '../../table/menu/cell-menu.js' // <astra-td-menu />
 import type { CellMenu } from '../../table/menu/cell-menu.js'
 import { JSON_TYPES, MutableElement } from '../mutable-element.js'
@@ -443,7 +443,7 @@ export class TableData extends MutableElement {
       /* prettier-ignore */ cellContents = html`<div class=${classes}>${ value === null ? 'NULL' : value === undefined ? 'DEFAULT' : typeof value === 'string' ? value.replace(/\n/g, returnCharacterPlaceholderRead) : value}</div>`;
     }
 
-    const themeClass = this.theme === Theme.dark ? 'dark' : ''
+    const themeClass = this.theme === 'dark' ? 'dark' : ''
     const inputEl = this.isEditing // &nbsp; prevents the row from collapsing (in height) when there is only 1 column
       ? html`<div class="${themeClass}">&nbsp;<input .value=${typeof value === 'string' ? value : (value ?? '')} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
       : html``
@@ -479,7 +479,7 @@ export class TableData extends MutableElement {
             @paste=${this.onPaste}
           >
             <astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
-              <span class="whitespace-pre ${this.theme === Theme.dark ? 'dark' : ''}">${cellContents}</span>
+              <span class="whitespace-pre ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
               ${this.isDisplayingPluginEditor
                 ? html`<span id="plugin-editor" class="absolute top-8 caret-current cursor-auto z-10">${cellEditorContents}</span>`
                 : null}

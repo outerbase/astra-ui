@@ -18,7 +18,6 @@ import {
 import {
   ColumnStatus,
   DBType,
-  Theme,
   type ColumnPlugin,
   type Columns,
   type HeaderMenuOptions,
@@ -26,6 +25,7 @@ import {
   type RowAsRecord,
   type Schema,
   type TableColumn,
+  type Theme,
 } from '../../../types.js'
 import { ClassifiedElement } from '../../classified-element.js'
 
@@ -330,7 +330,7 @@ export default class AstraTable extends ClassifiedElement {
   private setCssVariablesForPlugin(theme: Theme) {
     if (typeof document === 'undefined') return
 
-    if (theme == Theme.dark) {
+    if (theme == 'dark') {
       document.documentElement.style.setProperty('--ob-background-color', '#0A0A0A')
       document.documentElement.style.setProperty('--ob-text-color', '#FFFFFF')
       document.documentElement.style.setProperty('--ob-border-color', '#262626')
@@ -521,6 +521,7 @@ export default class AstraTable extends ClassifiedElement {
     }
 
     if (changedProperties.has('theme')) {
+      if (this.theme !== 'light' && this.theme !== 'dark') throw new Error(`Invalid value for theme: ${this.theme}`)
       this.setCssVariablesForPlugin(this.theme)
     }
 
