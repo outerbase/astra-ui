@@ -10,13 +10,14 @@ export enum Axis {
   'both' = 'both',
 }
 
-// copied from dashboard
 export type TableColumnType = 'string' | 'integer' | 'enum' | 'uuid' | 'date' | 'dateonly'
+
 export enum ColumnStatus {
   created,
   updated,
   deleted,
 }
+
 export enum DBType {
   REAL = 'REAL',
   INTEGER = 'INTEGER',
@@ -61,6 +62,7 @@ export enum DBType {
   TSQUERY = 'TSQUERY',
   VARYING = 'CHARACTER VARYING',
 }
+
 export type TableColumn = {
   model?: 'column'
   type?: string
@@ -81,7 +83,9 @@ export type TableColumn = {
 export type Schema = {
   columns: Columns
 }
+
 export type Columns = Array<TableColumn>
+
 export type RowAsRecord = {
   id: string
   values: Record<string, Serializable>
@@ -299,6 +303,8 @@ export type Field = {
   alias: string
 }
 export type Fields = Array<Field>
+
+// CHARTS
 export type ChartTypeV3 = 'column' | 'bar' | 'line' | 'area' | 'single_value' | 'table' | 'scatter' | 'heatmap' | 'text'
 export type DashboardV3ChartLegend = 'none' | 'top' | 'bottom' | 'left' | 'right'
 export type DashboardV3ChartLabelDisplayX = 'auto' | '0' | '45' | '90' | 'hidden'
@@ -350,16 +356,21 @@ export type DashboardV3Chart = {
   // The unique identifier for the chart
   id?: string
   // The name of the chart as provided by the user
-  name: string
+  name?: string
+  // Description of the chart, optional
   description?: string
   // An API key value that is used to fetch details of the chart
   apiKey: string
   // Array of queries that are used to render various charts on the widget
   layers: Array<DashboardV3ChartQuery>
-  // highlights
+  // callouts
+  // callouts?: Array<DashboardV3Callout>
   highlights?: Array<DashboardV3HighlightType>
   // Chart options
   options: DashboardV3ChartOptions
+
+  params?: {}
+  type?: ChartTypeV3
 }
 
 export enum DashboardFilterType {

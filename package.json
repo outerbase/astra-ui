@@ -1,6 +1,6 @@
 {
   "name": "@outerbase/astra-ui",
-  "version": "0.0.24",
+  "version": "0.0.23-chart.10",
   "type": "module",
   "main": "dist/js/index.js",
   "module": "dist/js/index.js",
@@ -24,7 +24,8 @@
     "compile:watch": "node .build/compile-typescript-on-changes.mjs",
     "bundle": "rollup -c ./.build/rollup.config.js",
     "preview": "astro preview --config .build/astro.config.mjs",
-    "prepack": "pnpm tailwind:build && pnpm compile && pnpm bundle"
+    "prepack": "pnpm tailwind:build && pnpm compile && pnpm bundle",
+    "publish-npm-module": "npm publish --access public"
   },
   "devDependencies": {
     "@astrojs/check": "^0.8.1",
@@ -37,6 +38,7 @@
     "@rollup/plugin-multi-entry": "^6.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
+    "@types/d3": "^7.4.3",
     "@types/lodash-es": "^4.17.12",
     "@types/react": "^18.3.3",
     "@webcomponents/template-shadowroot": "^0.2.1",
@@ -52,7 +54,13 @@
     "typescript": "^5.5.3"
   },
   "peerDependencies": {
-    "lit": "^3.1.2",
+    "lit": "^3.1.2"
+  },
+  "dependencies": {
+    "@observablehq/plot": "^0.6.15",
+    "d3": "^7.9.0",
+    "d3-time": "^3.1.0",
+    "d3-time-format": "^4.1.0",
     "lodash-es": "^4.17.21"
   },
   "packageManager": "pnpm@9.5.0"

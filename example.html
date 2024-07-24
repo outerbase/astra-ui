@@ -7,12 +7,30 @@
 
     <!-- include 'Inter' via Google Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet" />
 
     <!-- customize the page's styling -->
     <style>
       hr {
         color: lime;
         margin: 1rem 0;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          --background-color: black;
+          --text-color: white;
+          background-color: var(--background-color);
+          color: var(--text-color);
+        }
+      }
+      @media (prefers-color-scheme: light) {
+        body {
+          --background-color: white;
+          --text-color: black;
+          background-color: var(--background-color);
+          color: var(--text-color);
+        }
       }
     </style>
 
@@ -29,6 +47,32 @@
   </head>
 
   <body>
+    <div>
+      <p>Date Range Picker</p>
+      <div>
+        <astra-calendar theme="dark"></astra-calendar>
+      </div>
+
+      <div style="margin-top: 12px">
+        <astra-calendar theme="dark" single-month-view></astra-calendar>
+      </div>
+      <hr />
+    </div>
+
+    <div>
+      <astra-chart
+        type="line"
+        data='[{"label": "A", "value": 20}, {"label": "B", "value": 35 }, {"label": "C", "value": 40}]'
+        key-x="label"
+        key-y="value"
+      ></astra-chart>
+      <astra-chart
+        data='[{"label": "A", "value": 20}, {"label": "B", "value": 35 }, {"label": "C", "value": 40}]'
+        type="bar"
+        key-x="value"
+        key-y="label"
+      ></astra-chart>
+    </div>
     <astra-button>click click click</astra-button>
     <hr />
     <astra-card>arbitrary content</astra-card>

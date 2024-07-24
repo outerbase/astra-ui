@@ -1,6 +1,7 @@
 ---
 // server-side code goes here and can be accessed below
-import { Button, Card, Input, ScrollArea, Select, Table, Text, OuterbaseTable } from '../index'
+
+import { Button, Card, Chart, ComposedChart, Input, ScrollArea, Select, Table, Text, OuterbaseTable } from '../index'
 import Layout from '../layouts/Layout.astro'
 
 // include Inter font on the page
@@ -8,6 +9,7 @@ import '@fontsource/inter' // Defaults to weight 400
 
 // test data
 import spaceballs from '../lib/sample-data.json'
+import type { DashboardV3Chart } from '../types'
 const rows = spaceballs
   .map((d) => ({ ...d, traits: JSON.stringify(d.traits) }))
   .map((values) => ({ id: crypto.randomUUID(), values, originalValues: values }))
@@ -19,12 +21,184 @@ const optionsArray = [
   { label: 'Oranges', value: 'oranges' },
   { label: 'Avocados', value: 'avocados' },
 ]
+
+const stockQuotes = await (
+  await fetch('https://app.outerbase.com/api/v1/ezql/raw', {
+    body: '{"query":"SELECT aapl.date, aapl.close FROM aapl ","params":{},"run":true}',
+    cache: 'default',
+    credentials: 'omit',
+    headers: {
+      Accept: '*/*',
+      'Accept-Language': 'en-US,en;q=0.9',
+      'Cache-Control': 'no-cache',
+      'Content-Type': 'application/json',
+      Pragma: 'no-cache',
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15',
+      'X-Source-Token': 'kzt7ip4y5wkzhr9ncnueyirnytficdlnx1qpphyflhh8qezlxwiv5143411kh3ps',
+    },
+    method: 'POST',
+    mode: 'cors',
+    redirect: 'follow',
+    referrer: 'https://ficus.pages.dev/',
+    referrerPolicy: 'strict-origin-when-cross-origin',
+  })
+).json()
+
+const alphabet = await (
+  await fetch('https://app.outerbase.com/api/v1/ezql/query/6eacc1c5-4f67-4ccc-a892-dca9d793063c', {
+    cache: 'default',
+    credentials: 'omit',
+    headers: {
+      Accept: '*/*',
+      'Accept-Language': 'en-US,en;q=0.9',
+      'Cache-Control': 'no-cache',
+      'Content-Type': 'application/json',
+      Pragma: 'no-cache',
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15',
+      'X-Source-Token': 'kzt7ip4y5wkzhr9ncnueyirnytficdlnx1qpphyflhh8qezlxwiv5143411kh3ps',
+    },
+    method: 'POST',
+    mode: 'cors',
+    redirect: 'follow',
+    referrer: 'https://ficus.pages.dev/',
+    referrerPolicy: 'strict-origin-when-cross-origin',
+  })
+).json()
+
+const lineData: DashboardV3Chart = {
+  name: 'wubbalubbadubdub',
+  description: 'this that and the other',
+  apiKey: 'asdf-1234',
+  options: {
+    xAxisKey: 'date',
+    yAxisKeys: ['close'],
+  },
+  layers: [
+    {
+      type: 'line',
+      result: [], //stockQuotes.response.results.items.map((v: any) => ({ close: Number(v.close), date: new Date(v.date) })),
+    },
+  ],
+}
+
+const areaData: DashboardV3Chart = {
+  name: 'wubbalubbadubdub',
+  description: 'this that and the other',
+  apiKey: 'asdf-1234',
+  options: {
+    xAxisKey: 'date',
+    yAxisKeys: ['close'],
+  },
+  layers: [
+    {
+      type: 'area',
+      result: [], //stockQuotes.response.results.items.map((v: any) => ({ close: Number(v.close), date: new Date(v.date) })),
+    },
+  ],
+}
+
+const barData: DashboardV3Chart = {
+  name: 'wubbalubbadubdub',
+  description: 'this that and the other',
+  apiKey: 'asdf-1234',
+  options: {
+    yAxisKeys: ['starting_letter'],
+    xAxisKey: 'frequency',
+  },
+  layers: [
+    {
+      type: 'bar',
+      result: [], //alphabet.response.results.items.map((v: any) => ({ frequency: Number(v.frequency), starting_letter: v.starting_letter })),
+    },
+  ],
+}
+
+const tableData: DashboardV3Chart = {
+  name: 'wubbalubbadubdub',
+  description: 'this that and the other',
+  apiKey: 'asdf-1234',
+  options: {
+    xAxisKey: 'date',
+    yAxisKeys: ['close'],
+  },
+  layers: [
+    {
+      type: 'table',
+      result: [], //alphabet.response.results.items
+      // .map((v: any) => ({ frequency: Number(v.frequency), starting_letter: v.starting_letter }))
+      // .map((values: any) => ({ id: crypto.randomUUID(), values, originalValues: values })),
+    },
+  ],
+}
+
+const dotsData: DashboardV3Chart = {
+  name: 'wubbalubbadubdub',
+  description: 'this that and the other',
+  apiKey: 'asdf-1234',
+  options: {
+    xAxisKey: 'date',
+    yAxisKeys: ['close'],
+  },
+  layers: [
+    {
+      type: 'scatter',
+      result: [], //stockQuotes.response.results.items.map((v: any) => ({ close: Number(v.close), date: new Date(v.date) })),
+    },
+  ],
+}
+
+const alphabetData: DashboardV3Chart = {
+  name: 'wubbalubbadubdub',
+  description: 'this that and the other',
+  apiKey: 'asdf-1234',
+  options: {
+    xAxisKey: 'starting_letter',
+    yAxisKeys: ['frequency'],
+  },
+  layers: [
+    {
+      type: 'column',
+      result: [], //alphabet.response.results.items.map((v: any) => ({ frequency: Number(v.frequency), starting_letter: v.starting_letter })),
+    },
+  ],
+}
+
+const singleData: DashboardV3Chart = {
+  name: 'wubbalubbadubdub',
+  description: 'this that and the other',
+  apiKey: 'asdf-1234',
+  options: {
+    xAxisKey: 'starting_letter',
+    yAxisKeys: ['frequency'],
+  },
+  layers: [
+    {
+      type: 'single_value',
+      result: [], //alphabet.response.results.items.map((v: any) => ({ frequency: Number(v.frequency), starting_letter: v.starting_letter })),
+    },
+  ],
+}
+
+const textData: DashboardV3Chart = {
+  name: 'wubbalubbadubdub',
+  description: 'this that and the other',
+  apiKey: 'asdf-1234',
+  options: {
+    xAxisKey: 'starting_letter',
+    yAxisKeys: ['frequency'],
+  },
+  layers: [
+    {
+      type: 'text',
+      result: [], //alphabet.response.results.items.map((v: any) => ({ frequency: Number(v.frequency), starting_letter: v.starting_letter })),
+    },
+  ],
+}
 ---
 
 <Layout title="Astra-UI">
   <script>
     /* themes may also be set dynamically/programatically */
-    // document.documentElement.style.setProperty("--success-color", "lime");
 
     addEventListener('menu-selection', console.info)
     addEventListener('cell-updated', console.info)
@@ -77,9 +251,156 @@ const optionsArray = [
       </div>
     </div>
 
-    <h2><pre>&lt;astra-input /&gt;</pre></h2>
-    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-    <Input client:load placeholder="This is a placeholder" label="demo input" />
+    <h2><pre>&lt;astra-chart /&gt; as column</pre></h2>
+    <div class="flex flex-col gap-4">
+      <!-- @ts-ignore attributes -->
+      <Chart client:only="lit" data={alphabetData} theme="light" />
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as bar</pre></h2>
+      <div class="flex flex-col gap-4">
+        <!-- @ts-ignore attributes -->
+        <Chart client:only="lit" data={barData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as line</pre></h2>
+      <div class="flex flex-col gap-4">
+        <!-- @ts-ignore attributes -->
+        <Chart client:only="lit" data={lineData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as area</pre></h2>
+      <div class="flex flex-col gap-4">
+        <!-- @ts-ignore attributes -->
+        <Chart client:only="lit" data={areaData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as dots</pre></h2>
+      <div class="flex flex-col gap-4">
+        <!-- @ts-ignore attributes -->
+        <Chart client:only="lit" data={dotsData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as table</pre></h2>
+      <h3>
+        Tables require the container of the Chart to be relatively positioned with an explicit height/width -- because of how virtualized
+        scrolling works in the table
+      </h3>
+      <div class="flex flex-col gap-4 relative w-full h-96">
+        <!-- @ts-ignore attributes -->
+        <Chart client:only="lit" data={tableData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as single_value</pre></h2>
+      <h3>
+        Tables require the container of the Chart to be relatively positioned with an explicit height/width -- because of how virtualized
+        scrolling works in the table
+      </h3>
+      <div class="flex flex-col gap-4 relative w-full h-96">
+        <!-- @ts-ignore attributes -->
+        <Chart client:only="lit" data={singleData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as text</pre></h2>
+      <h3>
+        Tables require the container of the Chart to be relatively positioned with an explicit height/width -- because of how virtualized
+        scrolling works in the table
+      </h3>
+      <div class="flex flex-col gap-4 relative w-full h-96">
+        <!-- @ts-ignore attributes -->
+        <Chart client:only="lit" data={textData} theme="light" />
+      </div>
+    </div>
+
+    <hr />
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as column</pre></h2>
+      <div class="flex flex-col gap-4">
+        <!-- @ts-ignore attributes -->
+        <ComposedChart client:only="lit" data={alphabetData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as bar</pre></h2>
+      <div class="flex flex-col gap-4">
+        <!-- @ts-ignore attributes -->
+        <ComposedChart client:only="lit" data={barData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as line</pre></h2>
+      <div class="flex flex-col gap-4">
+        <!-- @ts-ignore attributes -->
+        <ComposedChart client:only="lit" data={lineData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as area</pre></h2>
+      <div class="flex flex-col gap-4">
+        <!-- @ts-ignore attributes -->
+        <ComposedChart client:only="lit" data={areaData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as dots</pre></h2>
+      <div class="flex flex-col gap-4">
+        <!-- @ts-ignore attributes -->
+        <ComposedChart client:only="lit" data={dotsData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as table</pre></h2>
+      <h3>
+        Tables require the container of the Chart to be relatively positioned with an explicit height/width -- because of how virtualized
+        scrolling works in the table
+      </h3>
+      <div class="flex flex-col gap-4 relative w-full h-96">
+        <!-- @ts-ignore attributes -->
+        <Chart client:only="lit" data={tableData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as single_value</pre></h2>
+      <h3>
+        Tables require the container of the Chart to be relatively positioned with an explicit height/width -- because of how virtualized
+        scrolling works in the table
+      </h3>
+      <div class="flex flex-col gap-4 relative w-full h-96">
+        <!-- @ts-ignore attributes -->
+        <Chart client:only="lit" data={singleData} theme="light" />
+      </div>
+    </div>
+
+    <div>
+      <h2><pre>&lt;astra-chart /&gt; as text</pre></h2>
+      <h3>
+        Tables require the container of the Chart to be relatively positioned with an explicit height/width -- because of how virtualized
+        scrolling works in the table
+      </h3>
+      <div class="flex flex-col gap-4 relative w-full h-96">
+        <!-- @ts-ignore attributes -->
+        <Chart client:only="lit" data={textData} theme="light" />
+      </div>
+    </div>
   </main>
 
   <div>

@@ -1,5 +1,8 @@
 import Button from './components/button.js'
+import Calendar from './components/calendar/calendar.js'
 import Card from './components/card.js'
+import Chart from './components/charts/chart.js'
+import ComposedChart from './components/charts/composed.js'
 import Input from './components/input.js'
 import ScrollArea from './components/scroll-area.js'
 import Select from './components/select.js'
@@ -8,7 +11,7 @@ import OuterbaseTable from './components/table/outerbase-table.js'
 import Text from './components/text.js'
 
 // export * as Types from './types'
-export { Button, Card, Input, OuterbaseTable, ScrollArea, Select, Table, Text }
+export { Button, Calendar, Card, Chart, ComposedChart, Input, OuterbaseTable, ScrollArea, Select, Table, Text }
 
 declare global {
   namespace JSX {
@@ -20,6 +23,7 @@ declare global {
       'astra-input': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
       'astra-text': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
       'astra-select': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
+      'astra-calendar': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
       'outerbase-table': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
     }
   }
