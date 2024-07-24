@@ -65,7 +65,7 @@ export class TextEditor extends ClassifiedElement {
     `,
   ]
 
-  @property({ type: Boolean }) wordWrap = false
+  @property({ type: Boolean, attribute: 'wrap' }) wordWrap = false
   @property() private text = `-- Creating a table with various data types and constraints
 CREATE TABLE employees (
     employee_id INT PRIMARY KEY, -- Primary key constraint
@@ -165,8 +165,9 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
     return html`
       <div class="font-mono flex flex-row border w-full bg-indigo-900 h-full">
         <div class="flex flex-none h-full w-full no-scrollbar">
+          <!-- line numbers  -->
           <div
-            class="px-3 bg-zinc-500/10 text-right text-white/40 select-none flex-none overflow-auto no-scrollbar"
+            class="px-3 bg-zinc-500/10 text-right text-white/40 select-none flex-none overflow-auto overscroll-contain no-scrollbar"
             @scroll="${() => {
               if (this.displayedCodeRef.value) {
                 this.displayedCodeRef.value.scrollTop = this.lineNumbersRef.value!.scrollTop
@@ -180,25 +181,43 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
             ${this.getLineNumbers()}
           </div>
 
+          <!-- text body -->
           <div ${ref(this.scrollerRef)} class="relative h-full w-full cursor-text mx-1">
             <div
               id="displayed-code"
-              class="top-0 bottom-0 left-0 right-0 absolute w-full text-white/80 select-none overflow-auto no-scrollbar"
+              class="top-0 bottom-0 left-0 right-0 absolute w-full text-white/80 select-none overflow-auto overscroll-contain no-scrollbar ${this
+                .wordWrap
+                ? ''
+                : 'whitespace-nowrap'}"
               ${ref(this.displayedCodeRef)}
+              @scroll="${() => {
+                if (this.textareaRef.value) {
+                  this.textareaRef.value.scrollLeft = this.displayedCodeRef.value!.scrollLeft
+                }
+              }}"
             >
               ${this.lines.map(
-                (item, index) => html`<code class="w-full whitespace-pre-wrap block language-sql" id="line-${index}">${item}</code>`
+                (item, index) =>
+                  html`<code
+                    class="w-full ${this.wordWrap ? 'whitespace-pre-wrap' : 'whitespace-pre'} block language-sql"
+                    id="line-${index}"
+                    >${item}</code
+                  >`
               )}
             </div>
             <textarea
               autocorrect="off"
               spellcheck="false"
-              class="resize-none top-0 bottom-0 left-0 right-0 absolute focus:outline-none overflow-auto no-scrollbar caret-lime-400 bg-zinc-100/10 text-transparent"
+              class="resize-none top-0 bottom-0 left-0 right-0 absolute focus:outline-none overflow-auto overscroll-contain no-scrollbar caret-lime-400 bg-zinc-100/10 text-transparent ${this
+                .wordWrap
+                ? ''
+                : 'whitespace-nowrap'}"
               .value="${this.text}"
               @input="${this.onInput}"
               @scroll="${() => {
                 if (this.displayedCodeRef.value) {
                   this.displayedCodeRef.value.scrollTop = this.textareaRef.value!.scrollTop
+                  this.displayedCodeRef.value.scrollLeft = this.textareaRef.value!.scrollLeft
                 }
                 if (this.lineNumbersRef.value) {
                   this.lineNumbersRef.value.scrollTop = this.textareaRef.value!.scrollTop
@@ -263,7 +282,7 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
 
     // initial load before any text is entered
     if (this.lines.length === 0) {
-      lineNumbers.push(html`<div class="whitespace-nowrap h-[${singleLineHeight}px] leading-[${singleLineHeight}px]">1</div>`)
+      lineNumbers.push(html`<div class="h-[${singleLineHeight}px] leading-[${singleLineHeight}px]">1</div>`)
     }
 
     // add numbers for each line, including wrapped content
@@ -272,7 +291,7 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
       const wrappedLines = Math.max(Math.ceil(currentLineHeight / singleLineHeight), 1)
       for (let i = 0; i < wrappedLines; i++) {
         lineNumbers.push(
-          html`<div class="whitespace-nowrap h-[${singleLineHeight}px] leading-[${singleLineHeight}px] ${i > 0 ? 'text-zinc-300/30' : ''}">
+          html`<div class="h-[${singleLineHeight}px] leading-[${singleLineHeight}px] ${i > 0 ? 'text-zinc-300/30' : ''}">
             ${i === 0 ? lineNumber : '.'}
           </div>`
         )

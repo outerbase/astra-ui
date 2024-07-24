@@ -4,5 +4,13 @@ import Layout from '../../layouts/Layout.astro'
 ---
 
 <Layout title="Astra-UI">
-  <TextEditor client:only="lit" />
+  <div class="h-1/2 mb-8">
+    <h1><pre>&lt;text-editor wrap /&gt;</pre></h1>
+    <TextEditor client:only="lit" wrap />
+  </div>
+
+  <div class="h-1/2">
+    <h1><pre>&lt;text-editor /&gt;</pre></h1>
+    <TextEditor client:only="lit" />
+  </div>
 </Layout>
