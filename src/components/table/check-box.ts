@@ -1,9 +1,8 @@
 import { LitElement, html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
-import { classMap } from 'lit/directives/class-map.js'
-import { CheckMark } from '../icons/check-mark.js'
-import { TWStyles } from '../lib/.tw-styles.js'
-import { CheckEvent } from '../lib/events.js'
+import { CheckMark } from '../../icons/check-mark.js'
+import { TWStyles } from '../../lib/.tw-styles.js'
+import { CheckEvent } from '../../lib/events.js'
 
 @customElement('check-box')
 export class CustomCheckbox extends LitElement {
@@ -46,13 +45,8 @@ export class CustomCheckbox extends LitElement {
     'focus:shadow-ringlet dark:focus:shadow-ringlet-dark focus:rounded-md focus:ring-1 focus:ring-black dark:focus:ring-neutral-300 focus:outline-none'
 
   render() {
-    const classes = classMap({
-      'flex items-center cursor-pointer': true,
-      dark: this.theme === 'dark',
-    })
-
     return html`
-      <div class=${classes} @click="${this.toggleCheckbox}">
+      <div class="flex flex-none items-center cursor-pointer ${this.theme === 'dark' ? 'dark' : ''}" @click="${this.toggleCheckbox}">
         ${this.checked ? CustomCheckbox.checkedTemplate : CustomCheckbox.uncheckedTemplate}
         <input type="checkbox" ?checked="${this.checked}" @change="${this.toggleCheckbox}" class="hidden" />
       </div>

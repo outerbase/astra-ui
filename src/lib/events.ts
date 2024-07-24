@@ -17,6 +17,28 @@ export class CellUpdateEvent extends BubblyEvent {
   }
 }
 
+export class TabOpenEvent extends BubblyEvent {
+  public detail: {
+    table: string
+    schema: string
+    filter: Record<string, string>
+  }
+
+  constructor(detail: { table: string; schema: string; filter: Record<string, string> }) {
+    super('table-tab-open-event')
+    this.detail = detail
+  }
+}
+
+export class CellBlurEvent extends BubblyEvent {
+  public detail: CellDetail
+
+  constructor(detail: CellDetail) {
+    super('cell-blurred')
+    this.detail = detail
+  }
+}
+
 // COLUMNS
 export class ColumnEvent extends BubblyEvent {
   public data?: Record<string, Serializable>

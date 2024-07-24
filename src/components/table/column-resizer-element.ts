@@ -1,9 +1,8 @@
 import { html, type PropertyValueMap } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
-import { classMap } from 'lit/directives/class-map.js'
-import { ResizeEndEvent, ResizeEvent, ResizeStartEvent } from '../lib/events.js'
-import { ClassifiedElement } from './classified-element.js'
-import type { TH } from './table/th.js'
+import { ResizeEndEvent, ResizeEvent, ResizeStartEvent } from '../../lib/events.js'
+import { ClassifiedElement } from '../classified-element.js'
+import type { TH } from './core/th.js'
 
 @customElement('column-resizer')
 export class ColumnResizer extends ClassifiedElement {
@@ -67,18 +66,15 @@ export class ColumnResizer extends ClassifiedElement {
   }
 
   public override render() {
-    const classes = classMap({
-      'absolute z-[1] top-0 bottom-0 -right-[7px] w-4': true,
-      'flex justify-center': true,
-      'cursor-col-resize group': true,
-      dark: this.theme === 'dark',
-    })
-
     // the reason for nested div's here is to increase the click/draggable area while preserving a smaller visual element
     return html`
-      <div class=${classes}>
+      <div
+        class="absolute z-[1] top-0 bottom-0 -right-[7px] w-4 flex justify-center cursor-col-resize group ${this.theme === 'dark'
+          ? 'dark'
+          : ''}"
+      >
         <div
-          class="h-full ml-[1px] w-[1px] group-hover:w-1 group-active:w-1 bg-theme-border dark:bg-theme-border-dark group-hover:bg-blue-400 group-active:bg-blue-500 dark:group-hover:bg-blue-900 dark:group-active:bg-blue-800"
+          class="h-full ml-[1px] w-[1px] group-hover:w-1 group-active:w-1 bg-theme-table-border dark:bg-theme-table-border-dark group-hover:bg-blue-400 group-active:bg-blue-500 dark:group-hover:bg-blue-900 dark:group-active:bg-blue-800"
         ></div>
       </div>
     `

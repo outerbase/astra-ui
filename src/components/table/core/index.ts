@@ -3,7 +3,7 @@ import { customElement, property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { ifDefined } from 'lit/directives/if-defined.js'
 import { repeat } from 'lit/directives/repeat.js'
-import arrayToObject from '../../lib/array-to-object.js'
+import arrayToObject from '../../../lib/array-to-object.js'
 import {
   ColumnAddedEvent,
   ColumnHiddenEvent,
@@ -14,7 +14,7 @@ import {
   RowAddedEvent,
   RowRemovedEvent,
   RowSelectedEvent,
-} from '../../lib/events.js'
+} from '../../../lib/events.js'
 import {
   ColumnStatus,
   DBType,
@@ -26,15 +26,15 @@ import {
   type Schema,
   type TableColumn,
   type Theme,
-} from '../../types.js'
-import { ClassifiedElement } from '../classified-element.js'
+} from '../../../types.js'
+import { ClassifiedElement } from '../../classified-element.js'
 
 // import subcomponents
 import { createRef, ref, type Ref } from 'lit/directives/ref.js'
 import { styleMap } from 'lit/directives/style-map.js'
+import type ScrollArea from '../../scroll-area.js'
+import '../add-column.js'
 import '../check-box.js'
-import type ScrollArea from '../scroll-area.js'
-import '../widgets/add-column.js'
 import './tbody.js'
 import './td.js'
 import type { TableData } from './td.js'
@@ -154,10 +154,13 @@ export default class AstraTable extends ClassifiedElement {
       values: row?.values ?? {},
       originalValues: row?.originalValues ?? {},
       isNew: row?.isNew ?? true,
+      isDeleted: false,
     }
 
-    this.rows = [...this.rows, _row]
+    this.rows.push(_row)
+    this.requestUpdate('rows')
     this.dispatchEvent(new RowAddedEvent(_row))
+
     return _row
   }
 
@@ -195,6 +198,13 @@ export default class AstraTable extends ClassifiedElement {
       checkbox.checked = false
       checkbox.dispatchEvent(new Event('change'))
     })
+  }
+
+  public resetValues() {
+    // replace values with a copy of original values (otherwise they share state and are always equal!!)
+    this.rows = this.rows
+      .filter(({ isNew }) => !isNew) // remove new rows
+      .map((r) => ({ ...r, values: { ...r.originalValues }, isDeleted: false })) // reset values
   }
 
   public deleteSelectedRows() {
@@ -320,7 +330,7 @@ export default class AstraTable extends ClassifiedElement {
   private setCssVariablesForPlugin(theme: Theme) {
     if (typeof document === 'undefined') return
 
-    if (theme === 'dark') {
+    if (theme == 'dark') {
       document.documentElement.style.setProperty('--ob-background-color', '#0A0A0A')
       document.documentElement.style.setProperty('--ob-text-color', '#FFFFFF')
       document.documentElement.style.setProperty('--ob-border-color', '#262626')
@@ -511,7 +521,6 @@ export default class AstraTable extends ClassifiedElement {
     }
 
     if (changedProperties.has('theme')) {
-      if (this.theme !== 'light' && this.theme !== 'dark') throw new Error('Invalid theme specified')
       this.setCssVariablesForPlugin(this.theme)
     }
 
@@ -532,7 +541,14 @@ export default class AstraTable extends ClassifiedElement {
       this.oldRows = []
 
       this.rows.forEach((row) => {
-        row.isNew ? this.newRows.push(row) : this.oldRows.push(row)
+        if (row.isNew && !row.isDeleted) {
+          this.newRows.push(row)
+        }
+
+        if (!row.isNew && !row.isDeleted) {
+          this.oldRows.push(row)
+        }
+
         this.fromIdToRowMap[row.id] = row
       })
 
@@ -552,9 +568,10 @@ export default class AstraTable extends ClassifiedElement {
   public override render() {
     const tableClasses = {
       'table table-fixed bg-theme-table dark:bg-theme-table-dark': true,
-      'text-theme-text dark:text-theme-text-dark text-sm': true,
+      'text-theme-table-content dark:text-theme-table-content-dark text-sm': true,
       'min-w-full': true,
       relative: true,
+      dark: this.theme === 'dark',
     }
 
     const selectAllCheckbox =
@@ -608,9 +625,9 @@ export default class AstraTable extends ClassifiedElement {
                               this.selectableRows
                                 ? html`<astra-th
                               theme=${this.theme}
-                              table-height=${ifDefined(this._height)}                              width="42px"
+                              table-height=${ifDefined(this._height)}
+                              width="42px"
                               .value=${null} .originalValue=${null}
-                              
                               ?separate-cells=${true}
                               ?outer-border=${this.outerBorder}
                               ?is-last-column=${0 === this.visibleColumns.length}

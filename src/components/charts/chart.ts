@@ -212,9 +212,9 @@ export default class AstraChart extends ClassifiedElement {
 
   @property({ type: String, attribute: 'api-key' }) apiKey: string | undefined
   @property({ type: String, attribute: 'chart-id' }) chartId: string | undefined
-  @property({ type: Array }) data?: DashboardV3Chart
+  @property({ type: Object }) data?: DashboardV3Chart
   @property({ type: String }) type?: ChartTypeV3
-  @property({ type: String }) highlights?: Array<DashboardV3HighlightType>
+  @property({ type: Array }) highlights?: Array<DashboardV3HighlightType>
 
   // X-Axis
   @property({ type: String, attribute: 'key-x' }) keyX?: string

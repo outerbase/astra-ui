@@ -1,15 +1,14 @@
 import { css, html, type PropertyValueMap, type TemplateResult } from 'lit'
 import type { DirectiveResult } from 'lit/async-directive.js'
 import { customElement, property, state } from 'lit/decorators.js'
-import { classMap } from 'lit/directives/class-map.js'
 import { createRef, ref, type Ref } from 'lit/directives/ref.js'
 import { UnsafeHTMLDirective, unsafeHTML } from 'lit/directives/unsafe-html.js'
 
-import { eventTargetIsPlugin, eventTargetIsPluginEditor } from '../../lib/event-target-is-plugin.js'
-import { type MenuSelectedEvent } from '../../lib/events.js'
-import { PluginEvent, type ColumnPlugin, type Serializable } from '../../types.js'
-import '../menu/cell-menu.js' // <astra-td-menu />
-import type { CellMenu } from '../menu/cell-menu.js'
+import { eventTargetIsPlugin, eventTargetIsPluginEditor } from '../../../lib/event-target-is-plugin.js'
+import { type MenuSelectedEvent } from '../../../lib/events.js'
+import { PluginEvent, type ColumnPlugin, type Serializable } from '../../../types.js'
+import '../../table/menu/cell-menu.js' // <astra-td-menu />
+import type { CellMenu } from '../../table/menu/cell-menu.js'
 import { JSON_TYPES, MutableElement } from '../mutable-element.js'
 
 type PluginActionEvent = CustomEvent<{ action: PluginEvent.onEdit | PluginEvent.onStopEdit | PluginEvent.onCancelEdit; value: any }>
@@ -18,6 +17,9 @@ const isAlphanumericOrSpecial = (key: string): boolean => {
   // Regular expression to match alphanumeric characters and specified special characters
   return /^[a-zA-Z0-9 \.,]+$/.test(key)
 }
+// const returnCharacterPlaceholderRead = '↩'
+const returnCharacterPlaceholderRead = ' '
+
 const RW_OPTIONS = [
   { label: 'Edit', value: 'edit' },
   { label: 'Copy', value: 'copy' },
@@ -139,18 +141,20 @@ export class TableData extends MutableElement {
     if (isInputTriggering && noMetaKeys && typeIsNotJSON) {
       event.preventDefault()
 
-      // toggle editing mode
-      self.isEditing = true
+      if (!self.readonly) {
+        // toggle editing mode
+        self.isEditing = true
 
-      // replace the contents
-      self.value = event.key
+        // replace the contents
+        self.value = event.key
 
-      // set the cursor input to the end
-      setTimeout(() => {
-        const input = self.shadowRoot?.querySelector('input')
-        input?.focus()
-        input?.setSelectionRange(input.value.length, input.value.length)
-      }, 0)
+        // set the cursor input to the end
+        setTimeout(() => {
+          const input = self.shadowRoot?.querySelector('input')
+          input?.focus()
+          input?.setSelectionRange(input.value.length, input.value.length)
+        }, 0)
+      }
     }
 
     // navigating around the table
@@ -210,12 +214,10 @@ export class TableData extends MutableElement {
       'table-cell relative focus:z-[1]': true,
       'px-cell-padding-x py-cell-padding-y': !this.plugin && !this.blank,
       'px-5': this.blank,
-      'border-theme-border dark:border-theme-border-dark': true,
-      'text-theme-cell-text dark:text-theme-cell-text-dark': true,
-      'bg-theme-cell dark:bg-theme-cell-dark': !this.isActive && (!this.dirty || this.hideDirt),
-      'bg-theme-row-selected dark:bg-theme-row-selected-dark': this.isActive && (!this.dirty || this.hideDirt), // i.e. this is the column being sorted
-      'bg-theme-cell-dirty dark:bg-theme-cell-dirty-dark': this.dirty && !this.hideDirt, // dirty cells
-      'group-hover:bg-neutral-50 dark:group-hover:bg-neutral-950': !this.dirty || this.hideDirt,
+      'border-theme-table-border dark:border-theme-table-border-dark': true,
+      'bg-theme-table-row-selected dark:bg-theme-table-row-selected-dark': this.isActive && (!this.dirty || this.hideDirt), // i.e. this is the column being sorted
+      'bg-theme-table-cell-dirty dark:bg-theme-table-cell-dirty-dark': this.dirty && !this.hideDirt, // dirty cells
+      'group-hover:bg-theme-table-row-hover dark:group-hover:bg-theme-table-row-hover-dark': !this.dirty || this.hideDirt,
       'focus:shadow-ringlet dark:focus:shadow-ringlet-dark focus:rounded-[4px] focus:ring-1 focus:ring-black dark:focus:ring-neutral-300 focus:outline-none':
         !this.isEditing && this.isInteractive,
       'border-r':
@@ -403,34 +405,23 @@ export class TableData extends MutableElement {
 
   public override render() {
     let value = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value) : this.value
-    let editorValue = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value, null, 2) : this.value
-    const contentWrapperClass = classMap({
-      'font-normal': true,
-      dark: this.theme === 'dark',
-    })
+
+    if (this.plugin && value && typeof value === 'string') {
+      // Replace single, double, and backticks with their HTML entity equivalents
+      value = value.replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/`/g, '&#96;')
+    }
 
     let cellContents: TemplateResult<1>
     let cellEditorContents: DirectiveResult<typeof UnsafeHTMLDirective> | undefined
 
     if (this.plugin) {
-      let pluginValue = value
-      if (value && typeof value === 'string') {
-        // Replace single, double, and backticks with their HTML entity equivalents
-        pluginValue = value.replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/`/g, '&#96;')
-      }
-
-      if (editorValue && typeof editorValue === 'string') {
-        // Replace single, double, and backticks with their HTML entity equivalents
-        editorValue = editorValue.replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/`/g, '&#96;')
-      }
-
       const { config, tagName } = this.plugin
 
       // TODO the plugin receives `null` as a string 'null' since params are always stringified
       //      we can resolve this by omitting `cellvalue` to represent null, but as of today, that renders `undefined` in our plugins
       //      `<${tagName} ${value !== null ? `cellvalue='${value}` : ''} configuration='${config}' ${this.pluginAttributes}></${tagName}>`
       const pluginAsString = unsafeHTML(
-        `<${tagName} cellvalue='${pluginValue}' columnName='${this.column}'  configuration='${config}' ${this.pluginAttributes}></${tagName}>`
+        `<${tagName} cellvalue='${value}' columnName='${this.column}'  configuration='${config}' ${this.pluginAttributes}></${tagName}>`
       )
 
       cellContents = html`${pluginAsString}`
@@ -443,28 +434,20 @@ export class TableData extends MutableElement {
               // possible future migration
               'astra-plugin-cell',
               'astra-plugin-editor'
-            )} cellvalue='${editorValue}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
+            )} cellvalue='${value}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
         )
       }
     } else {
       const classes =
         value === null || value === undefined ? 'nbsp text-neutral-400 dark:text-neutral-600' : 'nbsp overflow-hidden text-ellipsis'
-      cellContents = html`<div class=${classes}>${value === null ? 'NULL' : value === undefined ? 'DEFAULT' : value}</div>`
+      /* prettier-ignore */ cellContents = html`<div class=${classes}>${ value === null ? 'NULL' : value === undefined ? 'DEFAULT' : typeof value === 'string' ? value.replace(/\n/g, returnCharacterPlaceholderRead) : value}</div>`;
     }
 
+    const themeClass = this.theme === 'dark' ? 'dark' : ''
     const inputEl = this.isEditing // &nbsp; prevents the row from collapsing (in height) when there is only 1 column
-      ? html`<div class=${contentWrapperClass}>&nbsp;<input .value=${value ?? ''}
-                ?readonly=${this.readonly}
-                @input=${this.onChange}
-                class=${classMap({
-                  'z-[2] absolute top-0 bottom-0 right-0 left-0': true,
-                  'bg-blue-50 dark:bg-blue-950 outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700': true,
-                  'px-3 font-normal focus:rounded-[4px]': true,
-                })} @blur=${this.onBlur}></input></div>`
+      ? html`<div class="${themeClass}">&nbsp;<input .value=${typeof value === 'string' ? value : value ?? ''} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
       : html``
-
     const emptySlot = this.blank ? html`<slot></slot>` : html``
-
     const menuOptions = this.dirty
       ? [
           ...this.options,
@@ -496,7 +479,7 @@ export class TableData extends MutableElement {
             @paste=${this.onPaste}
           >
             <astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
-              <span class=${contentWrapperClass}>${cellContents}</span>
+              <span class="whitespace-pre ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
               ${this.isDisplayingPluginEditor
                 ? html`<span id="plugin-editor" class="absolute top-8 caret-current cursor-auto z-10">${cellEditorContents}</span>`
                 : null}

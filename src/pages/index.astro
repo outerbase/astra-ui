@@ -1,6 +1,7 @@
 ---
 // server-side code goes here and can be accessed below
-import { Button, Card, Chart, ComposedChart, Input, ScrollArea, Select, Table, Text } from '../index'
+
+import { Button, Card, Chart, ComposedChart, Input, ScrollArea, Select, Table, Text, OuterbaseTable } from '../index'
 import Layout from '../layouts/Layout.astro'
 
 // include Inter font on the page
@@ -75,7 +76,7 @@ const lineData: DashboardV3Chart = {
   layers: [
     {
       type: 'line',
-      result: stockQuotes.response.results.items.map((v: any) => ({ close: Number(v.close), date: new Date(v.date) })),
+      result: [], //stockQuotes.response.results.items.map((v: any) => ({ close: Number(v.close), date: new Date(v.date) })),
     },
   ],
 }
@@ -91,7 +92,7 @@ const areaData: DashboardV3Chart = {
   layers: [
     {
       type: 'area',
-      result: stockQuotes.response.results.items.map((v: any) => ({ close: Number(v.close), date: new Date(v.date) })),
+      result: [], //stockQuotes.response.results.items.map((v: any) => ({ close: Number(v.close), date: new Date(v.date) })),
     },
   ],
 }
@@ -107,7 +108,7 @@ const barData: DashboardV3Chart = {
   layers: [
     {
       type: 'bar',
-      result: alphabet.response.results.items.map((v: any) => ({ frequency: Number(v.frequency), starting_letter: v.starting_letter })),
+      result: [], //alphabet.response.results.items.map((v: any) => ({ frequency: Number(v.frequency), starting_letter: v.starting_letter })),
     },
   ],
 }
@@ -123,9 +124,9 @@ const tableData: DashboardV3Chart = {
   layers: [
     {
       type: 'table',
-      result: alphabet.response.results.items
-        .map((v: any) => ({ frequency: Number(v.frequency), starting_letter: v.starting_letter }))
-        .map((values: any) => ({ id: crypto.randomUUID(), values, originalValues: values })),
+      result: [], //alphabet.response.results.items
+      // .map((v: any) => ({ frequency: Number(v.frequency), starting_letter: v.starting_letter }))
+      // .map((values: any) => ({ id: crypto.randomUUID(), values, originalValues: values })),
     },
   ],
 }
@@ -141,7 +142,7 @@ const dotsData: DashboardV3Chart = {
   layers: [
     {
       type: 'scatter',
-      result: stockQuotes.response.results.items.map((v: any) => ({ close: Number(v.close), date: new Date(v.date) })),
+      result: [], //stockQuotes.response.results.items.map((v: any) => ({ close: Number(v.close), date: new Date(v.date) })),
     },
   ],
 }
@@ -157,7 +158,7 @@ const alphabetData: DashboardV3Chart = {
   layers: [
     {
       type: 'column',
-      result: alphabet.response.results.items.map((v: any) => ({ frequency: Number(v.frequency), starting_letter: v.starting_letter })),
+      result: [], //alphabet.response.results.items.map((v: any) => ({ frequency: Number(v.frequency), starting_letter: v.starting_letter })),
     },
   ],
 }
@@ -173,7 +174,7 @@ const singleData: DashboardV3Chart = {
   layers: [
     {
       type: 'single_value',
-      result: alphabet.response.results.items.map((v: any) => ({ frequency: Number(v.frequency), starting_letter: v.starting_letter })),
+      result: [], //alphabet.response.results.items.map((v: any) => ({ frequency: Number(v.frequency), starting_letter: v.starting_letter })),
     },
   ],
 }
@@ -189,7 +190,7 @@ const textData: DashboardV3Chart = {
   layers: [
     {
       type: 'text',
-      result: alphabet.response.results.items.map((v: any) => ({ frequency: Number(v.frequency), starting_letter: v.starting_letter })),
+      result: [], //alphabet.response.results.items.map((v: any) => ({ frequency: Number(v.frequency), starting_letter: v.starting_letter })),
     },
   ],
 }
@@ -215,15 +216,51 @@ const textData: DashboardV3Chart = {
 
   <main class="flex flex-col gap-8">
     <div>
-      <h2><pre>&lt;astra-chart /&gt; as column</pre></h2>
-      <div class="flex flex-col gap-4">
-        <Chart client:only="lit" data={alphabetData} theme="light" />
+      <div class="flex flex-col gap-8">
+        <div class="flex flex-none flex-col h-96">
+          <!-- @ts-ignore -->
+          <OuterbaseTable
+            client:only="lit"
+            schema={{ columns }}
+            data={[...rows, ...rows, ...rows, ...rows, ...rows]}
+            theme="light"
+            outer-border
+            theme="dark"
+            selectable-rows
+            tableName="foo"
+            total={rows.length * 5}
+            limit={30}
+          />
+        </div>
+
+        <div class="flex flex-none flex-col h-96">
+          <!-- @ts-ignore -->
+          <OuterbaseTable
+            client:only="lit"
+            schema={{ columns }}
+            data={[...rows, ...rows, ...rows, ...rows, ...rows]}
+            theme="light"
+            outer-border
+            theme="light"
+            selectable-rows
+            tableName="foo"
+            total={rows.length * 5}
+            limit={30}
+          />
+        </div>
       </div>
+    </div>
+
+    <h2><pre>&lt;astra-chart /&gt; as column</pre></h2>
+    <div class="flex flex-col gap-4">
+      <!-- @ts-ignore attributes -->
+      <Chart client:only="lit" data={alphabetData} theme="light" />
     </div>
 
     <div>
       <h2><pre>&lt;astra-chart /&gt; as bar</pre></h2>
       <div class="flex flex-col gap-4">
+        <!-- @ts-ignore attributes -->
         <Chart client:only="lit" data={barData} theme="light" />
       </div>
     </div>
@@ -231,6 +268,7 @@ const textData: DashboardV3Chart = {
     <div>
       <h2><pre>&lt;astra-chart /&gt; as line</pre></h2>
       <div class="flex flex-col gap-4">
+        <!-- @ts-ignore attributes -->
         <Chart client:only="lit" data={lineData} theme="light" />
       </div>
     </div>
@@ -238,6 +276,7 @@ const textData: DashboardV3Chart = {
     <div>
       <h2><pre>&lt;astra-chart /&gt; as area</pre></h2>
       <div class="flex flex-col gap-4">
+        <!-- @ts-ignore attributes -->
         <Chart client:only="lit" data={areaData} theme="light" />
       </div>
     </div>
@@ -245,6 +284,7 @@ const textData: DashboardV3Chart = {
     <div>
       <h2><pre>&lt;astra-chart /&gt; as dots</pre></h2>
       <div class="flex flex-col gap-4">
+        <!-- @ts-ignore attributes -->
         <Chart client:only="lit" data={dotsData} theme="light" />
       </div>
     </div>
@@ -256,6 +296,7 @@ const textData: DashboardV3Chart = {
         scrolling works in the table
       </h3>
       <div class="flex flex-col gap-4 relative w-full h-96">
+        <!-- @ts-ignore attributes -->
         <Chart client:only="lit" data={tableData} theme="light" />
       </div>
     </div>
@@ -267,6 +308,7 @@ const textData: DashboardV3Chart = {
         scrolling works in the table
       </h3>
       <div class="flex flex-col gap-4 relative w-full h-96">
+        <!-- @ts-ignore attributes -->
         <Chart client:only="lit" data={singleData} theme="light" />
       </div>
     </div>
@@ -278,6 +320,7 @@ const textData: DashboardV3Chart = {
         scrolling works in the table
       </h3>
       <div class="flex flex-col gap-4 relative w-full h-96">
+        <!-- @ts-ignore attributes -->
         <Chart client:only="lit" data={textData} theme="light" />
       </div>
     </div>
@@ -286,6 +329,7 @@ const textData: DashboardV3Chart = {
     <div>
       <h2><pre>&lt;astra-chart /&gt; as column</pre></h2>
       <div class="flex flex-col gap-4">
+        <!-- @ts-ignore attributes -->
         <ComposedChart client:only="lit" data={alphabetData} theme="light" />
       </div>
     </div>
@@ -293,6 +337,7 @@ const textData: DashboardV3Chart = {
     <div>
       <h2><pre>&lt;astra-chart /&gt; as bar</pre></h2>
       <div class="flex flex-col gap-4">
+        <!-- @ts-ignore attributes -->
         <ComposedChart client:only="lit" data={barData} theme="light" />
       </div>
     </div>
@@ -300,6 +345,7 @@ const textData: DashboardV3Chart = {
     <div>
       <h2><pre>&lt;astra-chart /&gt; as line</pre></h2>
       <div class="flex flex-col gap-4">
+        <!-- @ts-ignore attributes -->
         <ComposedChart client:only="lit" data={lineData} theme="light" />
       </div>
     </div>
@@ -307,6 +353,7 @@ const textData: DashboardV3Chart = {
     <div>
       <h2><pre>&lt;astra-chart /&gt; as area</pre></h2>
       <div class="flex flex-col gap-4">
+        <!-- @ts-ignore attributes -->
         <ComposedChart client:only="lit" data={areaData} theme="light" />
       </div>
     </div>
@@ -314,6 +361,7 @@ const textData: DashboardV3Chart = {
     <div>
       <h2><pre>&lt;astra-chart /&gt; as dots</pre></h2>
       <div class="flex flex-col gap-4">
+        <!-- @ts-ignore attributes -->
         <ComposedChart client:only="lit" data={dotsData} theme="light" />
       </div>
     </div>
@@ -325,6 +373,7 @@ const textData: DashboardV3Chart = {
         scrolling works in the table
       </h3>
       <div class="flex flex-col gap-4 relative w-full h-96">
+        <!-- @ts-ignore attributes -->
         <Chart client:only="lit" data={tableData} theme="light" />
       </div>
     </div>
@@ -336,6 +385,7 @@ const textData: DashboardV3Chart = {
         scrolling works in the table
       </h3>
       <div class="flex flex-col gap-4 relative w-full h-96">
+        <!-- @ts-ignore attributes -->
         <Chart client:only="lit" data={singleData} theme="light" />
       </div>
     </div>
@@ -347,13 +397,10 @@ const textData: DashboardV3Chart = {
         scrolling works in the table
       </h3>
       <div class="flex flex-col gap-4 relative w-full h-96">
+        <!-- @ts-ignore attributes -->
         <Chart client:only="lit" data={textData} theme="light" />
       </div>
     </div>
-    <hr <div />
-    <h2><pre>&lt;astra-input /&gt;</pre></h2>
-    <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-    <Input client:load placeholder="This is a placeholder" label="demo input" />
   </main>
 
   <div>

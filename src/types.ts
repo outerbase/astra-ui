@@ -3,6 +3,7 @@ import { type TemplateResult } from 'lit'
 export * from './lib/events.js'
 
 export type Theme = 'light' | 'dark'
+
 export enum Axis {
   'horizontal' = 'horizontal',
   'vertical' = 'vertical',
@@ -90,6 +91,7 @@ export type RowAsRecord = {
   values: Record<string, Serializable>
   originalValues: Record<string, Serializable>
   isNew: boolean
+  isDeleted: boolean
 }
 
 // API Response:
@@ -180,9 +182,129 @@ export type Serializable =
   | SerializableRecord
 export interface SerializableArray extends Array<Serializable> {}
 export interface SerializableRecord extends Record<string, Serializable> {}
+export type Row = Record<string, Serializable>
+export type Rows = {
+  items: Array<Row>
+  count: number
+  query?: string
+  name?: string
+}
+export type StructureTableColumn = TableColumn & {
+  // Index the column is in the table, used for the structure tab
+  // of the table editor to maintain the order of columns.
+  index: number
+
+  // Maintains the original column name for the column so we can
+  // reference the name of it when updating a column in the structure
+  // tab of the table editor.
+  originalColumnName: string
+}
+enum ConstraintType {
+  ForeignKey = 'FOREIGN KEY',
+  PrimaryKey = 'PRIMARY KEY',
+}
+type ConstraintColumn = {
+  model: 'constraint_column'
+  name: string
+  table: string
+  schema: string
+}
+export type Constraint = {
+  model?: 'constraint'
+  type?: ConstraintType
+  name: string
+  table: string
+  schema: string
+  column?: string
+  columns: Array<ConstraintColumn>
+}
+export type PluginModel = {
+  id: string // Unique ID of the plugin
+  name: string // Name of the plugin
+  description: string // Description of the plugin
+  author: string // Author of the plugin
+  version: string // Version of the plugin
+  created_at: string // Date the plugin was created
+  updated_at: string // Date the plugin was last updated
+  developer?: {
+    name: string
+  }
+  icon?: {
+    urls?: {
+      '500'?: string
+      raw?: string
+    }
+  } // Icon of the plugin
+  media?: Array<{
+    position: number
+    urls?: {
+      '500'?: string
+      raw?: string
+    }
+  }> // Screenshots & media of the plugin
+  code?: string // Code of the plugin
+  code_url: string // URL to the plugin code
+  type: string // Type of plugin, e.g. 'table' or 'column'
+  types: Array<string> // Types of data the plugin can handle, e.g. 'column', 'row', 'table', 'database'
+  tags: Array<string> // Tags to help with searching
+  identifier: string // Unique identifier for the plugin
+  url: string // URL to the plugin
+  terms_of_service?: string // Terms of service for the plugin
+  privacy_policy?: string // Privacy policy for the plugin
+  support_email?: string // Support email for the plugin
+  developer_site?: string // Developer site for the plugin
+  supports: {
+    cellValue: boolean
+    rowValue: boolean
+    tableValue: boolean
+    tableSchemaValue: boolean
+    databaseSchemaValue: boolean
+  } // What types of data the plugin supports
+  is_default?: boolean
+  is_private?: boolean
+  workspace_config: any // Configuration options
+  config: any // Configuration options
+}
+export type PluginWorkspaceModel = {
+  created_at: string
+  id: string
+  model: string
+  plugin: PluginModel
+  plugin_id: string
+  updated_at: string
+  workspace_id: string
+  config: any
+  installations?: Array<PluginInstallationModel>
+}
+export type PluginInstallationModel = {
+  id: string // Unique ID of the plugin
+  dateCreated: string // Date the plugin was created
+  dateUpdated: string // Date the plugin was last updated
+  code_url: string // URL to the plugin code
+  config: any // Configuration options
+  plugin_workspace?: PluginWorkspaceModel
+  plugin_workspace_id?: string // ID of the plugin workspace
+  schema?: string // Schema of the table
+  table?: string // Name of the table
+  source_id?: string // ID of the source
+  column?: string
+}
+export type Table = {
+  model?: 'table'
+  name: string
+  type?: string // Typically either 'table' or 'view'
+  schema: string
+  columns: Array<StructureTableColumn>
+  constraints: Array<Constraint>
+  plugins: Array<PluginInstallationModel>
+}
+export type Field = {
+  field: string
+  alias: string
+}
+export type Fields = Array<Field>
 
 // CHARTS
-export type Row = Record<string, Serializable>
 export type ChartTypeV3 = 'column' | 'bar' | 'line' | 'area' | 'single_value' | 'table' | 'scatter' | 'heatmap' | 'text'
 export type DashboardV3ChartLegend = 'none' | 'top' | 'bottom' | 'left' | 'right'
 export type DashboardV3ChartLabelDisplayX = 'auto' | '0' | '45' | '90' | 'hidden'
@@ -289,4 +411,18 @@ export type DashboardV3 = {
     maxW: number
   }>
   filters?: Array<DashboardV3Filters>
+}
+
+export type SourceSchema = {
+  [key: string]: Array<Table> | undefined
+}
+
+export type APIResponse<D> = {
+  success: boolean
+  response: D
+  error?: {
+    code: string
+    title: string
+    description: string
+  }
 }
