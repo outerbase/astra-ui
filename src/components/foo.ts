@@ -163,7 +163,7 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
 
   override render() {
     return html`
-      <div class="font-mono flex flex-row border w-full bg-indigo-900 h-full">
+      <div class="font-mono flex flex-row border w-full h-full">
         <div class="flex flex-none h-full w-full no-scrollbar">
           <!-- line numbers  -->
           <div

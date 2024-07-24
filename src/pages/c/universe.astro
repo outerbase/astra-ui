@@ -4,14 +4,44 @@ import Layout from '../../layouts/Layout.astro'
 ---
 
 <Layout title="Astra-UI">
-  <div class="h-1/2 mb-8">
-    <h1><pre>&lt;text-editor wrap /&gt;</pre></h1>
-    <!-- @ts-ignore attributes -->
-    <TextEditor client:only="lit" wrap />
-  </div>
+  <div class="flex flex-col gap-4">
+    <div>
+      <h1><pre>&lt;text-editor wrap /&gt;</pre> .bg-red-800</h1>
+      <div class="h-[400px] w-full bg-red-800">
+        <!-- @ts-ignore attributes -->
+        <span><TextEditor client:only="lit" wrap /></span>
+      </div>
+    </div>
 
-  <div class="h-1/2">
-    <h1><pre>&lt;text-editor /&gt;</pre></h1>
-    <TextEditor client:only="lit" />
+    <div>
+      <h1><pre>&lt;text-editor /&gt;</pre> .bg-zinc-800</h1>
+      <div class="h-[400px] w-full bg-zinc-800">
+        <TextEditor client:only="lit" />
+      </div>
+    </div>
+    <div>
+      <h1><pre>&lt;text-editor /&gt;</pre> .bg-indigo-800</h1>
+      <div class="h-[400px] w-full bg-indigo-800">
+        <TextEditor client:only="lit" />
+      </div>
+    </div>
+    <div>
+      <h1><pre>&lt;text-editor /&gt;</pre> .bg-green-800</h1>
+      <div class="h-[400px] w-full bg-green-800">
+        <TextEditor client:only="lit" />
+      </div>
+    </div>
+    <div>
+      <h1><pre>&lt;text-editor /&gt;</pre> .bg-orange-600</h1>
+      <div class="h-[400px] w-full bg-orange-600">
+        <TextEditor client:only="lit" />
+      </div>
+    </div>
+    <div>
+      <h1><pre>&lt;text-editor /&gt;</pre> .bg-yellow-600</h1>
+      <div class="h-[400px] w-full bg-yellow-600">
+        <TextEditor client:only="lit" />
+      </div>
+    </div>
   </div>
 </Layout>
