@@ -9,7 +9,7 @@ import Layout from '../../layouts/Layout.astro'
       <h1><pre>&lt;text-editor wrap /&gt;</pre> .bg-red-800</h1>
       <div class="h-[400px] w-full bg-red-800 text-5xl">
         <!-- @ts-ignore attributes -->
-        <span><TextEditor client:only="lit" wrap /></span>
+        <TextEditor client:only="lit" wrap />
       </div>
     </div>
 
