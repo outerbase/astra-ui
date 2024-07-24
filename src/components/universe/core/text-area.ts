@@ -5,8 +5,8 @@ import Prism from 'prismjs'
 import 'prismjs/components/prism-sql.js'
 import baseStyles from '../../../lib/base-styles.js'
 
-@customElement('universe-core-editor')
-export default class UniverseCoreEditor extends LitElement {
+@customElement('text-area')
+export default class TextArea extends LitElement {
   static styles = [
     baseStyles,
     css`
@@ -198,7 +198,7 @@ ORDER BY events_count DESC;
       </div>
 
       <div id="code-container">
-        <pre id="placeholder"></pre>
+        <pre id="placeholder">asdf</pre>
         <textarea
           ${ref(this.editorRef)}
           class="editor"
