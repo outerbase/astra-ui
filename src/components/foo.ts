@@ -163,7 +163,7 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
 
   override render() {
     return html`
-      <div class="font-mono flex flex-row border w-full bg-indigo-800 h-[400px]">
+      <div class="font-mono flex flex-row border w-full bg-indigo-900 h-full">
         <div class="flex flex-none h-full w-full no-scrollbar">
           <div
             class="px-3 bg-zinc-500/10 text-right text-white/40 select-none flex-none overflow-auto no-scrollbar"
@@ -181,6 +181,15 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
           </div>
 
           <div ${ref(this.scrollerRef)} class="relative h-full w-full cursor-text mx-1">
+            <div
+              id="displayed-code"
+              class="top-0 bottom-0 left-0 right-0 absolute w-full text-white/80 select-none overflow-auto no-scrollbar"
+              ${ref(this.displayedCodeRef)}
+            >
+              ${this.lines.map(
+                (item, index) => html`<code class="w-full whitespace-pre-wrap block language-sql" id="line-${index}">${item}</code>`
+              )}
+            </div>
             <textarea
               autocorrect="off"
               spellcheck="false"
@@ -197,15 +206,6 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
               }}"
               ${ref(this.textareaRef)}
             ></textarea>
-            <div
-              id="displayed-code"
-              class="top-0 bottom-0 left-0 right-0 absolute w-full text-white/80 select-none pointer-events-none z-1 overflow-auto no-scrollbar"
-              ${ref(this.displayedCodeRef)}
-            >
-              ${this.lines.map(
-                (item, index) => html`<code class="w-full whitespace-pre-wrap block language-sql" id="line-${index}">${item}</code>`
-              )}
-            </div>
           </div>
         </div>
       </div>
