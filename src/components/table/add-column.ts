@@ -7,7 +7,7 @@ import { classMap } from 'lit/directives/class-map.js'
 import { Plus } from '../../icons/plus.js'
 import { ChangeEvent, ColumnAddedEvent, MenuSelectedEvent } from '../../lib/events.js'
 import { ClassifiedElement } from '../classified-element.js'
-import '../menu/input-menu.js'
+import '../table/menu/input-menu.js'
 
 @customElement('astra-add-column')
 export class AddColumnElement extends ClassifiedElement {

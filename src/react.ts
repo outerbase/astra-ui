@@ -7,7 +7,7 @@ import AstraCard from './components/card.js'
 import AstraInput from './components/input.js'
 import AstraScrollArea from './components/scroll-area.js'
 import AstraSelect from './components/select.js'
-import AstraTable from './components/table/index.js'
+import AstraTable from './components/table/core/index.js'
 import AstraText from './components/text.js'
 
 export default function LitComponents(React: any) {
