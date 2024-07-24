@@ -17,13 +17,16 @@ export class CellUpdateEvent extends BubblyEvent {
   }
 }
 
-export declare class TabOpenEvent extends BubblyEvent {
-  detail: {
+export class TabOpenEvent extends BubblyEvent {
+  public detail: {
     table: string
     schema: string
     filter: Record<string, string>
   }
-  constructor(detail: CellDetail)
+  constructor(detail: { table: string; schema: string; filter: Record<string, string> }) {
+    super('tab-open-event')
+    this.detail = detail
+  }
 }
 
 // COLUMNS
