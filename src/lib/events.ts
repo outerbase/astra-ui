@@ -17,14 +17,15 @@ export class CellUpdateEvent extends BubblyEvent {
   }
 }
 
-export class TabOpenEvent extends BubblyEvent {
+export class TableTabOpenEvent extends BubblyEvent {
   public detail: {
     table: string
     schema: string
     filter: Record<string, string>
   }
+
   constructor(detail: { table: string; schema: string; filter: Record<string, string> }) {
-    super('tab-open-event')
+    super('table-tab-open-event')
     this.detail = detail
   }
 }
