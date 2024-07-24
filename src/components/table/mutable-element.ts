@@ -2,9 +2,9 @@ import type { PropertyValueMap, PropertyValues } from 'lit'
 import { property } from 'lit/decorators.js'
 import { isEqual } from 'lodash-es'
 
-import { CellUpdateEvent } from '../lib/events.js'
-import type { Position, Serializable } from '../types.js'
-import { ClassifiedElement } from './classified-element.js'
+import { CellBlurEvent, CellUpdateEvent } from '../../lib/events.js'
+import type { Position, Serializable } from '../../types.js'
+import { ClassifiedElement } from '../classified-element.js'
 
 export const NUMBER_TYPES = [
   'Int',
@@ -59,7 +59,7 @@ export class MutableElement extends ClassifiedElement {
 
       // abort changes
       self.isEditing = false
-      self.focus()
+      self.blur()
     }
 
     if (event.code === 'Enter' && self.isEditing && event.target instanceof HTMLElement) {
@@ -67,8 +67,7 @@ export class MutableElement extends ClassifiedElement {
 
       // without this setTimeout, something sets `isEditing` back and re-renders immediately, negating the effect entirely
       setTimeout(() => {
-        self.isEditing = false
-        self.focus()
+        self.blur()
 
         // wait until the prev commands have processed
         setTimeout(() => {
@@ -245,8 +244,20 @@ export class MutableElement extends ClassifiedElement {
     this.dispatchEvent(new CellUpdateEvent(event))
   }
 
+  protected dispatchBlurredEvent() {
+    const event = {
+      position: this.position,
+      previousValue: this.originalValue,
+      value: this.value,
+      label: this.label,
+    }
+
+    this.dispatchEvent(new CellBlurEvent(event))
+  }
+
   protected onBlur() {
     this.isEditing = false
+    this.dispatchBlurredEvent()
   }
 
   protected onChange(event: Event) {
