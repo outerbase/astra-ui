@@ -218,7 +218,7 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
     this.updateLineCache()
   }
 
-  protected updateLineCache(value?: string) {
+  protected updateLineCache() {
     const previousValue = this.lines
     this.cache = []
 
@@ -230,8 +230,8 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
     // })
 
     // WITH PRISM
-    const highlightedCode = unsafeHTML(Prism.highlight(this.text, Prism.languages.sql, 'sql'))
-    this.lines = highlightedCode.values[0].split('\n').map((s, index) => {
+    const highlightedCode = Prism.highlight(this.text, Prism.languages.sql, 'sql')
+    this.lines = highlightedCode.split('\n').map((s, index) => {
       const line = html`${s === '' ? html`<pre>&nbsp;</pre>` : unsafeHTML(s)}`
       this.cache[index] = this.shadowRoot!.getElementById(`line-${index}`)?.offsetHeight || 0
       return line
@@ -267,7 +267,7 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
     }
 
     // add numbers for each line, including wrapped content
-    this.lines.forEach((line, idx) => {
+    this.lines.forEach((_line, idx) => {
       const currentLineHeight = this.cache[idx] ?? singleLineHeight
       const wrappedLines = Math.max(Math.ceil(currentLineHeight / singleLineHeight), 1)
       for (let i = 0; i < wrappedLines; i++) {
