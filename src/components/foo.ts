@@ -181,14 +181,13 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
             ${this.getLineNumbers()}
           </div>
 
-          <!-- text body -->
-          <div ${ref(this.scrollerRef)} class="relative h-full w-full cursor-text mx-1">
+          <div ${ref(this.scrollerRef)} class="relative h-full w-full cursor-text mx-1 overscroll-contain">
             <div
               id="displayed-code"
               class="top-0 bottom-0 left-0 right-0 absolute w-full text-white/80 select-none overflow-auto overscroll-contain no-scrollbar ${this
                 .wordWrap
                 ? ''
-                : 'whitespace-nowrap'}"
+                : 'whitespace-nowrap overflow-x-auto'}"
               ${ref(this.displayedCodeRef)}
               @scroll="${() => {
                 if (this.textareaRef.value) {
@@ -211,7 +210,7 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
               class="resize-none top-0 bottom-0 left-0 right-0 absolute focus:outline-none overflow-auto overscroll-contain no-scrollbar caret-lime-400 bg-zinc-100/10 text-transparent ${this
                 .wordWrap
                 ? ''
-                : 'whitespace-nowrap'}"
+                : 'whitespace-nowrap overflow-x-auto'}"
               .value="${this.text}"
               @input="${this.onInput}"
               @scroll="${() => {
