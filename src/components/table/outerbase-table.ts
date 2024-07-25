@@ -262,6 +262,18 @@ export default class OuterbaseTable extends AstraTable {
     // fetch latest schema
     if (has('apiKey') || has('baseId') || has('workspaceId')) {
       this.sourceSchema = await this.fetchSchema()
+
+      // set a default schema name; prefer 'public'
+      if (!this.schemaName) {
+        if (this.sourceSchema.public) this.schemaName = 'public'
+        else this.schemaName = Object.keys(this.sourceSchema)?.[0]
+      }
+
+      // set a default table name; the first one in the schema
+      if (!this.tableName) {
+        const tables = this.sourceSchema[this.schemaName]
+        if (tables && tables.length > 0) this.tableName = tables[0].name
+      }
     }
 
     if (
