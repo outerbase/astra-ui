@@ -479,7 +479,7 @@ export class TableData extends MutableElement {
             @paste=${this.onPaste}
           >
             <astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
-              <span class="whitespace-pre ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
+              <span class="${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
               ${this.isDisplayingPluginEditor
                 ? html`<span id="plugin-editor" class="absolute top-8 caret-current cursor-auto z-10">${cellEditorContents}</span>`
                 : null}
