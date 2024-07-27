@@ -82,7 +82,7 @@ export default class AstraComposedChart extends AstraChart {
     }
 
     const highlightSection =
-      this.size === 'large' || this.size === 'medium'
+      (this.size === 'large' || this.size === 'medium') && this.data?.highlights?.length
         ? html`
             <div id="highlights" class="flex w-full items-center justify-between gap-8 mb-4">
               ${this.data?.highlights?.map(

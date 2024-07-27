@@ -356,7 +356,7 @@ export default class AstraChart extends ClassifiedElement {
         this.keyX = options.xAxisKey
         this.keyY = options.yAxisKeys?.[0] // TODO don't assume 1
         this.sortOrder = options.sortOrder
-        this.percent = options.percentage
+        // this.percent = options.percentage
         // TODO xAxisLabelDisplay, yAxisLabelDisplay, groupBy
       }
     }
@@ -433,6 +433,7 @@ export default class AstraChart extends ClassifiedElement {
       if (this.gridY !== false) {
         options.marks.push(gridY(defaultGridStyle))
       }
+      let sort = undefined
 
       // Loop through every item in the data layers [0].result and check if the data is a date
       const tempKeyX: string = this.keyX ?? ''
@@ -449,29 +450,37 @@ export default class AstraChart extends ClassifiedElement {
       // Is the data in the xAxisKey a date?
       const isXAxisKeyDate = newArray.length && newArray.every((d) => d instanceof Date)
 
-      // const xValues = d.map((item: any) => new Date(item[this.keyX]))
-      const startDate = min(newArray)
-      const endDate = max(newArray)
-      let tickValues = undefined
+      if (isXAxisKeyDate) {
+        const startDate = min(newArray)
+        const endDate = max(newArray)
+        let tickValues = undefined
 
-      if (startDate && endDate) {
-        tickValues = utcMonth.range(startDate, endDate)
-      }
+        if (startDate && endDate) {
+          tickValues = utcMonth.range(startDate, endDate)
+        }
 
-      options.x = {
-        ...options.x,
-        interval: isXAxisKeyDate ? utcDay.every(1) : undefined,
-        tickValues: isXAxisKeyDate ? tickValues : undefined,
+        options.x = {
+          ...options.x,
+          interval: isXAxisKeyDate ? utcDay.every(1) : undefined,
+          tickValues: isXAxisKeyDate ? tickValues : undefined,
+        }
+      } else {
+        if (this.sortOrder && this.sortOrder === 'asc') {
+          sort = { x: 'y', reverse: false }
+        } else if (this.sortOrder && this.sortOrder === 'desc') {
+          sort = { x: 'y', reverse: true }
+        }
       }
 
       options.marks.push(
         barY(d, {
           x: this.keyX,
           y: this.keyY,
-          // stroke: this.keyY,
+          //   stroke: this.groupBy,
           fill: 'url(#mercury)',
           inset: 0.5,
           tip,
+          sort,
         })
       )
     }
@@ -562,7 +571,7 @@ export default class AstraChart extends ClassifiedElement {
     let plot: any
 
     if (this.type === 'table') {
-      const firstRecord = this.data?.layers?.[0].result?.[0]?.originalValues
+      const firstRecord = this.data?.layers?.[0].result?.[0]
       let schema
       if (firstRecord) {
         schema = { columns: Object.keys(firstRecord).map((k) => ({ name: k })) }
@@ -570,21 +579,41 @@ export default class AstraChart extends ClassifiedElement {
 
       plot = html`<astra-table
         schema=${JSON.stringify(schema)}
-        data="${JSON.stringify(this.data?.layers?.[0].result)}"
-        theme="light"
+        data="${JSON.stringify(
+          this.data?.layers?.[0].result?.map((r) => {
+            return {
+              id: Math.random(),
+              values: r,
+              originalValues: r,
+              isNew: false,
+              isDeleted: false,
+            }
+          }) ?? []
+        )}"
+        theme=${this.theme}
         keyboard-shortcuts
         selectable-rows
         outer-border
         blank-fill
       ></astra-table>`
     } else if (this.type === 'single_value') {
-      plot = html`<astra-text variant="h1">single_value</astra-text>`
+      const firstRecord = this.data?.layers?.[0].result?.[0]
+      const firstRecordValue = firstRecord ? firstRecord[this.keyX ?? ''] : ''
+      plot = html`<astra-text variant="h1">${firstRecordValue}</astra-text>`
     } else if (this.type === 'text') {
       plot = html`<astra-text variant="h1">text</astra-text>`
     } else plot = this.getLatestPlot()
 
-    const decoratedPlot = html`<div class="bg-transparent selection:bg-violet-500/20 text-zinc-400 dark:text-zinc-600">${plot}</div>`
-    const themedPlot = html`<div id="themed-plot" class="${classMap({ dark: this.theme === 'dark', '*:fade barY *:animate-fade': true })}">
+    const decoratedPlot = html`<div
+      class=${`${this.type === 'table' ? `${this.theme === 'dark' ? '!bg-black' : '!bg-white'}` : ''} selection:bg-violet-500/20 text-zinc-400 dark:text-zinc-600 h-full`}
+    >
+      ${plot}
+    </div>`
+
+    const themedPlot = html`<div
+      id="themed-plot"
+      class="${classMap({ dark: this.theme === 'dark', '*:fade barY *:animate-fade w-full h-full relative': true })}"
+    >
       ${decoratedPlot}
     </div>`
 
