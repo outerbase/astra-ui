@@ -486,20 +486,55 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     // TYPE: LINE
+    // 1 Series:
+    // -> Single LineY with stroke as yAxis key, and groupBy would be column to use as stroke value
+    // 2+ Series:
+    // -> Multiple LineY without a stroke, has a custom hex value associated, maybe use value from iridium or w/e theme they're using
     if (this.type === 'line') {
       // include grid along X-axis unless explicitly disabled
       if (this.gridX !== false) {
         options.marks.push(gridX(defaultGridStyle))
       }
 
-      options.marks.push(
-        lineY(d, {
-          x: this.keyX,
-          y: this.keyY,
-          stroke: (this.data?.options?.yAxisKeys ?? []).length > 1 ? afterburnValues : 'url(#mercury)',
-          tip,
+      //   options.marks.push(
+      //     lineY(d, {
+      //       x: this.keyX,
+      //       y: this.keyY,
+      //       stroke: (this.data?.options?.yAxisKeys ?? []).length > 1 ? afterburnValues : 'url(#mercury)',
+      //       tip,
+      //     })
+      //   )
+
+      //   if (this.data?.name === 'New Chart') {
+      //     console.log('New Chart Data: ', this.data)
+      //   }
+
+      const yAxisKeys = this.data?.options?.yAxisKeys ?? []
+
+      if (yAxisKeys.length > 1) {
+        this.data?.options?.yAxisKeys?.forEach((key, index) => {
+          const randomColor = iridiumValues[index % iridiumValues.length]
+
+          options.marks.push(
+            lineY(d, {
+              x: this.keyX,
+              y: key,
+              stroke: randomColor,
+              tip,
+            })
+          )
         })
-      )
+      } else {
+        options.marks.push(
+          lineY(d, {
+            x: this.keyX,
+            y: this.keyY,
+            // stroke: 'url(#mercury)',
+            stroke: this.data?.options?.groupBy, //'user_id', //this.groupBy,
+            tip,
+          })
+        )
+      }
 
       // default to `nice` less explicitly set to false
       if (this.niceY !== false) this.niceY = true
