@@ -224,13 +224,6 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
                 ? ''
                 : 'whitespace-nowrap'}"
               ${ref(this.displayedCodeRef)}
-              @scroll="${() => {
-                if (this.textareaRef.value) {
-                  // this commented out line was present before chatgpt changed it; unclear which is correct atm
-                  // this.textareaRef.value.scrollLeft = this.displayedCodeRef.value!.scrollLeft
-                  this.displayedCodeRef.value!.scrollLeft = this.textareaRef.value!.scrollLeft
-                }
-              }}"
             >
               ${this.lines.map(
                 (item, index) =>
