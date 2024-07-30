@@ -12,7 +12,6 @@ export default class UniversePlugin extends LitElement {
     let ancestor = this.parentElement
     while (ancestor) {
       if (ancestor.tagName.toLowerCase() === 'text-editor') {
-        console.debug('Found <text-editor> ancestor:', ancestor)
         break
       }
       ancestor = ancestor.parentElement
