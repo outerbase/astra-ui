@@ -350,7 +350,6 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
 
     setTimeout(() => {
       const linesCount = lines.length
-      const adjustment = allLinesCommented ? -uncommentLength : commentLength
 
       // Adjust the cursor position after adding/removing comments
       let newSelectionStart = start
