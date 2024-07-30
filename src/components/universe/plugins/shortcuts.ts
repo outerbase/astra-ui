@@ -58,7 +58,7 @@ export class KeyboardShortcutsPlugin extends UniversePlugin {
       }
     })
 
-    editor.addEventListener('input', (event) => {
+    editor.addEventListener('input', (_event) => {
       this.saveStateToUndoStack()
     })
   }
