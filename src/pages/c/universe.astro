@@ -1,5 +1,6 @@
 ---
-import { TextEditor } from '../../components/foo'
+import { TextEditor } from '../../components/universe/index'
+import { UniversePluginKeyboardShortcuts } from '../../components/universe/plugins/shortcuts'
 import Layout from '../../layouts/Layout.astro'
 ---
 
@@ -41,6 +42,10 @@ import Layout from '../../layouts/Layout.astro'
       <h1><pre>&lt;text-editor /&gt;</pre> .bg-yellow-600</h1>
       <div class="h-[400px] w-full bg-yellow-600">
         <TextEditor client:only="lit" />
+        <!-- @ts-ignore attributes -->
+        <TextEditor client:only="lit" wrap>
+          <UniversePluginKeyboardShortcuts client:only="lit" />
+        </TextEditor>
       </div>
     </div>
   </div>
