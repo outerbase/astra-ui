@@ -81,7 +81,7 @@ export class KeyboardShortcutsPlugin extends UniversePlugin {
           text: this.editor!.text,
           selectionStart: this.editor!.textareaRef.value?.selectionStart || 0,
           selectionEnd: this.editor!.textareaRef.value?.selectionEnd || 0,
-          timestamp: Date.now(),
+          timestamp: oldestState.timestamp,
         })
 
         this.editor!.text = oldestState.text
@@ -100,21 +100,26 @@ export class KeyboardShortcutsPlugin extends UniversePlugin {
 
   private handleRedo() {
     if (this.redoStack.length > 0) {
-      const nextState = this.redoStack.pop()
-      if (nextState) {
+      const newestState = this.redoStack.pop()
+
+      if (newestState) {
         this.undoStack.push({
           text: this.editor!.text,
-          selectionStart: this.editor!.textareaRef.value!.selectionStart || 0,
-          selectionEnd: this.editor!.textareaRef.value!.selectionEnd || 0,
+          selectionStart: this.editor!.textareaRef.value?.selectionStart || 0,
+          selectionEnd: this.editor!.textareaRef.value?.selectionEnd || 0,
+          timestamp: newestState.timestamp,
         })
-        this.editor!.text = nextState.text
+
+        this.editor!.text = newestState.text
+        this.editor!.updateLineCache()
+
         const textarea = this.editor!.textareaRef.value
         if (textarea) {
-          textarea.value = this.editor!.text
-          textarea.selectionStart = nextState.selectionStart
-          textarea.selectionEnd = nextState.selectionEnd
+          setTimeout(() => {
+            textarea.selectionStart = newestState.selectionStart
+            textarea.selectionEnd = newestState.selectionEnd
+          }, 0)
         }
-        this.editor!.updateLineCache()
       }
     }
   }
