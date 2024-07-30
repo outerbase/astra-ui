@@ -129,6 +129,7 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
   @state() highlightedCode?: DirectiveResult
   @state() private cache: Array<number> = []
   @state() lines: Array<TemplateResult> = []
+  @state() private undoStack: Array<{ text: string; selectionStart: number; selectionEnd: number }> = []
 
   private textareaRef: Ref<HTMLTextAreaElement> = createRef()
   private displayedCodeRef: Ref<HTMLElement> = createRef()
@@ -143,6 +144,7 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
     // Add resize event listeners
     window.addEventListener('resize', this.handleResize)
     this.addEventListener('resize', this.handleResize)
+    document.addEventListener('keydown', this.handleUndo)
   }
 
   override disconnectedCallback() {
@@ -151,6 +153,7 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
     // Remove resize event listeners
     window.removeEventListener('resize', this.handleResize)
     this.removeEventListener('resize', this.handleResize)
+    document.removeEventListener('keydown', this.handleUndo)
   }
 
   private handleResize = () => {
@@ -160,6 +163,37 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
   override firstUpdated(changedProperties: PropertyValueMap<this>) {
     super.firstUpdated(changedProperties)
     this.updateLineCache() // update again after initial render (otherwise line numbers may fail to handle text wrapping in the editor)
+  }
+
+  private saveStateToUndoStack() {
+    const textarea = this.textareaRef.value
+    if (textarea) {
+      this.undoStack.push({
+        text: this.text,
+        selectionStart: textarea.selectionStart,
+        selectionEnd: textarea.selectionEnd,
+      })
+    }
+  }
+
+  private handleUndo = (event: KeyboardEvent) => {
+    if (event.key === 'z' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault()
+
+      if (this.undoStack.length > 0) {
+        const previousState = this.undoStack.pop()
+        if (previousState) {
+          this.text = previousState.text
+          const textarea = this.textareaRef.value
+          if (textarea) {
+            textarea.value = this.text
+            textarea.selectionStart = previousState.selectionStart
+            textarea.selectionEnd = previousState.selectionEnd
+          }
+          this.updateLineCache()
+        }
+      }
+    }
   }
 
   override render() {
@@ -192,7 +226,9 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
               ${ref(this.displayedCodeRef)}
               @scroll="${() => {
                 if (this.textareaRef.value) {
-                  this.textareaRef.value.scrollLeft = this.displayedCodeRef.value!.scrollLeft
+                  // this commented out line was present before chatgpt changed it; unclear which is correct atm
+                  // this.textareaRef.value.scrollLeft = this.displayedCodeRef.value!.scrollLeft
+                  this.displayedCodeRef.value!.scrollLeft = this.textareaRef.value!.scrollLeft
                 }
               }}"
             >
@@ -304,6 +340,8 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
   }
 
   public toggleLineComments() {
+    this.saveStateToUndoStack()
+
     const textarea = this.textareaRef.value
     const start = textarea!.selectionStart
     const end = textarea!.selectionEnd
@@ -379,17 +417,15 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
   }
 
   public insertTabAtSelection() {
+    this.saveStateToUndoStack()
+
     const textarea = this.textareaRef.value
     const start = textarea!.selectionStart
     const end = textarea!.selectionEnd
 
     // Set textarea value to: text before caret + tab + text after caret
-    this.text =
-      this.text.substring(0, start) +
-      '    ' + // This is where the tab character or spaces go
-      this.text.substring(end)
+    this.text = this.text.substring(0, start) + '    ' + this.text.substring(end)
 
-    // Put caret at correct position again
     setTimeout(() => {
       textarea!.selectionStart = textarea!.selectionEnd = start + 4 // Move the caret after the tab
       this.updateLineCache()
