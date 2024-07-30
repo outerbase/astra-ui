@@ -192,6 +192,8 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
           }
           this.updateLineCache()
         }
+      } else {
+        document.execCommand('undo')
       }
     }
   }
