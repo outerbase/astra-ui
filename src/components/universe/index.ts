@@ -130,6 +130,7 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
   @state() private cache: Array<number> = []
   @state() lines: Array<TemplateResult> = []
   @state() private undoStack: Array<{ text: string; selectionStart: number; selectionEnd: number }> = []
+  @state() private redoStack: Array<{ text: string; selectionStart: number; selectionEnd: number }> = []
 
   private textareaRef: Ref<HTMLTextAreaElement> = createRef()
   private displayedCodeRef: Ref<HTMLElement> = createRef()
@@ -144,7 +145,7 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
     // Add resize event listeners
     window.addEventListener('resize', this.handleResize)
     this.addEventListener('resize', this.handleResize)
-    document.addEventListener('keydown', this.handleUndo)
+    document.addEventListener('keydown', this.handleKeyboardEvents)
   }
 
   override disconnectedCallback() {
@@ -153,11 +154,29 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
     // Remove resize event listeners
     window.removeEventListener('resize', this.handleResize)
     this.removeEventListener('resize', this.handleResize)
-    document.removeEventListener('keydown', this.handleUndo)
+    document.removeEventListener('keydown', this.handleKeyboardEvents)
   }
 
   private handleResize = () => {
     this.updateLineCache()
+  }
+
+  private handleKeyboardEvents = (event: KeyboardEvent) => {
+    // REDO (Cmd+Shift+Z or Ctrl+Shift+Z)
+    if (event.key === 'z' && (event.metaKey || event.ctrlKey) && event.shiftKey) {
+      event.preventDefault()
+      this.handleRedo()
+    }
+    // UNDO (Cmd+Z or Ctrl+Z)
+    else if (event.key === 'z' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault()
+      this.handleUndo()
+    }
+    // REDO (Cmd+Y or Ctrl+Y)
+    else if (event.key === 'y' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault()
+      this.handleRedo()
+    }
   }
 
   override firstUpdated(changedProperties: PropertyValueMap<this>) {
@@ -173,28 +192,53 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
         selectionStart: textarea.selectionStart,
         selectionEnd: textarea.selectionEnd,
       })
+      this.redoStack = [] // Clear redo stack on new action
     }
   }
 
-  private handleUndo = (event: KeyboardEvent) => {
-    if (event.key === 'z' && (event.metaKey || event.ctrlKey)) {
-      event.preventDefault()
-
-      if (this.undoStack.length > 0) {
-        const previousState = this.undoStack.pop()
-        if (previousState) {
-          this.text = previousState.text
-          const textarea = this.textareaRef.value
-          if (textarea) {
-            textarea.value = this.text
-            textarea.selectionStart = previousState.selectionStart
-            textarea.selectionEnd = previousState.selectionEnd
-          }
-          this.updateLineCache()
+  private handleUndo() {
+    if (this.undoStack.length > 0) {
+      const previousState = this.undoStack.pop()
+      if (previousState) {
+        this.redoStack.push({
+          text: this.text,
+          selectionStart: this.textareaRef.value?.selectionStart || 0,
+          selectionEnd: this.textareaRef.value?.selectionEnd || 0,
+        })
+        this.text = previousState.text
+        const textarea = this.textareaRef.value
+        if (textarea) {
+          textarea.value = this.text
+          textarea.selectionStart = previousState.selectionStart
+          textarea.selectionEnd = previousState.selectionEnd
         }
-      } else {
-        document.execCommand('undo')
+        this.updateLineCache()
       }
+    } else {
+      document.execCommand('undo')
+    }
+  }
+
+  private handleRedo() {
+    if (this.redoStack.length > 0) {
+      const nextState = this.redoStack.pop()
+      if (nextState) {
+        this.undoStack.push({
+          text: this.text,
+          selectionStart: this.textareaRef.value?.selectionStart || 0,
+          selectionEnd: this.textareaRef.value?.selectionEnd || 0,
+        })
+        this.text = nextState.text
+        const textarea = this.textareaRef.value
+        if (textarea) {
+          textarea.value = this.text
+          textarea.selectionStart = nextState.selectionStart
+          textarea.selectionEnd = nextState.selectionEnd
+        }
+        this.updateLineCache()
+      }
+    } else {
+      document.execCommand('redo')
     }
   }
 
