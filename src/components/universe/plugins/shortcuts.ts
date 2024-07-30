@@ -3,8 +3,12 @@ import UniversePlugin from './base'
 
 @customElement('universe-keyboard-shortcuts-plugin')
 export class KeyboardShortcutsPlugin extends UniversePlugin {
-  @state() private undoStack: Array<{ text: string; selectionStart: number; selectionEnd: number }> = []
-  @state() private redoStack: Array<{ text: string; selectionStart: number; selectionEnd: number }> = []
+  @state() textBeforeEdit = ''
+  @state() positionStartBeforeEdit = 0
+  @state() positionEndBeforeEdit = 0
+
+  @state() private undoStack: Array<{ text: string; selectionStart: number; selectionEnd: number; timestamp: number }> = []
+  @state() private redoStack: Array<{ text: string; selectionStart: number; selectionEnd: number; timestamp: number }> = []
 
   connectedCallback(): void {
     super.connectedCallback()
@@ -15,6 +19,11 @@ export class KeyboardShortcutsPlugin extends UniversePlugin {
     }
 
     editor.addEventListener('keydown', (event) => {
+      // snag values before `input` mutates them
+      this.textBeforeEdit = editor.text
+      this.positionEndBeforeEdit = editor.textareaRef.value!.selectionEnd
+      this.positionStartBeforeEdit = editor.textareaRef.value!.selectionStart
+
       const hasMetaKey = event.metaKey
 
       // commenting
@@ -48,28 +57,44 @@ export class KeyboardShortcutsPlugin extends UniversePlugin {
         this.handleRedo()
       }
     })
+
+    editor.addEventListener('input', (event) => {
+      this.saveStateToUndoStack()
+    })
   }
 
   private handleUndo() {
     if (this.undoStack.length > 0) {
-      const previousState = this.undoStack.pop()
-      if (previousState) {
+      let currentState = this.undoStack.pop()
+      let oldestState = currentState
+
+      while (
+        this.undoStack.length > 0 &&
+        oldestState &&
+        oldestState.timestamp - (this.undoStack[this.undoStack.length - 1].timestamp as number) <= 500
+      ) {
+        oldestState = this.undoStack.pop()
+      }
+
+      if (oldestState) {
         this.redoStack.push({
           text: this.editor!.text,
           selectionStart: this.editor!.textareaRef.value?.selectionStart || 0,
           selectionEnd: this.editor!.textareaRef.value?.selectionEnd || 0,
+          timestamp: Date.now(),
         })
-        this.editor!.text = previousState.text
+
+        this.editor!.text = oldestState.text
+        this.editor!.updateLineCache()
+
         const textarea = this.editor!.textareaRef.value
         if (textarea) {
-          textarea.value = this.editor!.text
-          textarea.selectionStart = previousState.selectionStart
-          textarea.selectionEnd = previousState.selectionEnd
+          setTimeout(() => {
+            textarea.selectionStart = oldestState.selectionStart
+            textarea.selectionEnd = oldestState.selectionEnd
+          }, 0)
         }
-        this.editor!.updateLineCache()
       }
-    } else {
-      document.execCommand('undo')
     }
   }
 
@@ -91,20 +116,15 @@ export class KeyboardShortcutsPlugin extends UniversePlugin {
         }
         this.editor!.updateLineCache()
       }
-    } else {
-      document.execCommand('redo')
     }
   }
 
   private saveStateToUndoStack() {
-    const textarea = this.editor!.textareaRef.value
-    if (textarea) {
-      this.undoStack.push({
-        text: this.editor!.text,
-        selectionStart: textarea.selectionStart,
-        selectionEnd: textarea.selectionEnd,
-      })
-      this.redoStack = [] // Clear redo stack on new action
-    }
+    this.undoStack.push({
+      selectionEnd: this.positionEndBeforeEdit,
+      selectionStart: this.positionStartBeforeEdit,
+      text: this.textBeforeEdit,
+      timestamp: Date.now(),
+    })
   }
 }
