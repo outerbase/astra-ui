@@ -2,7 +2,7 @@ import { customElement, state } from 'lit/decorators.js'
 import UniversePlugin from './base'
 
 @customElement('universe-undo-plugin')
-export class UniverseUndoPlugin extends UniversePlugin {
+export class UndoPlugin extends UniversePlugin {
   @state() textBeforeEdit = ''
   @state() positionStartBeforeEdit = 0
   @state() positionEndBeforeEdit = 0

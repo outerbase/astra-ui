@@ -6,6 +6,7 @@ import { unsafeHTML } from 'lit/directives/unsafe-html.js'
 import * as Prism from 'prismjs'
 import 'prismjs/components/prism-sql'
 
+import { classMap } from 'lit/directives/class-map.js'
 import { ClassifiedElement } from '../classified-element'
 import SQL_EXAMPLE_TEXT from './sql-text-snippet'
 
@@ -72,6 +73,8 @@ export class TextEditor extends ClassifiedElement {
   @state() highlightedCode?: DirectiveResult
   @state() private cache: Array<number> = []
   @state() lines: Array<TemplateResult> = []
+  @state() activeLineNumber?: number
+  @state() hasSelectedText = false
 
   public textareaRef: Ref<HTMLTextAreaElement> = createRef()
   private displayedCodeRef: Ref<HTMLElement> = createRef()
@@ -98,6 +101,19 @@ export class TextEditor extends ClassifiedElement {
 
   private handleResize = () => {
     this.updateLineCache()
+  }
+
+  private updateActiveCodeLine = () => {
+    const textarea = this.textareaRef.value
+    if (textarea) {
+      setTimeout(() => {
+        const cursorPosition = textarea.selectionStart
+        const textUntilCursor = textarea.value.substring(0, cursorPosition)
+        this.activeLineNumber = textUntilCursor.split('\n').length
+      })
+    }
+
+    this.handleSelectionChange()
   }
 
   override firstUpdated(changedProperties: PropertyValueMap<this>) {
@@ -137,8 +153,14 @@ export class TextEditor extends ClassifiedElement {
               ${this.lines.map(
                 (item, index) =>
                   html`<code
-                    class="w-full ${this.wordWrap ? 'whitespace-pre-wrap' : 'whitespace-pre'} block language-sql"
-                    id="line-${index}"
+                    class="w-full block language-sql 
+                      ${classMap({
+                      'bg-white/20': this.activeLineNumber === index + 1 && !this.hasSelectedText,
+                      'whitespace-pre-wrap': this.wordWrap,
+                      'whitespace-pre': !this.wordWrap,
+                    })}
+                      "
+                    id="line-${index + 1}"
                     >${item}</code
                   >`
               )}
@@ -162,6 +184,10 @@ export class TextEditor extends ClassifiedElement {
                   this.lineNumbersRef.value.scrollTop = this.textareaRef.value!.scrollTop
                 }
               }}"
+              @mousedown="${this.updateActiveCodeLine}"
+              @keydown="${this.updateActiveCodeLine}"
+              @blur="${() => (this.activeLineNumber = -1)}"
+              @select="${this.handleSelectionChange}"
               ${ref(this.textareaRef)}
             ></textarea>
           </div>
@@ -174,6 +200,7 @@ export class TextEditor extends ClassifiedElement {
     const textarea = event.target as HTMLTextAreaElement
     this.text = textarea.value
     this.updateLineCache()
+    this.handleSelectionChange()
   }
 
   public updateLineCache() {
@@ -182,10 +209,10 @@ export class TextEditor extends ClassifiedElement {
 
     // WITHOUT PRISM
     // this.lines = (value ?? this.text).split('\n').map((s, index) => {
-    //   const line = html`${s === '' ? html`<pre>&nbsp;</pre>` : unsafeHTML(s)}`
-    //   this.cache[index] = this.shadowRoot!.getElementById(`line-${index}`)?.offsetHeight || 0
-    //   return line
-    // })
+    //   const line = html`${s === '' ? html`<pre>&nbsp;</pre>` : unsafeHTML(s)}`;
+    //   this.cache[index] = this.shadowRoot!.getElementById(`line-${index}`)?.offsetHeight || 0;
+    //   return line;
+    // });
 
     // WITH PRISM
     const highlightedCode = Prism.highlight(this.text, Prism.languages.sql, 'sql')
@@ -239,5 +266,9 @@ export class TextEditor extends ClassifiedElement {
     })
 
     return html`${lineNumbers}`
+  }
+
+  private handleSelectionChange() {
+    setTimeout(() => (this.hasSelectedText = this.textareaRef.value?.selectionEnd !== this.textareaRef.value?.selectionStart))
   }
 }
