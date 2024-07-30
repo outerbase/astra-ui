@@ -486,61 +486,66 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     // TYPE: LINE
-    // 1 Series:
-    // -> Single LineY with stroke as yAxis key, and groupBy would be column to use as stroke value
-    // 2+ Series:
-    // -> Multiple LineY without a stroke, has a custom hex value associated, maybe use value from iridium or w/e theme they're using
     if (this.type === 'line') {
       // include grid along X-axis unless explicitly disabled
       if (this.gridX !== false) {
         options.marks.push(gridX(defaultGridStyle))
       }
 
-      //   options.marks.push(
-      //     lineY(d, {
-      //       x: this.keyX,
-      //       y: this.keyY,
-      //       stroke: (this.data?.options?.yAxisKeys ?? []).length > 1 ? afterburnValues : 'url(#mercury)',
-      //       tip,
-      //     })
-      //   )
-
-      //   if (this.data?.name === 'New Chart') {
-      //     console.log('New Chart Data: ', this.data)
-      //   }
-
-      const yAxisKeys = this.data?.options?.yAxisKeys ?? []
+      const yAxisKeys = this.data?.options?.yAxisKeys ?? [this.keyY]
 
       if (yAxisKeys.length > 1) {
+        let legendColors: any[] = []
+        let legendValues: any[] = []
+
         this.data?.options?.yAxisKeys?.forEach((key, index) => {
-          const randomColor = iridiumValues[index % iridiumValues.length]
+          const desiredColor = this.data?.options?.yAxisKeyColors?.[key] ?? iridiumValues[index % iridiumValues.length]
+
+          legendColors.push(desiredColor)
+          legendValues.push(key)
 
           options.marks.push(
             lineY(d, {
               x: this.keyX,
               y: key,
-              stroke: randomColor,
+              stroke: desiredColor,
               tip,
             })
           )
         })
+
+        options.color = {
+          domain: legendValues,
+          range: legendColors,
+          legend: true,
+        }
       } else {
         options.marks.push(
           lineY(d, {
             x: this.keyX,
             y: this.keyY,
-            // stroke: 'url(#mercury)',
-            stroke: this.data?.options?.groupBy, //'user_id', //this.groupBy,
+            stroke: this.data?.options?.groupBy ?? this.groupBy,
             tip,
           })
         )
       }
 
+      // This shows a legend at the top if defined.
+      // options.color = {
+      //   domain: ['4cea4345-3bd4-448a-85cd-908f32baf94f', '25fc9ba7-d349-4533-b00a-d179ed0a9996', '7b6175d0-1a6b-425f-9a04-ac5674b6eefe'],
+      //   range: [
+      //     '#1f77b4', // Blue for the first user_id
+      //     '#ff7f0e', // Orange for the second user_id
+      //     '#2ca02c', // Green for the third user_id
+      //   ],
+      //   legend: true,
+      // }
+
       // default to `nice` less explicitly set to false
       if (this.niceY !== false) this.niceY = true
 
       options.color.legend = true
-      options.color.scheme = 'purples'
+      //   options.color.scheme = 'purples'
     }
 
     if (this.type === 'scatter') {

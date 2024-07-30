@@ -336,6 +336,8 @@ export type DashboardV3ChartOptions = {
   xAxisKey?: string
   // The Y axis column keys for the chart series
   yAxisKeys?: string[]
+  // The colors for the Y axis keys
+  yAxisKeyColors?: Record<string, string>
   // The display, or hidden, and angle degree of the X axis labels
   xAxisLabelDisplay?: DashboardV3ChartLabelDisplayX
   // The position of the Y axis, or hidden
