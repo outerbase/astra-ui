@@ -52,3 +52,9 @@ import Layout from '../../layouts/Layout.astro'
     </div>
   </div>
 </Layout>
+
+<script type="module">
+  document.addEventListener('universe:submit', (event) => {
+    console.info('User submitted the text area', event.detail)
+  })
+</script>

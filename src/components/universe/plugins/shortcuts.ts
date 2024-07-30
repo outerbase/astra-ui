@@ -42,6 +42,11 @@ export class KeyboardShortcutsPlugin extends UniversePlugin {
         this.indentLine('right')
         this.dispatchInputEvent()
       }
+
+      if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault()
+        this.dispatchEvent(new CustomEvent('universe:submit', { detail: { text: this.editor!.text }, bubbles: true, composed: true }))
+      }
     })
   }
 
