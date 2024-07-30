@@ -160,6 +160,10 @@ export default {
           green: '#79E2BE',
           ycombinator: '#FB651E',
         },
+        neutral: {
+          ...defaultTheme.colors.neutral,
+          925: '#121212',
+        },
       },
       keyframes: {
         swirl: {

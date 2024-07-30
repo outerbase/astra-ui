@@ -24,7 +24,8 @@ export default class AstraComposedChart extends AstraChart {
 
   @property({ type: String }) header?: string
   @property({ type: String }) subheader?: string
-  @property({ type: String }) size: 'small' | 'medium' | 'large' = 'large'
+  //   @property({ type: String }) size: 'small' | 'medium' | 'large' = 'large'
+  @property({ type: Boolean }) showHighlights = true
   @property({ type: Number }) refresh?: number
 
   // When `refresh` has changed re render
@@ -55,9 +56,7 @@ export default class AstraComposedChart extends AstraChart {
           ? html`
               <div id="header-labels" class="flex flex-col">
                 ${this.header ? html`<h1 class="text-xl font-medium">${this.header}</h1>` : null}
-                ${this.subheader && this.size === 'large'
-                  ? html`<h2 class="text-md text-neutral-600 dark:text-neutral-400">${this.subheader}</h2>`
-                  : null}
+                ${this.subheader ? html`<h2 class="text-md text-neutral-600 dark:text-neutral-400">${this.subheader}</h2>` : null}
               </div>
             `
           : null}
@@ -82,7 +81,7 @@ export default class AstraComposedChart extends AstraChart {
     }
 
     const highlightSection =
-      (this.size === 'large' || this.size === 'medium') && this.data?.highlights?.length
+      this.showHighlights && this.data?.highlights?.length
         ? html`
             <div id="highlights" class="flex w-full items-center justify-between gap-8 mb-4">
               ${this.data?.highlights?.map(
@@ -118,7 +117,7 @@ export default class AstraComposedChart extends AstraChart {
       <div class="${classMap({ dark: this.theme === 'dark' })} h-full">
         <div
           id="composed-chart"
-          class="dark:text-neutral-50 text-neutral-950 h-full flex flex-col p-6 gap-4 rounded-lg bg-neutral-100 dark:bg-neutral-900 group/actions"
+          class="dark:text-neutral-50 text-neutral-950 h-full flex flex-col p-6 gap-4 rounded-lg bg-neutral-100 dark:bg-neutral-925 group/actions"
         >
           ${headerSection} ${highlightSection} ${chartSection}
         </div>
