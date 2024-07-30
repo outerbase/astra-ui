@@ -166,10 +166,11 @@ export class TextEditor extends ClassifiedElement {
               )}
             </div>
 
+            <!-- pt-0.5 here slightly breaks the alignment (if the text weren't transparent), but better aligns the cursor with the <code>'s background highlight effect -->
             <textarea
               autocorrect="off"
               spellcheck="false"
-              class="resize-none top-0 bottom-0 left-0 right-0 absolute focus:outline-none overflow-auto overscroll-contain no-scrollbar caret-lime-400 bg-zinc-100/10 text-transparent ${this
+              class="resize-none top-0 pt-0.5 bottom-0 left-0 right-0 absolute focus:outline-none overflow-auto overscroll-contain no-scrollbar caret-lime-400 bg-zinc-100/10 text-transparent ${this
                 .wordWrap
                 ? ''
                 : 'whitespace-nowrap'}"
