@@ -1,8 +1,8 @@
 import { customElement } from 'lit/decorators.js'
 import UniversePlugin from './base'
 
-@customElement('universe-plugin-keyboard-shortcuts')
-export class UniversePluginKeyboardShortcuts extends UniversePlugin {
+@customElement('universe-keyboard-shortcuts-plugin')
+export class KeyboardShortcutsPlugin extends UniversePlugin {
   connectedCallback(): void {
     super.connectedCallback()
     const editor = this.editor

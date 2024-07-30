@@ -1,6 +1,6 @@
 import { LitElement } from 'lit'
 import { property } from 'lit/decorators.js'
-import type { TextEditor } from '../../foo'
+import type { TextEditor } from '..'
 
 export default class UniversePlugin extends LitElement {
   @property() editor?: TextEditor | null
