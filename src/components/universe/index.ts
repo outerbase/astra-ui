@@ -377,4 +377,22 @@ SET temp_data = CONCAT(temp_data, ' - Updated with a long concatenation string t
 
     this.updateLineCache()
   }
+
+  public insertTabAtSelection() {
+    const textarea = this.textareaRef.value
+    const start = textarea!.selectionStart
+    const end = textarea!.selectionEnd
+
+    // Set textarea value to: text before caret + tab + text after caret
+    this.text =
+      this.text.substring(0, start) +
+      '    ' + // This is where the tab character or spaces go
+      this.text.substring(end)
+
+    // Put caret at correct position again
+    setTimeout(() => {
+      textarea!.selectionStart = textarea!.selectionEnd = start + 4 // Move the caret after the tab
+      this.updateLineCache()
+    })
+  }
 }
