@@ -145,10 +145,7 @@ export class TextEditor extends ClassifiedElement {
           <div ${ref(this.scrollerRef)} class="relative h-full w-full cursor-text ml-1">
             <div
               id="displayed-code"
-              class="top-0 bottom-0 left-0 right-0 absolute w-full text-white/80 select-none overflow-scroll overscroll-contain no-scrollbar ${this
-                .wordWrap
-                ? ''
-                : 'whitespace-nowrap'}"
+              class="top-0 bottom-0 left-0 right-0 absolute text-white/80 select-none overflow-scroll overscroll-contain no-scrollbar"
               ${ref(this.displayedCodeRef)}
             >
               ${this.lines.map(
@@ -156,8 +153,9 @@ export class TextEditor extends ClassifiedElement {
                   html`<code
                     class="w-full block language-sql 
                       ${classMap({
+                      'whitespace-break-spaces': this.wordWrap,
+                      'whitespace-pre': !this.wordWrap,
                       'bg-white/20': this.activeLineNumber === index + 1 && !this.hasSelectedText,
-                      'whitespace-pre-wrap': this.wordWrap,
                     })}
                       "
                     id="line-${index + 1}"
@@ -170,10 +168,11 @@ export class TextEditor extends ClassifiedElement {
             <textarea
               autocorrect="off"
               spellcheck="false"
-              class="resize-none top-0 pt-[3px] bottom-0 left-0 right-0 absolute focus:outline-none no-scrollbar caret-lime-400 bg-zinc-100/10 text-transparent ${this
-                .wordWrap
-                ? ''
-                : 'whitespace-nowrap'}"
+              class="resize-none top-0 pt-[3px] bottom-0 left-0 right-0 absolute focus:outline-none no-scrollbar caret-lime-400 bg-zinc-100/10 text-red-500 ${classMap(
+                {
+                  'whitespace-pre': !this.wordWrap,
+                }
+              )}"
               .value="${this.text}"
               @input="${this.onInput}"
               @scroll="${() => {
