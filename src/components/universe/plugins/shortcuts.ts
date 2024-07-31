@@ -57,49 +57,55 @@ export class KeyboardShortcutsPlugin extends UniversePlugin {
       this.dispatchInputEvent()
     }
 
+    // Submit (Cmd+Enter or Ctrl+Enter)
     if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
       event.preventDefault()
       this.dispatchEvent(new CustomEvent('universe:submit', { detail: { text: this.editor.text }, bubbles: true, composed: true }))
     }
+
+    // Cut line (Cmd+X or Ctrl+X)
+    if (event.key === 'x' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault()
+      this.cutLine()
+      this.dispatchInputEvent()
+    }
   }
 
   private indentLine(indent: 'left' | 'right') {
-    const textarea = this.editor.textareaRef.value
-    if (textarea) {
-      const start = textarea.selectionStart
-      const end = textarea.selectionEnd
-      const text = this.editor.text
+    const textarea = this.editor.textareaRef.value!
+    const start = textarea.selectionStart
+    const end = textarea.selectionEnd
+    const text = this.editor.text
 
-      // Determine the start and end of the line(s) that the selection spans
-      const lineStart = text.lastIndexOf('\n', start - 1) + 1
-      const lineEnd = text.indexOf('\n', end) === -1 ? text.length : text.indexOf('\n', end)
+    // Determine the start and end of the line(s) that the selection spans
+    const lineStart = text.lastIndexOf('\n', start - 1) + 1
+    const lineEnd = text.indexOf('\n', end) === -1 ? text.length : text.indexOf('\n', end)
 
-      // Extract the line(s) to be indented
-      const lines = text.slice(lineStart, lineEnd).split('\n')
+    // Extract the line(s) to be indented
+    const lines = text.slice(lineStart, lineEnd).split('\n')
 
-      // Indent or outdent each line
-      const modifiedLines = lines.map((line) => {
-        if (indent === 'right') {
-          return '  ' + line
-        } else {
-          return line.startsWith('  ') ? line.slice(2) : line
-        }
-      })
+    // Indent or outdent each line
+    const modifiedLines = lines.map((line) => {
+      if (indent === 'right') {
+        return '  ' + line
+      } else {
+        return line.startsWith('  ') ? line.slice(2) : line
+      }
+    })
 
-      // Join the modified lines and replace the original text
-      const modifiedText = text.slice(0, lineStart) + modifiedLines.join('\n') + text.slice(lineEnd)
+    // Join the modified lines and replace the original text
+    const modifiedText = text.slice(0, lineStart) + modifiedLines.join('\n') + text.slice(lineEnd)
 
-      // Update the editor text and selection
-      this.editor.text = modifiedText
-      this.editor.updateLineCache()
+    // Update the editor text and selection
+    this.editor.text = modifiedText
+    this.editor.updateLineCache()
 
-      setTimeout(() => {
-        const newStart = start + (indent === 'right' ? 2 : -2)
-        const newEnd = end + (indent === 'right' ? 2 * lines.length : -2 * lines.length)
-        textarea.selectionStart = Math.max(0, newStart)
-        textarea.selectionEnd = Math.max(0, newEnd)
-      }, 0)
-    }
+    setTimeout(() => {
+      const newStart = start + (indent === 'right' ? 2 : -2)
+      const newEnd = end + (indent === 'right' ? 2 * lines.length : -2 * lines.length)
+      textarea.selectionStart = Math.max(0, newStart)
+      textarea.selectionEnd = Math.max(0, newEnd)
+    }, 0)
   }
 
   private dispatchInputEvent() {
@@ -199,6 +205,30 @@ export class KeyboardShortcutsPlugin extends UniversePlugin {
     setTimeout(() => {
       textarea!.selectionStart = textarea!.selectionEnd = start + 4 // Move the caret after the tab
       this.editor.updateLineCache()
+    })
+  }
+
+  private cutLine() {
+    const textarea = this.editor.textareaRef.value!
+    const start = textarea.selectionStart
+    const end = textarea.selectionEnd
+    const text = this.editor.text
+
+    // Determine the start and end of the line that the selection spans
+    const lineStart = text.lastIndexOf('\n', start - 1) + 1
+    const lineEnd = text.indexOf('\n', end) + 1 || text.length
+
+    // Extract the line to be cut
+    const lineToCut = text.slice(lineStart, lineEnd)
+
+    // Update the editor text by removing the line
+    this.editor.text = text.slice(0, lineStart) + text.slice(lineEnd)
+    this.editor.updateLineCache()
+
+    // Copy the line to the clipboard
+    navigator.clipboard.writeText(lineToCut).then(() => {
+      // Adjust cursor position after cutting the line
+      textarea.selectionStart = textarea.selectionEnd = lineStart
     })
   }
 }

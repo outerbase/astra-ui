@@ -208,15 +208,13 @@ export class TextEditor extends ClassifiedElement {
   }
 
   private updateActiveCodeLine() {
-    const textarea = this.textareaRef.value
-    if (textarea) {
-      setTimeout(() => {
-        const cursorPosition = textarea.selectionStart
-        const textUntilCursor = textarea.value.substring(0, cursorPosition)
-        this.activeLineNumber = textUntilCursor.split('\n').length
-        this.handleSelectionChange()
-      })
-    }
+    const textarea = this.textareaRef.value!
+    setTimeout(() => {
+      const cursorPosition = textarea.selectionStart
+      const textUntilCursor = textarea.value.substring(0, cursorPosition)
+      this.activeLineNumber = textUntilCursor.split('\n').length
+      this.handleSelectionChange()
+    })
   }
 
   private computeLineHeight(): number {

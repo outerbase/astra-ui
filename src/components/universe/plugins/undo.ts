@@ -87,24 +87,22 @@ export class UndoPlugin extends UniversePlugin {
       }
 
       if (oldestState) {
+        const textarea = this.editor.textareaRef.value!
         this.redoStack.push({
           text: this.editor.text,
-          selectionStart: this.editor.textareaRef.value?.selectionStart || 0,
-          selectionEnd: this.editor.textareaRef.value?.selectionEnd || 0,
+          selectionStart: textarea.selectionStart || 0,
+          selectionEnd: textarea.selectionEnd || 0,
           timestamp: oldestState.timestamp,
         })
 
         this.editor.text = oldestState.text
         this.editor.updateLineCache()
 
-        const textarea = this.editor.textareaRef.value
-        if (textarea) {
-          setTimeout(() => {
-            textarea.selectionStart = oldestState.selectionStart
-            textarea.selectionEnd = oldestState.selectionEnd
-            this.dispatchUndoEvent()
-          }, 0)
-        }
+        setTimeout(() => {
+          textarea.selectionStart = oldestState.selectionStart
+          textarea.selectionEnd = oldestState.selectionEnd
+          this.dispatchUndoEvent()
+        }, 0)
       }
     }
   }
@@ -114,9 +112,11 @@ export class UndoPlugin extends UniversePlugin {
       const newestState = this.redoStack.pop()
 
       if (newestState) {
+        const textarea = this.editor.textareaRef.value!
+
         this.undoStack.push({
           text: this.editor.text,
-          selectionStart: this.editor.textareaRef.value?.selectionStart || 0,
+          selectionStart: textarea.selectionStart || 0,
           selectionEnd: this.editor.textareaRef.value?.selectionEnd || 0,
           timestamp: newestState.timestamp,
         })
@@ -124,14 +124,11 @@ export class UndoPlugin extends UniversePlugin {
         this.editor.text = newestState.text
         this.editor.updateLineCache()
 
-        const textarea = this.editor.textareaRef.value
-        if (textarea) {
-          setTimeout(() => {
-            textarea.selectionStart = newestState.selectionStart
-            textarea.selectionEnd = newestState.selectionEnd
-            this.dispatchRedoEvent()
-          }, 0)
-        }
+        setTimeout(() => {
+          textarea.selectionStart = newestState.selectionStart
+          textarea.selectionEnd = newestState.selectionEnd
+          this.dispatchRedoEvent()
+        }, 0)
       }
     }
   }
