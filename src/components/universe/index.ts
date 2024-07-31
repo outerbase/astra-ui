@@ -123,7 +123,7 @@ export class TextEditor extends ClassifiedElement {
 
   override render() {
     return html`
-      <div class="font-mono flex flex-row border w-full h-full">
+      <div class="font-mono flex flex-row border-4 border-transparent w-full h-full">
         <div class="flex flex-none h-full w-full no-scrollbar">
           <!-- line numbers  -->
           <div
@@ -142,7 +142,7 @@ export class TextEditor extends ClassifiedElement {
             ${this.getLineNumbers()}
           </div>
 
-          <div ${ref(this.scrollerRef)} class="relative h-full w-full cursor-text mx-1">
+          <div ${ref(this.scrollerRef)} class="relative h-full w-full cursor-text ml-1">
             <div
               id="displayed-code"
               class="top-0 bottom-0 left-0 right-0 absolute w-full text-white/80 select-none overflow-scroll overscroll-contain no-scrollbar ${this
