@@ -1,61 +1,74 @@
+// Explanation
+// MetaKey + `/` = toggles line comments for the selected text
+// TabKey = inserts 4 spaces (because tabbing in a textarea doesn't do this natively!)
+// MetaKey + [ = indent the selected lines to the left
+// MetaKey + ] = indent the selected lines to the right
+// MetaKey + Enter = dispatches the `universe:submit` event with a copy of the text; this is useful for, say, running a query
+
 import { customElement } from 'lit/decorators.js'
 import UniversePlugin from './base'
 
 @customElement('universe-keyboard-shortcuts-plugin')
 export class KeyboardShortcutsPlugin extends UniversePlugin {
+  constructor() {
+    super()
+    this.onKeyDown = this.onKeyDown.bind(this)
+  }
+
   connectedCallback(): void {
     super.connectedCallback()
+    this.editor.addEventListener('keydown', this.onKeyDown)
+  }
 
-    const editor = this.editor
-    if (!editor) {
-      throw new Error('Failed to find parent <text-editor />')
+  disconnectedCallback(): void {
+    super.disconnectedCallback()
+    this.editor.removeEventListener('keydown', this.onKeyDown)
+  }
+
+  private onKeyDown(event: KeyboardEvent) {
+    const hasMetaKey = event.metaKey
+
+    // commenting
+    const isSlashKey = event.code === 'Slash'
+    if (hasMetaKey && isSlashKey) {
+      event.preventDefault()
+      this.toggleLineComments()
+      this.dispatchInputEvent()
     }
 
-    editor.addEventListener('keydown', (event) => {
-      const hasMetaKey = event.metaKey
+    // inserting tabs
+    if (event.code === 'Tab') {
+      event.preventDefault()
+      this.insertTabAtSelection()
+      this.dispatchInputEvent()
+    }
 
-      // commenting
-      const isSlashKey = event.code === 'Slash'
-      if (hasMetaKey && isSlashKey) {
-        event.preventDefault()
-        this.toggleLineComments()
-        this.dispatchInputEvent()
-      }
+    // INDENT (Cmd+[ or Ctrl+[)
+    if (event.key === '[' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault()
+      this.indentLine('left')
+      this.dispatchInputEvent()
+    }
 
-      // inserting tabs
-      if (event.code === 'Tab') {
-        event.preventDefault()
-        this.insertTabAtSelection()
-        this.dispatchInputEvent()
-      }
+    // OUTDENT (Cmd+] or Ctrl+])
+    if (event.key === ']' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault()
+      this.indentLine('right')
+      this.dispatchInputEvent()
+    }
 
-      // INDENT (Cmd+[ or Ctrl+[)
-      if (event.key === '[' && (event.metaKey || event.ctrlKey)) {
-        event.preventDefault()
-        this.indentLine('left')
-        this.dispatchInputEvent()
-      }
-
-      // OUTDENT (Cmd+] or Ctrl+])
-      if (event.key === ']' && (event.metaKey || event.ctrlKey)) {
-        event.preventDefault()
-        this.indentLine('right')
-        this.dispatchInputEvent()
-      }
-
-      if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
-        event.preventDefault()
-        this.dispatchEvent(new CustomEvent('universe:submit', { detail: { text: this.editor!.text }, bubbles: true, composed: true }))
-      }
-    })
+    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault()
+      this.dispatchEvent(new CustomEvent('universe:submit', { detail: { text: this.editor.text }, bubbles: true, composed: true }))
+    }
   }
 
   private indentLine(indent: 'left' | 'right') {
-    const textarea = this.editor!.textareaRef.value
+    const textarea = this.editor.textareaRef.value
     if (textarea) {
       const start = textarea.selectionStart
       const end = textarea.selectionEnd
-      const text = this.editor!.text
+      const text = this.editor.text
 
       // Determine the start and end of the line(s) that the selection spans
       const lineStart = text.lastIndexOf('\n', start - 1) + 1
@@ -77,8 +90,8 @@ export class KeyboardShortcutsPlugin extends UniversePlugin {
       const modifiedText = text.slice(0, lineStart) + modifiedLines.join('\n') + text.slice(lineEnd)
 
       // Update the editor text and selection
-      this.editor!.text = modifiedText
-      this.editor!.updateLineCache()
+      this.editor.text = modifiedText
+      this.editor.updateLineCache()
 
       setTimeout(() => {
         const newStart = start + (indent === 'right' ? 2 : -2)
@@ -101,7 +114,7 @@ export class KeyboardShortcutsPlugin extends UniversePlugin {
     )
   }
 
-  public toggleLineComments() {
+  private toggleLineComments() {
     const textarea = this.editor?.textareaRef.value
     const start = textarea!.selectionStart
     const end = textarea!.selectionEnd
@@ -112,13 +125,13 @@ export class KeyboardShortcutsPlugin extends UniversePlugin {
     const uncommentLength = uncommentCharacters.length
 
     // Find the start of the first line and the end of the last line in the selection
-    const firstLineStart = this.editor!.text.lastIndexOf('\n', start - 1) + 1
-    let lastLineEnd = this.editor!.text.indexOf('\n', end)
-    lastLineEnd = lastLineEnd === -1 ? this.editor!.text.length : lastLineEnd
+    const firstLineStart = this.editor.text.lastIndexOf('\n', start - 1) + 1
+    let lastLineEnd = this.editor.text.indexOf('\n', end)
+    lastLineEnd = lastLineEnd === -1 ? this.editor.text.length : lastLineEnd
 
-    const beforeSelection = this.editor!.text.substring(0, firstLineStart)
-    const selectionText = this.editor!.text.substring(firstLineStart, lastLineEnd)
-    const afterSelection = this.editor!.text.substring(lastLineEnd)
+    const beforeSelection = this.editor.text.substring(0, firstLineStart)
+    const selectionText = this.editor.text.substring(firstLineStart, lastLineEnd)
+    const afterSelection = this.editor.text.substring(lastLineEnd)
     const lines = selectionText.split('\n')
 
     // Check if all lines are commented out (ignoring leading whitespace)
@@ -144,7 +157,7 @@ export class KeyboardShortcutsPlugin extends UniversePlugin {
       }
     })
 
-    this.editor!.text = beforeSelection + updatedLines.join('\n') + afterSelection
+    this.editor.text = beforeSelection + updatedLines.join('\n') + afterSelection
 
     setTimeout(() => {
       const linesCount = lines.length
@@ -161,8 +174,8 @@ export class KeyboardShortcutsPlugin extends UniversePlugin {
       }
 
       // Prevent selection from bleeding into the next line
-      newSelectionStart = Math.min(newSelectionStart, this.editor!.text.length)
-      newSelectionEnd = Math.min(newSelectionEnd, this.editor!.text.length)
+      newSelectionStart = Math.min(newSelectionStart, this.editor.text.length)
+      newSelectionEnd = Math.min(newSelectionEnd, this.editor.text.length)
 
       textarea!.selectionStart = newSelectionStart
       textarea!.selectionEnd = newSelectionEnd
@@ -173,20 +186,20 @@ export class KeyboardShortcutsPlugin extends UniversePlugin {
       }
     })
 
-    this.editor!.updateLineCache()
+    this.editor.updateLineCache()
   }
 
-  public insertTabAtSelection() {
-    const textarea = this.editor!.textareaRef.value
+  private insertTabAtSelection() {
+    const textarea = this.editor.textareaRef.value
     const start = textarea!.selectionStart
     const end = textarea!.selectionEnd
 
     // Set textarea value to: text before caret + tab + text after caret
-    this.editor!.text = this.editor!.text.substring(0, start) + '    ' + this.editor!.text.substring(end)
+    this.editor.text = this.editor.text.substring(0, start) + '    ' + this.editor.text.substring(end)
 
     setTimeout(() => {
       textarea!.selectionStart = textarea!.selectionEnd = start + 4 // Move the caret after the tab
-      this.editor!.updateLineCache()
+      this.editor.updateLineCache()
     })
   }
 }

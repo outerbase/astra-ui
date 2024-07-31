@@ -23,6 +23,12 @@ export class UndoPlugin extends UniversePlugin {
   private undoStack: Array<UndoEvent> = []
   private redoStack: Array<UndoEvent> = []
 
+  constructor() {
+    super()
+    this.onKeyDown = this.onKeyDown.bind(this)
+    this.onInput = this.onInput.bind(this)
+  }
+
   connectedCallback(): void {
     super.connectedCallback()
 
@@ -31,32 +37,40 @@ export class UndoPlugin extends UniversePlugin {
       throw new Error('Failed to find parent <text-editor />')
     }
 
-    editor.addEventListener('keydown', (event) => {
-      // snag values before `input` mutates them
-      this.textBeforeEdit = editor.text
-      this.positionEndBeforeEdit = editor.textareaRef.value!.selectionEnd
-      this.positionStartBeforeEdit = editor.textareaRef.value!.selectionStart
+    editor.addEventListener('keydown', this.onKeyDown)
+    editor.addEventListener('input', this.onInput)
+  }
 
-      // REDO (Cmd+Shift+Z or Ctrl+Shift+Z)
-      if (event.key === 'z' && (event.metaKey || event.ctrlKey) && event.shiftKey) {
-        event.preventDefault()
-        this.handleRedo()
-      }
-      // UNDO (Cmd+Z or Ctrl+Z)
-      else if (event.key === 'z' && (event.metaKey || event.ctrlKey)) {
-        event.preventDefault()
-        this.handleUndo()
-      }
-      // REDO (Cmd+Y or Ctrl+Y)
-      else if (event.key === 'y' && (event.metaKey || event.ctrlKey)) {
-        event.preventDefault()
-        this.handleRedo()
-      }
-    })
+  disconnectedCallback(): void {
+    this.editor?.removeEventListener('keydown', this.onKeyDown)
+    this.editor?.removeEventListener('input', this.onInput)
+  }
 
-    editor.addEventListener('input', (_event) => {
-      this.saveStateToUndoStack()
-    })
+  private onKeyDown(event: KeyboardEvent) {
+    // snag values before `input` mutates them
+    this.textBeforeEdit = this.editor.text
+    this.positionEndBeforeEdit = this.editor.textareaRef.value!.selectionEnd
+    this.positionStartBeforeEdit = this.editor.textareaRef.value!.selectionStart
+
+    // REDO (Cmd+Shift+Z or Ctrl+Shift+Z)
+    if (event.key === 'z' && (event.metaKey || event.ctrlKey) && event.shiftKey) {
+      event.preventDefault()
+      this.handleRedo()
+    }
+    // UNDO (Cmd+Z or Ctrl+Z)
+    else if (event.key === 'z' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault()
+      this.handleUndo()
+    }
+    // REDO (Cmd+Y or Ctrl+Y)
+    else if (event.key === 'y' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault()
+      this.handleRedo()
+    }
+  }
+
+  private onInput(_event: Event) {
+    this.saveStateToUndoStack()
   }
 
   private handleUndo() {
@@ -74,16 +88,16 @@ export class UndoPlugin extends UniversePlugin {
 
       if (oldestState) {
         this.redoStack.push({
-          text: this.editor!.text,
-          selectionStart: this.editor!.textareaRef.value?.selectionStart || 0,
-          selectionEnd: this.editor!.textareaRef.value?.selectionEnd || 0,
+          text: this.editor.text,
+          selectionStart: this.editor.textareaRef.value?.selectionStart || 0,
+          selectionEnd: this.editor.textareaRef.value?.selectionEnd || 0,
           timestamp: oldestState.timestamp,
         })
 
-        this.editor!.text = oldestState.text
-        this.editor!.updateLineCache()
+        this.editor.text = oldestState.text
+        this.editor.updateLineCache()
 
-        const textarea = this.editor!.textareaRef.value
+        const textarea = this.editor.textareaRef.value
         if (textarea) {
           setTimeout(() => {
             textarea.selectionStart = oldestState.selectionStart
@@ -100,16 +114,16 @@ export class UndoPlugin extends UniversePlugin {
 
       if (newestState) {
         this.undoStack.push({
-          text: this.editor!.text,
-          selectionStart: this.editor!.textareaRef.value?.selectionStart || 0,
-          selectionEnd: this.editor!.textareaRef.value?.selectionEnd || 0,
+          text: this.editor.text,
+          selectionStart: this.editor.textareaRef.value?.selectionStart || 0,
+          selectionEnd: this.editor.textareaRef.value?.selectionEnd || 0,
           timestamp: newestState.timestamp,
         })
 
-        this.editor!.text = newestState.text
-        this.editor!.updateLineCache()
+        this.editor.text = newestState.text
+        this.editor.updateLineCache()
 
-        const textarea = this.editor!.textareaRef.value
+        const textarea = this.editor.textareaRef.value
         if (textarea) {
           setTimeout(() => {
             textarea.selectionStart = newestState.selectionStart

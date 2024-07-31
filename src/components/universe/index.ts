@@ -68,16 +68,17 @@ export class TextEditor extends ClassifiedElement {
     `,
   ]
 
-  @property({ type: String, reflect: true }) id = 'myid'
+  public textareaRef: Ref<HTMLTextAreaElement> = createRef()
+
   @property({ type: Boolean, attribute: 'wrap' }) wordWrap = false
   @property() text = SQL_EXAMPLE_TEXT
-  @state() highlightedCode?: DirectiveResult
-  @state() private cache: Array<number> = []
-  @state() lines: Array<TemplateResult> = []
-  @state() activeLineNumber?: number
-  @state() hasSelectedText = false
 
-  public textareaRef: Ref<HTMLTextAreaElement> = createRef()
+  @state() protected highlightedCode?: DirectiveResult
+  @state() protected lines: Array<TemplateResult> = []
+  @state() protected activeLineNumber?: number
+  @state() protected hasSelectedText = false
+  @state() private cache: Array<number> = []
+
   private displayedCodeRef: Ref<HTMLElement> = createRef()
   private lineNumbersRef: Ref<HTMLElement> = createRef()
   private scrollerRef: Ref<HTMLElement> = createRef()
@@ -98,22 +99,6 @@ export class TextEditor extends ClassifiedElement {
     // Remove resize event listeners
     window.removeEventListener('resize', this.handleResize)
     this.removeEventListener('resize', this.handleResize)
-  }
-
-  private handleResize = () => {
-    this.updateLineCache()
-  }
-
-  private updateActiveCodeLine = () => {
-    const textarea = this.textareaRef.value
-    if (textarea) {
-      setTimeout(() => {
-        const cursorPosition = textarea.selectionStart
-        const textUntilCursor = textarea.value.substring(0, cursorPosition)
-        this.activeLineNumber = textUntilCursor.split('\n').length
-        this.handleSelectionChange()
-      })
-    }
   }
 
   override firstUpdated(changedProperties: PropertyValueMap<this>) {
@@ -186,7 +171,7 @@ export class TextEditor extends ClassifiedElement {
               }}"
               @mouseup="${this.updateActiveCodeLine}"
               @keydown="${this.updateActiveCodeLine}"
-              @blur="${() => (this.activeLineNumber = -1)}"
+              @blur="${() => (this.activeLineNumber = undefined)}"
               @select="${this.handleSelectionChange}"
               ${ref(this.textareaRef)}
             ></textarea>
@@ -194,13 +179,6 @@ export class TextEditor extends ClassifiedElement {
         </div>
       </div>
     `
-  }
-
-  private onInput(event: InputEvent) {
-    const textarea = event.target as HTMLTextAreaElement
-    this.text = textarea.value
-    this.updateLineCache()
-    this.handleSelectionChange()
   }
 
   public updateLineCache() {
@@ -223,6 +201,29 @@ export class TextEditor extends ClassifiedElement {
     })
 
     this.requestUpdate('_lines', previousValue)
+  }
+
+  private onInput(event: InputEvent) {
+    const textarea = event.target as HTMLTextAreaElement
+    this.text = textarea.value
+    this.updateLineCache()
+    this.handleSelectionChange()
+  }
+
+  private handleResize() {
+    this.updateLineCache()
+  }
+
+  private updateActiveCodeLine() {
+    const textarea = this.textareaRef.value
+    if (textarea) {
+      setTimeout(() => {
+        const cursorPosition = textarea.selectionStart
+        const textUntilCursor = textarea.value.substring(0, cursorPosition)
+        this.activeLineNumber = textUntilCursor.split('\n').length
+        this.handleSelectionChange()
+      })
+    }
   }
 
   private computeLineHeight(): number {
@@ -278,5 +279,5 @@ export class TextEditor extends ClassifiedElement {
     if (this.textareaRef.value) {
       this.textareaRef.value.scrollTop = this.lineNumbersRef.value!.scrollTop
     }
-  }, 100) // Adjust the debounce time as needed
+  }, 100)
 }
