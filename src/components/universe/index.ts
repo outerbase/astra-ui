@@ -218,7 +218,7 @@ export class TextEditor extends ClassifiedElement {
     const highlightedCode = Prism.highlight(this.text, Prism.languages.sql, 'sql')
     this.lines = highlightedCode.split('\n').map((s, index) => {
       const line = html`${s === '' ? html`<pre>&nbsp;</pre>` : unsafeHTML(s)}`
-      this.cache[index] = this.shadowRoot!.getElementById(`line-${index}`)?.offsetHeight || 0
+      this.cache[index] = this.shadowRoot!.getElementById(`line-${index + 1}`)?.offsetHeight || 0
       return line
     })
 
