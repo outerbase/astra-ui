@@ -126,24 +126,25 @@ export class TextEditor extends ClassifiedElement {
         <div class="flex flex-none h-full w-full no-scrollbar">
           <!-- line numbers  -->
           <div
-            class="px-3 bg-zinc-500/10 text-right text-white/40 select-none flex-none overflow-auto overscroll-contain no-scrollbar"
+            class="px-3 bg-zinc-500/10 text-right text-white/40 select-none flex-none overflow-y-scroll overscroll-contain no-scrollbar"
             @scroll="${() => {
               if (this.displayedCodeRef.value) {
                 this.displayedCodeRef.value.scrollTop = this.lineNumbersRef.value!.scrollTop
               }
-              if (this.textareaRef.value) {
-                this.textareaRef.value.scrollTop = this.lineNumbersRef.value!.scrollTop
-              }
+              // this doesn't appear to be necessary; breaks momentum scrolling on mobile safari
+              // if (this.textareaRef.value) {
+              //   this.textareaRef.value.scrollTop = this.lineNumbersRef.value!.scrollTop
+              // }
             }}"
             ${ref(this.lineNumbersRef)}
           >
             ${this.getLineNumbers()}
           </div>
 
-          <div ${ref(this.scrollerRef)} class="relative h-full w-full cursor-text mx-1 overscroll-contain">
+          <div ${ref(this.scrollerRef)} class="relative h-full w-full cursor-text mx-1">
             <div
               id="displayed-code"
-              class="top-0 bottom-0 left-0 right-0 absolute w-full text-white/80 select-none overflow-auto overscroll-contain no-scrollbar ${this
+              class="top-0 bottom-0 left-0 right-0 absolute w-full text-white/80 select-none overflow-scroll overscroll-contain no-scrollbar ${this
                 .wordWrap
                 ? ''
                 : 'whitespace-nowrap'}"
@@ -156,7 +157,6 @@ export class TextEditor extends ClassifiedElement {
                       ${classMap({
                       'bg-white/20': this.activeLineNumber === index + 1 && !this.hasSelectedText,
                       'whitespace-pre-wrap': this.wordWrap,
-                      'whitespace-pre': !this.wordWrap,
                     })}
                       "
                     id="line-${index + 1}"
@@ -165,23 +165,23 @@ export class TextEditor extends ClassifiedElement {
               )}
             </div>
 
-            <!-- pt-0.5 here slightly breaks the alignment (if the text weren't transparent), but better aligns the cursor with the <code>'s background highlight effect -->
+            <!-- pt-[3px] here slightly breaks the alignment (if the text weren't transparent), but better aligns the cursor with the <code>'s background highlight effect -->
             <textarea
               autocorrect="off"
               spellcheck="false"
-              class="resize-none top-0 pt-0.5 bottom-0 left-0 right-0 absolute focus:outline-none overflow-auto overscroll-contain no-scrollbar caret-lime-400 bg-zinc-100/10 text-transparent ${this
+              class="resize-none top-0 pt-[3px] bottom-0 left-0 right-0 absolute focus:outline-none no-scrollbar caret-lime-400 bg-zinc-100/10 text-transparent ${this
                 .wordWrap
                 ? ''
                 : 'whitespace-nowrap'}"
               .value="${this.text}"
               @input="${this.onInput}"
               @scroll="${() => {
-                if (this.displayedCodeRef.value) {
-                  this.displayedCodeRef.value.scrollTop = this.textareaRef.value!.scrollTop
-                  this.displayedCodeRef.value.scrollLeft = this.textareaRef.value!.scrollLeft
-                }
                 if (this.lineNumbersRef.value) {
                   this.lineNumbersRef.value.scrollTop = this.textareaRef.value!.scrollTop
+                }
+                if (this.displayedCodeRef.value) {
+                  this.displayedCodeRef.value.scrollTop = this.textareaRef.value!.scrollTop // this doesn't appear to be necessary and seems to reduce the smoothness of momentum scrolling
+                  this.displayedCodeRef.value.scrollLeft = this.textareaRef.value!.scrollLeft
                 }
               }}"
               @mouseup="${this.updateActiveCodeLine}"
