@@ -13,13 +13,6 @@ import SQL_EXAMPLE_TEXT from './sql-text-snippet'
 
 @customElement('text-editor')
 export class TextEditor extends ClassifiedElement {
-  protected classMap() {
-    return {
-      foo: true,
-      ...super.classMap(),
-    }
-  }
-
   static styles = [
     ...ClassifiedElement.styles,
     css`
