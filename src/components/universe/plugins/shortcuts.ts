@@ -57,6 +57,12 @@ export class KeyboardShortcutsPlugin extends UniversePlugin {
       this.dispatchInputEvent()
     }
 
+    if (event.key === 'Tab' && event.shiftKey) {
+      event.preventDefault()
+      this.indentLine('left')
+      this.dispatchInputEvent()
+    }
+
     // Submit (Cmd+Enter or Ctrl+Enter)
     if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
       event.preventDefault()
