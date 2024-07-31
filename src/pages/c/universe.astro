@@ -5,75 +5,73 @@ import { UndoPlugin } from '../../components/universe/plugins/undo'
 import Layout from '../../layouts/Layout.astro'
 ---
 
-<Layout title="Astra-UI">
-  <div class="flex flex-col gap-4">
-    <div>
-      <h1><pre>&lt;text-editor wrap /&gt;</pre> .bg-zinc-700</h1>
-      <div class="h-[400px] w-full bg-zinc-700">
-        <!-- @ts-ignore attributes -->
-        <TextEditor client:only="lit" wrap>
-          <KeyboardShortcutsPlugin client:only="lit" />
-          <UndoPlugin client:only="lit" />
-        </TextEditor>
-      </div>
-    </div>
-
-    <div>
-      <h1><pre>&lt;text-editor wrap /&gt;</pre> .bg-green-600</h1>
-      <div class="h-[400px] w-full bg-green-600">
-        <!-- @ts-ignore attributes -->
-        <TextEditor client:only="lit" wrap>
-          <KeyboardShortcutsPlugin client:only="lit" />
-          <UndoPlugin client:only="lit" />
-        </TextEditor>
-      </div>
-    </div>
-
-    <div>
-      <h1><pre>&lt;text-editor wrap /&gt;</pre> .bg-indigo-800</h1>
-      <div class="h-[400px] w-full bg-indigo-800">
-        <!-- @ts-ignore attributes -->
-        <TextEditor client:only="lit" wrap>
-          <KeyboardShortcutsPlugin client:only="lit" />
-          <UndoPlugin client:only="lit" />
-        </TextEditor>
-      </div>
-    </div>
-
-    <div>
-      <h1><pre>&lt;text-editor wrap /&gt;</pre> .bg-blue-700</h1>
-      <div class="h-[400px] w-full bg-blue-700">
-        <!-- @ts-ignore attributes -->
-        <TextEditor client:only="lit" wrap>
-          <KeyboardShortcutsPlugin client:only="lit" />
-          <UndoPlugin client:only="lit" />
-        </TextEditor>
-      </div>
-    </div>
-
-    <div>
-      <h1><pre>&lt;text-editor wrap /&gt;</pre> .bg-orange-600</h1>
-      <div class="h-[400px] w-full bg-orange-600">
-        <!-- @ts-ignore attributes -->
-        <TextEditor client:only="lit" wrap>
-          <KeyboardShortcutsPlugin client:only="lit" />
-          <UndoPlugin client:only="lit" />
-        </TextEditor>
-      </div>
-    </div>
-
-    <div>
-      <h1><pre>&lt;text-editor wrap /&gt;</pre> .bg-red-800</h1>
-      <div class="h-[400px] w-full bg-red-800">
-        <!-- @ts-ignore attributes -->
-        <TextEditor client:only="lit" wrap>
-          <KeyboardShortcutsPlugin client:only="lit" />
-          <UndoPlugin client:only="lit" />
-        </TextEditor>
-      </div>
+<div class="flex flex-col gap-4">
+  <div>
+    <h1><pre>&lt;text-editor wrap /&gt;</pre> .bg-zinc-700</h1>
+    <div class="h-[400px] w-full bg-zinc-700">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
     </div>
   </div>
-</Layout>
+
+  <div>
+    <h1><pre>&lt;text-editor /&gt;</pre> .bg-green-600 <b>without line wrapping</b></h1>
+    <div class="h-[400px] w-full bg-green-600">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit">
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div>
+    <h1><pre>&lt;text-editor wrap /&gt;</pre> .bg-indigo-800</h1>
+    <div class="h-[400px] w-full bg-indigo-800">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div>
+    <h1><pre>&lt;text-editor wrap /&gt;</pre> .bg-blue-700</h1>
+    <div class="h-[400px] w-full bg-blue-700">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div>
+    <h1><pre>&lt;text-editor wrap /&gt;</pre> .bg-orange-600</h1>
+    <div class="h-[400px] w-full bg-orange-600">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div>
+    <h1><pre>&lt;text-editor wrap /&gt;</pre> .bg-red-800</h1>
+    <div class="h-[400px] w-full bg-red-800">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+</div>
 
 <script type="module">
   document.addEventListener('universe:submit', (event) => {
