@@ -110,10 +110,9 @@ export class TextEditor extends ClassifiedElement {
         const cursorPosition = textarea.selectionStart
         const textUntilCursor = textarea.value.substring(0, cursorPosition)
         this.activeLineNumber = textUntilCursor.split('\n').length
+        this.handleSelectionChange()
       })
     }
-
-    this.handleSelectionChange()
   }
 
   override firstUpdated(changedProperties: PropertyValueMap<this>) {
@@ -185,7 +184,7 @@ export class TextEditor extends ClassifiedElement {
                   this.lineNumbersRef.value.scrollTop = this.textareaRef.value!.scrollTop
                 }
               }}"
-              @mousedown="${this.updateActiveCodeLine}"
+              @mouseup="${this.updateActiveCodeLine}"
               @keydown="${this.updateActiveCodeLine}"
               @blur="${() => (this.activeLineNumber = -1)}"
               @select="${this.handleSelectionChange}"
