@@ -42,8 +42,8 @@ export class UndoPlugin extends UniversePlugin {
   }
 
   disconnectedCallback(): void {
-    this.editor?.removeEventListener('keydown', this.onKeyDown)
-    this.editor?.removeEventListener('input', this.onInput)
+    this.editor.removeEventListener('keydown', this.onKeyDown)
+    this.editor.removeEventListener('input', this.onInput)
   }
 
   private onKeyDown(event: KeyboardEvent) {

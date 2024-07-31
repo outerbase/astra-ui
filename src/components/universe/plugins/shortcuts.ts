@@ -103,19 +103,18 @@ export class KeyboardShortcutsPlugin extends UniversePlugin {
   }
 
   private dispatchInputEvent() {
-    const editor = this.editor
-    editor?.dispatchEvent(
+    this.editor.dispatchEvent(
       new InputEvent('input', {
         bubbles: true,
         cancelable: true,
-        data: editor.text,
+        data: this.editor.text,
         inputType: 'insertText',
       })
     )
   }
 
   private toggleLineComments() {
-    const textarea = this.editor?.textareaRef.value
+    const textarea = this.editor.textareaRef.value
     const start = textarea!.selectionStart
     const end = textarea!.selectionEnd
 
