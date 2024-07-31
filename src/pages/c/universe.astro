@@ -78,6 +78,14 @@ import Layout from '../../layouts/Layout.astro'
     console.info('onsubmit', event.detail.text)
   })
 
+  document.addEventListener('universe:undo', (event) => {
+    console.info('undo', event.detail.text)
+  })
+
+  document.addEventListener('universe:redo', (event) => {
+    console.info('redo', event.detail.text)
+  })
+
   document.addEventListener('input', (event) => {
     console.info('oninput', event.target.text)
   })

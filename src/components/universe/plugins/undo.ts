@@ -102,6 +102,7 @@ export class UndoPlugin extends UniversePlugin {
           setTimeout(() => {
             textarea.selectionStart = oldestState.selectionStart
             textarea.selectionEnd = oldestState.selectionEnd
+            this.dispatchUndoEvent()
           }, 0)
         }
       }
@@ -128,6 +129,7 @@ export class UndoPlugin extends UniversePlugin {
           setTimeout(() => {
             textarea.selectionStart = newestState.selectionStart
             textarea.selectionEnd = newestState.selectionEnd
+            this.dispatchRedoEvent()
           }, 0)
         }
       }
@@ -141,5 +143,13 @@ export class UndoPlugin extends UniversePlugin {
       text: this.textBeforeEdit,
       timestamp: Date.now(),
     })
+  }
+
+  private dispatchUndoEvent() {
+    this.editor.dispatchEvent(new CustomEvent('universe:undo', { detail: { text: this.editor.text }, bubbles: true, composed: true }))
+  }
+
+  private dispatchRedoEvent() {
+    this.editor.dispatchEvent(new CustomEvent('universe:redo', { detail: { text: this.editor.text }, bubbles: true, composed: true }))
   }
 }
