@@ -168,7 +168,7 @@ export class TextEditor extends ClassifiedElement {
             <textarea
               autocorrect="off"
               spellcheck="false"
-              class="resize-none top-0 pt-[3px] bottom-0 left-0 right-0 absolute focus:outline-none no-scrollbar caret-lime-400 bg-zinc-100/10 text-red-500 ${classMap(
+              class="resize-none top-0 pt-[3px] bottom-0 left-0 right-0 absolute focus:outline-none no-scrollbar caret-lime-400 bg-zinc-100/10 text-transparent ${classMap(
                 {
                   'whitespace-pre': !this.wordWrap,
                 }
