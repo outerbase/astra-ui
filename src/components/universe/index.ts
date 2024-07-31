@@ -105,6 +105,7 @@ export class TextEditor extends ClassifiedElement {
         <div class="flex flex-none h-full w-full no-scrollbar">
           <!-- line numbers  -->
           <div
+            id="line-numbers"
             class="px-3 bg-zinc-500/10 text-right text-white/40 select-none flex-none overflow-y-scroll overscroll-contain no-scrollbar"
             @scroll="${() => {
               // immediately synchronize the displayed code
