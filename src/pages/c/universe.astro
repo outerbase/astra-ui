@@ -2,6 +2,7 @@
 import { TextEditor } from '../../components/universe/index'
 import { KeyboardShortcutsPlugin } from '../../components/universe/plugins/shortcuts'
 import { UndoPlugin } from '../../components/universe/plugins/undo'
+import { HandlebarsPlugin } from '../../components/universe/plugins/handlebars'
 import Layout from '../../layouts/Layout.astro'
 ---
 
@@ -13,6 +14,7 @@ import Layout from '../../layouts/Layout.astro'
       <TextEditor client:only="lit" wrap>
         <KeyboardShortcutsPlugin client:only="lit" />
         <UndoPlugin client:only="lit" />
+        <HandlebarsPlugin client:only="lit" slot="cursor" />
       </TextEditor>
     </div>
   </div>
@@ -24,6 +26,7 @@ import Layout from '../../layouts/Layout.astro'
       <TextEditor client:only="lit">
         <KeyboardShortcutsPlugin client:only="lit" />
         <UndoPlugin client:only="lit" />
+        <HandlebarsPlugin client:only="lit" slot="cursor" />
       </TextEditor>
     </div>
   </div>

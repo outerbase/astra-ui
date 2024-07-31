@@ -65,6 +65,8 @@ export class TextEditor extends ClassifiedElement {
 
   @property({ type: Boolean, attribute: 'wrap' }) wordWrap = false
   @property() text = SQL_EXAMPLE_TEXT
+  @state() cursorX = 0
+  @state() cursorY = 0
 
   @state() public hasSelectedText = false
   @state() protected highlightedCode?: DirectiveResult
@@ -102,6 +104,9 @@ export class TextEditor extends ClassifiedElement {
   override render() {
     return html`
       <div class="font-mono flex flex-row border-4 border-transparent w-full h-full">
+        <!-- positions a div immediately following the cursor; useful for, say, a context menu -->
+        <div class="absolute z-10 ml-12" style="top: ${this.cursorY}px; left: ${this.cursorX}px"><slot name="cursor" /></div>
+
         <div class="flex flex-none h-full w-full no-scrollbar">
           <!-- line numbers  -->
           <div
@@ -162,6 +167,16 @@ export class TextEditor extends ClassifiedElement {
                   this.displayedCodeRef.value.scrollTop = this.textareaRef.value!.scrollTop // this doesn't appear to be necessary and seems to reduce the smoothness of momentum scrolling
                   this.displayedCodeRef.value.scrollLeft = this.textareaRef.value!.scrollLeft
                 }
+
+                this.updateCursorPosition()
+              }}"
+              @mouseup="${() => {
+                this.updateActiveCodeLine()
+                this.updateCursorPosition()
+              }}"
+              @keydown="${() => {
+                this.updateActiveCodeLine()
+                this.updateCursorPosition()
               }}"
               @mouseup="${this.updateActiveCodeLine}"
               @keydown="${this.updateActiveCodeLine}"
@@ -202,6 +217,7 @@ export class TextEditor extends ClassifiedElement {
     this.text = textarea.value
     this.updateLineCache()
     this.handleSelectionChange()
+    this.updateCursorPosition()
   }
 
   private handleResize() {
@@ -218,7 +234,7 @@ export class TextEditor extends ClassifiedElement {
     })
   }
 
-  private computeLineHeight(): number {
+  public computeLineHeight(): number {
     if (this.computedLineHeight === null) {
       const tempElement = document.createElement('div')
       tempElement.style.visibility = 'hidden'
@@ -272,4 +288,39 @@ export class TextEditor extends ClassifiedElement {
       this.textareaRef.value.scrollTop = this.lineNumbersRef.value!.scrollTop
     }
   }, 100)
+
+  updateCursorPosition() {
+    // TODO dont use a timeout when scrolling
+    setTimeout(() => {
+      const textarea = this.textareaRef.value!
+      const selectionStart = textarea.selectionStart
+      const text = textarea.value.substring(0, selectionStart)
+      const lines = text.split('\n')
+      const lineNumber = lines.length
+      const columnNumber = lines[lines.length - 1].length
+
+      // Create a temporary span to measure the width of the text up to the cursor
+      const span = document.createElement('span')
+      span.style.position = 'absolute'
+      span.style.whiteSpace = 'pre'
+      span.style.visibility = 'hidden'
+      span.style.font = getComputedStyle(textarea).font // Ensure the span uses the same font properties as the textarea
+      span.textContent = lines[lines.length - 1]
+      document.body.appendChild(span)
+      const textWidth = span.getBoundingClientRect().width
+      document.body.removeChild(span)
+
+      const lineHeight = parseInt(getComputedStyle(textarea).lineHeight, 10)
+
+      // If the cursor is at the start of the line, set the width to 0
+      const adjustedTextWidth = columnNumber === 0 ? 0 : textWidth
+
+      // Adjust the position to align the left part of the div with the cursor
+      this.cursorX = adjustedTextWidth + textarea.offsetLeft - textarea.scrollLeft // Adjust for scrolling
+      this.cursorY = (lineNumber - 1) * lineHeight + textarea.offsetTop - textarea.scrollTop // Adjust for scrolling
+      console.log(this.cursorX, this.cursorY)
+
+      this.requestUpdate()
+    })
+  }
 }
