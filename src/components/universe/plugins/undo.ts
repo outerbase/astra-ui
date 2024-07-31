@@ -1,14 +1,27 @@
-import { customElement, state } from 'lit/decorators.js'
+// Explanation
+// On every `input` event, we push another snapshot of the textfield to the undo stack
+// On `undo`, we skip to the oldest snapshot before there is more than `THRESHOLD` time between them
+// As a result, if you make a series of edits without pausing, they'all all be undone at once
+// However, if you pause for > THRESHOLD (e.g. 500ms), the changes before that pause won't be undone -- unless you trigger this plugin again with Command + Z
+
+import { customElement } from 'lit/decorators.js'
 import UniversePlugin from './base'
 
+type UndoEvent = {
+  text: string
+  selectionStart: number
+  selectionEnd: number
+  timestamp: number
+}
+
+const THRESHOLD = 500
 @customElement('universe-undo-plugin')
 export class UndoPlugin extends UniversePlugin {
-  @state() textBeforeEdit = ''
-  @state() positionStartBeforeEdit = 0
-  @state() positionEndBeforeEdit = 0
-
-  @state() private undoStack: Array<{ text: string; selectionStart: number; selectionEnd: number; timestamp: number }> = []
-  @state() private redoStack: Array<{ text: string; selectionStart: number; selectionEnd: number; timestamp: number }> = []
+  private textBeforeEdit = ''
+  private positionStartBeforeEdit = 0
+  private positionEndBeforeEdit = 0
+  private undoStack: Array<UndoEvent> = []
+  private redoStack: Array<UndoEvent> = []
 
   connectedCallback(): void {
     super.connectedCallback()
@@ -54,7 +67,7 @@ export class UndoPlugin extends UniversePlugin {
       while (
         this.undoStack.length > 0 &&
         oldestState &&
-        oldestState.timestamp - (this.undoStack[this.undoStack.length - 1].timestamp as number) <= 500
+        oldestState.timestamp - (this.undoStack[this.undoStack.length - 1].timestamp as number) <= THRESHOLD
       ) {
         oldestState = this.undoStack.pop()
       }
