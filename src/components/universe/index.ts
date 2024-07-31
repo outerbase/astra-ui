@@ -7,6 +7,7 @@ import * as Prism from 'prismjs'
 import 'prismjs/components/prism-sql'
 
 import { classMap } from 'lit/directives/class-map.js'
+import debounce from 'lodash-es/debounce'
 import { ClassifiedElement } from '../classified-element'
 import SQL_EXAMPLE_TEXT from './sql-text-snippet'
 
@@ -128,13 +129,13 @@ export class TextEditor extends ClassifiedElement {
           <div
             class="px-3 bg-zinc-500/10 text-right text-white/40 select-none flex-none overflow-y-scroll overscroll-contain no-scrollbar"
             @scroll="${() => {
+              // immediately synchronize the displayed code
               if (this.displayedCodeRef.value) {
                 this.displayedCodeRef.value.scrollTop = this.lineNumbersRef.value!.scrollTop
               }
-              // this doesn't appear to be necessary; breaks momentum scrolling on mobile safari
-              // if (this.textareaRef.value) {
-              //   this.textareaRef.value.scrollTop = this.lineNumbersRef.value!.scrollTop
-              // }
+
+              // delayed updating of the textarea's scroll position
+              this.handleScrollEnd()
             }}"
             ${ref(this.lineNumbersRef)}
           >
@@ -271,4 +272,12 @@ export class TextEditor extends ClassifiedElement {
   private handleSelectionChange() {
     setTimeout(() => (this.hasSelectedText = this.textareaRef.value?.selectionEnd !== this.textareaRef.value?.selectionStart))
   }
+
+  // keeping the textarea in sync while scrolling interferes with momentum/smoothness
+  // so we update it when scrolling ends instead
+  private handleScrollEnd = debounce(() => {
+    if (this.textareaRef.value) {
+      this.textareaRef.value.scrollTop = this.lineNumbersRef.value!.scrollTop
+    }
+  }, 100) // Adjust the debounce time as needed
 }
