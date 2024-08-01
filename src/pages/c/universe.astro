@@ -6,6 +6,228 @@ import { HandlebarsPlugin } from '../../components/universe/plugins/handlebars'
 import Layout from '../../layouts/Layout.astro'
 ---
 
+<style>
+  #crazy-theme {
+    --border-color: red;
+
+    --line-number-fg-color: lime;
+    --line-number-bg-color: purple;
+
+    --code-fg-color: yellow;
+    --code-bg-color: black;
+    --active-line-bg-color: pink;
+    --caret-color: purple;
+
+    --keyword-fg-color: blue;
+    --keyword-weight: regular;
+    --keyword-style: normal;
+    --keyword-decoration: overline;
+
+    --punctuation-fg-color: red;
+
+    --operator-style: normal;
+    --operator-weight: regular;
+    --operator-fg-color: red;
+
+    --comment-opacity: 0.4;
+    --comment-fg-color: aqua;
+
+    --boolean-style: regular;
+    --boolean-decoration: overline;
+    --number-style: regular;
+    --number-decoration: overline;
+    --string-style: regular;
+    --string-decoration: overline;
+
+    --border-color: #e11d48;
+  }
+
+  .theme.freedom {
+    /* --border-color: #e11d48; */
+    --line-number-fg-color: #a3a3a3;
+    --line-number-bg-color: #eee;
+    --code-fg-color: #000000;
+    --code-bg-color: #fff;
+    --active-line-bg-color: #f6f8fa;
+    --caret-color: #e11d48;
+    --keyword-fg-color: #1d4ed8;
+    --keyword-weight: normal;
+    --keyword-style: normal;
+    --keyword-decoration: none;
+    --punctuation-fg-color: indigo;
+    --operator-style: normal;
+    --operator-weight: normal;
+    --operator-fg-color: #e11d48;
+    --comment-opacity: 1;
+    --comment-fg-color: #a3a3a3;
+    --boolean-style: normal;
+    --boolean-decoration: none;
+    --number-fg-color: #0000ff;
+    --number-style: normal;
+    --number-decoration: none;
+    --string-fg-color: black;
+    --string-style: normal;
+    --string-decoration: none;
+    --variable-fg-color: #000000;
+    --function-fg-color: #795e26;
+    --invalid-fg-color: #ff0000;
+  }
+
+  .theme.freedom.dark {
+    /* --border-color: #f43f5e; */
+    --line-number-fg-color: #737373;
+    --line-number-bg-color: #000;
+    --code-fg-color: #60a5fa;
+    --code-bg-color: black;
+    --active-line-bg-color: #f6f8fa;
+    --caret-color: #fb7185;
+    --keyword-fg-color: #3b82f6;
+    --keyword-weight: normal;
+    --keyword-style: normal;
+    --keyword-decoration: none;
+    --punctuation-fg-color: indigo;
+    --operator-style: normal;
+    --operator-weight: normal;
+    --operator-fg-color: #fb7185;
+    --comment-opacity: 1;
+    --comment-fg-color: #737373;
+    --boolean-style: normal;
+    --boolean-decoration: none;
+    --number-fg-color: #60a5fa;
+    --number-style: normal;
+    --number-decoration: none;
+    --string-fg-color: white;
+    --string-style: normal;
+    --string-decoration: none;
+    --variable-fg-color: #60a5fa;
+    --function-fg-color: #60a5fa;
+    --invalid-fg-color: #ff0000;
+  }
+
+  .theme.invasion {
+    /* --border-color: #24292e; */
+    --line-number-fg-color: #a3a3a3;
+    --line-number-bg-color: #eee;
+    --code-fg-color: #000000;
+    --code-bg-color: #fff;
+    --active-line-bg-color: #f6f8fa;
+    --caret-color: #24292e;
+    --keyword-fg-color: #7f00ff;
+    --keyword-weight: normal;
+    --keyword-style: normal;
+    --keyword-decoration: none;
+    --punctuation-fg-color: indigo;
+    --operator-style: normal;
+    --operator-weight: normal;
+    --operator-fg-color: #24292e;
+    --comment-opacity: 1;
+    --comment-fg-color: #a3a3a3;
+    --boolean-style: normal;
+    --boolean-decoration: none;
+    --number-fg-color: #0000ff;
+    --number-style: normal;
+    --number-decoration: none;
+    --string-fg-color: #228b22;
+    --string-style: normal;
+    --string-decoration: none;
+    --variable-fg-color: #000000;
+    --function-fg-color: #000000;
+    --invalid-fg-color: ff0000;
+  }
+
+  .theme.invasion.dark {
+    /* --border-color: #f6f8fa; */
+    --line-number-fg-color: #525252;
+    --line-number-bg-color: #000;
+    --code-fg-color: #f8f8f2;
+    --code-bg-color: #000;
+    --active-line-bg-color: #f6f8fa;
+    --caret-color: #f6f8fa;
+    --keyword-fg-color: #bd93f9;
+    --keyword-weight: normal;
+    --keyword-style: normal;
+    --keyword-decoration: none;
+    --punctuation-fg-color: indigo;
+    --operator-style: normal;
+    --operator-weight: normal;
+    --operator-fg-color: #f6f8fa;
+    --comment-opacity: 1;
+    --comment-fg-color: #525252;
+    --boolean-style: normal;
+    --boolean-decoration: none;
+    --number-fg-color: #8be9fd;
+    --number-style: normal;
+    --number-decoration: none;
+    --string-fg-color: #50fa7b;
+    --string-style: normal;
+    --string-decoration: none;
+    --variable-fg-color: #f8f8f2;
+    --function-fg-color: #f8f8f2;
+    --invalid-fg-color: #ff0000;
+  }
+
+  .theme.moondust {
+    --border-color: indigo;
+    --line-number-fg-color: #737373;
+    --line-number-bg-color: #000;
+    --code-fg-color: #111111;
+    --code-bg-color: white;
+    --active-line-bg-color: #f6f8fa;
+    --caret-color: indigo;
+    --keyword-fg-color: #737373;
+    --keyword-weight: normal;
+    --keyword-style: normal;
+    --keyword-decoration: none;
+    --punctuation-fg-color: indigo;
+    --operator-style: normal;
+    --operator-weight: normal;
+    --operator-fg-color: indigo;
+    --comment-opacity: 1;
+    --comment-fg-color: #737373;
+    --boolean-style: normal;
+    --boolean-decoration: none;
+    --number-fg-color: indigo;
+    --number-style: normal;
+    --number-decoration: none;
+    --string-fg-color: #737373;
+    --string-style: normal;
+    --string-decoration: none;
+    --variable-fg-color: #111111;
+    --function-fg-color: #111111;
+    --invalid-fg-color: #ff0000;
+  }
+
+  .theme.moondust.dark {
+    --border-color: indigo;
+    --line-number-fg-color: #737373;
+    --line-number-bg-color: #000;
+    --code-fg-color: indigo;
+    --code-bg-color: #9ca3af;
+    --active-line-bg-color: #f6f8fa;
+    --caret-color: indigo;
+    --keyword-fg-color: black;
+    --keyword-weight: normal;
+    --keyword-style: normal;
+    --keyword-decoration: none;
+    --punctuation-fg-color: indigo;
+    --operator-style: normal;
+    --operator-weight: normal;
+    --operator-fg-color: indigo;
+    --comment-opacity: 1;
+    --comment-fg-color: #737373;
+    --boolean-style: normal;
+    --boolean-decoration: none;
+    --number-fg-color: indigo;
+    --number-style: normal;
+    --number-decoration: none;
+    --string-fg-color: #9ca3af;
+    --string-style: normal;
+    --string-decoration: none;
+    --variable-fg-color: indigo;
+    --function-fg-color: indigo;
+    --invalid-fg-color: #ff0000;
+  }
+</style>
 <div class="flex flex-col gap-4">
   <div>
     <h1><pre>&lt;text-editor wrap /&gt;</pre> .bg-zinc-700</h1>
@@ -68,6 +290,83 @@ import Layout from '../../layouts/Layout.astro'
   <div>
     <h1><pre>&lt;text-editor wrap /&gt;</pre> .bg-red-800</h1>
     <div class="h-[400px] w-full bg-red-800">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div class="theme freedom">
+    <h1>Freedom</h1>
+    <div class="h-[400px] w-full">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div class="theme freedom dark">
+    <h1>Freedom: Dark</h1>
+    <div class="h-[400px] w-full bg-black">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div class="theme invasion">
+    <h1>Invasion</h1>
+    <div class="h-[400px] w-full">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div class="theme invasion dark">
+    <h1>Invasion: Dark</h1>
+    <div class="h-[400px] w-full bg-black">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div class="theme moondust">
+    <h1>moondust</h1>
+    <div class="h-[400px] w-full">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div class="theme moondust dark">
+    <h1>moondust: Dark</h1>
+    <div class="h-[400px] w-full bg-black">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div id="crazy-theme">
+    <h1>nonsense</h1>
+    <div class="h-[400px] w-full bg-black">
       <!-- @ts-ignore attributes -->
       <TextEditor client:only="lit" wrap>
         <KeyboardShortcutsPlugin client:only="lit" />
