@@ -90,6 +90,11 @@ export class KeyboardShortcutsPlugin extends UniversePlugin {
     // Extract the line(s) to be indented
     const lines = text.slice(lineStart, lineEnd).split('\n')
 
+    // Check if there's white space at the beginning of the first line
+    if (!lines[0].startsWith(' ') && indent === 'left') {
+      return // Abort if no white space at the beginning of the line and indenting left
+    }
+
     // Indent or outdent each line
     const modifiedLines = lines.map((line) => {
       if (indent === 'right') {
