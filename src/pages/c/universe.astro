@@ -38,6 +38,7 @@ import Layout from '../../layouts/Layout.astro'
       <TextEditor client:only="lit" wrap>
         <KeyboardShortcutsPlugin client:only="lit" />
         <UndoPlugin client:only="lit" />
+        <HandlebarsPlugin client:only="lit" slot="cursor" />
       </TextEditor>
     </div>
   </div>

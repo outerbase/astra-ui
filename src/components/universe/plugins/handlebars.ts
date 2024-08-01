@@ -41,26 +41,17 @@ export class HandlebarsPlugin extends UniversePlugin {
   }
 
   render() {
-    const lineheight = this.editor!.computeLineHeight() * 2
-    console.log('lineheight', lineheight)
-
-    // const textarea = this.editor!.textareaRef.value!
-
-    // function getCurrentLine() {
-    //   const text = textarea.value.substr(0, textarea.selectionStart)
-    //   return text.split('\n').length - 1
-    // }
-
-    // const lines = textarea.value.split('\n')
-    // const { scrollTop, clientHeight } = textarea
-    // const lineHeight = parseInt(window.getComputedStyle(textarea).lineHeight)
-    // const startIndex = Math.floor(scrollTop / lineHeight)
-    // const endIndex = Math.floor((scrollTop + clientHeight) / lineHeight)
-
-    // const currentLine = getCurrentLine()
-    // console.log(`Current line: ${currentLine + 1}. ` + (currentLine < startIndex || currentLine > endIndex ? 'Off-screen' : 'Visible'))
-
-    // style="margin-top: ${lineheight}px;"
-    return this.isDisplayed ? html`<div class="border border-zinc-500 bg-zinc-300/50 backdrop-blur-sm rounded">😮</div>` : nothing
+    return this.isDisplayed
+      ? html`<div
+          class="border border-zinc-500 bg-zinc-200/60 backdrop-blur-sm rounded flex flex-col items-start overflow-clip text-sm text-zinc-600 w-[120px]"
+        >
+          <span class="text-center w-full py-2 text-xl border-b border-zinc-500">😮</span>
+          <span class="cursor-pointer bg-white/40 hover:bg-white flex-auto w-full p-2 hover:text-black border-b border-zinc-500"
+            >Context</span
+          >
+          <span class="cursor-pointer bg-white/40 hover:bg-white flex-auto w-full p-2 hover:text-black border-b border-zinc-500">Menu</span>
+          <span class="cursor-pointer bg-white/40 hover:bg-white flex-auto w-full p-2 hover:text-black">Items</span>
+        </div>`
+      : nothing
   }
 }

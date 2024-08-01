@@ -103,7 +103,7 @@ export class TextEditor extends ClassifiedElement {
 
   override render() {
     return html`
-      <div class="font-mono flex flex-row border-4 border-transparent w-full h-full">
+      <div class="font-mono flex flex-row border-4 border-transparent w-full h-full relative">
         <!-- positions a div immediately following the cursor; useful for, say, a context menu -->
         <div class="absolute z-10 ml-12" style="top: ${this.cursorY}px; left: ${this.cursorX}px"><slot name="cursor" /></div>
 
@@ -178,8 +178,6 @@ export class TextEditor extends ClassifiedElement {
                 this.updateActiveCodeLine()
                 this.updateCursorPosition()
               }}"
-              @mouseup="${this.updateActiveCodeLine}"
-              @keydown="${this.updateActiveCodeLine}"
               @blur="${() => (this.activeLineNumber = undefined)}"
               @select="${this.handleSelectionChange}"
               ${ref(this.textareaRef)}
@@ -289,37 +287,126 @@ export class TextEditor extends ClassifiedElement {
     }
   }, 100)
 
+  getMonospaceCharWidth(textarea: HTMLElement) {
+    const testChar = 'A'
+    const canvas = document.createElement('canvas')
+    const context = canvas.getContext('2d')!
+    const style = window.getComputedStyle(textarea)
+
+    context.font = `${style.fontSize} ${style.fontFamily}`
+    return context.measureText(testChar).width
+  }
+
+  calculateHeight(text: string, textarea: HTMLElement) {
+    const style = window.getComputedStyle(textarea)
+    const div = document.createElement('div')
+
+    div.style.position = 'absolute'
+    div.style.visibility = 'hidden'
+    div.style.whiteSpace = 'pre-wrap'
+    div.style.wordWrap = this.wordWrap ? 'break-word' : 'normal'
+    div.style.width = this.wordWrap ? `${textarea.clientWidth}px` : 'auto'
+    div.style.font = style.font
+    div.style.lineHeight = style.lineHeight
+    div.textContent = text
+
+    document.body.appendChild(div)
+    const height = div.offsetHeight
+    document.body.removeChild(div)
+
+    return height
+  }
+
+  calculateWrappedLineCount(text: string, textarea: HTMLElement) {
+    const style = window.getComputedStyle(textarea)
+    const div = document.createElement('div')
+
+    div.style.position = 'absolute'
+    div.style.visibility = 'hidden'
+    div.style.whiteSpace = 'pre-wrap'
+    div.style.wordWrap = this.wordWrap ? 'break-word' : 'normal'
+    div.style.width = this.wordWrap ? `${textarea.clientWidth}px` : 'auto'
+    div.style.font = style.font
+    div.style.lineHeight = style.lineHeight
+    div.textContent = text
+
+    document.body.appendChild(div)
+    const lineCount = Math.ceil(div.scrollHeight / parseInt(style.lineHeight))
+    document.body.removeChild(div)
+
+    return lineCount
+  }
+
+  calculateWrappedLineWidth(text: string, textarea: HTMLElement) {
+    const style = window.getComputedStyle(textarea)
+    const div = document.createElement('div')
+
+    div.style.position = 'absolute'
+    div.style.visibility = 'hidden'
+    div.style.whiteSpace = 'pre-wrap'
+    div.style.wordWrap = this.wordWrap ? 'break-word' : 'normal'
+    div.style.width = this.wordWrap ? `${textarea.clientWidth}px` : 'auto'
+    div.style.font = style.font
+    div.style.lineHeight = style.lineHeight
+    div.textContent = text
+
+    document.body.appendChild(div)
+    const width = div.scrollWidth
+    document.body.removeChild(div)
+
+    return width
+  }
+
   updateCursorPosition() {
-    // TODO dont use a timeout when scrolling
+    const textarea = this.textareaRef.value!
+    const characterWidth = this.getMonospaceCharWidth(textarea)
+
     setTimeout(() => {
-      const textarea = this.textareaRef.value!
-      const selectionStart = textarea.selectionStart
-      const text = textarea.value.substring(0, selectionStart)
-      const lines = text.split('\n')
-      const lineNumber = lines.length
-      const columnNumber = lines[lines.length - 1].length
+      const cursorPosition = textarea.selectionStart
+      const textBeforeCursor = textarea.value.substring(0, cursorPosition)
+      const lines = textBeforeCursor.split('\n')
 
-      // Create a temporary span to measure the width of the text up to the cursor
-      const span = document.createElement('span')
-      span.style.position = 'absolute'
-      span.style.whiteSpace = 'pre'
-      span.style.visibility = 'hidden'
-      span.style.font = getComputedStyle(textarea).font // Ensure the span uses the same font properties as the textarea
-      span.textContent = lines[lines.length - 1]
-      document.body.appendChild(span)
-      const textWidth = span.getBoundingClientRect().width
-      document.body.removeChild(span)
+      const lineHeight = 24 // assuming each line has a fixed height of 24px
+      const leftOffset = 0 // assuming a left margin offset of 12px
 
-      const lineHeight = parseInt(getComputedStyle(textarea).lineHeight, 10)
+      let totalLines = 0
 
-      // If the cursor is at the start of the line, set the width to 0
-      const adjustedTextWidth = columnNumber === 0 ? 0 : textWidth
+      // Calculate total number of lines, including wrapped lines
+      lines.forEach((line) => {
+        if (line.length === 0) {
+          totalLines += 1
+        } else {
+          totalLines += this.wordWrap ? this.calculateWrappedLineCount(line, textarea) : 1
+        }
+      })
 
-      // Adjust the position to align the left part of the div with the cursor
-      this.cursorX = adjustedTextWidth + textarea.offsetLeft - textarea.scrollLeft // Adjust for scrolling
-      this.cursorY = (lineNumber - 1) * lineHeight + textarea.offsetTop - textarea.scrollTop // Adjust for scrolling
-      console.log(this.cursorX, this.cursorY)
+      const lastLine = lines[lines.length - 1]
+      const wrappedLineWidth = this.wordWrap ? this.calculateWrappedLineWidth(lastLine, textarea) : 0
+      const charCountInCurrentLine = lastLine.length
 
+      const top = totalLines * lineHeight + 2
+
+      // Calculate the wrapped line x position
+      const visibleWidth = textarea.clientWidth
+      const wrappedLineCount = this.wordWrap ? Math.ceil(wrappedLineWidth / visibleWidth) : 1
+      const lastLineTextWidth = this.wordWrap ? wrappedLineWidth % visibleWidth : 0
+      const isWrappedLine = this.wordWrap && wrappedLineCount > 1
+
+      let left
+      if (isWrappedLine) {
+        const lastWrappedLineText = lastLine.slice(-Math.floor(lastLineTextWidth / characterWidth))
+        left = leftOffset + lastWrappedLineText.length * characterWidth
+      } else {
+        // Handle the first character on the line
+        if (charCountInCurrentLine === 0 || lastLine === '\n') {
+          left = leftOffset
+        } else {
+          left = leftOffset + charCountInCurrentLine * characterWidth
+        }
+      }
+
+      this.cursorY = top - textarea.scrollTop - 3
+      this.cursorX = left - textarea.scrollLeft
       this.requestUpdate()
     })
   }
