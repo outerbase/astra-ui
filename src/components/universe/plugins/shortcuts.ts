@@ -70,7 +70,7 @@ export class KeyboardShortcutsPlugin extends UniversePlugin {
     }
 
     // Cut line (Cmd+X or Ctrl+X)
-    if (event.key === 'x' && (event.metaKey || event.ctrlKey)) {
+    if (event.key === 'x' && (event.metaKey || event.ctrlKey) && !this.editor.hasSelectedText) {
       event.preventDefault()
       this.cutLine()
       this.dispatchInputEvent()

@@ -66,11 +66,11 @@ export class TextEditor extends ClassifiedElement {
   @property({ type: Boolean, attribute: 'wrap' }) wordWrap = false
   @property() text = SQL_EXAMPLE_TEXT
 
+  @state() public hasSelectedText = false
   @state() protected highlightedCode?: DirectiveResult
   @state() protected lines: Array<TemplateResult> = []
   @state() protected activeLineNumber?: number
-  @state() protected hasSelectedText = false
-  @state() private cache: Array<number> = []
+  @state() protected cache: Array<number> = []
 
   private displayedCodeRef: Ref<HTMLElement> = createRef()
   private lineNumbersRef: Ref<HTMLElement> = createRef()
