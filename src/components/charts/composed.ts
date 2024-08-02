@@ -1,6 +1,7 @@
 import { css, html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
+import type { DashboardV3ChartQuery } from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
 import AstraChart from './chart.js'
 
@@ -9,11 +10,6 @@ export default class AstraComposedChart extends AstraChart {
   static override styles = [
     ...ClassifiedElement.styles,
     css`
-      /* #composed-chart-title {
-        font-size: 20px;
-        line-height: 28px;
-      } */
-
       .space-mono-regular {
         font-family: 'Space Mono', monospace;
         font-weight: 400;
@@ -22,31 +18,16 @@ export default class AstraComposedChart extends AstraChart {
     `,
   ]
 
+  // A header to display above the chart.
   @property({ type: String }) header?: string
+  // A subheader to display below the header.
   @property({ type: String }) subheader?: string
-  //   @property({ type: String }) size: 'small' | 'medium' | 'large' = 'large'
+  // Whether to show the highlights section of the chart. Defaults to true.
   @property({ type: Boolean }) showHighlights = true
-  @property({ type: Number }) refresh?: number
-
-  // When `refresh` has changed re render
-  //   public updated(changedProperties: PropertyValueMap<this>): void {
-  //     super.updated(changedProperties)
-
-  //     console.log('Changed Props: ', changedProperties)
-
-  //     if (changedProperties.has('refresh')) {
-  //       this.requestUpdate()
-  //     }
-  //   }
-
-  //   public willUpdate(changedProperties: PropertyValueMap<this>): void {
-  //     super.willUpdate(changedProperties)
-
-  //     if (changedProperties.has('data')) {
-  //       this.header = this.data?.name
-  //       this.subheader = this.data?.description
-  //     }
-  //   }
+  // When presented in a grid layout, indicates how many spaces on the X axis the chart consumes. Between 1 and 4.
+  @property({ type: Number }) sizeX?: number
+  // When presented in a grid layout, indicates how many spaces on the Y axis the chart consumes. Between 1 and 2.
+  @property({ type: Number }) sizeY?: number
 
   public render() {
     // include header when large
@@ -55,7 +36,7 @@ export default class AstraComposedChart extends AstraChart {
         ${this.header || this.subheader
           ? html`
               <div id="header-labels" class="flex flex-col">
-                ${this.header ? html`<h1 class="text-xl font-medium">${this.header}</h1>` : null}
+                ${this.header ? html`<h1 class="text-xl dark:text-neutral-200 text-neutral-800 font-medium">${this.header}</h1>` : null}
                 ${this.subheader ? html`<h2 class="text-md text-neutral-600 dark:text-neutral-400">${this.subheader}</h2>` : null}
               </div>
             `
@@ -65,11 +46,14 @@ export default class AstraComposedChart extends AstraChart {
       </div>
     `
 
+    // For the Highlights section, calculate the various potential values
+    // that can be displayed. This includes the total, average, and percent change.
+    const layer: DashboardV3ChartQuery = this.data?.layers?.[0] ?? {}
     let highlightTotal = 0
     let highlightAverage = 0
 
-    if (this.data?.layers?.length && this.data?.layers?.[0].result) {
-      this.data?.layers?.[0].result?.forEach((row) => {
+    if (layer && layer?.result) {
+      layer?.result?.forEach((row) => {
         // Assume the first yAxisKey is the total and casted as a Number
         const yAxisKey = this.data?.options?.yAxisKeys?.[0] ?? ''
         const rowValue = row[yAxisKey]
@@ -77,36 +61,48 @@ export default class AstraComposedChart extends AstraChart {
         highlightTotal += total
       })
 
-      highlightAverage = highlightTotal / (this.data?.layers?.[0].result?.length ?? 0)
+      highlightAverage = highlightTotal / (layer?.result?.length ?? 0)
     }
 
-    const highlightSection =
-      this.showHighlights && this.data?.highlights?.length
-        ? html`
-            <div id="highlights" class="flex w-full items-center justify-between gap-8 mb-4">
-              ${this.data?.highlights?.map(
-                (callout) => html`
-                  <div class="flex flex-auto flex-col text-xl text-black dark:text-white">
-                    <div class="dark:text-neutral-400 text-neutral-600 capitalize" style="font-size: 14px; line-height: 21px;">
-                      ${callout.replace('_', ' ')}
-                    </div>
-                    ${callout === 'total'
-                      ? html`<div class="space-mono-regular" style="font-size: 30px; margin-top: 6px;">
-                          ${highlightTotal.toLocaleString('en', { useGrouping: true })}
-                        </div>`
-                      : null}
-                    ${callout === 'average'
-                      ? html`<div class="space-mono-regular" style="font-size: 30px; margin-top: 6px;">${highlightAverage.toFixed(2)}</div>`
-                      : null}
-                    ${callout === 'percent_change'
-                      ? html`<div class="space-mono-regular" style="font-size: 30px; margin-top: 6px;">${'??'}%</div>`
-                      : null}
-                  </div>
-                `
-              )}
-            </div>
-          `
-        : null
+    // For small size charts, only show the first two highlights. Show a maximum of 4 highlights for other sizes.
+    const highlightsDisplayed = this.data?.highlights?.slice(0, this.sizeY === 1 ? 2 : 4)
+    let highlightSection = null
+
+    // When the sizeX value is 1 or 2, show the highlights in a grid layout.
+    if (this.showHighlights && highlightsDisplayed?.length) {
+      const classList =
+        this.sizeX === 1 || this.sizeX === 2
+          ? `grid grid-cols-2 gap-8 w-full`
+          : `flex w-full items-center justify-between gap-8 ${layer?.type === 'single_value' ? '' : 'mb-4'}`
+      const styleList = this.sizeX === 1 || this.sizeX === 2 ? `grid-template: auto / auto auto;` : ''
+
+      highlightSection = html`
+        <div id="highlights" class=${classList} style=${styleList}>
+          ${highlightsDisplayed?.map(
+            (callout) => html`
+              <div class="flex flex-auto flex-col text-xl dark:text-neutral-100 text-neutral-900">
+                <div class="dark:text-neutral-400 text-neutral-600 capitalize" style="font-size: 14px; line-height: 20px;">
+                  ${callout.replace('_', ' ')}
+                </div>
+                ${callout === 'total'
+                  ? html`<div class="space-mono-regular" style="font-size: 20px; line-height: 28px; margin-top: 4px;">
+                      ${highlightTotal.toLocaleString('en', { useGrouping: true })}
+                    </div>`
+                  : null}
+                ${callout === 'average'
+                  ? html`<div class="space-mono-regular" style="font-size: 20px; line-height: 28px; margin-top: 4px;">
+                      ${highlightAverage.toFixed(2)}
+                    </div>`
+                  : null}
+                ${callout === 'percent_change'
+                  ? html`<div class="space-mono-regular" style="font-size: 20px; line-height: 28px; margin-top: 4px;">${'??'}%</div>`
+                  : null}
+              </div>
+            `
+          )}
+        </div>
+      `
+    }
 
     // render chart
     const chart = super.render()
@@ -117,9 +113,13 @@ export default class AstraComposedChart extends AstraChart {
       <div class="${classMap({ dark: this.theme === 'dark' })} h-full">
         <div
           id="composed-chart"
-          class="dark:text-neutral-50 text-neutral-950 h-full flex flex-col p-6 gap-4 rounded-lg bg-neutral-100 dark:bg-neutral-925 group/actions"
+          class="dark:text-neutral-100 text-neutral-950 h-full flex flex-col p-5 gap-4 rounded-lg bg-neutral-100 dark:bg-neutral-925 group/actions"
         >
-          ${headerSection} ${highlightSection} ${chartSection}
+          ${layer?.type === 'single_value'
+            ? // Single value charts show the highlights at the bottom of the card
+              html`${headerSection} ${chartSection} ${highlightSection}`
+            : // All other charts show the highlights above the chart rendering
+              html`${headerSection} ${highlightSection} ${chartSection}`}
         </div>
       </div>
     `
