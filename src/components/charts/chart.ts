@@ -129,11 +129,6 @@ export default class AstraChart extends ClassifiedElement {
           animation: 1.5s ease-out 0s drawLine forwards;
         }
 
-        // g[aria-label='area'] {
-        //   opacity: 0;
-        //   transition: 0.4s ease-out;
-        // }
-
         [aria-label='y-axis tick label'],
         [aria-label='y-axis tick'],
         [aria-label='x-axis tick label'],
@@ -350,7 +345,7 @@ export default class AstraChart extends ClassifiedElement {
 
       const options = this.data?.options
       if (options) {
-        this.legend = options.legend
+        // this.legend = options.legend
         this.axisLabelX = options.xAxisLabel
         this.axisLabelY = options.yAxisLabel
         this.keyX = options.xAxisKey
@@ -393,10 +388,10 @@ export default class AstraChart extends ClassifiedElement {
       color: {
         type: this.colorType,
         scheme: this.colorScheme,
-        legend: this.legend,
+        // legend: this.legend,
         // range: afterburnValues // TODO: If multiple series exists, pass the array of color RGB values from dashboard.next
       },
-      symbol: { legend: this.legend },
+      //   symbol: { legend: this.legend },
 
       // Marks option: https://observablehq.com/plot/features/plots#marks-option
       marks: [],
@@ -425,6 +420,15 @@ export default class AstraChart extends ClassifiedElement {
           tip,
         })
       )
+
+      const truncate = (str: string, maxLength: number) => (str.length > maxLength ? str.substring(0, maxLength) + '...' : str)
+
+      options.y = {
+        ...options.y,
+        tickFormat: (d: any) => truncate(d, 6),
+      }
+
+      options.marginLeft = 50
     }
 
     // TYPE: COLUMN
@@ -517,7 +521,7 @@ export default class AstraChart extends ClassifiedElement {
         options.color = {
           domain: legendValues,
           range: legendColors,
-          legend: true,
+          //   legend: true,
         }
       } else {
         options.marks.push(
@@ -544,7 +548,7 @@ export default class AstraChart extends ClassifiedElement {
       // default to `nice` less explicitly set to false
       if (this.niceY !== false) this.niceY = true
 
-      options.color.legend = true
+      //   options.color.legend = true
       //   options.color.scheme = 'purples'
     }
 
@@ -639,13 +643,19 @@ export default class AstraChart extends ClassifiedElement {
     } else if (this.type === 'single_value') {
       const firstRecord = this.data?.layers?.[0].result?.[0]
       const firstRecordValue = firstRecord ? firstRecord[this.keyX ?? ''] : ''
-      plot = html`<astra-text variant="h1">${firstRecordValue}</astra-text>`
+      const style = this.sizeX === 1 && this.sizeY === 1 ? 'font-size: 30px; line-height: 36px;' : 'font-size: 60px; line-height: 68px;'
+      plot = html`<div
+        style=${`font-family: Inter, sans-serif; ${style}`}
+        class=${`${this.theme === 'dark' ? 'text-neutral-50' : 'text-neutral-950'} font-bold`}
+      >
+        ${firstRecordValue}
+      </div>`
     } else if (this.type === 'text') {
       plot = html`<astra-text variant="h1">text</astra-text>`
     } else plot = this.getLatestPlot()
 
     const decoratedPlot = html`<div
-      class=${`${this.type === 'table' ? `${this.theme === 'dark' ? '!bg-black' : '!bg-white'}` : ''} selection:bg-violet-500/20 text-zinc-400 dark:text-zinc-600 h-full`}
+      class=${`${this.type === 'table' ? `${this.theme === 'dark' ? '!bg-black' : '!bg-white'}` : ''} selection:bg-violet-500/20 text-zinc-400 dark:text-zinc-600 h-full flex items-end`}
     >
       ${plot}
     </div>`
