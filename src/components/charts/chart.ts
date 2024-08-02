@@ -1,5 +1,5 @@
 import { areaY, barX, barY, dot, gridX, gridY, lineY, plot } from '@observablehq/plot'
-import { max, min, utcDay, utcMonth } from 'd3'
+import { max, min, utcMonth } from 'd3'
 import { css, html, type PropertyValueMap } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
@@ -47,11 +47,13 @@ const gradients = [
   ]),
 ]
 
-const iridiumValues = ['#87E9C0', '#B9D975', '#C9D69B']
-const celestialValues = ['#D1FFFF', '#93FDFF', '#1A9EF5']
-const cobaltValues = ['#5956E2', '#A99AFF', '#82DBFF']
-const afterburnValues = ['#E75F98', '#FFA285', '#CCB8F2']
-const mercuryValues = ['#ffffff', '#747474', '#000']
+// const iridiumValues = ['#87E9C0', '#B9D975', '#C9D69B']
+// const celestialValues = ['#D1FFFF', '#93FDFF', '#1A9EF5']
+// const cobaltValues = ['#5956E2', '#A99AFF', '#82DBFF']
+// const afterburnValues = ['#E75F98', '#FFA285', '#CCB8F2']
+
+const mercuryValuesDark = ['#ffffff', '#747474', '#000']
+const mercuryValuesLight = ['#000', '#747474', '#ffffff']
 
 @customElement('astra-chart')
 export default class AstraChart extends ClassifiedElement {
@@ -269,17 +271,17 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: Boolean }) percent?: boolean // if true, transform proportions in [0, 1] to percents in [0, 100]
   // TODO does percent apply to `x` or `y`?
 
+  @property({ type: Array }) colorValues = this.theme === 'dark' ? mercuryValuesDark : mercuryValuesLight
+
   private convertDataIntoCastedData(data: DashboardV3Chart | undefined): DashboardV3Chart | undefined {
     let temp: any = JSON.parse(JSON.stringify(data))
 
     // For each temp.layers castData
-    temp.layers.forEach((layer: any) => {
+    temp.layers?.forEach((layer: any) => {
       layer.result = this.castData(layer.result)
     })
 
     return temp
-    //   temp.layers[0].result = this.castData(this.data?.layers?.[0].result ?? [])
-    //   this.data = temp
   }
 
   private castData(data: Row[]): Row[] {
@@ -314,6 +316,11 @@ export default class AstraChart extends ClassifiedElement {
           this.data = await AstraChart.getChartData(this.apiKey, this.chartId)
         }
       })()
+    }
+
+    if (changedProperties.has('theme')) {
+      this.colorValues = this.theme === 'dark' ? mercuryValuesDark : mercuryValuesLight
+      this.render()
     }
 
     if (changedProperties.has('data')) {
@@ -398,10 +405,11 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     const tip = {
-      fill: this.theme === 'dark' ? '#171717' : '#FFFFFF',
-      stroke: this.theme === 'dark' ? '#262626' : '#e5e5e5',
+      fill: this.theme === 'dark' ? '#121212' : '#FFFFFF',
+      stroke: this.theme === 'dark' ? '#303032' : '#e5e5e5',
       textPadding: 10,
       lineHeight: 1.5,
+      color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
     }
 
     // TYPE: BAR
@@ -417,6 +425,7 @@ export default class AstraChart extends ClassifiedElement {
           y: this.keyY,
           // stroke: this.keyX,
           // fill: 'url(#teal)',
+          fill: this.colorValues[0],
           tip,
         })
       )
@@ -465,7 +474,7 @@ export default class AstraChart extends ClassifiedElement {
 
         options.x = {
           ...options.x,
-          interval: isXAxisKeyDate ? utcDay.every(1) : undefined,
+          //   interval: isXAxisKeyDate ? utcDay.every(1) : undefined,
           tickValues: isXAxisKeyDate ? tickValues : undefined,
         }
       } else {
@@ -481,7 +490,8 @@ export default class AstraChart extends ClassifiedElement {
           x: this.keyX,
           y: this.keyY,
           //   stroke: this.groupBy,
-          fill: 'url(#mercury)',
+          //   fill: 'url(#mercury)',
+          fill: this.colorValues[0],
           inset: 0.5,
           tip,
           sort,
@@ -503,7 +513,7 @@ export default class AstraChart extends ClassifiedElement {
         let legendValues: any[] = []
 
         this.data?.options?.yAxisKeys?.forEach((key, index) => {
-          const desiredColor = this.data?.options?.yAxisKeyColors?.[key] ?? iridiumValues[index % iridiumValues.length]
+          const desiredColor = this.data?.options?.yAxisKeyColors?.[key] ?? this.colorValues[index % this.colorValues.length]
 
           legendColors.push(desiredColor)
           legendValues.push(key)
@@ -513,6 +523,7 @@ export default class AstraChart extends ClassifiedElement {
               x: this.keyX,
               y: key,
               stroke: desiredColor,
+              // TODO: Custom tooltip that shows all line values in one box instead of N boxes?
               tip,
             })
           )
@@ -524,14 +535,19 @@ export default class AstraChart extends ClassifiedElement {
           //   legend: true,
         }
       } else {
+        const group = this.data?.options?.groupBy ?? this.groupBy
         options.marks.push(
           lineY(d, {
             x: this.keyX,
             y: this.keyY,
-            stroke: this.data?.options?.groupBy ?? this.groupBy,
+            stroke: group ? group : this.colorValues[0],
             tip,
           })
         )
+
+        options.color = {
+          range: this.colorValues,
+        }
       }
 
       // This shows a legend at the top if defined.
@@ -547,9 +563,6 @@ export default class AstraChart extends ClassifiedElement {
 
       // default to `nice` less explicitly set to false
       if (this.niceY !== false) this.niceY = true
-
-      //   options.color.legend = true
-      //   options.color.scheme = 'purples'
     }
 
     if (this.type === 'scatter') {
@@ -557,6 +570,7 @@ export default class AstraChart extends ClassifiedElement {
         dot(d, {
           x: this.keyX,
           y: this.keyY,
+          stroke: this.colorValues[0],
           tip,
         })
       )
@@ -567,14 +581,16 @@ export default class AstraChart extends ClassifiedElement {
         lineY(d, {
           x: this.keyX,
           y: this.keyY,
-          stroke: (this.data?.options?.yAxisKeys ?? []).length > 1 ? afterburnValues : 'url(#mercury)',
+          //   stroke: (this.data?.options?.yAxisKeys ?? []).length > 1 ? afterburnValues : 'url(#mercury)',
+          stroke: this.colorValues[0],
           tip,
         }),
 
         areaY(d, {
           x: this.keyX,
           y2: this.keyY,
-          fill: 'url(#mercury)',
+          //   fill: 'url(#mercury)',
+          fill: this.colorValues[1],
           fillOpacity: 0.1,
         })
       )
@@ -646,7 +662,7 @@ export default class AstraChart extends ClassifiedElement {
       const style = this.sizeX === 1 && this.sizeY === 1 ? 'font-size: 30px; line-height: 36px;' : 'font-size: 60px; line-height: 68px;'
       plot = html`<div
         style=${`font-family: Inter, sans-serif; ${style}`}
-        class=${`${this.theme === 'dark' ? 'text-neutral-50' : 'text-neutral-950'} font-bold`}
+        class=${`${this.theme === 'dark' ? 'text-neutral-50' : 'text-neutral-950'} font-bold truncate`}
       >
         ${firstRecordValue}
       </div>`

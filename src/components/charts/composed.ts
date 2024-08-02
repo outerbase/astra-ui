@@ -65,7 +65,7 @@ export default class AstraComposedChart extends AstraChart {
     }
 
     // For small size charts, only show the first two highlights. Show a maximum of 4 highlights for other sizes.
-    const highlightsDisplayed = this.data?.highlights?.slice(0, this.sizeY === 1 ? 2 : 4)
+    const highlightsDisplayed = this.data?.highlights?.slice(0, this.sizeY === 1 && this.sizeX !== 4 ? 2 : 4)
     let highlightSection = null
 
     // When the sizeX value is 1 or 2, show the highlights in a grid layout.
