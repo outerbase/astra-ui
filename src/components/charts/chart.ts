@@ -1,5 +1,5 @@
 import { areaY, barX, barY, dot, gridX, gridY, lineY, plot } from '@observablehq/plot'
-import { max, min, utcMonth } from 'd3'
+import { max, min, timeDay, utcDay, utcMinute, utcMonth, utcWeek, utcYear } from 'd3'
 import { css, html, type PropertyValueMap } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
@@ -329,26 +329,7 @@ export default class AstraChart extends ClassifiedElement {
       this.highlights = this.data?.highlights
       // this.apiKey = this.data?.apiKey // <-- this will switch from using passed-in data to making API requests
 
-      //////////// BRAYDEN PLEASE HELP ME
-      ////////////
-      //   let newArray: Row[] = []
-      //   this.data?.layers?.[0].result?.forEach((r) => {
-      //     const day: string = r['day'] as string
-      //     // console.log('Day: ', new Date(day))
-      //     newArray.push({ day: new Date(day), total_users: Number(r['total_users']) })
-      //   })
-
-      //   let temp: any = JSON.parse(JSON.stringify(this.data))
-      //   temp.layers[0].result = newArray
-      //   this.data = temp
-
-      //   let temp: any = JSON.parse(JSON.stringify(this.data))
-      //   temp.layers[0].result = this.castData(this.data?.layers?.[0].result ?? [])
-      //   this.data = temp
-
       this.data = this.convertDataIntoCastedData(this.data)
-      ////////////
-      ////////////
 
       const options = this.data?.options
       if (options) {
@@ -361,6 +342,24 @@ export default class AstraChart extends ClassifiedElement {
         // this.percent = options.percentage
         // TODO xAxisLabelDisplay, yAxisLabelDisplay, groupBy
       }
+    }
+  }
+
+  private determineInterval(dates: Date[]) {
+    const minDate = dates.length > 0 ? dates[0] : new Date() //min(dates) ?? new Date()
+    const maxDate = dates.length > 1 ? dates[1] : new Date() //max(dates) ?? new Date()
+    const diffDays = timeDay.count(minDate, maxDate)
+
+    if (diffDays < 1) {
+      return utcMinute.every(1)
+    } else if (diffDays <= 7) {
+      return utcDay.every(1)
+    } else if (diffDays <= 30) {
+      return utcWeek.every(1)
+    } else if (diffDays <= 365) {
+      return utcMonth.every(1)
+    } else {
+      return utcYear.every(1)
     }
   }
 
@@ -450,18 +449,15 @@ export default class AstraChart extends ClassifiedElement {
 
       // Loop through every item in the data layers [0].result and check if the data is a date
       const tempKeyX: string = this.keyX ?? ''
-      const newArray: Date[] =
-        this.data?.layers?.[0].result
-          ?.map((r: Record<string, any>) => {
-            const isDate = !isNaN(Date.parse(r[tempKeyX]))
+      const newArray: any[] | undefined = this.data?.layers?.[0].result?.map((r: Record<string, any>) => {
+        const isDate = !isNaN(Date.parse(r[tempKeyX]))
 
-            if (isDate) return new Date(r[tempKeyX])
-            return undefined
-          })
-          .filter((r): r is Date => r !== undefined) ?? []
+        if (isDate) return new Date(r[tempKeyX])
+        return undefined
+      })
 
       // Is the data in the xAxisKey a date?
-      const isXAxisKeyDate = newArray.length && newArray.every((d) => d instanceof Date)
+      const isXAxisKeyDate = newArray?.length && newArray.every((d) => d instanceof Date)
 
       if (isXAxisKeyDate) {
         const startDate = min(newArray)
@@ -472,9 +468,11 @@ export default class AstraChart extends ClassifiedElement {
           tickValues = utcMonth.range(startDate, endDate)
         }
 
+        const interval = isXAxisKeyDate ? this.determineInterval(newArray) : undefined
+
         options.x = {
           ...options.x,
-          //   interval: isXAxisKeyDate ? utcDay.every(1) : undefined,
+          interval: interval,
           tickValues: isXAxisKeyDate ? tickValues : undefined,
         }
       } else {
@@ -485,10 +483,12 @@ export default class AstraChart extends ClassifiedElement {
         }
       }
 
+      const minWidth = 1
       options.marks.push(
         barY(d, {
           x: this.keyX,
           y: this.keyY,
+          //   width: Math.max(minWidth, 1),
           //   stroke: this.groupBy,
           //   fill: 'url(#mercury)',
           fill: this.colorValues[0],
@@ -667,11 +667,12 @@ export default class AstraChart extends ClassifiedElement {
         ${firstRecordValue}
       </div>`
     } else if (this.type === 'text') {
-      plot = html`<astra-text variant="h1">text</astra-text>`
+      let variant = 'p'
+      plot = html`<astra-text variant=${variant}>${this.data?.options?.text}</astra-text>`
     } else plot = this.getLatestPlot()
 
     const decoratedPlot = html`<div
-      class=${`${this.type === 'table' ? `${this.theme === 'dark' ? '!bg-black' : '!bg-white'}` : ''} selection:bg-violet-500/20 text-zinc-400 dark:text-zinc-600 h-full flex items-end`}
+      class=${`${this.type === 'table' ? `${this.theme === 'dark' ? '!bg-black' : '!bg-white'}` : ''} flex-col h-full flex`}
     >
       ${plot}
     </div>`

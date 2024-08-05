@@ -348,6 +348,8 @@ export type DashboardV3ChartOptions = {
   groupBy?: string
   // indicate that we're using % values
   percentage?: boolean
+  // Text to display for text charts only
+  text?: string
 }
 
 export type DashboardV3Highlight = {
@@ -365,13 +367,11 @@ export type DashboardV3Chart = {
   apiKey: string
   // Array of queries that are used to render various charts on the widget
   layers: Array<DashboardV3ChartQuery>
-  // callouts
-  // callouts?: Array<DashboardV3Callout>
+  // Highlights to display on the chart, accessories to the main chart
   highlights?: Array<DashboardV3HighlightType>
   // Chart options
   options: DashboardV3ChartOptions
-
-  params?: {}
+  // The type of chart to render
   type?: ChartTypeV3
 }
 
