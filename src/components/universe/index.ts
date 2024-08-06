@@ -16,7 +16,26 @@ export class TextEditor extends ClassifiedElement {
   static styles = [
     ...ClassifiedElement.styles,
     css`
-      :host {
+      #container {
+        border-color: var(--border-color, transparent);
+      }
+
+      #line-numbers {
+        color: var(--line-number-fg-color, rgb(255 255 255 / 0.4));
+        background-color: var(--line-number-bg-color, rgb(113 113 122 / 0.1));
+      }
+
+      #displayed-code {
+        color: var(--code-fg-color, rgb(255 255 255 / 0.8));
+        background-color: var(--code-bg-color, rgb(244 244 245 / 0.1));
+      }
+
+      .active-line {
+        background-color: var(--active-line-bg-color, rgb(255 255 255 / 0.2));
+      }
+
+      textarea {
+        caret-color: var(--caret-color, #a3e635);
       }
 
       .no-scrollbar::-webkit-scrollbar {
@@ -30,33 +49,50 @@ export class TextEditor extends ClassifiedElement {
     `,
     css`
       .keyword {
-        color: white;
-        font-weight: bold;
-        // font-style: italic;
-        // text-decoration: underline;
+        color: var(--keyword-fg-color, white);
+        font-weight: var(--keyword-weight, bold);
+        font-style: var(--keyword-style, italic);
+        text-decoration: var(--keyword-decoration, underline);
       }
 
       .punctuation {
-        color: white;
+        color: var(--punctuation-fg-color, white);
       }
 
       .operator {
-        // font-style: italic;
-        font-weight: bold;
-        color: white;
+        font-style: var(--operator-style, italic);
+        font-weight: var(--operator-weight, bold);
+        color: var(--operator-fg-color, white);
       }
 
       .comment {
         font-style: italic;
-        // color: aqua;
-        opacity: 0.2;
+        color: var(--comment-fg-color, inherit);
+        opacity: var(--comment-opacity, 0.2);
       }
 
-      .boolean,
-      .number,
+      .boolean {
+        text-decoration: var(--boolean-decoration, underline);
+        font-style: var(--boolean-style, italic);
+      }
+      .number {
+        color: var(--number-fg-color, inherit);
+        text-decoration: var(--number-decoration, underline);
+        font-style: var(--number-style, italic);
+      }
       .string {
-        // text-decoration: underline;
-        font-style: italic;
+        color: var(--string-fg-color, inherit);
+        text-decoration: var(--string-decoration, underline);
+        font-style: var(--string-style, italic);
+      }
+      .variable {
+        color: var(--variable-fg-color, inherit);
+      }
+      .function {
+        color: var(--function-fg-color, inherit);
+      }
+      .invalid {
+        color: var(--invalid-fg-color, inherit);
       }
     `,
   ]
@@ -65,6 +101,8 @@ export class TextEditor extends ClassifiedElement {
 
   @property({ type: Boolean, attribute: 'wrap' }) wordWrap = false
   @property() text = SQL_EXAMPLE_TEXT
+  @state() cursorX = 0
+  @state() cursorY = 0
 
   @state() public hasSelectedText = false
   @state() protected highlightedCode?: DirectiveResult
@@ -101,12 +139,15 @@ export class TextEditor extends ClassifiedElement {
 
   override render() {
     return html`
-      <div class="font-mono flex flex-row border-4 border-transparent w-full h-full">
+      <div id="container" class="font-mono flex flex-row border-4 w-full h-full relative">
+        <!-- positions a div immediately following the cursor; useful for, say, a context menu -->
+        <div class="absolute z-10 ml-12" style="top: ${this.cursorY}px; left: ${this.cursorX}px"><slot name="cursor" /></div>
+
         <div class="flex flex-none h-full w-full no-scrollbar">
           <!-- line numbers  -->
           <div
             id="line-numbers"
-            class="px-3 bg-zinc-500/10 text-right text-white/40 select-none flex-none overflow-y-scroll overscroll-contain no-scrollbar"
+            class="px-3 text-right select-none flex-none overflow-y-scroll overscroll-contain no-scrollbar"
             @scroll="${() => {
               // immediately synchronize the displayed code
               if (this.displayedCodeRef.value) {
@@ -124,7 +165,7 @@ export class TextEditor extends ClassifiedElement {
           <div ${ref(this.scrollerRef)} class="relative h-full w-full cursor-text ml-1">
             <div
               id="displayed-code"
-              class="top-0 bottom-0 left-0 right-0 absolute text-white/80 select-none overflow-scroll overscroll-contain no-scrollbar"
+              class="top-0 bottom-0 left-0 right-0 absolute  select-none overflow-scroll overscroll-contain no-scrollbar"
               ${ref(this.displayedCodeRef)}
             >
               ${this.lines.map(
@@ -134,7 +175,7 @@ export class TextEditor extends ClassifiedElement {
                       ${classMap({
                       'whitespace-break-spaces': this.wordWrap,
                       'whitespace-pre': !this.wordWrap,
-                      'bg-white/20': this.activeLineNumber === index + 1 && !this.hasSelectedText,
+                      'active-line': this.activeLineNumber === index + 1 && !this.hasSelectedText,
                     })}
                       "
                     id="line-${index + 1}"
@@ -147,7 +188,7 @@ export class TextEditor extends ClassifiedElement {
             <textarea
               autocorrect="off"
               spellcheck="false"
-              class="resize-none top-0 pt-[3px] bottom-0 left-0 right-0 absolute focus:outline-none no-scrollbar caret-lime-400 bg-zinc-100/10 text-transparent ${classMap(
+              class="resize-none top-0 pt-[3px] bottom-0 left-0 right-0 absolute focus:outline-none no-scrollbar bg-transparent text-transparent ${classMap(
                 {
                   'whitespace-pre': !this.wordWrap,
                 }
@@ -162,9 +203,17 @@ export class TextEditor extends ClassifiedElement {
                   this.displayedCodeRef.value.scrollTop = this.textareaRef.value!.scrollTop // this doesn't appear to be necessary and seems to reduce the smoothness of momentum scrolling
                   this.displayedCodeRef.value.scrollLeft = this.textareaRef.value!.scrollLeft
                 }
+
+                this.updateCursorPosition()
               }}"
-              @mouseup="${this.updateActiveCodeLine}"
-              @keydown="${this.updateActiveCodeLine}"
+              @mouseup="${() => {
+                this.updateActiveCodeLine()
+                this.updateCursorPosition()
+              }}"
+              @keydown="${() => {
+                this.updateActiveCodeLine()
+                this.updateCursorPosition()
+              }}"
               @blur="${() => (this.activeLineNumber = undefined)}"
               @select="${this.handleSelectionChange}"
               ${ref(this.textareaRef)}
@@ -202,6 +251,7 @@ export class TextEditor extends ClassifiedElement {
     this.text = textarea.value
     this.updateLineCache()
     this.handleSelectionChange()
+    this.updateCursorPosition()
   }
 
   private handleResize() {
@@ -218,7 +268,7 @@ export class TextEditor extends ClassifiedElement {
     })
   }
 
-  private computeLineHeight(): number {
+  public computeLineHeight(): number {
     if (this.computedLineHeight === null) {
       const tempElement = document.createElement('div')
       tempElement.style.visibility = 'hidden'
@@ -249,11 +299,7 @@ export class TextEditor extends ClassifiedElement {
       const currentLineHeight = this.cache[idx] ?? singleLineHeight
       const wrappedLines = Math.max(Math.ceil(currentLineHeight / singleLineHeight), 1)
       for (let i = 0; i < wrappedLines; i++) {
-        lineNumbers.push(
-          html`<div class="h-[${singleLineHeight}px] leading-[${singleLineHeight}px] ${i > 0 ? 'text-zinc-300/30' : ''}">
-            ${i === 0 ? lineNumber : '.'}
-          </div>`
-        )
+        lineNumbers.push(html`<div class="h-[${singleLineHeight}px] leading-[${singleLineHeight}px]">${i === 0 ? lineNumber : '.'}</div>`)
       }
       lineNumber++
     })
@@ -272,4 +318,128 @@ export class TextEditor extends ClassifiedElement {
       this.textareaRef.value.scrollTop = this.lineNumbersRef.value!.scrollTop
     }
   }, 100)
+
+  getMonospaceCharWidth(textarea: HTMLElement) {
+    const testChar = 'A'
+    const canvas = document.createElement('canvas')
+    const context = canvas.getContext('2d')!
+    const style = window.getComputedStyle(textarea)
+
+    context.font = `${style.fontSize} ${style.fontFamily}`
+    return context.measureText(testChar).width
+  }
+
+  calculateHeight(text: string, textarea: HTMLElement) {
+    const style = window.getComputedStyle(textarea)
+    const div = document.createElement('div')
+
+    div.style.position = 'absolute'
+    div.style.visibility = 'hidden'
+    div.style.whiteSpace = 'pre-wrap'
+    div.style.wordWrap = this.wordWrap ? 'break-word' : 'normal'
+    div.style.width = this.wordWrap ? `${textarea.clientWidth}px` : 'auto'
+    div.style.font = style.font
+    div.style.lineHeight = style.lineHeight
+    div.textContent = text
+
+    document.body.appendChild(div)
+    const height = div.offsetHeight
+    document.body.removeChild(div)
+
+    return height
+  }
+
+  calculateWrappedLineCount(text: string, textarea: HTMLElement) {
+    const style = window.getComputedStyle(textarea)
+    const div = document.createElement('div')
+
+    div.style.position = 'absolute'
+    div.style.visibility = 'hidden'
+    div.style.whiteSpace = 'pre-wrap'
+    div.style.wordWrap = this.wordWrap ? 'break-word' : 'normal'
+    div.style.width = this.wordWrap ? `${textarea.clientWidth}px` : 'auto'
+    div.style.font = style.font
+    div.style.lineHeight = style.lineHeight
+    div.textContent = text
+
+    document.body.appendChild(div)
+    const lineCount = Math.ceil(div.scrollHeight / parseInt(style.lineHeight))
+    document.body.removeChild(div)
+
+    return lineCount
+  }
+
+  calculateWrappedLineWidth(text: string, textarea: HTMLElement) {
+    const style = window.getComputedStyle(textarea)
+    const div = document.createElement('div')
+
+    div.style.position = 'absolute'
+    div.style.visibility = 'hidden'
+    div.style.whiteSpace = 'pre-wrap'
+    div.style.wordWrap = this.wordWrap ? 'break-word' : 'normal'
+    div.style.width = this.wordWrap ? `${textarea.clientWidth}px` : 'auto'
+    div.style.font = style.font
+    div.style.lineHeight = style.lineHeight
+    div.textContent = text
+
+    document.body.appendChild(div)
+    const width = div.scrollWidth
+    document.body.removeChild(div)
+
+    return width
+  }
+
+  updateCursorPosition() {
+    const textarea = this.textareaRef.value!
+    const characterWidth = this.getMonospaceCharWidth(textarea)
+
+    setTimeout(() => {
+      const cursorPosition = textarea.selectionStart
+      const textBeforeCursor = textarea.value.substring(0, cursorPosition)
+      const lines = textBeforeCursor.split('\n')
+
+      const lineHeight = 24 // assuming each line has a fixed height of 24px
+      const leftOffset = 0 // assuming a left margin offset of 12px
+
+      let totalLines = 0
+
+      // Calculate total number of lines, including wrapped lines
+      lines.forEach((line) => {
+        if (line.length === 0) {
+          totalLines += 1
+        } else {
+          totalLines += this.wordWrap ? this.calculateWrappedLineCount(line, textarea) : 1
+        }
+      })
+
+      const lastLine = lines[lines.length - 1]
+      const wrappedLineWidth = this.wordWrap ? this.calculateWrappedLineWidth(lastLine, textarea) : 0
+      const charCountInCurrentLine = lastLine.length
+
+      const top = totalLines * lineHeight + 2
+
+      // Calculate the wrapped line x position
+      const visibleWidth = textarea.clientWidth
+      const wrappedLineCount = this.wordWrap ? Math.ceil(wrappedLineWidth / visibleWidth) : 1
+      const lastLineTextWidth = this.wordWrap ? wrappedLineWidth % visibleWidth : 0
+      const isWrappedLine = this.wordWrap && wrappedLineCount > 1
+
+      let left
+      if (isWrappedLine) {
+        const lastWrappedLineText = lastLine.slice(-Math.floor(lastLineTextWidth / characterWidth))
+        left = leftOffset + lastWrappedLineText.length * characterWidth
+      } else {
+        // Handle the first character on the line
+        if (charCountInCurrentLine === 0 || lastLine === '\n') {
+          left = leftOffset
+        } else {
+          left = leftOffset + charCountInCurrentLine * characterWidth
+        }
+      }
+
+      this.cursorY = top - textarea.scrollTop - 3
+      this.cursorX = left - textarea.scrollLeft
+      this.requestUpdate()
+    })
+  }
 }

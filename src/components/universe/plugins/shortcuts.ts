@@ -36,35 +36,36 @@ export class KeyboardShortcutsPlugin extends UniversePlugin {
       this.dispatchInputEvent()
     }
 
-    // inserting tabs
-    if (event.code === 'Tab') {
-      event.preventDefault()
-      this.insertTabAtSelection()
-      this.dispatchInputEvent()
-    }
-
-    // INDENT (Cmd+[ or Ctrl+[)
-    if (event.key === '[' && (event.metaKey || event.ctrlKey)) {
+    // indent (Cmd+[ or Ctrl+[)
+    else if (event.key === '[' && (event.metaKey || event.ctrlKey)) {
       event.preventDefault()
       this.indentLine('left')
       this.dispatchInputEvent()
     }
 
-    // OUTDENT (Cmd+] or Ctrl+])
-    if (event.key === ']' && (event.metaKey || event.ctrlKey)) {
+    // outdent (Cmd+] or Ctrl+])
+    else if (event.key === ']' && (event.metaKey || event.ctrlKey)) {
       event.preventDefault()
       this.indentLine('right')
       this.dispatchInputEvent()
     }
 
-    if (event.key === 'Tab' && event.shiftKey) {
+    // outdent (Shift+Tab)
+    else if (event.key === 'Tab' && event.shiftKey) {
       event.preventDefault()
       this.indentLine('left')
       this.dispatchInputEvent()
     }
 
-    // Submit (Cmd+Enter or Ctrl+Enter)
-    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+    // insert tab
+    else if (event.code === 'Tab') {
+      event.preventDefault()
+      this.insertTabAtSelection()
+      this.dispatchInputEvent()
+    }
+
+    // submit (Cmd+Enter or Ctrl+Enter)
+    else if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
       event.preventDefault()
       this.dispatchEvent(new CustomEvent('universe:submit', { detail: { text: this.editor.text }, bubbles: true, composed: true }))
     }
@@ -89,6 +90,11 @@ export class KeyboardShortcutsPlugin extends UniversePlugin {
 
     // Extract the line(s) to be indented
     const lines = text.slice(lineStart, lineEnd).split('\n')
+
+    // Check if there's white space at the beginning of the first line
+    if (!lines[0].startsWith(' ') && indent === 'left') {
+      return // Abort if no white space at the beginning of the line and indenting left
+    }
 
     // Indent or outdent each line
     const modifiedLines = lines.map((line) => {
