@@ -235,16 +235,12 @@ export class TableData extends MutableElement {
         (this.separateCells && this.isLastColumn && this.outerBorder) || // include last column when outerBorder
         (this.separateCells && !this.isLastColumn), // internal cell walls
       'first:border-l': this.separateCells && this.outerBorder, // left/right borders when the `separate-cells` attribute is set
-      'border-b': this.withBottomBorder, // bottom border when the `with-bottom-border` attribute is set
+      'border-b': !this.isLastRow, // bottom border unless last row
     }
   }
 
   @property({ attribute: 'plugin-attributes', type: String })
   public pluginAttributes: String = ''
-
-  // allows, for example, <astra-td bottom-border="true" />
-  @property({ type: Boolean, attribute: 'bottom-border' })
-  public withBottomBorder: boolean = false
 
   @property({ type: Boolean, attribute: 'odd' })
   public isOdd?: boolean
