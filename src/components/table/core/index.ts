@@ -500,7 +500,6 @@ export default class AstraTable extends ClassifiedElement {
     // ensure that `this.rowHeight` is correct
     // measure the height of each row
     const elem = document.createElement('astra-td') as TableData
-    elem.withBottomBorder = true
     elem.outerBorder = this.outerBorder
     elem.isInteractive = true
 
