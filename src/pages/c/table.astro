@@ -17,14 +17,27 @@ const rows = spaceballs
 const columns = Object.keys(rows[0].values).map((name) => ({ name }))
 ---
 
+<style>
+  #blurred-table {
+    --astra-table-content-color: rgb(255, 255, 255);
+    --astra-table-border-color: rgba(255, 255, 255, 0.1);
+    --astra-table-column-header-background-color: rgba(0, 0, 0, 0.2);
+    --astra-table-column-header-background-color-dark: rgba(0, 0, 0, 0.5);
+    --astra-table-column-header-content-color: rgb(255, 255, 255);
+    --astra-table-row-even-background-color: rgba(0, 0, 0, 0.2);
+    --astra-table-row-even-background-color-dark: rgba(0, 0, 0, 0.3);
+    --astra-table-row-even-background-color: rgba(0, 0, 0, 0.2);
+    --astra-table-row-even-background-color-dark: rgba(0, 0, 0, 0.3);
+  }
+</style>
 <Layout title="Astra-UI">
   <ComponentLayout title="Table" summary="This, _that_, and THE other.">
     <!-- @ts-ignore -->
 
     <div class="dark:bg-black w-full" slot="preview">
-      <div class="relative h-52">
+      <div class="relative h-52 rounded-md overflow-clip">
         <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-        <AstraTable id="table-preview" client:load schema={{ columns }} data={rows} />
+        <AstraTable id="blurred-table" client:load schema={{ columns }} data={rows} blurry static-widths />
       </div>
     </div>
 

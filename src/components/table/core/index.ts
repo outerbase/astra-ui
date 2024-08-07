@@ -77,6 +77,9 @@ export default class AstraTable extends ClassifiedElement {
   @property({ attribute: 'non-interactive', type: Boolean })
   public isNonInteractive = false
 
+  @property({ attribute: 'static-widths', type: Boolean })
+  public staticWidths = false
+
   @property({ attribute: 'auth-token', type: String })
   public authToken?: string
 
@@ -113,6 +116,9 @@ export default class AstraTable extends ClassifiedElement {
 
   @property({ attribute: 'active-column', type: String })
   public activeColumn?: string
+
+  @property({ attribute: 'blurry', type: Boolean })
+  public blurry = false
 
   @state() protected scrollableEl: Ref<ScrollArea> = createRef()
   @state() public rows: Array<RowAsRecord> = []
@@ -352,7 +358,12 @@ export default class AstraTable extends ClassifiedElement {
       ({ id }) => id,
       ({ id, values, originalValues, isNew }, rowIndex) => {
         return !this.removedRowUUIDs.has(id)
-          ? html`<astra-tr .selected=${this.selectedRowUUIDs.has(id)} ?new=${isNew} @on-selection=${this._onRowSelection}>
+          ? html`<astra-tr
+              .selected=${this.selectedRowUUIDs.has(id)}
+              ?new=${isNew}
+              ?blurry=${this.blurry}
+              @on-selection=${this._onRowSelection}
+            >
               <!-- checkmark cell -->
               ${this.selectableRows
                 ? html`<astra-td
@@ -619,7 +630,7 @@ export default class AstraTable extends ClassifiedElement {
                     }}
                 >
                     <astra-thead>
-                        <astra-tr header>
+                        <astra-tr header ?blurry=${this.blurry}>
                             <!-- first column of (optional) checkboxes -->
                             ${
                               this.selectableRows
@@ -655,7 +666,7 @@ export default class AstraTable extends ClassifiedElement {
                                   ?separate-cells=${true}
                                   ?outer-border=${this.outerBorder}
                                   ?menu=${!this.isNonInteractive && !this.readonly}
-                                  ?with-resizer=${!this.isNonInteractive}
+                                  ?with-resizer=${!this.isNonInteractive && !this.staticWidths}
                                   ?is-first-column=${idx === 0}
                                   ?is-last-column=${idx === this.visibleColumns.length - 1}
                                   ?removable=${true}
