@@ -374,7 +374,6 @@ export default class AstraTable extends ClassifiedElement {
                     .type=${null}
                     theme=${this.theme}
                     ?separate-cells=${true}
-                    ?bottom-border=${true}
                     ?outer-border=${this.outerBorder}
                     ?blank=${true}
                     ?is-last-row=${rowIndex === this.rows.length - 1}
@@ -427,7 +426,6 @@ export default class AstraTable extends ClassifiedElement {
                       .plugin=${plugin}
                       plugin-attributes=${this.installedPlugins?.[name]?.supportingAttributes ?? ''}
                       ?separate-cells=${true}
-                      ?bottom-border=${true}
                       ?outer-border=${this.outerBorder}
                       ?resizable=${!this.staticWidths}
                       ?is-last-row=${rowIndex === this.rows.length - 1}
@@ -445,7 +443,7 @@ export default class AstraTable extends ClassifiedElement {
                 }
               )}
               ${this.blankFill
-                ? html`<astra-td ?outer-border=${false} ?read-only=${true} ?separate-cells=${false} ?bottom-border=${true} ?interactive=${false} ?menu=${false} ?blank=${true}></<astra-td>`
+                ? html`<astra-td ?outer-border=${false} ?read-only=${true} ?separate-cells=${false} ?interactive=${false} ?menu=${false} ?blank=${true}></<astra-td>`
                 : ''}
             </astra-tr>`
           : null
