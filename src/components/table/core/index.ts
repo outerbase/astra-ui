@@ -374,7 +374,6 @@ export default class AstraTable extends ClassifiedElement {
                     .type=${null}
                     theme=${this.theme}
                     ?separate-cells=${true}
-                    ?draw-right-border=${true}
                     ?bottom-border=${true}
                     ?outer-border=${this.outerBorder}
                     ?blank=${true}
@@ -428,9 +427,9 @@ export default class AstraTable extends ClassifiedElement {
                       .plugin=${plugin}
                       plugin-attributes=${this.installedPlugins?.[name]?.supportingAttributes ?? ''}
                       ?separate-cells=${true}
-                      ?draw-right-border=${true}
                       ?bottom-border=${true}
                       ?outer-border=${this.outerBorder}
+                      ?resizable=${!this.staticWidths}
                       ?is-last-row=${rowIndex === this.rows.length - 1}
                       ?is-last-column=${idx === this.visibleColumns.length - 1}
                       ?is-first-row=${rowIndex === 0}

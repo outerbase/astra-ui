@@ -231,9 +231,9 @@ export class TableData extends MutableElement {
       'focus:shadow-ringlet dark:focus:shadow-ringlet-dark focus:rounded-[4px] focus:ring-1 focus:ring-black dark:focus:ring-neutral-300 focus:outline-none':
         !this.isEditing && this.isInteractive,
       'border-r':
-        this.isInteractive ||
-        (this._drawRightBorder && this.separateCells && this.isLastColumn && this.outerBorder) || // include last column when outerBorder
-        (this._drawRightBorder && this.separateCells && !this.isLastColumn), // internal cell walls
+        this.resizable || // include or it looks funny that a resize handler is above it
+        (this.separateCells && this.isLastColumn && this.outerBorder) || // include last column when outerBorder
+        (this.separateCells && !this.isLastColumn), // internal cell walls
       'first:border-l': this.separateCells && this.outerBorder, // left/right borders when the `separate-cells` attribute is set
       'border-b': this.withBottomBorder, // bottom border when the `with-bottom-border` attribute is set
     }
@@ -248,9 +248,6 @@ export class TableData extends MutableElement {
 
   @property({ type: Boolean, attribute: 'odd' })
   public isOdd?: boolean
-
-  @property({ type: Boolean, attribute: 'draw-right-border' })
-  public _drawRightBorder = false
 
   @property({ type: Boolean, attribute: 'row-selector' })
   public isRowSelector = false
@@ -273,8 +270,8 @@ export class TableData extends MutableElement {
   @property({ attribute: 'is-first-row', type: Boolean })
   public isFirstRow = false
 
-  // @property({ attribute: 'is-last-row', type: Boolean })
-  // public isLastRow = false
+  @property({ attribute: 'resizable', type: Boolean })
+  public resizable = false
 
   @state() isContentEditable = true // this property is to toggle off the contenteditableness of to resolve quirky focus and text selection that can happen when, say, right-clicking to trigger the context menu
   @state() protected options = RW_OPTIONS
