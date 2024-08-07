@@ -48,7 +48,7 @@ export default class AstraComposedChart extends AstraChart {
 
     // For the Highlights section, calculate the various potential values
     // that can be displayed. This includes the total, average, and percent change.
-    const layer: DashboardV3ChartQuery = this.data?.layers?.[0] ?? {}
+    const layer: DashboardV3ChartQuery | undefined = this.data?.layers?.[0]
     let highlightTotal = 0
     let highlightAverage = 0
 

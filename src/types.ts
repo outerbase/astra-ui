@@ -373,6 +373,8 @@ export type DashboardV3Chart = {
   options: DashboardV3ChartOptions
   // The type of chart to render
   type?: ChartTypeV3
+  // TBD
+  params?: Record<string, string>
 }
 
 export enum DashboardFilterType {
