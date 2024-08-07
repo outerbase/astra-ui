@@ -24,7 +24,7 @@ export class CellMenu extends Menu {
     // it needs to be conditional whether the menu is open or not or else double tabbing occurs on the table
     return this.open
       ? html`
-          <span class="whitespace-nowrap text-ellipsis bg-red-50 overflow-hidden w-full focus:z-[1]"><slot></slot></span>
+          <span class="whitespace-nowrap text-ellipsis overflow-hidden w-full focus:z-[1]"><slot></slot></span>
           <span
             id="trigger"
             aria-haspopup="menu"
