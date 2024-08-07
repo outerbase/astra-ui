@@ -272,6 +272,8 @@ export default class AstraChart extends ClassifiedElement {
   // TODO does percent apply to `x` or `y`?
 
   @property({ type: Array }) colorValues = this.theme === 'dark' ? mercuryValuesDark : mercuryValuesLight
+  @property({ type: Number }) sizeX?: number
+  @property({ type: Number }) sizeY?: number
 
   private convertDataIntoCastedData(data: DashboardV3Chart | undefined): DashboardV3Chart | undefined {
     let temp: any = JSON.parse(JSON.stringify(data))
@@ -370,6 +372,8 @@ export default class AstraChart extends ClassifiedElement {
     const d = layer.result
     if (!d) return null
 
+    let showLegend = this.data?.options?.legend && this.data?.options?.legend !== 'none'
+    let showingLegend = false
     const defaultGridStyle = { strokeDasharray: '2', strokeOpacity: 0.1, stroke: this.theme === 'light' ? 'black' : 'white' }
 
     const options: Record<string, any> = {
@@ -483,12 +487,24 @@ export default class AstraChart extends ClassifiedElement {
         }
       }
 
-      const minWidth = 1
+      //   let legendColors: any[] = []
+      //   let legendValues: any[] = []
+
+      //   legendColors.push('#1f77b4')
+      //   legendValues.push(tempKeyX)
+
+      //   options.color = {
+      //     domain: legendValues,
+      //     range: legendColors,
+      //     legend: true,
+      //   }
+
+      //   options.marginBottom = 60
+
       options.marks.push(
         barY(d, {
           x: this.keyX,
           y: this.keyY,
-          //   width: Math.max(minWidth, 1),
           //   stroke: this.groupBy,
           //   fill: 'url(#mercury)',
           fill: this.colorValues[0],
@@ -529,10 +545,15 @@ export default class AstraChart extends ClassifiedElement {
           )
         })
 
-        options.color = {
-          domain: legendValues,
-          range: legendColors,
-          //   legend: true,
+        if (showLegend) {
+          options.color = {
+            ...options.color,
+            domain: legendValues,
+            range: legendColors,
+            legend: true,
+          }
+
+          showingLegend = true
         }
       } else {
         const group = this.data?.options?.groupBy ?? this.groupBy
@@ -547,6 +568,22 @@ export default class AstraChart extends ClassifiedElement {
 
         options.color = {
           range: this.colorValues,
+        }
+
+        // Get distinct values for the legend for the groupBy key
+        if (group && showLegend) {
+          console.log('Show legend? ', this.data?.options?.legend)
+          const legendValues = Array.from(new Set(d?.map((r) => r[group])))
+          const legendColors = legendValues.map((_, i) => this.colorValues[i % this.colorValues.length])
+
+          options.color = {
+            //   ...options.color,
+            domain: legendValues,
+            range: legendColors,
+            legend: true,
+          }
+
+          showingLegend = true
         }
       }
 
@@ -596,15 +633,43 @@ export default class AstraChart extends ClassifiedElement {
       )
     }
 
+    let showXTicks = true
+    let showYTicks = true
+    let tickRotation = 0
+    let yAxisDisplay = 'left'
+
+    if (this.data?.options?.xAxisLabelDisplay === '45') {
+      tickRotation = -45
+    } else if (this.data?.options?.xAxisLabelDisplay === '90') {
+      tickRotation = -90
+    } else if (this.data?.options?.xAxisLabelDisplay === 'hidden') {
+      showXTicks = false
+    }
+
+    if (this.data?.options?.yAxisLabelDisplay === 'right') {
+      yAxisDisplay = 'right'
+    } else if (this.data?.options?.yAxisLabelDisplay === 'hidden') {
+      showYTicks = false
+    }
+
+    // Adjust for showing the legend at the top
+    if (showingLegend) {
+      options.marginBottom = 60
+    }
+
     // LABELS
     options.x = {
       ...options.x,
       label: this.axisLabelX ?? null,
       labelAnchor: 'center',
       labelArrow: 'none',
-      ticks: this.ticksX,
+      ticks: showYTicks ? this.ticksX : undefined,
+      tickRotate: tickRotation,
+      tickFormat: showXTicks ? undefined : () => '',
+      tickSize: showXTicks ? 5 : 0,
       nice: this.niceX,
       padding: 0.3,
+      width: 2,
     }
     options.y = {
       ...options.y,
@@ -614,6 +679,9 @@ export default class AstraChart extends ClassifiedElement {
       ticks: this.ticksY,
       //   tickPadding: -10,
       nice: this.niceY,
+      axis: yAxisDisplay,
+      tickFormat: showYTicks ? undefined : () => '',
+      tickSize: showYTicks ? 5 : 0,
     }
 
     // render and append the plot
