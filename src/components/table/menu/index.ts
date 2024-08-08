@@ -28,12 +28,6 @@ export class Menu extends ClassifiedElement {
   @property({ type: Array, attribute: 'options' })
   public options: HeaderMenuOptions = []
 
-  @property({ type: Number, attribute: 'originX' })
-  public originX?: Number
-
-  @property({ type: Number, attribute: 'originY' })
-  public originY?: Number
-
   @state() protected activeOptions: HeaderMenuOptions = []
   @state() protected historyStack: Array<HeaderMenuOptions> = []
   @state() protected focused?: string
@@ -250,7 +244,7 @@ export class Menu extends ClassifiedElement {
     const darkClass = classMap({ dark: this.theme === 'dark' })
 
     return html`
-      <hans-wormhole .open=${this.open} .x=${this.originX} .y=${this.originY}>
+      <hans-wormhole .open=${this.open}>
         <span
           ${ref(this.menuRef)}
           aria-haspopup="menu"
