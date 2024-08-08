@@ -50,6 +50,11 @@ export class Menu extends ClassifiedElement {
   private outsideClicker: ((event: MouseEvent) => void) | undefined
   private activeEvent: Event | undefined
 
+  constructor() {
+    super()
+    this.onResize = this.onResize.bind(this)
+  }
+
   // storing this as a variable instead of anonymous function
   // so that the listener can determine if it's the same closer or not
   // for the scenario when the same menu is repeatedly opened
@@ -163,6 +168,20 @@ export class Menu extends ClassifiedElement {
       // prevent tabbing focus away from an open menu
       if (this.open) event.preventDefault()
     }
+  }
+
+  private onResize() {
+    this.open = false
+  }
+
+  public override connectedCallback(): void {
+    super.connectedCallback()
+    window.addEventListener('resize', this.onResize)
+  }
+
+  public override disconnectedCallback(): void {
+    super.disconnectedCallback()
+    window.removeEventListener('resize', this.onResize)
   }
 
   public override willUpdate(changedProperties: PropertyValueMap<this>): void {
