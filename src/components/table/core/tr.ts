@@ -25,6 +25,8 @@ export class TableRow extends ClassifiedElement {
       'bg-theme-table-row-selected dark:bg-theme-table-row-selected-dark hover:bg-theme-table-row-selected-hover dark:hover:bg-theme-row-selected-hover-dark':
         this.selected && !this.isHeaderRow,
 
+      'backdrop-blur-sm': this.blurry,
+
       ...super.classMap(),
     }
   }
@@ -37,6 +39,9 @@ export class TableRow extends ClassifiedElement {
 
   @property({ type: Boolean, attribute: 'new' })
   public new = false
+
+  @property({ type: Boolean, attribute: 'blurry' })
+  public blurry = false
 
   public override willUpdate(changedProperties: PropertyValueMap<this>): void {
     super.willUpdate(changedProperties)

@@ -68,8 +68,8 @@ export default {
           // editing cells
           'table-cell-mutating-background': 'var(--astra-cell-mutating-background-color, rgb(239 246 255))',
           'table-cell-mutating-background-dark': 'var(--astra-cell-mutating-background-color-dark, rgb(23 37 84))',
-          'table-cell-mutating-content': 'var(--astra-cell-mutating-background-content, rgb(0,0,255)',
-          'table-cell-mutating-content-dark': 'var(--astra-cell-mutating-content-dark, rgb(255,0,255)',
+          'table-cell-mutating-content': 'var(--astra-cell-mutating-content-color, rgb(0,0,255))',
+          'table-cell-mutating-content-dark': 'var(--astra-cell-mutating-content-color-dark, rgb(255,0,255))',
 
           // dirty cells
           'table-cell-dirty': 'var(--astra-cell-dirty-background-color, rgb(253 230 138))',
@@ -86,6 +86,12 @@ export default {
           'sidebar-header-content-dark': 'var(--astra-header-content-color-dark, #ffffff)',
           'sidebar-subheader-content': 'var(--astra-sidebar-subheader-content-color, #eeeee)',
           'sidebar-subheader-content-dark': 'var(--astra-sidebar-subheader-content-color-dark, #eeeeee)',
+
+          // MENUS
+          'menu-background-color': 'var(--astra-menu-background-color, #fff)',
+          'menu-background-color-dark': 'var(--astra-menu-background-color-dark, #000)',
+          'menu-content-color': 'var(--astra-menu-content-color, #000)',
+          'menu-content-color-dark': 'var(--astra-menu-content-color-dark, #fff)',
         },
 
         light: {
