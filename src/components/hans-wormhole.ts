@@ -36,8 +36,6 @@ export class HansWormhole extends LitElement {
       } else {
         this.removeWormhole()
       }
-    } else if (this.open && (changedProperties.has('x') || changedProperties.has('y'))) {
-      this.adjustPosition()
     }
   }
 
