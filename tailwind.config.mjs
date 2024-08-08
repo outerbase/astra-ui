@@ -86,6 +86,12 @@ export default {
           'sidebar-header-content-dark': 'var(--astra-header-content-color-dark, #ffffff)',
           'sidebar-subheader-content': 'var(--astra-sidebar-subheader-content-color, #eeeee)',
           'sidebar-subheader-content-dark': 'var(--astra-sidebar-subheader-content-color-dark, #eeeeee)',
+
+          // MENUS
+          'menu-background-color': 'var(--astra-menu-background-color, #fff)',
+          'menu-background-color-dark': 'var(--astra-menu-background-color-dark, #000)',
+          'menu-content-color': 'var(--astra-menu-content-color, #000)',
+          'menu-content-color-dark': 'var(--astra-menu-content-color-dark, #fff)',
         },
 
         light: {

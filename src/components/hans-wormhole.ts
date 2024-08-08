@@ -52,6 +52,7 @@ export class HansWormhole extends LitElement {
     this.wormhole = document.createElement('div')
     this.wormhole.style.position = 'absolute' // Changed from 'absolute' to 'fixed'
     this.wormhole.style.zIndex = '100'
+    this.wormhole.classList.add('backdrop-blur-sm')
 
     const content = document.createElement('div')
     this.moveContent(this, content)

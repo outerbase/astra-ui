@@ -18,6 +18,12 @@ const columns = Object.keys(rows[0].values).map((name) => ({ name }))
 ---
 
 <style>
+  /* wormhole'd things need to be set on the `body` :shrug: */
+  body {
+    --astra-menu-background-color: rgba(0, 0, 0, 0.6);
+    --astra-menu-content-color: white;
+  }
+
   #blurred-table {
     --astra-table-content-color: rgb(255, 255, 255);
     --astra-table-border-color: rgba(255, 255, 255, 0.1);
@@ -28,9 +34,6 @@ const columns = Object.keys(rows[0].values).map((name) => ({ name }))
     --astra-table-row-even-background-color-dark: rgba(0, 0, 0, 0.3);
     --astra-table-row-even-background-color: rgba(0, 0, 0, 0.2);
     --astra-table-row-even-background-color-dark: rgba(0, 0, 0, 0.3);
-
-    /* --astra-cell-mutating-background-color: black;
-    --astra-cell-mutating-content-color: yellow; */
   }
 </style>
 <Layout title="Astra-UI">

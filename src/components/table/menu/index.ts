@@ -57,17 +57,11 @@ export class Menu extends ClassifiedElement {
   protected get listElement() {
     if (!this.open) return null
 
-    const classes = {
-      [this.menuPositionClasses]: true,
-      'z-[2] overflow-hidden': true,
-      'rounded-xl p-1.5': true,
-      'text-sm text-neutral-900 dark:text-white font-medium': true,
-      'bg-white dark:bg-neutral-900': true,
-      'shadow-lg shadow-black/5': true,
-      'border border-neutral-200 dark:border-neutral-800': true,
-    }
-
-    return html`<ul tabindex="0" class=${classMap(classes)} role="menu">
+    return html`<ul
+      tabindex="0"
+      class="z-[2] overflow-hidden rounded-xl p-1.5 text-sm font-medium shadow-lg shadow-black/5 border border-neutral-200 dark:border-neutral-800 bg-theme-menu-background-color dark:bg-theme-menu-background-color-dark text-theme-menu-content-color dark:text-theme-menu-content-color-dark"
+      role="menu"
+    >
       ${repeat(
         this.activeOptions,
         ({ label }) => label,
@@ -79,7 +73,6 @@ export class Menu extends ClassifiedElement {
               [classes ?? '']: !!classes,
               'text-ellipsis overflow-hidden': true,
               'rounded-md p-2.5': true,
-              'text-neutral-700 dark:text-neutral-300': !classes,
               'cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800': true,
               'bg-neutral-100 dark:bg-neutral-800 dark:hover:bg-neutral-800': this.focused === value,
             })}
