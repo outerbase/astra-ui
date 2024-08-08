@@ -174,7 +174,6 @@ export class TH extends MutableElement {
     const menu = this.shadowRoot?.querySelector('astra-th-menu') as ColumnMenu | null
     if (menu) {
       event.preventDefault()
-      menu.focus()
       menu.open = true
     }
   }

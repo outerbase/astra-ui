@@ -1,11 +1,13 @@
+import '../../hans-wormhole.js'
+
 import { html, type PropertyValueMap } from 'lit'
 import { property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { repeat } from 'lit/directives/repeat.js'
 
-import { CaretDown } from '../../../icons/caret-down.js'
+import { createRef, ref, type Ref } from 'lit/directives/ref.js'
 import classMapToClassName from '../../../lib/class-map-to-class-name.js'
-import { MenuOpenEvent, MenuSelectedEvent } from '../../../lib/events.js'
+import { MenuCloseEvent, MenuOpenEvent, MenuSelectedEvent } from '../../../lib/events.js'
 import { type HeaderMenuOptions } from '../../../types.js'
 import { ClassifiedElement } from '../../classified-element.js'
 
@@ -30,6 +32,8 @@ export class Menu extends ClassifiedElement {
   @state() protected historyStack: Array<HeaderMenuOptions> = []
   @state() protected focused?: string
 
+  private menuRef: Ref<HTMLElement> = createRef()
+
   // this function is intended to be overriden in a subclass
   // and not accessed otherwise
   protected get menuPositionClasses() {
@@ -39,6 +43,11 @@ export class Menu extends ClassifiedElement {
   // for closing menus when an ousside click occurs
   private outsideClicker: ((event: MouseEvent) => void) | undefined
   private activeEvent: Event | undefined
+
+  constructor() {
+    super()
+    this.onResize = this.onResize.bind(this)
+  }
 
   // storing this as a variable instead of anonymous function
   // so that the listener can determine if it's the same closer or not
@@ -50,7 +59,7 @@ export class Menu extends ClassifiedElement {
 
     const classes = {
       [this.menuPositionClasses]: true,
-      'absolute z-[2] overflow-hidden': true,
+      'z-[2] overflow-hidden': true,
       'rounded-xl p-1.5': true,
       'text-sm text-neutral-900 dark:text-white font-medium': true,
       'bg-white dark:bg-neutral-900': true,
@@ -58,7 +67,7 @@ export class Menu extends ClassifiedElement {
       'border border-neutral-200 dark:border-neutral-800': true,
     }
 
-    return html`<ul class=${classMap(classes)} role="menu">
+    return html`<ul tabindex="0" class=${classMap(classes)} role="menu">
       ${repeat(
         this.activeOptions,
         ({ label }) => label,
@@ -83,7 +92,7 @@ export class Menu extends ClassifiedElement {
     </ul>`
   }
 
-  protected onTrigger(event: Event) {
+  protected onTrigger(event: MouseEvent) {
     this.open = !this.open
     this.activeEvent = event
   }
@@ -155,9 +164,18 @@ export class Menu extends ClassifiedElement {
     }
   }
 
-  public override focus() {
-    const trigger = this.shadowRoot?.querySelector('#trigger') as HTMLElement | null
-    trigger?.focus()
+  private onResize() {
+    this.open = false
+  }
+
+  public override connectedCallback(): void {
+    super.connectedCallback()
+    window.addEventListener('resize', this.onResize)
+  }
+
+  public override disconnectedCallback(): void {
+    super.disconnectedCallback()
+    window.removeEventListener('resize', this.onResize)
   }
 
   public override willUpdate(changedProperties: PropertyValueMap<this>): void {
@@ -177,7 +195,7 @@ export class Menu extends ClassifiedElement {
       this.dispatchEvent(new MenuOpenEvent(this.close))
     }
     // when the menu is being closed
-    else if (changedProperties.has('open') && !this.open) {
+    else if (changedProperties.has('open') && changedProperties.get('open') !== undefined && !this.open) {
       this.removeAttribute('aria-expanded')
 
       // reset history; restore root menu ietms
@@ -185,10 +203,13 @@ export class Menu extends ClassifiedElement {
         this.options = this.historyStack[0]
         this.historyStack = []
       }
+
       if (this.outsideClicker) {
         delete this.activeEvent
         document.removeEventListener('click', this.outsideClicker)
       }
+
+      this.dispatchEvent(new MenuCloseEvent())
     }
 
     if (changedProperties.has('options')) {
@@ -204,38 +225,36 @@ export class Menu extends ClassifiedElement {
     if (changedProperties.has('open') && !this.open) {
       this.focused = undefined
     }
+
+    // when opening
+    else if (this.open) {
+      // wait until it renders
+      setTimeout(() => {
+        // set focus so keyboard can navigate the menu
+        const list = this.menuRef.value?.firstElementChild as HTMLElement
+        list.focus()
+      })
+    }
   }
 
   public override render() {
-    // @click shows/hides the menu
     // @dblclick prevents parent's dblclick
     // @keydown navigates the menu
 
-    const outerClasses = {
-      'relative -mr-1 cursor-pointer': true,
-      dark: this.theme == 'dark',
-    }
-
-    const innerClasses = {
-      'border border-transparent': true,
-      'hover:bg-neutral-100 dark:hover:bg-neutral-900 active:border-neutral-200 dark:active:border-neutral-800': true,
-      'p-0.5 rounded-md': true,
-    }
+    const darkClass = classMap({ dark: this.theme === 'dark' })
 
     return html`
-      <slot></slot>
-      <div
-        id="trigger"
-        class=${classMap(outerClasses)}
-        aria-haspopup="menu"
-        tabindex="0"
-        @click=${this.onTrigger}
-        @dblclick=${(e: MouseEvent) => e.stopPropagation()}
-        @keydown=${this.onKeyDown}
-      >
-        <div class=${classMap(innerClasses)}>${CaretDown(16)}</div>
-        ${this.listElement}
-      </div>
+      <hans-wormhole .open=${this.open}>
+        <span
+          ${ref(this.menuRef)}
+          aria-haspopup="menu"
+          class="${darkClass}"
+          @dblclick=${(e: MouseEvent) => e.stopPropagation()}
+          @keydown=${this.onKeyDown}
+        >
+          ${this.listElement}
+        </span>
+      </hans-wormhole>
     `
   }
 }
