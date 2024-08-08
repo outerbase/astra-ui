@@ -46,15 +46,25 @@ export class TableData extends MutableElement {
     `,
   ]
 
-  static onContextMenu(event: MouseEvent) {
+  onContextMenu(event: MouseEvent) {
     const isPluginEditor = eventTargetIsPluginEditor(event)
     if (isPluginEditor) return
+    this.isContentEditable = false
 
     const menu = (event.currentTarget as HTMLElement).shadowRoot?.querySelector('astra-td-menu') as CellMenu | null
     if (menu) {
       event.preventDefault()
-      menu.focus()
+      event.stopPropagation()
+      event.stopImmediatePropagation()
+
       menu.open = true
+
+      const onMenuClose = () => {
+        this.isContentEditable = true
+        menu.removeEventListener('menuclose', onMenuClose)
+      }
+
+      menu.addEventListener('menuclose', onMenuClose)
     }
   }
 
@@ -266,6 +276,7 @@ export class TableData extends MutableElement {
   // @property({ attribute: 'is-last-row', type: Boolean })
   // public isLastRow = false
 
+  @state() isContentEditable = true // this property is to toggle off the contenteditableness of to resolve quirky focus and text selection that can happen when, say, right-clicking to trigger the context menu
   @state() protected options = RW_OPTIONS
 
   private contentEditableWrapper: Ref<HTMLDivElement> = createRef()
@@ -332,7 +343,7 @@ export class TableData extends MutableElement {
   public override connectedCallback(): void {
     super.connectedCallback()
 
-    this.addEventListener('contextmenu', TableData.onContextMenu)
+    this.addEventListener('contextmenu', this.onContextMenu)
     this.addEventListener('click', this.onClick)
     this.addEventListener('keydown', TableData.onKeyDown)
 
@@ -349,7 +360,7 @@ export class TableData extends MutableElement {
   public override disconnectedCallback(): void {
     super.disconnectedCallback()
 
-    this.removeEventListener('contextmenu', TableData.onContextMenu)
+    this.removeEventListener('contextmenu', this.onContextMenu)
     this.removeEventListener('keydown', TableData.onKeyDown)
     this.removeEventListener('click', this.onClick)
     this.removeEventListener('dblclick', TableData.onDoubleClick)
@@ -477,8 +488,8 @@ export class TableData extends MutableElement {
       !this.isEditing && !this.blank
         ? html`<span
             ${ref(this.contentEditableWrapper)}
-            class="outline-none caret-transparent"
-            contenteditable="true"
+            class="outline-none caret-transparent select-none"
+            contenteditable="${this.isContentEditable}"
             spellcheck="false"
             autocorrect="off"
             @dragover=${TableData.onDragOver}
