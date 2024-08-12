@@ -491,7 +491,8 @@ export class TableData extends MutableElement {
           >
             <astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
               <div class="flex">
-                <span class="flex-auto truncate whitespace-pre ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
+                <!-- putting whitespace-pre here wrecks dashboard (i.e. when there's a plugin??) -->
+                <span class="flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
                 ${pluginAccessory}
               </div>
 
