@@ -52,8 +52,9 @@ const gradients = [
 // const cobaltValues = ['#5956E2', '#A99AFF', '#82DBFF']
 // const afterburnValues = ['#E75F98', '#FFA285', '#CCB8F2']
 
-const mercuryValuesDark = ['#ffffff', '#747474', '#000']
-const mercuryValuesLight = ['#000', '#747474', '#ffffff']
+// const mercuryValuesDark = ['#fafafa', '#e5e5e5', '#a3a3a3', '#525252', '#262626']
+const mercuryValuesDark = ['#fafafa', '#525252', '#a3a3a3', '#e5e5e5', '#262626']
+const mercuryValuesLight = ['#0a0a0a', '#262626', '#525252', '#a3a3a3', '#e5e5e5']
 
 @customElement('astra-chart')
 export default class AstraChart extends ClassifiedElement {
@@ -373,7 +374,6 @@ export default class AstraChart extends ClassifiedElement {
     if (!d) return null
 
     let showLegend = this.data?.options?.legend && this.data?.options?.legend !== 'none'
-    let showingLegend = false
     const defaultGridStyle = { strokeDasharray: '2', strokeOpacity: 0.1, stroke: this.theme === 'light' ? 'black' : 'white' }
 
     const options: Record<string, any> = {
@@ -544,17 +544,6 @@ export default class AstraChart extends ClassifiedElement {
             })
           )
         })
-
-        if (showLegend) {
-          options.color = {
-            ...options.color,
-            domain: legendValues,
-            range: legendColors,
-            legend: true,
-          }
-
-          showingLegend = true
-        }
       } else {
         const group = this.data?.options?.groupBy ?? this.groupBy
         options.marks.push(
@@ -569,36 +558,8 @@ export default class AstraChart extends ClassifiedElement {
         options.color = {
           range: this.colorValues,
         }
-
-        // Get distinct values for the legend for the groupBy key
-        if (group && showLegend) {
-          console.log('Show legend? ', this.data?.options?.legend)
-          const legendValues = Array.from(new Set(d?.map((r) => r[group])))
-          const legendColors = legendValues.map((_, i) => this.colorValues[i % this.colorValues.length])
-
-          options.color = {
-            //   ...options.color,
-            domain: legendValues,
-            range: legendColors,
-            legend: true,
-          }
-
-          showingLegend = true
-        }
       }
 
-      // This shows a legend at the top if defined.
-      // options.color = {
-      //   domain: ['4cea4345-3bd4-448a-85cd-908f32baf94f', '25fc9ba7-d349-4533-b00a-d179ed0a9996', '7b6175d0-1a6b-425f-9a04-ac5674b6eefe'],
-      //   range: [
-      //     '#1f77b4', // Blue for the first user_id
-      //     '#ff7f0e', // Orange for the second user_id
-      //     '#2ca02c', // Green for the third user_id
-      //   ],
-      //   legend: true,
-      // }
-
-      // default to `nice` less explicitly set to false
       if (this.niceY !== false) this.niceY = true
     }
 
@@ -652,9 +613,46 @@ export default class AstraChart extends ClassifiedElement {
       showYTicks = false
     }
 
-    // Adjust for showing the legend at the top
-    if (showingLegend) {
-      options.marginBottom = 60
+    // Determine if the legend should be shown and what values to use
+    // based on the data options or the data itself.
+    if (showLegend) {
+      // Multiple Y axis keys
+      const yAxisKeys = this.data?.options?.yAxisKeys ?? [this.keyY]
+      // Alternatively, group by key
+      const group = this.data?.options?.groupBy ?? this.groupBy
+
+      let legendValues: any[] = []
+      let legendColors: any[] = []
+
+      if (yAxisKeys.length > 1) {
+        yAxisKeys.forEach((key, index) => {
+          if (!key) return
+          const desiredColor = this.data?.options?.yAxisKeyColors?.[key] ?? this.colorValues[index % this.colorValues.length]
+
+          legendColors.push(desiredColor)
+          legendValues.push(key)
+        })
+      } else if (group) {
+        const firstRecord = this.data?.layers?.[0].result?.[0]
+        const firstRecordKey = firstRecord ? Object.keys(firstRecord)[0] : ''
+        legendValues = group ? Array.from(new Set(d?.map((r) => r[group]))) : [firstRecordKey]
+        legendColors = legendValues.map((_, i) => this.colorValues[i % this.colorValues.length])
+      } else {
+        const firstRecord = this.data?.layers?.[0].result?.[0]
+        const firstRecordKey = firstRecord ? Object.keys(firstRecord)[0] : ''
+        legendValues = [firstRecordKey]
+        legendColors = [this.colorValues[0]]
+      }
+
+      if (legendValues.length > 0 && legendColors.length > 0) {
+        options.color = {
+          domain: legendValues,
+          range: legendColors,
+          legend: true,
+        }
+
+        options.marginBottom = 60
+      }
     }
 
     // LABELS
@@ -735,15 +733,19 @@ export default class AstraChart extends ClassifiedElement {
         ${firstRecordValue}
       </div>`
     } else if (this.type === 'text') {
+      let height = this.height ?? 0
+      let lineClamp = Math.floor(height / 21)
       let variant = 'p'
-      plot = html`<astra-text variant=${variant}>${this.data?.options?.text}</astra-text>`
+
+      plot = html`<astra-text
+        variant=${variant}
+        style=${`display: -webkit-box; -webkit-line-clamp: ${lineClamp}; -webkit-box-orient: vertical; overflow: hidden;`}
+        >${this.data?.options?.text}</astra-text
+      >`
     } else plot = this.getLatestPlot()
 
-    const decoratedPlot = html`<div
-      class=${`${this.type === 'table' ? `${this.theme === 'dark' ? '!bg-black' : '!bg-white'}` : ''} flex-col h-full flex`}
-    >
-      ${plot}
-    </div>`
+    // ${this.type === 'table' ? `${this.theme === 'dark' ? '!bg-black' : '!bg-white'}` : ''}
+    const decoratedPlot = html`<div class=${` flex-col h-full flex`}>${plot}</div>`
 
     const themedPlot = html`<div
       id="themed-plot"

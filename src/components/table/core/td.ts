@@ -1,4 +1,4 @@
-import { css, html, type PropertyValueMap, type TemplateResult } from 'lit'
+import { css, html, nothing, type PropertyValueMap, type TemplateResult } from 'lit'
 import type { DirectiveResult } from 'lit/async-directive.js'
 import { customElement, property, state } from 'lit/decorators.js'
 import { createRef, ref, type Ref } from 'lit/directives/ref.js'
@@ -405,7 +405,7 @@ export class TableData extends MutableElement {
 
   public override render() {
     let value = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value) : this.value
-
+    let pluginAccessory: DirectiveResult<typeof UnsafeHTMLDirective> | typeof nothing = nothing
     if (this.plugin && value && typeof value === 'string') {
       // Replace single, double, and backticks with their HTML entity equivalents
       value = value.replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/`/g, '&#96;')
@@ -422,6 +422,13 @@ export class TableData extends MutableElement {
       //      `<${tagName} ${value !== null ? `cellvalue='${value}` : ''} configuration='${config}' ${this.pluginAttributes}></${tagName}>`
       const pluginAsString = unsafeHTML(
         `<${tagName} cellvalue='${value}' columnName='${this.column}'  configuration='${config}' ${this.pluginAttributes}></${tagName}>`
+      )
+
+      pluginAccessory = unsafeHTML(
+        `<${tagName.replace(
+          'outerbase-plugin-cell',
+          'outerbase-plugin-accessory'
+        )} cellvalue='${value}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
       )
 
       cellContents = html`${pluginAsString}`
@@ -479,7 +486,11 @@ export class TableData extends MutableElement {
             @paste=${this.onPaste}
           >
             <astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
-              <span class="${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
+              <div class="flex">
+                <span class="flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
+                ${pluginAccessory}
+              </div>
+
               ${this.isDisplayingPluginEditor
                 ? html`<span id="plugin-editor" class="absolute top-8 caret-current cursor-auto z-10">${cellEditorContents}</span>`
                 : null}

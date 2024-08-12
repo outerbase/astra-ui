@@ -1,0 +1,212 @@
+---
+import { TextEditor } from '../../components/universe/index'
+import { KeyboardShortcutsPlugin } from '../../components/universe/plugins/shortcuts'
+import { UndoPlugin } from '../../components/universe/plugins/undo'
+import { HandlebarsPlugin } from '../../components/universe/plugins/handlebars'
+import Layout from '../../layouts/Layout.astro'
+import '../../styles/freedom.css'
+import '../../styles/moondust.css'
+import '../../styles/invasion.css'
+---
+
+<style>
+  #nonsensical-theme {
+    --border-color: red;
+
+    --line-number-fg-color: lime;
+    --line-number-bg-color: purple;
+
+    --code-fg-color: yellow;
+    --code-bg-color: black;
+    --active-line-bg-color: pink;
+    --caret-color: purple;
+
+    --keyword-fg-color: blue;
+    --keyword-weight: regular;
+    --keyword-style: normal;
+    --keyword-decoration: overline;
+
+    --punctuation-fg-color: red;
+
+    --operator-style: normal;
+    --operator-weight: regular;
+    --operator-fg-color: red;
+
+    --comment-opacity: 0.4;
+    --comment-fg-color: aqua;
+
+    --boolean-style: regular;
+    --boolean-decoration: overline;
+    --number-style: regular;
+    --number-decoration: overline;
+    --string-style: regular;
+    --string-decoration: overline;
+
+    --border-color: #e11d48;
+  }
+</style>
+<div class="flex flex-col gap-4">
+  <div>
+    <h1><pre>&lt;text-editor wrap /&gt;</pre> .bg-zinc-700</h1>
+    <div class="h-[400px] w-full bg-zinc-700">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+        <HandlebarsPlugin client:only="lit" slot="cursor" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div>
+    <h1><pre>&lt;text-editor /&gt;</pre> .bg-green-600 <b>without line wrapping</b></h1>
+    <div class="h-[400px] w-full bg-green-600">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit">
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+        <HandlebarsPlugin client:only="lit" slot="cursor" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div>
+    <h1><pre>&lt;text-editor wrap /&gt;</pre> .bg-indigo-800</h1>
+    <div class="h-[400px] w-full bg-indigo-800">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+        <HandlebarsPlugin client:only="lit" slot="cursor" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div>
+    <h1><pre>&lt;text-editor wrap /&gt;</pre> .bg-blue-700</h1>
+    <div class="h-[400px] w-full bg-blue-700">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div>
+    <h1><pre>&lt;text-editor wrap /&gt;</pre> .bg-orange-600</h1>
+    <div class="h-[400px] w-full bg-orange-600">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div>
+    <h1><pre>&lt;text-editor wrap /&gt;</pre> .bg-red-800</h1>
+    <div class="h-[400px] w-full bg-red-800">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div class="theme freedom">
+    <h1>Freedom</h1>
+    <div class="h-[400px] w-full">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div class="theme freedom dark">
+    <h1>Freedom: Dark</h1>
+    <div class="h-[400px] w-full bg-black">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div class="theme invasion">
+    <h1>Invasion</h1>
+    <div class="h-[400px] w-full">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div class="theme invasion dark">
+    <h1>Invasion: Dark</h1>
+    <div class="h-[400px] w-full bg-black">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div class="theme moondust">
+    <h1>moondust</h1>
+    <div class="h-[400px] w-full">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div class="theme moondust dark">
+    <h1>moondust: Dark</h1>
+    <div class="h-[400px] w-full bg-black">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+
+  <div id="nonsensical-theme">
+    <h1>nonsensical theme</h1>
+    <div class="h-[400px] w-full bg-black">
+      <!-- @ts-ignore attributes -->
+      <TextEditor client:only="lit" wrap>
+        <KeyboardShortcutsPlugin client:only="lit" />
+        <UndoPlugin client:only="lit" />
+      </TextEditor>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  document.addEventListener('universe:submit', (event) => {
+    console.info('onsubmit', event.detail.text)
+  })
+
+  document.addEventListener('universe:undo', (event) => {
+    console.info('undo', event.detail.text)
+  })
+
+  document.addEventListener('universe:redo', (event) => {
+    console.info('redo', event.detail.text)
+  })
+
+  document.addEventListener('input', (event) => {
+    console.info('oninput', event.target.text)
+  })
+</script>
