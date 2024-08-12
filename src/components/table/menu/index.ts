@@ -69,13 +69,16 @@ export class Menu extends ClassifiedElement {
           html`<li
             @click=${this.onItemClick}
             data-value=${value}
-            class=${classMapToClassName({
-              [classes ?? '']: !!classes,
-              'text-ellipsis overflow-hidden': true,
-              'rounded-md p-2.5': true,
-              'cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800': true,
-              'bg-neutral-100 dark:bg-neutral-800 dark:hover:bg-neutral-800': this.focused === value,
-            })}
+            class="text-ellipsis overflow-hidden rounded-md p-2.5 cursor-pointer hover:bg-theme-menu-background-color-active hover:text-theme-menu-content-color-active dark:hover:bg-theme-menu-background-color-active-dark dark:hover:text-theme-menu-content-color-active-dark ${classMapToClassName(
+              {
+                [classes ?? '']: !!classes,
+                // active states
+                'text-theme-menu-content-color-active': this.focused === value,
+                'bg-theme-menu-background-color-active': this.focused === value,
+                'dark:text-theme-menu-content-color-active-dark': this.focused === value,
+                'dark:bg-theme-menu-background-color-active-dark': this.focused === value,
+              }
+            )}"
             role="menuitem"
             ?selected=${this.selection === value}
           >
@@ -223,9 +226,11 @@ export class Menu extends ClassifiedElement {
     else if (this.open) {
       // wait until it renders
       setTimeout(() => {
-        // set focus so keyboard can navigate the menu
-        const list = this.menuRef.value?.firstElementChild as HTMLElement
-        list.focus()
+        if (this.open) {
+          // set focus so keyboard can navigate the menu
+          const list = this.menuRef.value?.firstElementChild as HTMLElement
+          list?.focus()
+        }
       })
     }
   }

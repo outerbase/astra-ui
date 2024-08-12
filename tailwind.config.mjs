@@ -92,6 +92,15 @@ export default {
           'menu-background-color-dark': 'var(--astra-menu-background-color-dark, #000)',
           'menu-content-color': 'var(--astra-menu-content-color, #000)',
           'menu-content-color-dark': 'var(--astra-menu-content-color-dark, #fff)',
+          'menu-content-color-active': 'var(--astra-menu-content-color-active, #fff)',
+          'menu-content-color-active-dark': 'var(--astra-menu-content-color-active-dark, #000)',
+          'menu-background-color-active': 'var(--astra-menu-background-color-active, #000)',
+          'menu-background-color-active-dark': 'var(--astra-menu-background-color-active-dark, #fff)',
+
+          'menu-toggle-color-hover': 'var(--astra-toggle-color-hover, #fafafa)',
+          'menu-toggle-color-hover-dark': 'var(--astra-toggle-color-hover-dark, #262626)',
+          'menu-toggle-color-active': 'var(--astra-toggle-color-active, #f5f5f5)',
+          'menu-toggle-color-active-dark': 'var(--astra-toggle-color-active-dark, #404040)',
         },
 
         light: {
