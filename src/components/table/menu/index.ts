@@ -59,7 +59,7 @@ export class Menu extends ClassifiedElement {
 
     return html`<ul
       tabindex="0"
-      class="z-[2] overflow-hidden rounded-xl p-1.5 text-sm font-medium shadow-lg shadow-black/5 border border-neutral-200 dark:border-neutral-800 bg-theme-menu-background-color dark:bg-theme-menu-background-color-dark text-theme-menu-content-color dark:text-theme-menu-content-color-dark"
+      class="z-[2] overflow-hidden rounded-xl p-1.5 text-sm font-medium shadow-lg shadow-black/5 border border-neutral-200 dark:border-neutral-800 bg-theme-menu-background-color dark:bg-theme-menu-background-color-dark text-theme-menu-content-color dark:text-theme-menu-content-color-dark backdrop-blur-astra-menu"
       role="menu"
     >
       ${repeat(

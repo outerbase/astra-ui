@@ -11,7 +11,7 @@ export class THead extends ClassifiedElement {
       sticky: true,
       'z-[2]': true,
       'top-0': true,
-      'backdrop-blur-astra': true,
+      'backdrop-blur-astra-table': true,
       ...super.classMap(),
     }
   }
