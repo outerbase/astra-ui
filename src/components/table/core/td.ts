@@ -1,4 +1,4 @@
-import { css, html, nothing, type PropertyValueMap, type TemplateResult } from 'lit'
+import { css, html, nothing, type PropertyValueMap, type PropertyValues, type TemplateResult } from 'lit'
 import type { DirectiveResult } from 'lit/async-directive.js'
 import { customElement, property, state } from 'lit/decorators.js'
 import { createRef, ref, type Ref } from 'lit/directives/ref.js'
@@ -412,6 +412,12 @@ export class TableData extends MutableElement {
         this.removeAttribute('first-cell')
       }
     }
+
+  public override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties)
+    if (changedProperties.has('blank')) {
+      this.tabIndex = this.blank ? -1 : 0
+    }
   }
 
   public override render() {
@@ -482,7 +488,7 @@ export class TableData extends MutableElement {
         ]
       : this.options
 
-    this.tabIndex = 0
+    this.tabIndex = this.blank ? -1 : 0
 
     // the outer div is contenteditable, allowing us to get the `paste` event that an arbitrary element cannot otherwise receive
     // astra-td-menu wraps our content and provides a right-click menu
