@@ -305,7 +305,7 @@ export type Field = {
 export type Fields = Array<Field>
 
 // CHARTS
-export type ChartTypeV3 = 'column' | 'bar' | 'line' | 'area' | 'single_value' | 'table' | 'scatter' | 'heatmap' | 'text'
+export type ChartTypeV3 = 'column' | 'bar' | 'line' | 'area' | 'single_value' | 'table' | 'scatter' | 'heatmap' | 'text' | 'section'
 export type DashboardV3ChartLegend = 'none' | 'top' | 'bottom' | 'left' | 'right'
 export type DashboardV3ChartLabelDisplayX = 'auto' | '0' | '45' | '90' | 'hidden'
 export type DashboardV3ChartLabelDisplayY = 'left' | 'right' | 'hidden'
@@ -336,6 +336,8 @@ export type DashboardV3ChartOptions = {
   xAxisKey?: string
   // The Y axis column keys for the chart series
   yAxisKeys?: string[]
+  // The colors for the Y axis keys
+  yAxisKeyColors?: Record<string, string>
   // The display, or hidden, and angle degree of the X axis labels
   xAxisLabelDisplay?: DashboardV3ChartLabelDisplayX
   // The position of the Y axis, or hidden
@@ -346,6 +348,8 @@ export type DashboardV3ChartOptions = {
   groupBy?: string
   // indicate that we're using % values
   percentage?: boolean
+  // Text to display for text charts only
+  text?: string
 }
 
 export type DashboardV3Highlight = {
@@ -363,14 +367,14 @@ export type DashboardV3Chart = {
   apiKey: string
   // Array of queries that are used to render various charts on the widget
   layers: Array<DashboardV3ChartQuery>
-  // callouts
-  // callouts?: Array<DashboardV3Callout>
+  // Highlights to display on the chart, accessories to the main chart
   highlights?: Array<DashboardV3HighlightType>
   // Chart options
   options: DashboardV3ChartOptions
-
-  params?: {}
+  // The type of chart to render
   type?: ChartTypeV3
+  // TBD
+  params?: Record<string, string>
 }
 
 export enum DashboardFilterType {
