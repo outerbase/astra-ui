@@ -482,6 +482,8 @@ export class TableData extends MutableElement {
         ]
       : this.options
 
+    this.tabIndex = 0
+
     // the outer div is contenteditable, allowing us to get the `paste` event that an arbitrary element cannot otherwise receive
     // astra-td-menu wraps our content and provides a right-click menu
     const menuEl =
@@ -495,6 +497,7 @@ export class TableData extends MutableElement {
             @dragover=${TableData.onDragOver}
             @drop=${TableData.onDrop}
             @paste=${this.onPaste}
+            tabindex="-1"
           >
             <astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
               <div class="flex">
