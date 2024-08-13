@@ -412,6 +412,7 @@ export class TableData extends MutableElement {
         this.removeAttribute('first-cell')
       }
     }
+  }
 
   public override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties)
