@@ -1,5 +1,6 @@
 import { html } from 'lit'
 import { customElement } from 'lit/decorators.js'
+import { classMap } from 'lit/directives/class-map.js'
 import { CaretDown } from '../../../icons/caret-down.js'
 import { Menu } from './index.js'
 
@@ -10,7 +11,15 @@ export class ColumnMenu extends Menu {
       <div class="flex items-center justify-between gap-2">
         <slot></slot>
         <div
-          class="border border-transparent hover:bg-neutral-100 dark:hover:bg-neutral-900 active:border-neutral-200 dark:active:border-neutral-800 p-0.5 rounded-md"
+          class="border border-transparent active:border-neutral-200 dark:active:border-neutral-800 p-0.5 rounded-md ${classMap({
+            // light
+            'hover:bg-theme-menu-toggle-color-hover': this.theme !== 'dark',
+            'active:bg-theme-menu-toggle-color-active': this.theme !== 'dark',
+
+            // dark
+            'hover:bg-theme-menu-toggle-color-hover-dark': this.theme === 'dark',
+            'active:bg-theme-menu-toggle-color-active-dark': this.theme === 'dark',
+          })}"
           @click=${this.onTrigger}
         >
           ${CaretDown(16)}

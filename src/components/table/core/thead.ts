@@ -6,6 +6,13 @@ import { ClassifiedElement } from '../../classified-element.js'
 @customElement('astra-thead')
 export class THead extends ClassifiedElement {
   protected override classMap() {
-    return { 'table-header-group sticky z-[2] top-0': true, ...super.classMap() }
+    return {
+      'table-header-group ': true,
+      sticky: true,
+      'z-[2]': true,
+      'top-0': true,
+      'backdrop-blur-astra': true,
+      ...super.classMap(),
+    }
   }
 }
