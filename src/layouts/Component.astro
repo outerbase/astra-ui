@@ -12,6 +12,11 @@ const previewClass = previewBg
   : 'flex items-center justify-center p-40 bg-black dark:bg-white rounded-lg'
 ---
 
+<style>
+  #foo {
+    background-image: url('https://images.unsplash.com/photo-1537420327992-d6e192287183?q=80&w=2576&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+  }
+</style>
 <div class="flex flex-col gap-8">
   <span>Docs / {title}</span>
   <h1 class="text-2xl font-semibold">{title}</h1>
@@ -19,7 +24,7 @@ const previewClass = previewBg
 
   <!-- preview -->
   <h2 class="font-semibold">Preview</h2>
-  <div class={previewClass}><slot name="preview" /></div>
+  <div id="foo" class={previewClass}><slot name="preview" /></div>
 
   <!-- usage -->
   <h1 class="text-2xl font-semibold">Usage</h1>

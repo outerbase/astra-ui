@@ -1,4 +1,4 @@
-import { css, html, nothing, type PropertyValueMap, type TemplateResult } from 'lit'
+import { css, html, nothing, type PropertyValueMap, type PropertyValues, type TemplateResult } from 'lit'
 import type { DirectiveResult } from 'lit/async-directive.js'
 import { customElement, property, state } from 'lit/decorators.js'
 import { createRef, ref, type Ref } from 'lit/directives/ref.js'
@@ -43,18 +43,36 @@ export class TableData extends MutableElement {
         content: '.'; /* Non-breaking space */
         visibility: hidden;
       }
+
+      :host {
+        backdrop-filter: blur(var(--astra-table-backdrop-blur));
+        -webkit-backdrop-filter: blur(var(--astra-table-backdrop-blur));
+        -moz-backdrop-filter: blur(var(--astra-table-backdrop-blur));
+        -o-backdrop-filter: blur(var(--astra-table-backdrop-blur));
+        -ms-backdrop-filter: blur(var(--astra-table-backdrop-blur));
+      }
     `,
   ]
 
-  static onContextMenu(event: MouseEvent) {
+  onContextMenu(event: MouseEvent) {
     const isPluginEditor = eventTargetIsPluginEditor(event)
     if (isPluginEditor) return
+    this.isContentEditable = false
 
     const menu = (event.currentTarget as HTMLElement).shadowRoot?.querySelector('astra-td-menu') as CellMenu | null
     if (menu) {
       event.preventDefault()
-      menu.focus()
+      event.stopPropagation()
+      event.stopImmediatePropagation()
+
       menu.open = true
+
+      const onMenuClose = () => {
+        this.isContentEditable = true
+        menu.removeEventListener('menuclose', onMenuClose)
+      }
+
+      menu.addEventListener('menuclose', onMenuClose)
     }
   }
 
@@ -221,26 +239,19 @@ export class TableData extends MutableElement {
       'focus:shadow-ringlet dark:focus:shadow-ringlet-dark focus:rounded-[4px] focus:ring-1 focus:ring-black dark:focus:ring-neutral-300 focus:outline-none':
         !this.isEditing && this.isInteractive,
       'border-r':
-        this.isInteractive ||
-        (this._drawRightBorder && this.separateCells && this.isLastColumn && this.outerBorder) || // include last column when outerBorder
-        (this._drawRightBorder && this.separateCells && !this.isLastColumn), // internal cell walls
+        this.resizable || // include or it looks funny that a resize handler is above it
+        (this.separateCells && this.isLastColumn && this.outerBorder) || // include last column when outerBorder
+        (this.separateCells && !this.isLastColumn), // internal cell walls
       'first:border-l': this.separateCells && this.outerBorder, // left/right borders when the `separate-cells` attribute is set
-      'border-b': this.withBottomBorder, // bottom border when the `with-bottom-border` attribute is set
+      'border-b': !this.isLastRow, // bottom border unless last row
     }
   }
 
   @property({ attribute: 'plugin-attributes', type: String })
   public pluginAttributes: String = ''
 
-  // allows, for example, <astra-td bottom-border="true" />
-  @property({ type: Boolean, attribute: 'bottom-border' })
-  public withBottomBorder: boolean = false
-
   @property({ type: Boolean, attribute: 'odd' })
   public isOdd?: boolean
-
-  @property({ type: Boolean, attribute: 'draw-right-border' })
-  public _drawRightBorder = false
 
   @property({ type: Boolean, attribute: 'row-selector' })
   public isRowSelector = false
@@ -263,9 +274,10 @@ export class TableData extends MutableElement {
   @property({ attribute: 'is-first-row', type: Boolean })
   public isFirstRow = false
 
-  // @property({ attribute: 'is-last-row', type: Boolean })
-  // public isLastRow = false
+  @property({ attribute: 'resizable', type: Boolean })
+  public resizable = false
 
+  @state() isContentEditable = true // this property is to toggle off the contenteditableness of to resolve quirky focus and text selection that can happen when, say, right-clicking to trigger the context menu
   @state() protected options = RW_OPTIONS
 
   private contentEditableWrapper: Ref<HTMLDivElement> = createRef()
@@ -332,7 +344,7 @@ export class TableData extends MutableElement {
   public override connectedCallback(): void {
     super.connectedCallback()
 
-    this.addEventListener('contextmenu', TableData.onContextMenu)
+    this.addEventListener('contextmenu', this.onContextMenu)
     this.addEventListener('click', this.onClick)
     this.addEventListener('keydown', TableData.onKeyDown)
 
@@ -349,7 +361,7 @@ export class TableData extends MutableElement {
   public override disconnectedCallback(): void {
     super.disconnectedCallback()
 
-    this.removeEventListener('contextmenu', TableData.onContextMenu)
+    this.removeEventListener('contextmenu', this.onContextMenu)
     this.removeEventListener('keydown', TableData.onKeyDown)
     this.removeEventListener('click', this.onClick)
     this.removeEventListener('dblclick', TableData.onDoubleClick)
@@ -400,6 +412,13 @@ export class TableData extends MutableElement {
       } else {
         this.removeAttribute('first-cell')
       }
+    }
+  }
+
+  public override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties)
+    if (changedProperties.has('blank')) {
+      this.tabIndex = this.blank ? -1 : 0
     }
   }
 
@@ -471,19 +490,22 @@ export class TableData extends MutableElement {
         ]
       : this.options
 
+    this.tabIndex = this.blank ? -1 : 0
+
     // the outer div is contenteditable, allowing us to get the `paste` event that an arbitrary element cannot otherwise receive
     // astra-td-menu wraps our content and provides a right-click menu
     const menuEl =
       !this.isEditing && !this.blank
         ? html`<span
             ${ref(this.contentEditableWrapper)}
-            class="outline-none caret-transparent"
-            contenteditable="true"
+            class="outline-none caret-transparent select-none"
+            contenteditable="${this.isContentEditable}"
             spellcheck="false"
             autocorrect="off"
             @dragover=${TableData.onDragOver}
             @drop=${TableData.onDrop}
             @paste=${this.onPaste}
+            tabindex="-1"
           >
             <astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
               <div class="flex">
