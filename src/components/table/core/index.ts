@@ -358,12 +358,7 @@ export default class AstraTable extends ClassifiedElement {
       ({ id }) => id,
       ({ id, values, originalValues, isNew }, rowIndex) => {
         return !this.removedRowUUIDs.has(id)
-          ? html`<astra-tr
-              .selected=${this.selectedRowUUIDs.has(id)}
-              ?new=${isNew}
-              ?blurry=${this.blurry}
-              @on-selection=${this._onRowSelection}
-            >
+          ? html`<astra-tr .selected=${this.selectedRowUUIDs.has(id)} ?new=${isNew} @on-selection=${this._onRowSelection}>
               <!-- checkmark cell -->
               ${this.selectableRows
                 ? html`<astra-td
@@ -443,7 +438,14 @@ export default class AstraTable extends ClassifiedElement {
                 }
               )}
               ${this.blankFill
-                ? html`<astra-td ?outer-border=${false} ?read-only=${true} ?separate-cells=${false} ?interactive=${false} ?menu=${false} ?blank=${true}></<astra-td>`
+                ? html`<astra-td
+                    ?outer-border=${false}
+                    ?read-only=${true}
+                    ?separate-cells=${false}
+                    ?interactive=${false}
+                    ?menu=${false}
+                    ?blank=${true}
+                  ></astra-td>`
                 : ''}
             </astra-tr>`
           : null
@@ -626,7 +628,7 @@ export default class AstraTable extends ClassifiedElement {
                     }}
                 >
                     <astra-thead>
-                        <astra-tr header ?blurry=${this.blurry}>
+                        <astra-tr header>
                             <!-- first column of (optional) checkboxes -->
                             ${
                               this.selectableRows

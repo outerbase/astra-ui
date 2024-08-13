@@ -43,6 +43,14 @@ export class TableData extends MutableElement {
         content: '.'; /* Non-breaking space */
         visibility: hidden;
       }
+
+      :host {
+        backdrop-filter: blur(var(--astra-table-backdrop-blur));
+        -webkit-backdrop-filter: blur(var(--astra-table-backdrop-blur));
+        -moz-backdrop-filter: blur(var(--astra-table-backdrop-blur));
+        -o-backdrop-filter: blur(var(--astra-table-backdrop-blur));
+        -ms-backdrop-filter: blur(var(--astra-table-backdrop-blur));
+      }
     `,
   ]
 
