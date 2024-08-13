@@ -398,8 +398,6 @@ export default class AstraChart extends ClassifiedElement {
       color: {
         type: this.colorType,
         scheme: this.colorScheme,
-        // legend: this.legend,
-        // range: afterburnValues // TODO: If multiple series exists, pass the array of color RGB values from dashboard.next
       },
       //   symbol: { legend: this.legend },
 
@@ -675,7 +673,6 @@ export default class AstraChart extends ClassifiedElement {
       labelAnchor: 'top',
       labelArrow: 'none',
       ticks: this.ticksY,
-      //   tickPadding: -10,
       nice: this.niceY,
       axis: yAxisDisplay,
       tickFormat: showYTicks ? undefined : () => '',
@@ -690,6 +687,14 @@ export default class AstraChart extends ClassifiedElement {
     const elements = this.shadowRoot!.querySelectorAll('rect')
     for (let i = 0; i < elements.length; i++) {
       elements[i].style.animationDelay = `${i / 50}s`
+    }
+
+    // If sizeX or sizeY change then set `hasUpdatedHeight = false` to force the height to be recalculated
+    const sizeXChanged = _changedProperties.has('sizeX') && _changedProperties.get('sizeX') !== undefined
+    const sizeYChanged = _changedProperties.has('sizeY') && _changedProperties.get('sizeY') !== undefined
+    if ((sizeXChanged || sizeYChanged) && this.hasUpdatedHeight) {
+      console.log('_changedProperties', _changedProperties)
+      this.hasUpdatedHeight = false
     }
   }
 
@@ -719,7 +724,6 @@ export default class AstraChart extends ClassifiedElement {
         theme=${this.theme}
         keyboard-shortcuts
         selectable-rows
-        outer-border
         blank-fill
       ></astra-table>`
     } else if (this.type === 'single_value') {
@@ -737,15 +741,15 @@ export default class AstraChart extends ClassifiedElement {
       let lineClamp = Math.floor(height / 21)
       let variant = 'p'
 
-      plot = html`<astra-text
+      plot = html`<label
         variant=${variant}
-        style=${`display: -webkit-box; -webkit-line-clamp: ${lineClamp}; -webkit-box-orient: vertical; overflow: hidden;`}
-        >${this.data?.options?.text}</astra-text
+        style=${`display: -webkit-box; -webkit-line-clamp: ${lineClamp}; -webkit-box-orient: vertical; overflow: hidden; font-family: Inter, sans-serif;`}
+        class=${`text-neutral-900 dark:text-neutral-100`}
+        >${this.data?.options?.text}</label
       >`
     } else plot = this.getLatestPlot()
 
-    // ${this.type === 'table' ? `${this.theme === 'dark' ? '!bg-black' : '!bg-white'}` : ''}
-    const decoratedPlot = html`<div class=${` flex-col h-full flex`}>${plot}</div>`
+    const decoratedPlot = html`<div class=${`flex-col h-full flex`}>${plot}</div>`
 
     const themedPlot = html`<div
       id="themed-plot"
@@ -769,14 +773,15 @@ export default class AstraChart extends ClassifiedElement {
      * `#chart` element is not present and the height will be 0.
      */
     if (!this.hasUpdatedHeight) {
+      // Get height of `themedPlot` and set it as the height of the component
       setTimeout(() => {
-        // Get height of `themedPlot` and set it as the height of the component
+        // console.log('Setting height')
         const findThemedPlot = this.shadowRoot?.querySelector('#chart')
         const { height } = findThemedPlot?.getBoundingClientRect() ?? { height: 0 }
 
         this.height = height
         this.hasUpdatedHeight = true
-      }, 0)
+      }, 500)
     }
 
     return html`${gradients} ${themedPlot}`
