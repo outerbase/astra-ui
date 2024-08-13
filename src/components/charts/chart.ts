@@ -126,7 +126,6 @@ export default class AstraChart extends ClassifiedElement {
 
         g[aria-label='line'] {
           opacity: 0;
-          // stroke-dasharray: 4000; // not working as intended; this is needed for the fancy loading animation tho
           transition-property: stroke-width;
           transition: 0.3s ease;
           animation: 1.5s ease-out 0s drawLine forwards;
@@ -144,10 +143,6 @@ export default class AstraChart extends ClassifiedElement {
         }
 
         &:hover {
-          /* [aria-label='line'] {
-            stroke-width: 4;
-          } */
-
           [aria-label='area'] {
             opacity: 0.5;
           }
@@ -336,13 +331,11 @@ export default class AstraChart extends ClassifiedElement {
 
       const options = this.data?.options
       if (options) {
-        // this.legend = options.legend
         this.axisLabelX = options.xAxisLabel
         this.axisLabelY = options.yAxisLabel
         this.keyX = options.xAxisKey
         this.keyY = options.yAxisKeys?.[0] // TODO don't assume 1
         this.sortOrder = options.sortOrder
-        // this.percent = options.percentage
         // TODO xAxisLabelDisplay, yAxisLabelDisplay, groupBy
       }
     }
@@ -399,7 +392,6 @@ export default class AstraChart extends ClassifiedElement {
         type: this.colorType,
         scheme: this.colorScheme,
       },
-      //   symbol: { legend: this.legend },
 
       // Marks option: https://observablehq.com/plot/features/plots#marks-option
       marks: [],
@@ -577,7 +569,6 @@ export default class AstraChart extends ClassifiedElement {
         lineY(d, {
           x: this.keyX,
           y: this.keyY,
-          //   stroke: (this.data?.options?.yAxisKeys ?? []).length > 1 ? afterburnValues : 'url(#mercury)',
           stroke: this.colorValues[0],
           tip,
         }),
@@ -585,7 +576,6 @@ export default class AstraChart extends ClassifiedElement {
         areaY(d, {
           x: this.keyX,
           y2: this.keyY,
-          //   fill: 'url(#mercury)',
           fill: this.colorValues[1],
           fillOpacity: 0.1,
         })
@@ -775,7 +765,6 @@ export default class AstraChart extends ClassifiedElement {
     if (!this.hasUpdatedHeight) {
       // Get height of `themedPlot` and set it as the height of the component
       setTimeout(() => {
-        // console.log('Setting height')
         const findThemedPlot = this.shadowRoot?.querySelector('#chart')
         const { height } = findThemedPlot?.getBoundingClientRect() ?? { height: 0 }
 

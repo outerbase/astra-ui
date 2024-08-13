@@ -159,30 +159,6 @@ export default class AstraComposedChart extends AstraChart {
         : html`${chart}`}
     </div>`
 
-    // const isDarkTheme = this.theme === 'dark'
-    // const isTableLayer = layer?.type === 'table'
-    // const isSingleValueLayer = layer?.type === 'single_value'
-
-    // // Define the classes that do not depend on conditional logic
-    // const staticChartClasses = 'text-neutral-950 h-full flex flex-col gap-4 rounded-lg bg-neutral-100 dark:bg-neutral-925 group/actions'
-
-    // // Use classMap for the dynamic dark mode class and combine it with the static classes
-    // const chartClasses = classMap({ dark: isDarkTheme }) + ' ' + staticChartClasses + (isTableLayer ? '' : ' p-5')
-    // const headerContainerClasses = isTableLayer ? 'p-5' : ''
-
-    // return html`
-    //   <div class="h-full ${classMap({ dark: isDarkTheme })}">
-    //     <div id="composed-chart" class="${chartClasses}">
-    //       ${isSingleValueLayer
-    //         ? html`${headerSection} ${chartSection} ${highlightSection}`
-    //         : html`
-    //             <div class="${headerContainerClasses}">${headerSection} ${highlightSection}</div>
-    //             ${chartSection}
-    //           `}
-    //     </div>
-    //   </div>
-    // `
-
     // render result
     return html`
       <div class="${classMap({ dark: this.theme === 'dark' })} h-full">
