@@ -86,9 +86,16 @@ export class CodeMirrorHandlebarPlugin extends CodeMirrorPlugin {
 
     const markHandlebarTheme = EditorView.baseTheme({
       '.cm-handlebar': {
-        backgroundColor: '#7ed6df',
+        backgroundColor: '#3498db',
+        color: '#fff',
         padding: '1px',
         border: '1px solid #22a6b3',
+      },
+      '&dark .cm-handlebar': {
+        backgroundColor: '#9b59b6',
+        color: '#fff',
+        padding: '1px',
+        border: '1px solid #8e44ad',
       },
     })
 

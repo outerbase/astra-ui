@@ -4,6 +4,7 @@ import Card from './components/card.js'
 import Chart from './components/charts/chart.js'
 import ComposedChart from './components/charts/composed.js'
 import { CodeMirror } from './components/codemirror/index.js'
+import { CodeMirrorHandlebarPlugin } from './components/codemirror/plugins/handlebar.js'
 import { CodeMirrorSqlPlugin } from './components/codemirror/plugins/sql.js'
 import Input from './components/input.js'
 import ScrollArea from './components/scroll-area.js'
@@ -19,6 +20,7 @@ export {
   Card,
   Chart,
   CodeMirror,
+  CodeMirrorHandlebarPlugin,
   CodeMirrorSqlPlugin,
   ComposedChart,
   Input,
@@ -47,6 +49,7 @@ declare global {
         theme?: string
       }
       'code-mirror-sql': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { dialect?: string; schema?: string }
+      'code-mirror-handlebar': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { variables?: string }
     }
   }
 }

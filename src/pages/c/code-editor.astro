@@ -1,5 +1,6 @@
 ---
 import { CodeMirror } from '../../components/codemirror'
+import { CodeMirrorHandlebarPlugin } from '../../components/codemirror/plugins/handlebar'
 import { CodeMirrorSqlPlugin } from '../../components/codemirror/plugins/sql'
 import Layout from '../../layouts/Layout.astro'
 //
@@ -17,6 +18,8 @@ CREATE TABLE employees (
     FOREIGN KEY (department_id) REFERENCES departments(department_id), -- Foreign key constraint
     CHECK (salary >= 0) -- Check constraint
 );
+
+[[handlebar]]
 
 -- Inserting values into the table with various operators blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah  
 INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_id, salary, department_id) VALUES 
@@ -75,6 +78,18 @@ const SCHEMA = {
     <CodeMirror client:only="lit" value={SAMPLE_TEXT} theme="freedom">
       <!-- @ts-ignore attributes -->
       <CodeMirrorSqlPlugin client:only="lit" dialect="sqlite" schema={JSON.stringify(SCHEMA)} />
+      <!-- @ts-ignore attributes -->
+      <CodeMirrorHandlebarPlugin client:only="lit" variables="variable1,variable2" />
+    </CodeMirror>
+  </div>
+
+  <div class="h-[400px] w-full mt-2 bg-black">
+    <!-- @ts-ignore attributes -->
+    <CodeMirror client:only="lit" value={SAMPLE_TEXT} theme="freedom" color="dark">
+      <!-- @ts-ignore attributes -->
+      <CodeMirrorSqlPlugin client:only="lit" dialect="sqlite" schema={JSON.stringify(SCHEMA)} />
+      <!-- @ts-ignore attributes -->
+      <CodeMirrorHandlebarPlugin client:only="lit" variables="variable1,variable2" />
     </CodeMirror>
   </div>
 </Layout>
