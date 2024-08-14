@@ -1,4 +1,4 @@
-import { css, html, nothing, type PropertyValueMap, type TemplateResult } from 'lit'
+import { css, html, nothing, type PropertyValueMap, type PropertyValues, type TemplateResult } from 'lit'
 import type { DirectiveResult } from 'lit/async-directive.js'
 import { customElement, property, state } from 'lit/decorators.js'
 import { createRef, ref, type Ref } from 'lit/directives/ref.js'
@@ -42,6 +42,14 @@ export class TableData extends MutableElement {
       .nbsp::after {
         content: '.'; /* Non-breaking space */
         visibility: hidden;
+      }
+
+      :host {
+        backdrop-filter: blur(var(--astra-table-backdrop-blur));
+        -webkit-backdrop-filter: blur(var(--astra-table-backdrop-blur));
+        -moz-backdrop-filter: blur(var(--astra-table-backdrop-blur));
+        -o-backdrop-filter: blur(var(--astra-table-backdrop-blur));
+        -ms-backdrop-filter: blur(var(--astra-table-backdrop-blur));
       }
     `,
   ]
@@ -231,26 +239,19 @@ export class TableData extends MutableElement {
       'focus:shadow-ringlet dark:focus:shadow-ringlet-dark focus:rounded-[4px] focus:ring-1 focus:ring-black dark:focus:ring-neutral-300 focus:outline-none':
         !this.isEditing && this.isInteractive,
       'border-r':
-        this.isInteractive ||
-        (this._drawRightBorder && this.separateCells && this.isLastColumn && this.outerBorder) || // include last column when outerBorder
-        (this._drawRightBorder && this.separateCells && !this.isLastColumn), // internal cell walls
+        this.resizable || // include or it looks funny that a resize handler is above it
+        (this.separateCells && this.isLastColumn && this.outerBorder) || // include last column when outerBorder
+        (this.separateCells && !this.isLastColumn), // internal cell walls
       'first:border-l': this.separateCells && this.outerBorder, // left/right borders when the `separate-cells` attribute is set
-      'border-b': this.withBottomBorder, // bottom border when the `with-bottom-border` attribute is set
+      'border-b': !this.isLastRow, // bottom border unless last row
     }
   }
 
   @property({ attribute: 'plugin-attributes', type: String })
   public pluginAttributes: String = ''
 
-  // allows, for example, <astra-td bottom-border="true" />
-  @property({ type: Boolean, attribute: 'bottom-border' })
-  public withBottomBorder: boolean = false
-
   @property({ type: Boolean, attribute: 'odd' })
   public isOdd?: boolean
-
-  @property({ type: Boolean, attribute: 'draw-right-border' })
-  public _drawRightBorder = false
 
   @property({ type: Boolean, attribute: 'row-selector' })
   public isRowSelector = false
@@ -273,8 +274,8 @@ export class TableData extends MutableElement {
   @property({ attribute: 'is-first-row', type: Boolean })
   public isFirstRow = false
 
-  // @property({ attribute: 'is-last-row', type: Boolean })
-  // public isLastRow = false
+  @property({ attribute: 'resizable', type: Boolean })
+  public resizable = false
 
   @state() isContentEditable = true // this property is to toggle off the contenteditableness of to resolve quirky focus and text selection that can happen when, say, right-clicking to trigger the context menu
   @state() protected options = RW_OPTIONS
@@ -414,6 +415,13 @@ export class TableData extends MutableElement {
     }
   }
 
+  public override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties)
+    if (changedProperties.has('blank')) {
+      this.tabIndex = this.blank ? -1 : 0
+    }
+  }
+
   public override render() {
     let value = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value) : this.value
     let pluginAccessory: DirectiveResult<typeof UnsafeHTMLDirective> | typeof nothing = nothing
@@ -463,7 +471,7 @@ export class TableData extends MutableElement {
 
     const themeClass = this.theme === 'dark' ? 'dark' : ''
     const inputEl = this.isEditing // &nbsp; prevents the row from collapsing (in height) when there is only 1 column
-      ? html`<div class="${themeClass}">&nbsp;<input .value=${typeof value === 'string' ? value : (value ?? '')} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
+      ? html`<div class="${themeClass}">&nbsp;<input .value=${typeof value === 'string' ? value : value ?? ''} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
       : html``
     const emptySlot = this.blank ? html`<slot></slot>` : html``
     const menuOptions = this.dirty
@@ -482,6 +490,8 @@ export class TableData extends MutableElement {
         ]
       : this.options
 
+    this.tabIndex = this.blank ? -1 : 0
+
     // the outer div is contenteditable, allowing us to get the `paste` event that an arbitrary element cannot otherwise receive
     // astra-td-menu wraps our content and provides a right-click menu
     const menuEl =
@@ -495,10 +505,11 @@ export class TableData extends MutableElement {
             @dragover=${TableData.onDragOver}
             @drop=${TableData.onDrop}
             @paste=${this.onPaste}
+            tabindex="-1"
           >
             <astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
               <div class="flex">
-                <span class="flex-auto truncate whitespace-pre ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
+                <span class="flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
                 ${pluginAccessory}
               </div>
 

@@ -77,6 +77,9 @@ export default class AstraTable extends ClassifiedElement {
   @property({ attribute: 'non-interactive', type: Boolean })
   public isNonInteractive = false
 
+  @property({ attribute: 'static-widths', type: Boolean })
+  public staticWidths = false
+
   @property({ attribute: 'auth-token', type: String })
   public authToken?: string
 
@@ -113,6 +116,9 @@ export default class AstraTable extends ClassifiedElement {
 
   @property({ attribute: 'active-column', type: String })
   public activeColumn?: string
+
+  @property({ attribute: 'blurry', type: Boolean })
+  public blurry = false
 
   @state() protected scrollableEl: Ref<ScrollArea> = createRef()
   @state() public rows: Array<RowAsRecord> = []
@@ -363,8 +369,6 @@ export default class AstraTable extends ClassifiedElement {
                     .type=${null}
                     theme=${this.theme}
                     ?separate-cells=${true}
-                    ?draw-right-border=${true}
-                    ?bottom-border=${true}
                     ?outer-border=${this.outerBorder}
                     ?blank=${true}
                     ?is-last-row=${rowIndex === this.rows.length - 1}
@@ -417,9 +421,8 @@ export default class AstraTable extends ClassifiedElement {
                       .plugin=${plugin}
                       plugin-attributes=${this.installedPlugins?.[name]?.supportingAttributes ?? ''}
                       ?separate-cells=${true}
-                      ?draw-right-border=${true}
-                      ?bottom-border=${true}
                       ?outer-border=${this.outerBorder}
+                      ?resizable=${!this.staticWidths}
                       ?is-last-row=${rowIndex === this.rows.length - 1}
                       ?is-last-column=${idx === this.visibleColumns.length - 1}
                       ?is-first-row=${rowIndex === 0}
@@ -435,7 +438,14 @@ export default class AstraTable extends ClassifiedElement {
                 }
               )}
               ${this.blankFill
-                ? html`<astra-td ?outer-border=${false} ?read-only=${true} ?separate-cells=${false} ?bottom-border=${true} ?interactive=${false} ?menu=${false} ?blank=${true}></<astra-td>`
+                ? html`<astra-td
+                    ?outer-border=${false}
+                    ?read-only=${true}
+                    ?separate-cells=${false}
+                    ?interactive=${false}
+                    ?menu=${false}
+                    ?blank=${true}
+                  ></astra-td>`
                 : ''}
             </astra-tr>`
           : null
@@ -492,7 +502,6 @@ export default class AstraTable extends ClassifiedElement {
     // ensure that `this.rowHeight` is correct
     // measure the height of each row
     const elem = document.createElement('astra-td') as TableData
-    elem.withBottomBorder = true
     elem.outerBorder = this.outerBorder
     elem.isInteractive = true
 
@@ -655,7 +664,7 @@ export default class AstraTable extends ClassifiedElement {
                                   ?separate-cells=${true}
                                   ?outer-border=${this.outerBorder}
                                   ?menu=${!this.isNonInteractive && !this.readonly}
-                                  ?with-resizer=${!this.isNonInteractive}
+                                  ?with-resizer=${!this.isNonInteractive && !this.staticWidths}
                                   ?is-first-column=${idx === 0}
                                   ?is-last-column=${idx === this.visibleColumns.length - 1}
                                   ?removable=${true}
