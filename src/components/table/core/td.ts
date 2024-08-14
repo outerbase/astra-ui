@@ -36,8 +36,6 @@ if (customElements.get('astra-td')) {
 // tl;dr <td/>, table-cell
 @customElement('astra-td')
 export class TableData extends MutableElement {
-  id = 'td'
-
   static override styles = [
     ...MutableElement.styles,
     css`
@@ -358,6 +356,8 @@ export class TableData extends MutableElement {
     if (this.isInteractive) {
       this.addEventListener('dblclick', TableData.onDoubleClick)
     }
+
+    this.id = 'td'
   }
 
   public override disconnectedCallback(): void {
