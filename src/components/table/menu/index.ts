@@ -170,7 +170,6 @@ export class Menu extends ClassifiedElement {
 
   public override connectedCallback(): void {
     super.connectedCallback()
-    this.findAndSetParent()
     window.addEventListener('resize', this.onResize)
   }
 
@@ -238,63 +237,6 @@ export class Menu extends ClassifiedElement {
         }
       })
     }
-
-    if (changedProperties.has('anchorId')) {
-      this.findAndSetParent()
-    }
-  }
-
-  findAndSetParent() {
-    if (!this.anchorId) {
-      this.anchor = null
-      return
-    }
-
-    let currentElement: HTMLElement | null = this
-
-    while (currentElement && currentElement.id !== this.anchorId) {
-      currentElement = currentElement.parentElement || ((currentElement.getRootNode() as ShadowRoot).host as HTMLElement)
-
-      // Break the loop if we've reached the top of the DOM or a detached element
-      if (!currentElement || currentElement === document.body) {
-        currentElement = null
-        break
-      }
-    }
-
-    this.anchor = currentElement
-  }
-
-  calculateMenuPosition() {
-    if (!this.anchor || !this.menuRef.value) return { x: -1, y: -1 }
-
-    const anchorRect = this.anchor.getBoundingClientRect()
-    const menuRect = this.menuRef.value.getBoundingClientRect()
-
-    const viewportWidth = window.innerWidth
-    const viewportHeight = window.innerHeight
-
-    // Initially set x and y to bottom-right of anchor
-    let x = anchorRect.right
-    let y = anchorRect.bottom
-
-    // Check if there's enough space to the right
-    if (x + menuRect.width > viewportWidth) {
-      // If not, try positioning to the left
-      x = anchorRect.left - menuRect.width
-      // If still not enough space, align with left edge of viewport
-      if (x < 0) x = 0
-    }
-
-    // Check if there's enough space below
-    if (y + menuRect.height > viewportHeight) {
-      // If not, try positioning above
-      y = anchorRect.top - menuRect.height
-      // If still not enough space, align with top edge of viewport
-      if (y < 0) y = 0
-    }
-
-    return { x, y }
   }
 
   public override render() {
@@ -312,9 +254,7 @@ export class Menu extends ClassifiedElement {
       ${this.listElement}
     </span>`
 
-    const { x, y } = this.calculateMenuPosition()
     if (this.anchorId) return html`<hans-wormhole .open=${this.open} .anchorId=${this.anchorId}>${content}</hans-wormhole>`
-    if (x !== -1 && y !== -1) return html`<hans-wormhole .open=${this.open} atX=${x} atY=${y}>${content}</hans-wormhole>`
     return html`<hans-wormhole .open=${this.open}>${content}</hans-wormhole>`
   }
 }
