@@ -514,7 +514,7 @@ export class TableData extends MutableElement {
                 ${pluginAccessory}
               </div>
 
-              <hans-wormhole .open=${this.isDisplayingPluginEditor}>
+              <hans-wormhole .open=${this.isDisplayingPluginEditor} .anchorId=${this.id}>
                 <span id="plugin-editor" class="caret-current cursor-auto z-10">${cellEditorContents}</span>
               </hans-wormhole>
             </astra-td-menu>

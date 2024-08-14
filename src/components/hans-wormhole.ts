@@ -120,22 +120,34 @@ export class HansWormhole extends LitElement {
     this.wormhole.style.top = `${adjustedY}px`
   }
 
-  findAnchor() {
-    let currentElement: HTMLElement | null = this
-    while (currentElement && currentElement.id !== this.anchorId) {
-      currentElement = currentElement.parentElement || ((currentElement.getRootNode() as ShadowRoot).host as HTMLElement)
+  findAnchor(): HTMLElement | null {
+    let currentElement: Node | null = this
 
-      // Break the loop if we've reached the top of the DOM or a detached element
-      if (!currentElement || currentElement === document.body) {
-        currentElement = null
+    while (currentElement && currentElement !== document) {
+      // Check if the current element is the anchor
+      if (currentElement instanceof HTMLElement && currentElement.id === this.anchorId) {
+        return currentElement
+      }
+
+      // Move to the parent element
+      if (currentElement.parentNode) {
+        currentElement = currentElement.parentNode
+      }
+      // If we're at a shadow root, move to the host element
+      else if (currentElement instanceof ShadowRoot) {
+        currentElement = currentElement.host
+      }
+      // If we can't go up further, break the loop
+      else {
         break
       }
     }
 
-    return currentElement
+    // If we've reached here, we didn't find the anchor
+    return null
   }
 
-  calculateMenuPosition(anchor: HTMLElement) {
+  calculateMenuPosition(anchor: HTMLElement): { x: number; y: number } {
     if (!this.slotRef.value) return { x: 0, y: 0 }
 
     const anchorRect = anchor.getBoundingClientRect()
@@ -151,24 +163,36 @@ export class HansWormhole extends LitElement {
     const viewportWidth = window.innerWidth
     const viewportHeight = window.innerHeight
 
-    // Initially set x and y to bottom-right of anchor
-    let x = anchorRect.right
-    let y = anchorRect.bottom
+    // Calculate available space in each direction
+    const spaceRight = viewportWidth - anchorRect.right
+    const spaceLeft = anchorRect.left
+    const spaceBelow = viewportHeight - anchorRect.bottom
+    const spaceAbove = anchorRect.top
 
-    // Check if there's enough space to the right
-    if (x + menuRect.width > viewportWidth) {
-      // If not, try positioning to the left
+    // Determine horizontal position
+    let x: number
+    if (spaceRight >= menuRect.width) {
+      // Position to the right if there's enough space
+      x = anchorRect.right
+    } else if (spaceLeft >= menuRect.width) {
+      // Position to the left if there's enough space
       x = anchorRect.left - menuRect.width
-      // If still not enough space, align with left edge of viewport
-      if (x < 0) x = 0
+    } else {
+      // If neither side has enough space, align with the side that has more space
+      x = spaceRight > spaceLeft ? viewportWidth - menuRect.width : 0
     }
 
-    // Check if there's enough space below
-    if (y + menuRect.height > viewportHeight) {
-      // If not, try positioning above
+    // Determine vertical position
+    let y: number
+    if (spaceBelow >= menuRect.height) {
+      // Position below if there's enough space
+      y = anchorRect.bottom
+    } else if (spaceAbove >= menuRect.height) {
+      // Position above if there's enough space
       y = anchorRect.top - menuRect.height
-      // If still not enough space, align with top edge of viewport
-      if (y < 0) y = 0
+    } else {
+      // If neither above nor below has enough space, align with the side that has more space
+      y = spaceBelow > spaceAbove ? viewportHeight - menuRect.height : 0
     }
 
     return { x, y }
