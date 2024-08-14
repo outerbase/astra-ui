@@ -1,8 +1,17 @@
 import { acceptCompletion, autocompletion, closeBracketsKeymap, completionStatus, startCompletion } from '@codemirror/autocomplete'
 import { defaultKeymap, history, historyKeymap, indentLess, indentMore } from '@codemirror/commands'
 import { defaultHighlightStyle, foldKeymap, indentOnInput, indentUnit, syntaxHighlighting } from '@codemirror/language'
-import { Compartment, StateEffect, type Extension } from '@codemirror/state'
-import { dropCursor, highlightActiveLine, highlightActiveLineGutter, keymap, lineNumbers, ViewUpdate } from '@codemirror/view'
+import { Compartment, Prec, StateEffect, type Extension } from '@codemirror/state'
+import {
+  dropCursor,
+  highlightActiveLine,
+  highlightActiveLineGutter,
+  keymap,
+  lineNumbers,
+  placeholder,
+  ViewUpdate,
+  type KeyBinding,
+} from '@codemirror/view'
 import { EditorView } from 'codemirror'
 import { LitElement } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
@@ -18,6 +27,7 @@ export class CodeMirror extends LitElement {
   protected _wrap: boolean = false
   protected _color: 'dark' | 'light' = 'light'
   protected _theme: string = 'moondust'
+  protected _placeholder: string = ''
 
   constructor() {
     super()
@@ -28,12 +38,83 @@ export class CodeMirror extends LitElement {
     this.attachShadow({ mode: 'open' })
     this.shadowRoot?.append(container)
 
+    // We will use icon font instead of SVG because CodeMirror rely
+    // on :after content. It is easily to change the color of the icon
+    // when we toggle dark/light mode.
+    //
+    // We append it to document instead of shadowRoot because browser
+    // does not support loading font dynamically inside shadowRoot
+    //
+    // To construct the font, you can do it on
+    // https://icomoon.io/app/
+    // \62 => https://phosphoricons.com/?q=%22column%22
+    // \61 => https://phosphoricons.com/?q=%22table%22
+    if (!document.getElementById('codemirror-custom-font')) {
+      const head = document.head || document.getElementsByTagName('head')[0]
+      const iconFontStyle = document.createElement('style')
+      iconFontStyle.id = 'codemirror-custom-font'
+      head.appendChild(iconFontStyle)
+
+      iconFontStyle.innerHTML = `
+        @font-face {
+            font-family: 'outerbase-icon';
+            font-weight: normal;
+            font-style: normal;
+            font-display: block;
+            src: url(data:@file/octet-stream;base64,d09GRgABAAAAAAVQAAsAAAAABQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABPUy8yAAABCAAAAGAAAABgDxEM4WNtYXAAAAFoAAAAVAAAAFT/9AFKZ2FzcAAAAbwAAAAIAAAACAAAABBnbHlmAAABxAAAAUAAAAFAAL6X5WhlYWQAAAMEAAAANgAAADYogzvlaGhlYQAAAzwAAAAkAAAAJAdiA8dobXR4AAADYAAAABgAAAAYDgAAAGxvY2EAAAN4AAAADgAAAA4AyAB0bWF4cAAAA4gAAAAgAAAAIAANADJuYW1lAAADqAAAAYYAAAGGmUoJ+3Bvc3QAAAUwAAAAIAAAACAAAwAAAAMDVQGQAAUAAAKZAswAAACPApkCzAAAAesAMwEJAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAQAAAAGIDwP/AAEADwABAAAAAAQAAAAAAAAAAAAAAIAAAAAAAAwAAAAMAAAAcAAEAAwAAABwAAwABAAAAHAAEADgAAAAKAAgAAgACAAEAIABi//3//wAAAAAAIABh//3//wAB/+P/owADAAEAAAAAAAAAAAAAAAEAAf//AA8AAQAA/8AAAAPAAAIAADc5AQAAAAABAAD/wAAAA8AAAgAANzkBAAAAAAEAAP/AAAADwAACAAA3OQEAAAAABAAA/8ADQAPAABMAFwArAC8AAAEjIgYVMREUFjMxMzI2NTERNCYjESMRMyUjIgYVMREUFjMxMzI2NTERNCYjESMRMwGgoBslJRugGyUlG6CgAWCgGyUlG6AbJSUboKADQCUb/YAbJSUbAoAbJf1AAoBAJRv9gBslJRsCgBsl/UACgAAABgAA/8ADoAPAABMAFwAbAB8AIwAnAAABISIGFTERFBYzMSEyNjUxETQmIwEzFSM3IRUhARUhNREzFSMpATUhA4D9AA0TJRsCwBslEw39IKCg4AHg/iAB4P1AoKACwP4gAeADABMN/eAbJSUbAiANE/8AgICAAUCAgP6AgIAAAAABAAAAAAAAbqA4a18PPPUACwQAAAAAAOLie7QAAAAA4uJ7tAAA/8ADoAPAAAAACAACAAAAAAAAAAEAAAPA/8AAAAQAAAAAAAOgAAEAAAAAAAAAAAAAAAAAAAAGBAAAAAAAAAAAAAAAAgAAAAQAAAAEAAAAAAAAAAAKABQAHgBgAKAAAAABAAAABgAwAAYAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAADgCuAAEAAAAAAAEABwAAAAEAAAAAAAIABwBgAAEAAAAAAAMABwA2AAEAAAAAAAQABwB1AAEAAAAAAAUACwAVAAEAAAAAAAYABwBLAAEAAAAAAAoAGgCKAAMAAQQJAAEADgAHAAMAAQQJAAIADgBnAAMAAQQJAAMADgA9AAMAAQQJAAQADgB8AAMAAQQJAAUAFgAgAAMAAQQJAAYADgBSAAMAAQQJAAoANACkaWNvbW9vbgBpAGMAbwBtAG8AbwBuVmVyc2lvbiAxLjAAVgBlAHIAcwBpAG8AbgAgADEALgAwaWNvbW9vbgBpAGMAbwBtAG8AbwBuaWNvbW9vbgBpAGMAbwBtAG8AbwBuUmVndWxhcgBSAGUAZwB1AGwAYQByaWNvbW9vbgBpAGMAbwBtAG8AbwBuRm9udCBnZW5lcmF0ZWQgYnkgSWNvTW9vbi4ARgBvAG4AdAAgAGcAZQBuAGUAcgBhAHQAZQBkACAAYgB5ACAASQBjAG8ATQBvAG8AbgAuAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==) format('woff2');
+        }  
+      `
+    }
+
+    const styleElement = document.createElement('style')
+    styleElement.innerHTML = `
+      .cm-tooltip-autocomplete > ul > li {
+        display: flex;
+      }
+
+      .cm-tooltip-autocomplete > ul > li > .cm-completionIcon {
+        width: 1em !important;
+        display: flex;
+        align-self: center;
+        justify-content: center;
+      }
+
+      .cm-tooltip-autocomplete .cm-completionLabel {
+        flex-grow: 1;
+      }
+
+      .cm-tooltip-autocomplete .cm-completionDetail {
+        padding-left: 15px;
+      }
+      
+      .cm-completionIcon-property::after {
+        content: "\\61" !important;
+        font-family: 'outerbase-icon' !important;
+      }
+
+      .cm-completionIcon-type::after {
+        content: "\\62" !important;
+        font-family: 'outerbase-icon' !important;
+      }
+
+      .cm-completionIcon-function::after,
+      .cm-completionIcon-method::after,
+      .cm-completionIcon-variable::after,
+      .cm-completionIcon-namespace::after,
+      .cm-completionIcon-interface::after {
+        content: '⚡' !important;
+      }
+    `
+
+    this.shadowRoot?.append(styleElement)
+
     this.container = container
   }
 
   connectedCallback(): void {
     this._color = this.getAttribute('color') === 'dark' ? 'dark' : 'light'
     this._theme = this.getAttribute('theme') ?? 'moondust'
+    this._placeholder = this.getAttribute('placeholder') ?? ''
 
     // Default extensions
     this.extensions = [
@@ -77,6 +158,7 @@ export class CodeMirror extends LitElement {
         ],
         comp: new Compartment(),
       },
+      { name: 'placeholder', ext: placeholder(this._placeholder), comp: new Compartment() },
       {
         name: 'theme',
         ext: getPredefineTheme(this._color, this._theme),
@@ -150,6 +232,15 @@ export class CodeMirror extends LitElement {
     return this._color
   }
 
+  @property() set placeholder(value: string | null) {
+    this._placeholder = value ?? ''
+    this.updateExtension('placeholder', placeholder(this._placeholder))
+  }
+
+  get placeholder() {
+    return this._placeholder
+  }
+
   @property() set theme(value: string) {
     this._theme = value
     this.updateExtension('theme', getPredefineTheme(this._color, this._theme))
@@ -174,6 +265,10 @@ export class CodeMirror extends LitElement {
       }),
       ...this.extensions.map((ext) => ext.comp.of(ext.ext)),
     ]
+  }
+
+  registerKeymap(name: string, key: KeyBinding) {
+    this.updateExtension('custom-keybinding-' + name, Prec.highest(keymap.of([key])))
   }
 
   updateExtension(extensionName: string, ext: any) {

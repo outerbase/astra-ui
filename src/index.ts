@@ -41,8 +41,12 @@ declare global {
       'astra-select': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
       'astra-calendar': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
       'outerbase-table': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'code-mirror': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'code-mirror-sql': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
+      'code-mirror': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+        value?: string
+        placeholder?: string
+        theme?: string
+      }
+      'code-mirror-sql': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { dialect?: string; schema?: string }
     }
   }
 }
