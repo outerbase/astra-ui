@@ -21,6 +21,8 @@ export class HansWormhole extends LitElement {
   `
 
   @property({ type: Boolean }) open = false
+  @property({ type: Number }) atX?: number
+  @property({ type: Number }) atY?: number
   @query('#wormhole') private wormhole!: HTMLElement
 
   // last mouse coordinates; does NOT trigger re-render
@@ -80,16 +82,17 @@ export class HansWormhole extends LitElement {
 
   private adjustPosition() {
     if (!this.wormhole) return
+
     const rect = this.wormhole.getBoundingClientRect()
     const windowWidth = window.innerWidth
     const windowHeight = window.innerHeight
-
-    let adjustedX = this.x
-    let adjustedY = this.y
+    let adjustedX = this.atX ?? this.x
+    let adjustedY = this.atY ?? this.y
 
     if (this.x + rect.width > windowWidth) {
       adjustedX = windowWidth - rect.width
     }
+
     if (this.y + rect.height > windowHeight) {
       adjustedY = windowHeight - rect.height
     }
