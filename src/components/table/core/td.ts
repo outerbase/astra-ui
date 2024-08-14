@@ -36,6 +36,8 @@ if (customElements.get('astra-td')) {
 // tl;dr <td/>, table-cell
 @customElement('astra-td')
 export class TableData extends MutableElement {
+  id = 'td'
+
   static override styles = [
     ...MutableElement.styles,
     css`
@@ -471,7 +473,7 @@ export class TableData extends MutableElement {
 
     const themeClass = this.theme === 'dark' ? 'dark' : ''
     const inputEl = this.isEditing // &nbsp; prevents the row from collapsing (in height) when there is only 1 column
-      ? html`<div class="${themeClass}">&nbsp;<input .value=${typeof value === 'string' ? value : value ?? ''} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
+      ? html`<div class="${themeClass}">&nbsp;<input .value=${typeof value === 'string' ? value : (value ?? '')} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
       : html``
     const emptySlot = this.blank ? html`<slot></slot>` : html``
     const menuOptions = this.dirty
@@ -491,7 +493,6 @@ export class TableData extends MutableElement {
       : this.options
 
     this.tabIndex = this.blank ? -1 : 0
-
     // the outer div is contenteditable, allowing us to get the `paste` event that an arbitrary element cannot otherwise receive
     // astra-td-menu wraps our content and provides a right-click menu
     const menuEl =
@@ -514,7 +515,7 @@ export class TableData extends MutableElement {
               </div>
 
               <hans-wormhole .open=${this.isDisplayingPluginEditor}>
-                <span id="plugin-editor" class="caret-current cursor-auto z-10"> ${cellEditorContents} </span>
+                <span id="plugin-editor" class="caret-current cursor-auto z-10">${cellEditorContents}</span>
               </hans-wormhole>
             </astra-td-menu>
           </span>`
