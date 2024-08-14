@@ -206,7 +206,8 @@ export default {
         'ringlet-dark': '0px 0px 0px 3px #525252;',
       },
       backdropBlur: {
-        astra: 'var(--astra-table-backdrop-blur, 4px)',
+        'astra-table': 'var(--astra-table-backdrop-blur, 4px)',
+        'astra-menu': 'var(--astra-table-menu-backdrop-blur, 4px)',
       },
     },
     fontFamily: {

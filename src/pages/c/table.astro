@@ -21,13 +21,15 @@ const columns = Object.keys(rows[0].values).map((name) => ({ name }))
   /* wormhole'd things need to be set on the `body` :shrug: */
   #blurred-table {
     --astra-table-backdrop-blur: 4px;
+    --astra-table-menu-backdrop-blur: 4px;
     --astra-toggle-color-hover: rgba(0, 0, 0, 0.2);
     --astra-toggle-color-active: rgba(0, 0, 0, 0.7);
 
-    --astra-menu-background-color: black;
+    --astra-menu-background-color: rgba(0, 0, 0, 0.6);
     --astra-menu-content-color: white;
-    --astra-menu-content-color-active: black;
-    --astra-menu-background-color-active: white;
+    --astra-menu-content-color-active: white;
+    --astra-toggle-color-hover: rgba(0, 0, 0, 0.2);
+    --astra-toggle-color-active: black;
 
     --astra-table-content-color: rgb(255, 255, 255);
     --astra-table-border-color: rgba(255, 255, 255, 0.1);
