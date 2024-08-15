@@ -68,6 +68,26 @@ export class AstraEditor extends LitElement {
 
     const styleElement = document.createElement('style')
     styleElement.innerHTML = `
+      .cm-tooltip-autocomplete ul::-webkit-scrollbar,
+      .cm-scroller::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+
+      .cm-scroller::-webkit-scrollbar-thumb {
+        border-radius: 5px;
+      }
+
+      .cm-tooltip-autocomplete ul::-webkit-scrollbar-thumb,
+      .cm-scroller::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.3);
+      }
+
+      .dark .cm-tooltip-autocomplete ul::-webkit-scrollbar-thumb, 
+      .dark .cm-scroller::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
       .cm-tooltip-autocomplete > ul > li {
         display: flex;
       }
@@ -115,6 +135,12 @@ export class AstraEditor extends LitElement {
     this._color = this.getAttribute('color') === 'dark' ? 'dark' : 'light'
     this._theme = this.getAttribute('theme') ?? 'moondust'
     this._placeholder = this.getAttribute('placeholder') ?? ''
+
+    if (this._color === 'dark') {
+      this.container.classList.add('dark')
+    } else {
+      this.container.classList.remove('dark')
+    }
 
     // Default extensions
     this.extensions = [
@@ -230,6 +256,13 @@ export class AstraEditor extends LitElement {
 
   @property() set color(value: string | null) {
     this._color = value === 'dark' ? 'dark' : 'light'
+
+    if (this._color === 'dark') {
+      this.container.classList.add('dark')
+    } else {
+      this.container.classList.remove('dark')
+    }
+
     this.updateExtension('theme', getPredefineTheme(this._color, this._theme))
   }
 
