@@ -10,13 +10,13 @@ export class AstraEditorPlugin extends LitElement {
 
     let ancestor = this.parentElement
     while (ancestor) {
-      if (ancestor.tagName.toLowerCase() === 'code-mirror') {
+      if (ancestor.tagName.toLowerCase() === 'astra-editor') {
         break
       }
       ancestor = ancestor.parentElement
     }
 
-    if (!ancestor) throw new Error('Failed to find parent <code-mirror />')
+    if (!ancestor) throw new Error('Failed to find parent <astra-editor />')
 
     this.editor = ancestor as unknown as AstraEditor
   }
