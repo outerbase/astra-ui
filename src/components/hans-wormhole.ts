@@ -12,6 +12,7 @@ export class HansWormhole extends LitElement {
 
     #wormhole {
       margin: 0;
+      padding: 0;
       background-color: unset;
       border: 0;
     }
@@ -173,10 +174,10 @@ export class HansWormhole extends LitElement {
     let x: number
     if (spaceRight >= menuRect.width) {
       // Position to the right if there's enough space
-      x = anchorRect.right
+      x = anchorRect.left
     } else if (spaceLeft >= menuRect.width) {
       // Position to the left if there's enough space
-      x = anchorRect.left - menuRect.width
+      x = anchorRect.right - menuRect.width
     } else {
       // If neither side has enough space, align with the side that has more space
       x = spaceRight > spaceLeft ? viewportWidth - menuRect.width : 0
@@ -186,10 +187,10 @@ export class HansWormhole extends LitElement {
     let y: number
     if (spaceBelow >= menuRect.height) {
       // Position below if there's enough space
-      y = anchorRect.bottom
+      y = anchorRect.bottom + 4
     } else if (spaceAbove >= menuRect.height) {
       // Position above if there's enough space
-      y = anchorRect.top - menuRect.height
+      y = anchorRect.top - menuRect.height - 4
     } else {
       // If neither above nor below has enough space, align with the side that has more space
       y = spaceBelow > spaceAbove ? viewportHeight - menuRect.height : 0

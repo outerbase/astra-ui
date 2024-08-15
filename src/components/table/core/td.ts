@@ -230,7 +230,6 @@ export class TableData extends MutableElement {
     return {
       ...super.classMap(),
       'table-cell relative focus:z-[1]': true,
-      'px-cell-padding-x py-cell-padding-y': !this.plugin && !this.blank,
       'px-5': this.blank,
       'border-theme-table-border dark:border-theme-table-border-dark': true,
       'bg-theme-table-row-selected dark:bg-theme-table-row-selected-dark': this.isActive && (!this.dirty || this.hideDirt), // i.e. this is the column being sorted
@@ -279,6 +278,7 @@ export class TableData extends MutableElement {
 
   @state() isContentEditable = true // this property is to toggle off the contenteditableness of to resolve quirky focus and text selection that can happen when, say, right-clicking to trigger the context menu
   @state() protected options = RW_OPTIONS
+  @state() protected isHoveringCell = false
 
   private contentEditableWrapper: Ref<HTMLDivElement> = createRef()
   private _interstitialValue: Serializable
@@ -435,6 +435,9 @@ export class TableData extends MutableElement {
     let cellContents: TemplateResult<1>
     let cellEditorContents: DirectiveResult<typeof UnsafeHTMLDirective> | undefined
 
+    const classes =
+      value === null || value === undefined ? 'nbsp text-neutral-400 dark:text-neutral-600' : 'nbsp overflow-hidden text-ellipsis'
+
     if (this.plugin) {
       const { config, tagName } = this.plugin
 
@@ -445,14 +448,25 @@ export class TableData extends MutableElement {
         `<${tagName} cellvalue='${value}' columnName='${this.column}'  configuration='${config}' ${this.pluginAttributes}></${tagName}>`
       )
 
-      pluginAccessory = unsafeHTML(
-        `<${tagName.replace(
-          'outerbase-plugin-cell',
-          'outerbase-plugin-accessory'
-        )} cellvalue='${value}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
-      )
+      const pluginAccessoryTag = tagName.replace('outerbase-plugin-cell', 'outerbase-plugin-cell-accessory')
 
-      cellContents = html`${pluginAsString}`
+      pluginAccessory = customElements.get(pluginAccessoryTag)
+        ? unsafeHTML(
+            `<${pluginAccessoryTag} ishoveringcell='${this.isHoveringCell}' cellvalue='${value}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${pluginAccessoryTag}>`
+          )
+        : nothing
+
+      cellContents = customElements.get(tagName)
+        ? html`${pluginAsString}`
+        : html`<div class=${classes} style="line-height: 34px;">
+            ${value === null
+              ? 'NULL'
+              : value === undefined
+                ? 'DEFAULT'
+                : typeof value === 'string'
+                  ? value.replace(/\n/g, returnCharacterPlaceholderRead)
+                  : value}
+          </div>`
 
       if (this.isDisplayingPluginEditor) {
         cellEditorContents = unsafeHTML(
@@ -466,8 +480,6 @@ export class TableData extends MutableElement {
         )
       }
     } else {
-      const classes =
-        value === null || value === undefined ? 'nbsp text-neutral-400 dark:text-neutral-600' : 'nbsp overflow-hidden text-ellipsis'
       /* prettier-ignore */ cellContents = html`<div class=${classes}>${ value === null ? 'NULL' : value === undefined ? 'DEFAULT' : typeof value === 'string' ? value.replace(/\n/g, returnCharacterPlaceholderRead) : value}</div>`;
     }
 
@@ -509,7 +521,18 @@ export class TableData extends MutableElement {
             tabindex="-1"
           >
             <astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
-              <div class="flex">
+              <div
+                class="flex items-center px-cell-padding-x"
+                @mouseenter=${() => {
+                  this.isHoveringCell = true
+                }}
+                @mouseleave=${() => {
+                  this.isHoveringCell = false
+                }}
+                @mouseout=${() => {
+                  this.isHoveringCell = false
+                }}
+              >
                 <span class="flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
                 ${pluginAccessory}
               </div>
