@@ -1,9 +1,9 @@
 import { MSSQL, MySQL, PostgreSQL, sql, SQLDialect, SQLite, StandardSQL, type SQLNamespace } from '@codemirror/lang-sql'
 import { customElement, property } from 'lit/decorators.js'
-import { CodeMirrorPlugin } from './base'
+import { AstraEditorPlugin } from './base'
 
-@customElement('code-mirror-sql')
-export class CodeMirrorSqlPlugin extends CodeMirrorPlugin {
+@customElement('astra-editor-sql')
+export class AstraEditorSqlPlugin extends AstraEditorPlugin {
   protected _schema: SQLNamespace = {}
   protected _dialect: string = 'sql'
 

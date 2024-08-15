@@ -5,7 +5,7 @@ import { Range } from '@codemirror/state'
 import { Decoration, EditorView, ViewPlugin, ViewUpdate, type DecorationSet } from '@codemirror/view'
 import { customElement, property } from 'lit/decorators.js'
 
-import { CodeMirrorPlugin } from './base'
+import { AstraEditorPlugin } from './base'
 
 const handlebarMark = Decoration.mark({ class: 'cm-handlebar' })
 
@@ -23,8 +23,8 @@ function decorateHandlebar(view: EditorView) {
   return Decoration.set(decorationList)
 }
 
-@customElement('code-mirror-handlebar')
-export class CodeMirrorHandlebarPlugin extends CodeMirrorPlugin {
+@customElement('astra-editor-handlebar')
+export class AstraEditorHandlerbarPlugin extends AstraEditorPlugin {
   protected _variables: string = ''
 
   @property() set variables(value: string) {

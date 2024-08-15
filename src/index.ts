@@ -1,11 +1,11 @@
+import { AstraEditor } from './components/astra-editor/index.js'
+import { AstraEditorHandlerbarPlugin } from './components/astra-editor/plugins/handlebar.js'
+import { AstraEditorSqlPlugin } from './components/astra-editor/plugins/sql.js'
 import Button from './components/button.js'
 import Calendar from './components/calendar/calendar.js'
 import Card from './components/card.js'
 import Chart from './components/charts/chart.js'
 import ComposedChart from './components/charts/composed.js'
-import { CodeMirror } from './components/codemirror/index.js'
-import { CodeMirrorHandlebarPlugin } from './components/codemirror/plugins/handlebar.js'
-import { CodeMirrorSqlPlugin } from './components/codemirror/plugins/sql.js'
 import Input from './components/input.js'
 import ScrollArea from './components/scroll-area.js'
 import Select from './components/select.js'
@@ -15,13 +15,13 @@ import Text from './components/text.js'
 
 // export * as Types from './types'
 export {
+  AstraEditor,
+  AstraEditorHandlerbarPlugin,
+  AstraEditorSqlPlugin,
   Button,
   Calendar,
   Card,
   Chart,
-  CodeMirror,
-  CodeMirrorHandlebarPlugin,
-  CodeMirrorSqlPlugin,
   ComposedChart,
   Input,
   OuterbaseTable,
@@ -43,13 +43,13 @@ declare global {
       'astra-select': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
       'astra-calendar': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
       'outerbase-table': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'code-mirror': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+      'astra-editor': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
         value?: string
         placeholder?: string
         theme?: string
       }
-      'code-mirror-sql': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { dialect?: string; schema?: string }
-      'code-mirror-handlebar': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { variables?: string }
+      'astra-editor-sql': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { dialect?: string; schema?: string }
+      'astra-eidtor-handlebar': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { variables?: string }
     }
   }
 }

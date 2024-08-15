@@ -1,7 +1,7 @@
 ---
-import { CodeMirror } from '../../components/codemirror'
-import { CodeMirrorHandlebarPlugin } from '../../components/codemirror/plugins/handlebar'
-import { CodeMirrorSqlPlugin } from '../../components/codemirror/plugins/sql'
+import { AstraEditor } from '../../components/astra-editor'
+import { AstraEditorHandlerbarPlugin } from '../../components/astra-editor/plugins/handlebar'
+import { AstraEditorSqlPlugin } from '../../components/astra-editor/plugins/sql'
 import Layout from '../../layouts/Layout.astro'
 //
 
@@ -75,21 +75,21 @@ const SCHEMA = {
 <Layout title="Astra-UI">
   <div class="h-[400px] w-full">
     <!-- @ts-ignore attributes -->
-    <CodeMirror client:only="lit" value={SAMPLE_TEXT} theme="freedom">
+    <AstraEditor client:only="lit" value={SAMPLE_TEXT} theme="freedom">
       <!-- @ts-ignore attributes -->
-      <CodeMirrorSqlPlugin client:only="lit" dialect="sqlite" schema={JSON.stringify(SCHEMA)} />
+      <AstraEditorSqlPlugin client:only="lit" dialect="sqlite" schema={JSON.stringify(SCHEMA)} />
       <!-- @ts-ignore attributes -->
-      <CodeMirrorHandlebarPlugin client:only="lit" variables="variable1,variable2" />
-    </CodeMirror>
+      <AstraEditorHandlerbarPlugin client:only="lit" variables="variable1,variable2" />
+    </AstraEditor>
   </div>
 
   <div class="h-[400px] w-full mt-2 bg-black">
     <!-- @ts-ignore attributes -->
-    <CodeMirror client:only="lit" value={SAMPLE_TEXT} theme="freedom" color="dark">
+    <AstraEditor client:only="lit" value={SAMPLE_TEXT} theme="freedom" color="dark">
       <!-- @ts-ignore attributes -->
-      <CodeMirrorSqlPlugin client:only="lit" dialect="sqlite" schema={JSON.stringify(SCHEMA)} />
+      <AstraEditorSqlPlugin client:only="lit" dialect="sqlite" schema={JSON.stringify(SCHEMA)} />
       <!-- @ts-ignore attributes -->
-      <CodeMirrorHandlebarPlugin client:only="lit" variables="variable1,variable2" />
-    </CodeMirror>
+      <AstraEditorHandlerbarPlugin client:only="lit" variables="variable1,variable2" />
+    </AstraEditor>
   </div>
 </Layout>

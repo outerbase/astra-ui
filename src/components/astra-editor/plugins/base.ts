@@ -1,9 +1,9 @@
 import { LitElement } from 'lit'
 import { property } from 'lit/decorators.js'
-import { CodeMirror } from '..'
+import { AstraEditor } from '..'
 
-export class CodeMirrorPlugin extends LitElement {
-  @property() editor!: CodeMirror
+export class AstraEditorPlugin extends LitElement {
+  @property() editor!: AstraEditor
 
   connectedCallback() {
     super.connectedCallback()
@@ -18,6 +18,6 @@ export class CodeMirrorPlugin extends LitElement {
 
     if (!ancestor) throw new Error('Failed to find parent <code-mirror />')
 
-    this.editor = ancestor as unknown as CodeMirror
+    this.editor = ancestor as unknown as AstraEditor
   }
 }

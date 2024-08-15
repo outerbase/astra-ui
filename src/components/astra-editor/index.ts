@@ -1,5 +1,5 @@
 import { acceptCompletion, autocompletion, closeBracketsKeymap, completionStatus, startCompletion } from '@codemirror/autocomplete'
-import { defaultKeymap, history, historyKeymap, indentLess, indentMore } from '@codemirror/commands'
+import { defaultKeymap, history, historyKeymap, indentLess, indentMore, insertNewline } from '@codemirror/commands'
 import { defaultHighlightStyle, foldKeymap, indentOnInput, indentUnit, syntaxHighlighting } from '@codemirror/language'
 import { Compartment, Prec, StateEffect, type Extension } from '@codemirror/state'
 import {
@@ -17,8 +17,8 @@ import { LitElement } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { getPredefineTheme } from './theme'
 
-@customElement('code-mirror')
-export class CodeMirror extends LitElement {
+@customElement('astra-editor')
+export class AstraEditor extends LitElement {
   protected container: HTMLDivElement
   protected editor?: EditorView
   protected extensions: { name: string; comp: Compartment; ext: Extension }[] = []
@@ -143,6 +143,11 @@ export class CodeMirror extends LitElement {
                 return true
               },
               shift: indentLess,
+            },
+            {
+              key: 'Shift-Enter',
+              preventDefault: true,
+              run: insertNewline,
             },
             {
               key: 'Ctrl-Space',
