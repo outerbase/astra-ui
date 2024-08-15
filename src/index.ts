@@ -49,7 +49,7 @@ declare global {
         theme?: string
       }
       'astra-editor-sql': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { dialect?: string; schema?: string }
-      'astra-eidtor-handlebar': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { variables?: string }
+      'astra-editor-handlebar': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { variables?: string }
     }
   }
 }
