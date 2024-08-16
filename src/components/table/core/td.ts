@@ -485,7 +485,7 @@ export class TableData extends MutableElement {
 
     const themeClass = this.theme === 'dark' ? 'dark' : ''
     const inputEl = this.isEditing // &nbsp; prevents the row from collapsing (in height) when there is only 1 column
-      ? html`<div class="${themeClass}">&nbsp;<input .value=${typeof value === 'string' ? value : (value ?? '')} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
+      ? html`<div class="${themeClass}" style="height: 34px;">&nbsp;<input .value=${typeof value === 'string' ? value : (value ?? '')} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
       : html``
     const emptySlot = this.blank ? html`<slot></slot>` : html``
     const menuOptions = this.dirty
@@ -518,21 +518,16 @@ export class TableData extends MutableElement {
             @dragover=${TableData.onDragOver}
             @drop=${TableData.onDrop}
             @paste=${this.onPaste}
+            @pointerenter=${() => {
+              this.isHoveringCell = true
+            }}
+            @pointerleave=${() => {
+              this.isHoveringCell = false
+            }}
             tabindex="-1"
           >
             <astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
-              <div
-                class="flex items-center px-cell-padding-x"
-                @mouseenter=${() => {
-                  this.isHoveringCell = true
-                }}
-                @mouseleave=${() => {
-                  this.isHoveringCell = false
-                }}
-                @mouseout=${() => {
-                  this.isHoveringCell = false
-                }}
-              >
+              <div class="flex items-center px-cell-padding-x">
                 <span class="flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
                 ${pluginAccessory}
               </div>
