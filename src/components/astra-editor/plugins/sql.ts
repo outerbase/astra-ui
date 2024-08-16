@@ -6,7 +6,6 @@ import { AstraEditorPlugin } from './base'
 @customElement('astra-editor-sql')
 export class AstraEditorSqlPlugin extends AstraEditorPlugin {
   protected _schema: SQLNamespace = {}
-  protected _dialect: string = 'sql'
 
   @property() dialect: string = 'sql'
   @property() schema: string = ''
@@ -29,7 +28,7 @@ export class AstraEditorSqlPlugin extends AstraEditorPlugin {
 
   protected updateExtension() {
     if (this.editor) {
-      let dialect: SQLDialect = { mysql: MySQL, sqlite: SQLite, postgre: PostgreSQL, mssql: MSSQL }[this._dialect] ?? StandardSQL
+      let dialect: SQLDialect = { mysql: MySQL, sqlite: SQLite, postgre: PostgreSQL, mssql: MSSQL }[this.dialect] ?? StandardSQL
 
       this.editor.updateExtension(
         'sql-plugin',
