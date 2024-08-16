@@ -1,4 +1,5 @@
 import { CompletionContext } from '@codemirror/autocomplete'
+import { MSSQL, MySQL, PostgreSQL, SQLite, StandardSQL } from '@codemirror/lang-sql'
 import { syntaxTree } from '@codemirror/language'
 import { Range } from '@codemirror/state'
 import { Decoration, EditorView, ViewPlugin, ViewUpdate, type DecorationSet } from '@codemirror/view'
@@ -44,10 +45,7 @@ export class AstraEditorHandlerbarPlugin extends AstraEditorPlugin {
 
   setupAutoCompletion() {
     const completionList = this.variables.split(',').filter(Boolean)
-    if (completionList.length === 0) return null
-
-    const lang = this.editor.getLanguage()
-    if (!lang) return null
+    if (completionList.length === 0) return []
 
     function handlebarCompletion(context: CompletionContext) {
       const node = syntaxTree(context.state).resolveInner(context.pos)
@@ -64,7 +62,13 @@ export class AstraEditorHandlerbarPlugin extends AstraEditorPlugin {
       }
     }
 
-    return lang.data.of({ autocomplete: handlebarCompletion })
+    return [
+      StandardSQL.language.data.of({ autocomplete: handlebarCompletion }),
+      SQLite.language.data.of({ autocomplete: handlebarCompletion }),
+      MySQL.language.data.of({ autocomplete: handlebarCompletion }),
+      MSSQL.language.data.of({ autocomplete: handlebarCompletion }),
+      PostgreSQL.language.data.of({ autocomplete: handlebarCompletion }),
+    ]
   }
 
   setupExtension() {
@@ -98,6 +102,6 @@ export class AstraEditorHandlerbarPlugin extends AstraEditorPlugin {
       },
     })
 
-    this.editor.updateExtension('handlebars', [markHandlebarPlugin, markHandlebarTheme, this.setupAutoCompletion()].filter(Boolean))
+    this.editor.updateExtension('handlebars', [markHandlebarPlugin, markHandlebarTheme, ...this.setupAutoCompletion()])
   }
 }
