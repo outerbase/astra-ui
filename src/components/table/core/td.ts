@@ -344,6 +344,9 @@ export class TableData extends MutableElement {
   public override connectedCallback(): void {
     super.connectedCallback()
 
+    // this.addEventListener('pointerenter', this.onPointerEnter.bind(this))
+    // this.addEventListener('pointerleave', this.onPointerLeave.bind(this))
+
     this.addEventListener('contextmenu', this.onContextMenu)
     this.addEventListener('click', this.onClick)
     this.addEventListener('keydown', TableData.onKeyDown)
@@ -362,6 +365,10 @@ export class TableData extends MutableElement {
 
   public override disconnectedCallback(): void {
     super.disconnectedCallback()
+
+    this.stopHoverCheck()
+    this.removeEventListener('pointerenter', this.onPointerEnter.bind(this))
+    this.removeEventListener('pointerleave', this.onPointerLeave.bind(this))
 
     this.removeEventListener('contextmenu', this.onContextMenu)
     this.removeEventListener('keydown', TableData.onKeyDown)
@@ -518,12 +525,8 @@ export class TableData extends MutableElement {
             @dragover=${TableData.onDragOver}
             @drop=${TableData.onDrop}
             @paste=${this.onPaste}
-            @pointerenter=${() => {
-              this.isHoveringCell = true
-            }}
-            @pointerleave=${() => {
-              this.isHoveringCell = false
-            }}
+            @pointerenter=${this.onPointerEnter}
+            @pointerleave=${this.onPointerLeave}
             tabindex="-1"
           >
             <astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
@@ -540,5 +543,34 @@ export class TableData extends MutableElement {
         : html``
 
     return this.isEditing ? inputEl : this.blank ? emptySlot : menuEl
+  }
+
+  protected onPointerEnter() {
+    this.isHoveringCell = true
+    this.startHoverCheck()
+  }
+
+  protected onPointerLeave() {
+    this.isHoveringCell = false
+    this.stopHoverCheck()
+  }
+
+  protected startHoverCheck() {
+    document.addEventListener('mousemove', this.handleMouseMove)
+  }
+
+  protected stopHoverCheck() {
+    document.removeEventListener('mousemove', this.handleMouseMove)
+  }
+
+  private handleMouseMove = (event: MouseEvent) => {
+    const rect = this.getBoundingClientRect()
+    const mouseX = event.clientX
+    const mouseY = event.clientY
+
+    if (mouseX < rect.left || mouseX > rect.right || mouseY < rect.top || mouseY > rect.bottom) {
+      this.isHoveringCell = false
+      this.stopHoverCheck()
+    }
   }
 }
