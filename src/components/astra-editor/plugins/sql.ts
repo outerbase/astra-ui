@@ -1,4 +1,5 @@
 import { MSSQL, MySQL, PostgreSQL, sql, SQLDialect, SQLite, StandardSQL, type SQLNamespace } from '@codemirror/lang-sql'
+import type { PropertyValues } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { AstraEditorPlugin } from './base'
 
@@ -7,30 +8,23 @@ export class AstraEditorSqlPlugin extends AstraEditorPlugin {
   protected _schema: SQLNamespace = {}
   protected _dialect: string = 'sql'
 
-  @property() set schema(value: string) {
-    try {
-      this._schema = JSON.parse(value)
-    } catch {
-      this._schema = {}
+  @property() dialect: string = 'sql'
+  @property() schema: string = ''
+
+  protected updated(properties: PropertyValues): void {
+    if (properties.has('dialect')) {
+      this.updateExtension()
     }
 
-    if (this.editor) {
-      this.editor.updateExtension(
-        'sql-plugin',
-        sql({
-          dialect: SQLite,
-          schema: this._schema,
-        })
-      )
+    if (properties.has('schema')) {
+      try {
+        this._schema = JSON.parse(this.schema)
+      } catch {
+        this._schema = {}
+      }
+
+      this.updateExtension()
     }
-  }
-
-  get schema(): string {
-    return JSON.stringify(this._schema)
-  }
-
-  @property() set dialect(value: string) {
-    this._dialect = value
   }
 
   protected updateExtension() {
@@ -40,7 +34,7 @@ export class AstraEditorSqlPlugin extends AstraEditorPlugin {
       this.editor.updateExtension(
         'sql-plugin',
         sql({
-          dialect: dialect,
+          dialect,
           schema: this._schema,
         })
       )
@@ -49,14 +43,7 @@ export class AstraEditorSqlPlugin extends AstraEditorPlugin {
 
   connectedCallback() {
     super.connectedCallback()
-
-    this.editor.updateExtension(
-      'sql-plugin',
-      sql({
-        dialect: SQLite,
-        schema: this._schema,
-      })
-    )
+    this.updateExtension()
   }
 
   disconnectedCallback() {

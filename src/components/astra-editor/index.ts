@@ -1,6 +1,6 @@
 import { acceptCompletion, autocompletion, closeBracketsKeymap, completionStatus, startCompletion } from '@codemirror/autocomplete'
 import { defaultKeymap, history, historyKeymap, indentLess, indentMore, insertNewline } from '@codemirror/commands'
-import { defaultHighlightStyle, foldKeymap, indentOnInput, indentUnit, syntaxHighlighting } from '@codemirror/language'
+import { defaultHighlightStyle, foldKeymap, indentOnInput, indentUnit, language, syntaxHighlighting } from '@codemirror/language'
 import { Compartment, Prec, StateEffect, type Extension } from '@codemirror/state'
 import {
   dropCursor,
@@ -13,30 +13,85 @@ import {
   type KeyBinding,
 } from '@codemirror/view'
 import { EditorView } from 'codemirror'
-import { LitElement } from 'lit'
+import { css, html, LitElement, type PropertyValues } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
+import { createRef, ref, type Ref } from 'lit/directives/ref.js'
 import { getPredefineTheme } from './theme'
 
 @customElement('astra-editor')
 export class AstraEditor extends LitElement {
-  protected container: HTMLDivElement
   protected editor?: EditorView
   protected extensions: { name: string; comp: Compartment; ext: Extension }[] = []
+  protected containerRef: Ref<HTMLDivElement> = createRef()
+  protected previousValue: string = ''
 
-  protected _value: string = ''
-  protected _wrap: boolean = false
-  protected _color: 'dark' | 'light' = 'light'
-  protected _theme: string = 'moondust'
-  protected _placeholder: string = ''
+  @property() color: string = 'light'
+  @property({ type: 'Boolean' }) wrap: boolean = false
+  @property() theme: string = 'moondust'
+  @property() placeholder: string = ''
+  @property() value: string = ''
+
+  static styles = css`
+    .cm-tooltip-autocomplete ul::-webkit-scrollbar,
+    .cm-scroller::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    .cm-scroller::-webkit-scrollbar-thumb {
+      border-radius: 5px;
+    }
+
+    .cm-tooltip-autocomplete ul::-webkit-scrollbar-thumb,
+    .cm-scroller::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .dark .cm-tooltip-autocomplete ul::-webkit-scrollbar-thumb,
+    .dark .cm-scroller::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .cm-tooltip-autocomplete > ul > li {
+      display: flex;
+    }
+
+    .cm-tooltip-autocomplete > ul > li > .cm-completionIcon {
+      width: 1em !important;
+      display: flex;
+      align-self: center;
+      justify-content: center;
+    }
+
+    .cm-tooltip-autocomplete .cm-completionLabel {
+      flex-grow: 1;
+    }
+
+    .cm-tooltip-autocomplete .cm-completionDetail {
+      padding-left: 15px;
+    }
+
+    .cm-completionIcon-property::after {
+      content: '\\61' !important;
+      font-family: 'outerbase-icon' !important;
+    }
+
+    .cm-completionIcon-type::after {
+      content: '\\62' !important;
+      font-family: 'outerbase-icon' !important;
+    }
+
+    .cm-completionIcon-function::after,
+    .cm-completionIcon-method::after,
+    .cm-completionIcon-variable::after,
+    .cm-completionIcon-namespace::after,
+    .cm-completionIcon-interface::after {
+      content: '⚡' !important;
+    }
+  `
 
   constructor() {
     super()
-
-    const container = document.createElement('div')
-    container.style.height = '100%'
-
-    this.attachShadow({ mode: 'open' })
-    this.shadowRoot?.append(container)
 
     // We will use icon font instead of SVG because CodeMirror rely
     // on :after content. It is easily to change the color of the icon
@@ -65,83 +120,9 @@ export class AstraEditor extends LitElement {
         }  
       `
     }
-
-    const styleElement = document.createElement('style')
-    styleElement.innerHTML = `
-      .cm-tooltip-autocomplete ul::-webkit-scrollbar,
-      .cm-scroller::-webkit-scrollbar {
-        width: 10px;
-        height: 10px;
-      }
-
-      .cm-scroller::-webkit-scrollbar-thumb {
-        border-radius: 5px;
-      }
-
-      .cm-tooltip-autocomplete ul::-webkit-scrollbar-thumb,
-      .cm-scroller::-webkit-scrollbar-thumb {
-        background: rgba(0, 0, 0, 0.3);
-      }
-
-      .dark .cm-tooltip-autocomplete ul::-webkit-scrollbar-thumb, 
-      .dark .cm-scroller::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.3);
-      }
-
-      .cm-tooltip-autocomplete > ul > li {
-        display: flex;
-      }
-
-      .cm-tooltip-autocomplete > ul > li > .cm-completionIcon {
-        width: 1em !important;
-        display: flex;
-        align-self: center;
-        justify-content: center;
-      }
-
-      .cm-tooltip-autocomplete .cm-completionLabel {
-        flex-grow: 1;
-      }
-
-      .cm-tooltip-autocomplete .cm-completionDetail {
-        padding-left: 15px;
-      }
-      
-      .cm-completionIcon-property::after {
-        content: "\\61" !important;
-        font-family: 'outerbase-icon' !important;
-      }
-
-      .cm-completionIcon-type::after {
-        content: "\\62" !important;
-        font-family: 'outerbase-icon' !important;
-      }
-
-      .cm-completionIcon-function::after,
-      .cm-completionIcon-method::after,
-      .cm-completionIcon-variable::after,
-      .cm-completionIcon-namespace::after,
-      .cm-completionIcon-interface::after {
-        content: '⚡' !important;
-      }
-    `
-
-    this.shadowRoot?.append(styleElement)
-
-    this.container = container
   }
 
-  connectedCallback(): void {
-    this._color = this.getAttribute('color') === 'dark' ? 'dark' : 'light'
-    this._theme = this.getAttribute('theme') ?? 'moondust'
-    this._placeholder = this.getAttribute('placeholder') ?? ''
-
-    if (this._color === 'dark') {
-      this.container.classList.add('dark')
-    } else {
-      this.container.classList.remove('dark')
-    }
-
+  protected firstUpdated(): void {
     // Default extensions
     this.extensions = [
       {
@@ -189,10 +170,10 @@ export class AstraEditor extends LitElement {
         ],
         comp: new Compartment(),
       },
-      { name: 'placeholder', ext: placeholder(this._placeholder), comp: new Compartment() },
+      { name: 'placeholder', ext: placeholder(this.placeholder), comp: new Compartment() },
       {
         name: 'theme',
-        ext: getPredefineTheme(this._color, this._theme),
+        ext: getPredefineTheme(this.color === 'dark' ? 'dark' : 'light', this.theme),
         comp: new Compartment(),
       },
       {
@@ -200,92 +181,68 @@ export class AstraEditor extends LitElement {
         ext: EditorView.updateListener.of((vu: ViewUpdate) => {
           if (vu.docChanged) {
             const value = vu.state.doc.toString()
-            this._value = value
+            this.value = value
+            this.previousValue = value
             this.dispatchEvent(new CustomEvent('change', { detail: value }))
           }
         }),
         comp: new Compartment(),
       },
+      ...this.extensions,
     ]
 
     const editor = new EditorView({
-      doc: this.getAttribute('value') ?? '',
+      doc: this.value,
       extensions: this.getExtensions(),
-      parent: this.container,
+      parent: this.containerRef.value,
       root: this.shadowRoot as ShadowRoot,
     })
 
     this.editor = editor
   }
 
-  render() {
-    return this.container
-  }
+  protected updated(properties: PropertyValues): void {
+    if (properties.has('color')) {
+      if (this.color === 'dark') {
+        this.containerRef?.value?.classList.add('dark')
+      } else {
+        this.containerRef?.value?.classList.remove('dark')
+      }
 
-  @property() set value(value: string) {
-    if (this.editor) {
-      if (value !== this._value) {
+      this.updateExtension('theme', getPredefineTheme(this.color === 'dark' ? 'dark' : 'light', this.theme))
+    }
+    if (properties.has('theme')) {
+      this.updateExtension('theme', getPredefineTheme(this.color === 'dark' ? 'dark' : 'light', this.theme))
+    }
+
+    if (properties.has('wrap')) {
+      if (this.wrap) {
+        this.updateExtension('line-wrap', EditorView.lineWrapping)
+      } else {
+        this.removeExtension('line-wrap')
+      }
+    }
+
+    if (properties.has('placeholder')) {
+      this.updateExtension('placeholder', placeholder(this.placeholder))
+    }
+
+    if (properties.has('value')) {
+      if (this.editor && this.value !== this.previousValue) {
+        this.previousValue = this.value
         this.editor.dispatch({
           changes: {
             from: 0,
             to: this.editor.state.doc.length,
-            insert: value,
+            insert: this.value,
           },
         })
       }
     }
   }
 
-  get value(): string {
-    return this._value
-  }
-
-  @property() set wrap(value: string | null) {
-    if (value !== null) {
-      this._wrap = true
-      this.updateExtension('line-wrap', EditorView.lineWrapping)
-    } else {
-      this._wrap = false
-      this.removeExtension('line-wrap')
-    }
-  }
-
-  get wrap(): boolean {
-    return this._wrap
-  }
-
-  @property() set color(value: string | null) {
-    this._color = value === 'dark' ? 'dark' : 'light'
-
-    if (this._color === 'dark') {
-      this.container.classList.add('dark')
-    } else {
-      this.container.classList.remove('dark')
-    }
-
-    this.updateExtension('theme', getPredefineTheme(this._color, this._theme))
-  }
-
-  get color() {
-    return this._color
-  }
-
-  @property() set placeholder(value: string | null) {
-    this._placeholder = value ?? ''
-    this.updateExtension('placeholder', placeholder(this._placeholder))
-  }
-
-  get placeholder() {
-    return this._placeholder
-  }
-
-  @property() set theme(value: string) {
-    this._theme = value
-    this.updateExtension('theme', getPredefineTheme(this._color, this._theme))
-  }
-
-  get theme() {
-    return this._theme
+  render() {
+    return html`<div id="container" style="height:100%" ${ref(this.containerRef)}></div>`
   }
 
   private getExtensions() {
@@ -307,6 +264,12 @@ export class AstraEditor extends LitElement {
 
   registerKeymap(name: string, key: KeyBinding) {
     this.updateExtension('custom-keybinding-' + name, Prec.highest(keymap.of([key])))
+  }
+
+  getLanguage() {
+    if (this.editor) {
+      return this.editor.state.facet(language)
+    }
   }
 
   updateExtension(extensionName: string, ext: any) {

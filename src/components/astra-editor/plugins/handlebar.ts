@@ -1,10 +1,9 @@
 import { CompletionContext } from '@codemirror/autocomplete'
-import { SQLite } from '@codemirror/lang-sql'
 import { syntaxTree } from '@codemirror/language'
 import { Range } from '@codemirror/state'
 import { Decoration, EditorView, ViewPlugin, ViewUpdate, type DecorationSet } from '@codemirror/view'
+import type { PropertyValues } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
-
 import { AstraEditorPlugin } from './base'
 
 const handlebarMark = Decoration.mark({ class: 'cm-handlebar' })
@@ -25,20 +24,17 @@ function decorateHandlebar(view: EditorView) {
 
 @customElement('astra-editor-handlebar')
 export class AstraEditorHandlerbarPlugin extends AstraEditorPlugin {
-  protected _variables: string = ''
+  @property({ type: 'String' }) variables: string = ''
 
-  @property() set variables(value: string) {
-    this._variables = value
-    this.setupExtension(value ?? '')
-  }
-
-  get variables(): string {
-    return this._variables
+  protected updated(properties: PropertyValues): void {
+    if (properties.has('variables')) {
+      this.setupExtension()
+    }
   }
 
   connectedCallback() {
     super.connectedCallback()
-    this.setupExtension(this.getAttribute('variables') ?? '')
+    this.setupExtension()
   }
 
   disconnectedCallback(): void {
@@ -46,9 +42,12 @@ export class AstraEditorHandlerbarPlugin extends AstraEditorPlugin {
     this.editor.removeExtension('handlebars')
   }
 
-  setupAutoCompletion(variables: string) {
-    const completionList = variables.split(',').filter(Boolean)
+  setupAutoCompletion() {
+    const completionList = this.variables.split(',').filter(Boolean)
     if (completionList.length === 0) return null
+
+    const lang = this.editor.getLanguage()
+    if (!lang) return null
 
     function handlebarCompletion(context: CompletionContext) {
       const node = syntaxTree(context.state).resolveInner(context.pos)
@@ -65,10 +64,10 @@ export class AstraEditorHandlerbarPlugin extends AstraEditorPlugin {
       }
     }
 
-    return SQLite.language.data.of({ autocomplete: handlebarCompletion })
+    return lang.data.of({ autocomplete: handlebarCompletion })
   }
 
-  setupExtension(variables: string) {
+  setupExtension() {
     if (!this.editor) return
 
     const markHandlebarPlugin = ViewPlugin.fromClass(
@@ -99,9 +98,6 @@ export class AstraEditorHandlerbarPlugin extends AstraEditorPlugin {
       },
     })
 
-    this.editor.updateExtension(
-      'handlebars',
-      [markHandlebarPlugin, markHandlebarTheme, this.setupAutoCompletion(variables)].filter(Boolean)
-    )
+    this.editor.updateExtension('handlebars', [markHandlebarPlugin, markHandlebarTheme, this.setupAutoCompletion()].filter(Boolean))
   }
 }
