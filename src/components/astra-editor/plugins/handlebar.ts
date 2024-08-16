@@ -44,7 +44,7 @@ export class AstraEditorHandlerbarPlugin extends AstraEditorPlugin {
   }
 
   setupAutoCompletion() {
-    const completionList = this.variables.split(',').filter(Boolean)
+    const completionList = (this.variables ?? '').split(',').filter(Boolean)
     if (completionList.length === 0) return []
 
     function handlebarCompletion(context: CompletionContext) {
