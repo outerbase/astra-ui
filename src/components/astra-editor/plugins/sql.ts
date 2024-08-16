@@ -1,7 +1,7 @@
 import { MSSQL, MySQL, PostgreSQL, sql, SQLDialect, SQLite, StandardSQL, type SQLNamespace } from '@codemirror/lang-sql'
 import type { PropertyValues } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
-import { AstraEditorPlugin } from './base'
+import { AstraEditorPlugin } from './base.js'
 
 @customElement('astra-editor-sql')
 export class AstraEditorSqlPlugin extends AstraEditorPlugin {

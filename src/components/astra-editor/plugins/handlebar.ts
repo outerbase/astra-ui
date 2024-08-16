@@ -5,7 +5,7 @@ import { Range } from '@codemirror/state'
 import { Decoration, EditorView, ViewPlugin, ViewUpdate, type DecorationSet } from '@codemirror/view'
 import type { PropertyValues } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
-import { AstraEditorPlugin } from './base'
+import { AstraEditorPlugin } from './base.js'
 
 const handlebarMark = Decoration.mark({ class: 'cm-handlebar' })
 

@@ -16,7 +16,7 @@ import { EditorView } from 'codemirror'
 import { css, html, LitElement, type PropertyValues } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { createRef, ref, type Ref } from 'lit/directives/ref.js'
-import { getPredefineTheme } from './theme'
+import { getPredefineTheme } from './theme.js'
 
 @customElement('astra-editor')
 export class AstraEditor extends LitElement {
