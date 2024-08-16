@@ -59,6 +59,15 @@
     "lit": "^3.1.2"
   },
   "dependencies": {
+    "codemirror": "^6.0.1",
+    "@codemirror/autocomplete": "^6.18.0",
+    "@codemirror/commands": "^6.6.0",
+    "@codemirror/lang-sql": "^6.7.0",
+    "@codemirror/language": "^6.10.2",
+    "@codemirror/state": "^6.4.1",
+    "@codemirror/view": "^6.32.0",
+    "@lezer/common": "^1.2.1",
+    "@lezer/highlight": "^1.2.1",
     "@observablehq/plot": "^0.6.15",
     "d3": "^7.9.0",
     "d3-time": "^3.1.0",

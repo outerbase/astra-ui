@@ -1,3 +1,6 @@
+import { AstraEditor } from './components/astra-editor/index.js'
+import { AstraEditorHandlerbarPlugin } from './components/astra-editor/plugins/handlebar.js'
+import { AstraEditorSqlPlugin } from './components/astra-editor/plugins/sql.js'
 import Button from './components/button.js'
 import Calendar from './components/calendar/calendar.js'
 import Card from './components/card.js'
@@ -11,7 +14,22 @@ import OuterbaseTable from './components/table/outerbase-table.js'
 import Text from './components/text.js'
 
 // export * as Types from './types'
-export { Button, Calendar, Card, Chart, ComposedChart, Input, OuterbaseTable, ScrollArea, Select, Table, Text }
+export {
+  AstraEditor,
+  AstraEditorHandlerbarPlugin,
+  AstraEditorSqlPlugin,
+  Button,
+  Calendar,
+  Card,
+  Chart,
+  ComposedChart,
+  Input,
+  OuterbaseTable,
+  ScrollArea,
+  Select,
+  Table,
+  Text,
+}
 
 declare global {
   namespace JSX {
@@ -25,6 +43,13 @@ declare global {
       'astra-select': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
       'astra-calendar': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
       'outerbase-table': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
+      'astra-editor': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+        value?: string
+        placeholder?: string
+        theme?: string
+      }
+      'astra-editor-sql': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { dialect?: string; schema?: string }
+      'astra-editor-handlebar': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { variables?: string }
     }
   }
 }
