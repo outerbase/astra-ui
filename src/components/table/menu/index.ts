@@ -28,6 +28,10 @@ export class Menu extends ClassifiedElement {
   @property({ type: Array, attribute: 'options' })
   public options: HeaderMenuOptions = []
 
+  @property({ type: Object })
+  public anchorId: string | null = null
+
+  @state() protected anchor: HTMLElement | null = null
   @state() protected activeOptions: HeaderMenuOptions = []
   @state() protected historyStack: Array<HeaderMenuOptions> = []
   @state() protected focused?: string
@@ -238,21 +242,19 @@ export class Menu extends ClassifiedElement {
   public override render() {
     // @dblclick prevents parent's dblclick
     // @keydown navigates the menu
+    if (typeof window === 'undefined') return html``
 
-    const darkClass = classMap({ dark: this.theme === 'dark' })
+    const content = html`<span
+      ${ref(this.menuRef)}
+      aria-haspopup="menu"
+      class=${classMap({ dark: this.theme === 'dark' })}
+      @dblclick=${(e: MouseEvent) => e.stopPropagation()}
+      @keydown=${this.onKeyDown}
+    >
+      ${this.listElement}
+    </span>`
 
-    return html`
-      <hans-wormhole .open=${this.open}>
-        <span
-          ${ref(this.menuRef)}
-          aria-haspopup="menu"
-          class="${darkClass}"
-          @dblclick=${(e: MouseEvent) => e.stopPropagation()}
-          @keydown=${this.onKeyDown}
-        >
-          ${this.listElement}
-        </span>
-      </hans-wormhole>
-    `
+    if (this.anchorId) return html`<hans-wormhole .open=${this.open} .anchorId=${this.anchorId}>${content}</hans-wormhole>`
+    return html`<hans-wormhole .open=${this.open}>${content}</hans-wormhole>`
   }
 }

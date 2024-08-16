@@ -230,7 +230,6 @@ export class TableData extends MutableElement {
     return {
       ...super.classMap(),
       'table-cell relative focus:z-[1]': true,
-      'px-cell-padding-x py-cell-padding-y': !this.plugin && !this.blank,
       'px-5': this.blank,
       'border-theme-table-border dark:border-theme-table-border-dark': true,
       'bg-theme-table-row-selected dark:bg-theme-table-row-selected-dark': this.isActive && (!this.dirty || this.hideDirt), // i.e. this is the column being sorted
@@ -279,6 +278,7 @@ export class TableData extends MutableElement {
 
   @state() isContentEditable = true // this property is to toggle off the contenteditableness of to resolve quirky focus and text selection that can happen when, say, right-clicking to trigger the context menu
   @state() protected options = RW_OPTIONS
+  @state() protected isHoveringCell = false
 
   private contentEditableWrapper: Ref<HTMLDivElement> = createRef()
   private _interstitialValue: Serializable
@@ -356,10 +356,14 @@ export class TableData extends MutableElement {
     if (this.isInteractive) {
       this.addEventListener('dblclick', TableData.onDoubleClick)
     }
+
+    this.id = 'td'
   }
 
   public override disconnectedCallback(): void {
     super.disconnectedCallback()
+
+    this.stopHoverCheck()
 
     this.removeEventListener('contextmenu', this.onContextMenu)
     this.removeEventListener('keydown', TableData.onKeyDown)
@@ -433,6 +437,9 @@ export class TableData extends MutableElement {
     let cellContents: TemplateResult<1>
     let cellEditorContents: DirectiveResult<typeof UnsafeHTMLDirective> | undefined
 
+    const classes =
+      value === null || value === undefined ? 'nbsp text-neutral-400 dark:text-neutral-600' : 'nbsp overflow-hidden text-ellipsis'
+
     if (this.plugin) {
       const { config, tagName } = this.plugin
 
@@ -443,14 +450,25 @@ export class TableData extends MutableElement {
         `<${tagName} cellvalue='${value}' columnName='${this.column}'  configuration='${config}' ${this.pluginAttributes}></${tagName}>`
       )
 
-      pluginAccessory = unsafeHTML(
-        `<${tagName.replace(
-          'outerbase-plugin-cell',
-          'outerbase-plugin-accessory'
-        )} cellvalue='${value}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
-      )
+      const pluginAccessoryTag = tagName.replace('outerbase-plugin-cell', 'outerbase-plugin-cell-accessory')
 
-      cellContents = html`${pluginAsString}`
+      pluginAccessory = customElements.get(pluginAccessoryTag)
+        ? unsafeHTML(
+            `<${pluginAccessoryTag} ishoveringcell='${this.isHoveringCell}' cellvalue='${value}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${pluginAccessoryTag}>`
+          )
+        : nothing
+
+      cellContents = customElements.get(tagName)
+        ? html`${pluginAsString}`
+        : html`<div class=${classes} style="line-height: 34px;">
+            ${value === null
+              ? 'NULL'
+              : value === undefined
+                ? 'DEFAULT'
+                : typeof value === 'string'
+                  ? value.replace(/\n/g, returnCharacterPlaceholderRead)
+                  : value}
+          </div>`
 
       if (this.isDisplayingPluginEditor) {
         cellEditorContents = unsafeHTML(
@@ -464,14 +482,12 @@ export class TableData extends MutableElement {
         )
       }
     } else {
-      const classes =
-        value === null || value === undefined ? 'nbsp text-neutral-400 dark:text-neutral-600' : 'nbsp overflow-hidden text-ellipsis'
       /* prettier-ignore */ cellContents = html`<div class=${classes}>${ value === null ? 'NULL' : value === undefined ? 'DEFAULT' : typeof value === 'string' ? value.replace(/\n/g, returnCharacterPlaceholderRead) : value}</div>`;
     }
 
     const themeClass = this.theme === 'dark' ? 'dark' : ''
     const inputEl = this.isEditing // &nbsp; prevents the row from collapsing (in height) when there is only 1 column
-      ? html`<div class="${themeClass}">&nbsp;<input .value=${typeof value === 'string' ? value : value ?? ''} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
+      ? html`<div class="${themeClass}" style="height: 34px;">&nbsp;<input .value=${typeof value === 'string' ? value : (value ?? '')} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
       : html``
     const emptySlot = this.blank ? html`<slot></slot>` : html``
     const menuOptions = this.dirty
@@ -491,7 +507,6 @@ export class TableData extends MutableElement {
       : this.options
 
     this.tabIndex = this.blank ? -1 : 0
-
     // the outer div is contenteditable, allowing us to get the `paste` event that an arbitrary element cannot otherwise receive
     // astra-td-menu wraps our content and provides a right-click menu
     const menuEl =
@@ -505,21 +520,52 @@ export class TableData extends MutableElement {
             @dragover=${TableData.onDragOver}
             @drop=${TableData.onDrop}
             @paste=${this.onPaste}
+            @pointerenter=${this.onPointerEnter}
+            @pointerleave=${this.onPointerLeave}
             tabindex="-1"
           >
             <astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
-              <div class="flex">
+              <div class="flex items-center px-cell-padding-x">
                 <span class="flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
                 ${pluginAccessory}
               </div>
 
-              ${this.isDisplayingPluginEditor
-                ? html`<span id="plugin-editor" class="absolute top-8 caret-current cursor-auto z-10">${cellEditorContents}</span>`
-                : null}
+              <hans-wormhole .open=${this.isDisplayingPluginEditor} .anchorId=${this.id}>
+                <span id="plugin-editor" class="caret-current cursor-auto z-10">${cellEditorContents}</span>
+              </hans-wormhole>
             </astra-td-menu>
           </span>`
         : html``
 
     return this.isEditing ? inputEl : this.blank ? emptySlot : menuEl
+  }
+
+  protected onPointerEnter() {
+    this.isHoveringCell = true
+    this.startHoverCheck()
+  }
+
+  protected onPointerLeave() {
+    this.isHoveringCell = false
+    this.stopHoverCheck()
+  }
+
+  protected startHoverCheck() {
+    document.addEventListener('mousemove', this.handleMouseMove)
+  }
+
+  protected stopHoverCheck() {
+    document.removeEventListener('mousemove', this.handleMouseMove)
+  }
+
+  private handleMouseMove = (event: MouseEvent) => {
+    const rect = this.getBoundingClientRect()
+    const mouseX = event.clientX
+    const mouseY = event.clientY
+
+    if (mouseX < rect.left || mouseX > rect.right || mouseY < rect.top || mouseY > rect.bottom) {
+      this.isHoveringCell = false
+      this.stopHoverCheck()
+    }
   }
 }
