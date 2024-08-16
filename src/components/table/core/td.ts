@@ -344,9 +344,6 @@ export class TableData extends MutableElement {
   public override connectedCallback(): void {
     super.connectedCallback()
 
-    // this.addEventListener('pointerenter', this.onPointerEnter.bind(this))
-    // this.addEventListener('pointerleave', this.onPointerLeave.bind(this))
-
     this.addEventListener('contextmenu', this.onContextMenu)
     this.addEventListener('click', this.onClick)
     this.addEventListener('keydown', TableData.onKeyDown)
@@ -367,8 +364,6 @@ export class TableData extends MutableElement {
     super.disconnectedCallback()
 
     this.stopHoverCheck()
-    this.removeEventListener('pointerenter', this.onPointerEnter.bind(this))
-    this.removeEventListener('pointerleave', this.onPointerLeave.bind(this))
 
     this.removeEventListener('contextmenu', this.onContextMenu)
     this.removeEventListener('keydown', TableData.onKeyDown)
