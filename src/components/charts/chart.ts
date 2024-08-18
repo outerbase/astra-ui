@@ -405,11 +405,19 @@ export default class AstraChart extends ClassifiedElement {
       color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
     }
 
+    let sort = undefined
+
     // TYPE: BAR
     if (this.type === 'bar') {
       // include grid along X-axis unless explicitly disabled
       if (this.gridX !== false) {
         options.marks.push(gridX(defaultGridStyle))
+      }
+
+      if (this.sortOrder && this.sortOrder === 'asc') {
+        sort = { y: 'x', reverse: false }
+      } else if (this.sortOrder && this.sortOrder === 'desc') {
+        sort = { y: 'x', reverse: true }
       }
 
       options.marks.push(
@@ -420,6 +428,7 @@ export default class AstraChart extends ClassifiedElement {
           // fill: 'url(#teal)',
           fill: this.colorValues[0],
           tip,
+          sort,
         })
       )
 
@@ -444,9 +453,12 @@ export default class AstraChart extends ClassifiedElement {
       // Loop through every item in the data layers [0].result and check if the data is a date
       const tempKeyX: string = this.keyX ?? ''
       const newArray: any[] | undefined = this.data?.layers?.[0].result?.map((r: Record<string, any>) => {
-        const isDate = !isNaN(Date.parse(r[tempKeyX]))
+        const value = r[tempKeyX]
 
-        if (isDate) return new Date(r[tempKeyX])
+        // Check if the value is not a plain number and is a valid date
+        if (typeof value !== 'number' && !isNaN(Date.parse(value))) {
+          return new Date(value)
+        }
         return undefined
       })
 
@@ -469,36 +481,19 @@ export default class AstraChart extends ClassifiedElement {
           interval: interval,
           tickValues: isXAxisKeyDate ? tickValues : undefined,
         }
-      } else {
-        if (this.sortOrder && this.sortOrder === 'asc') {
-          sort = { x: 'y', reverse: false }
-        } else if (this.sortOrder && this.sortOrder === 'desc') {
-          sort = { x: 'y', reverse: true }
-        }
       }
 
-      //   let legendColors: any[] = []
-      //   let legendValues: any[] = []
-
-      //   legendColors.push('#1f77b4')
-      //   legendValues.push(tempKeyX)
-
-      //   options.color = {
-      //     domain: legendValues,
-      //     range: legendColors,
-      //     legend: true,
-      //   }
-
-      //   options.marginBottom = 60
+      if (this.sortOrder && this.sortOrder === 'asc') {
+        sort = { x: 'y', reverse: false }
+      } else if (this.sortOrder && this.sortOrder === 'desc') {
+        sort = { x: 'y', reverse: true }
+      }
 
       options.marks.push(
         barY(d, {
           x: this.keyX,
           y: this.keyY,
-          //   stroke: this.groupBy,
-          //   fill: 'url(#mercury)',
           fill: this.colorValues[0],
-          inset: 0.5,
           tip,
           sort,
         })
@@ -529,7 +524,6 @@ export default class AstraChart extends ClassifiedElement {
               x: this.keyX,
               y: key,
               stroke: desiredColor,
-              // TODO: Custom tooltip that shows all line values in one box instead of N boxes?
               tip,
             })
           )
@@ -683,7 +677,6 @@ export default class AstraChart extends ClassifiedElement {
     const sizeXChanged = _changedProperties.has('sizeX') && _changedProperties.get('sizeX') !== undefined
     const sizeYChanged = _changedProperties.has('sizeY') && _changedProperties.get('sizeY') !== undefined
     if ((sizeXChanged || sizeYChanged) && this.hasUpdatedHeight) {
-      console.log('_changedProperties', _changedProperties)
       this.hasUpdatedHeight = false
     }
   }
@@ -713,7 +706,6 @@ export default class AstraChart extends ClassifiedElement {
         )}"
         theme=${this.theme}
         keyboard-shortcuts
-        selectable-rows
         blank-fill
       ></astra-table>`
     } else if (this.type === 'single_value') {
