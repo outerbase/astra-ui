@@ -2,7 +2,6 @@
 import { AstraEditor } from '../../components/astra-editor'
 import { AstraEditorHandlerbarPlugin } from '../../components/astra-editor/plugins/handlebar'
 import { AstraEditorSqlPlugin } from '../../components/astra-editor/plugins/sql'
-import Layout from '../../layouts/Layout.astro'
 //
 
 const SAMPLE_TEXT = `-- Creating a table with various data types and constraints
@@ -72,24 +71,69 @@ const SCHEMA = {
 }
 ---
 
-<Layout title="Astra-UI">
-  <div class="h-[400px] w-full">
+<div id="container" class="h-[400px] w-full mt-2">
+  <!-- @ts-ignore attributes -->
+  <AstraEditor id="editor" client:only="lit" value={SAMPLE_TEXT} theme="freedom">
     <!-- @ts-ignore attributes -->
-    <AstraEditor client:only="lit" value={SAMPLE_TEXT} theme="freedom">
-      <!-- @ts-ignore attributes -->
-      <AstraEditorSqlPlugin client:only="lit" dialect="sqlite" schema={JSON.stringify(SCHEMA)} />
-      <!-- @ts-ignore attributes -->
-      <AstraEditorHandlerbarPlugin client:only="lit" variables="variable1,variable2" />
-    </AstraEditor>
-  </div>
+    <AstraEditorSqlPlugin client:only="lit" dialect="sqlite" schema={JSON.stringify(SCHEMA)} />
+    <!-- @ts-ignore attributes -->
+    <AstraEditorHandlerbarPlugin client:only="lit" variables="variable1,variable2" />
+  </AstraEditor>
+</div>
 
-  <div class="h-[400px] w-full mt-2 bg-black">
-    <!-- @ts-ignore attributes -->
-    <AstraEditor client:only="lit" value={SAMPLE_TEXT} theme="freedom" color="dark">
-      <!-- @ts-ignore attributes -->
-      <AstraEditorSqlPlugin client:only="lit" dialect="sqlite" schema={JSON.stringify(SCHEMA)} />
-      <!-- @ts-ignore attributes -->
-      <AstraEditorHandlerbarPlugin client:only="lit" variables="variable1,variable2" />
-    </AstraEditor>
-  </div>
-</Layout>
+<div class="p-4">
+  <select id="theme">
+    <option value="freedom">Freedom</option>
+    <option value="moondust">Moondust</option>
+    <option value="invasion">Invasion</option>
+  </select>
+
+  <label>
+    <input type="checkbox" id="readonly" />
+    Readonly
+  </label>
+
+  <label>
+    <input type="checkbox" id="wrap" />
+    Wrap
+  </label>
+
+  <label>
+    <input type="checkbox" id="dark" />
+    Dark
+  </label>
+</div>
+
+<script>
+  const container = document.getElementById('container')
+  const readonlyElement = document.getElementById('readonly') as HTMLInputElement
+  const wrapElement = document.getElementById('wrap') as HTMLInputElement
+  const darkElement = document.getElementById('dark') as HTMLInputElement
+  const themeElement = document.getElementById('theme') as HTMLSelectElement
+
+  readonlyElement.onchange = () => {
+    const editor = document.getElementById('editor') as any
+    editor.readonly = readonlyElement?.checked
+  }
+
+  wrapElement.onchange = () => {
+    const editor = document.getElementById('editor') as any
+    editor.wrap = wrapElement?.checked
+  }
+
+  darkElement.onchange = () => {
+    const editor = document.getElementById('editor') as any
+
+    if (darkElement?.checked) {
+      container?.classList.add('bg-black')
+    } else {
+      container?.classList.remove('bg-black')
+    }
+    editor.color = darkElement?.checked ? 'dark' : undefined
+  }
+
+  themeElement.onchange = () => {
+    const editor = document.getElementById('editor') as any
+    editor.theme = themeElement.value
+  }
+</script>
