@@ -1,7 +1,7 @@
 import { acceptCompletion, autocompletion, closeBracketsKeymap, completionStatus, startCompletion } from '@codemirror/autocomplete'
 import { defaultKeymap, history, historyKeymap, indentLess, indentMore, insertNewline } from '@codemirror/commands'
 import { defaultHighlightStyle, foldKeymap, indentOnInput, indentUnit, language, syntaxHighlighting } from '@codemirror/language'
-import { Compartment, Prec, StateEffect, type Extension } from '@codemirror/state'
+import { Compartment, EditorState, Prec, StateEffect, type Extension } from '@codemirror/state'
 import {
   dropCursor,
   highlightActiveLine,
@@ -30,6 +30,7 @@ export class AstraEditor extends LitElement {
   @property() theme: string = 'moondust'
   @property() placeholder: string = ''
   @property() value: string = ''
+  @property({ type: 'Boolean' }) readonly: boolean = false
 
   static styles = css`
     .cm-tooltip-autocomplete ul::-webkit-scrollbar,
@@ -171,6 +172,7 @@ export class AstraEditor extends LitElement {
         comp: new Compartment(),
       },
       { name: 'placeholder', ext: placeholder(this.placeholder), comp: new Compartment() },
+      { name: 'readonly', ext: EditorState.readOnly.of(this.readonly), comp: new Compartment() },
       {
         name: 'theme',
         ext: getPredefineTheme(this.color === 'dark' ? 'dark' : 'light', this.theme),
@@ -201,7 +203,7 @@ export class AstraEditor extends LitElement {
     this.editor = editor
   }
 
-  protected updated(properties: PropertyValues): void {
+  protected updated(properties: PropertyValues<this>): void {
     if (properties.has('color')) {
       if (this.color === 'dark') {
         this.containerRef?.value?.classList.add('dark')
@@ -238,6 +240,10 @@ export class AstraEditor extends LitElement {
           },
         })
       }
+    }
+
+    if (properties.has('readonly')) {
+      this.updateExtension('readonly', EditorState.readOnly.of(this.readonly))
     }
   }
 
