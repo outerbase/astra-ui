@@ -93,6 +93,9 @@ export class Menu extends ClassifiedElement {
   }
 
   protected onTrigger(event: MouseEvent) {
+    // prevent the click from surfacing and triggering column sorting
+    event.stopPropagation()
+
     this.open = !this.open
     this.activeEvent = event
   }
@@ -112,6 +115,9 @@ export class Menu extends ClassifiedElement {
     const value = parent.getAttribute('data-value')
     if (!value) throw new Error("onItemClick didn't recover a selection value")
     this.onSelection(event, value)
+
+    // close the menu
+    this.open = false
   }
 
   protected onSelection(event: Event, value: string) {
