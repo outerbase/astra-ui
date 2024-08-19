@@ -445,6 +445,7 @@ export default class AstraTable extends ClassifiedElement {
                     ?interactive=${false}
                     ?menu=${false}
                     ?blank=${true}
+                    ?is-last-row=${rowIndex === this.rows.length - 1}
                   ></astra-td>`
                 : ''}
             </astra-tr>`

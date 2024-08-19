@@ -242,7 +242,7 @@ export class TableData extends MutableElement {
         (this.separateCells && this.isLastColumn && this.outerBorder) || // include last column when outerBorder
         (this.separateCells && !this.isLastColumn), // internal cell walls
       'first:border-l': this.separateCells && this.outerBorder, // left/right borders when the `separate-cells` attribute is set
-      'border-b': !this.isLastRow, // bottom border unless last row
+      'border-b': !this.isLastRow || (this.isLastRow && this.outerBorder), // bottom border unless last row
     }
   }
 
