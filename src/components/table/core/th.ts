@@ -225,7 +225,7 @@ export class TH extends MutableElement {
   }
 
   public override disconnectedCallback(): void {
-    super.disconnectedCallback
+    super.disconnectedCallback()
     this.removeEventListener('contextmenu', this.onContextMenu)
     this.removeEventListener('click', this.onClick)
   }

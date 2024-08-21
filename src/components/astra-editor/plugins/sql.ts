@@ -46,6 +46,7 @@ export class AstraEditorSqlPlugin extends AstraEditorPlugin {
   }
 
   disconnectedCallback() {
+    super.disconnectedCallback()
     this.editor.removeExtension('sql-plugin')
   }
 }
