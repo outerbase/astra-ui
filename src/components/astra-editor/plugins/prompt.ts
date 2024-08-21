@@ -20,7 +20,7 @@ class PlaceholderWidget extends WidgetType {
     const wrap = document.createElement('span')
     wrap.className = 'cm-placeholder'
     wrap.style.padding = ''
-    wrap.append(document.createTextNode('⌘ + L to get AI assistant'))
+    wrap.append(document.createTextNode('⌘ + B to get AI assistant'))
     return wrap
   }
 
@@ -284,8 +284,8 @@ function createPromptStatePlugin(plugin: AstraEditorPromptPlugin) {
 const promptKeyBinding = Prec.highest(
   keymap.of([
     {
-      key: 'Ctrl-l',
-      mac: 'Cmd-l',
+      key: 'Ctrl-b',
+      mac: 'Cmd-b',
       preventDefault: true,
       run: (v) => {
         if (v.state.doc.lineAt(v.state.selection.main.from).text === '') {
