@@ -11,11 +11,11 @@ import { diffObjects } from '../../lib/diff-objects.js'
 import { normalizeKeys } from '../../lib/normalize-object-keys.js'
 import stringifyWithoutNewLines from '../../lib/stringify-without-new-lines.js'
 import type { APIResponse, CellUpdateEvent, Fields, MenuSelectedEvent, RowAsRecord, Rows, SourceSchema, Table } from '../../types.js'
-import '../button.js' // Ensure the button component is imported
+import '../button.js'; // Ensure the button component is imported
 import AstraTable from './core/index.js'
 
-// const OUTERBASE_API_DOMAIN = 'app.outerbase.com'
-const OUTERBASE_API_DOMAIN = 'app.dev.outerbase.com'
+const OUTERBASE_API_DOMAIN = 'app.outerbase.com'
+// const OUTERBASE_API_DOMAIN = 'app.dev.outerbase.com'
 
 @customElement('outerbase-table')
 export default class OuterbaseTable extends AstraTable {
