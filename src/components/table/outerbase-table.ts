@@ -107,6 +107,69 @@ export default class OuterbaseTable extends AstraTable {
     return { ...data.response, items: stringifiedData }
   }
 
+  // Note: this is returning `[]`
+  protected async fetchConnections() {
+    if (!this.apiKey) throw new Error('Fetching data requires an api-key')
+
+    const data: APIResponse<Rows> = await (
+      await fetch(`https://${OUTERBASE_API_DOMAIN}/api/v1/workspace/${this.workspaceId}/connection`, {
+        headers: {
+          'content-type': 'application/json',
+          'x-auth-token': this.apiKey,
+        },
+        method: 'GET',
+      })
+    ).json()
+
+    let items = data?.response?.items ?? []
+
+    if (this.baseId) {
+      // ensure this is a uuid or throw
+      const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(this.baseId)
+
+      if (!isValidUUID) throw new Error('attempted to fetch connection source with non-uuid for base; this endpoint only works with UUIDs?')
+
+      items = items.filter((connection) => connection.base_id === this.baseId)
+    }
+
+    return items
+  }
+
+  // Note: this is untested, pending `sourceId`
+  protected async queryData() {
+    if (!this.apiKey) throw new Error('Fetching data requires an api-key')
+    if (!this.codeEditorValue) throw new Error('Missing SQL query')
+
+    const data: APIResponse<Rows> = await // TODO replace `1234567890` with a valid source id
+    (
+      await fetch(`https://${OUTERBASE_API_DOMAIN}/api/v1/workspace/${this.workspaceId}/source/${1234567890}/query/raw`, {
+        body: JSON.stringify({ query: this.codeEditorValue, options: {} }),
+        headers: {
+          'content-type': 'application/json',
+          'x-auth-token': this.apiKey,
+        },
+        method: 'POST',
+      })
+    ).json()
+
+    // stringify all the values so user modifications are consistent with the "OG" data
+    // i.e. +46 <=> "46"
+    const stringifiedData: Record<string, string>[] = []
+    data.response.items.forEach((row) => {
+      const _row: Record<string, string> = {}
+      Object.entries(row).forEach(([key, value]) => {
+        const _key = key.toString()
+        if (!_key || !value) return
+
+        _row[_key] = typeof value === 'object' ? stringifyWithoutNewLines(value) : value?.toString()
+      })
+
+      stringifiedData.push(_row)
+    })
+
+    return { ...data.response, items: stringifiedData }
+  }
+
   protected detectChanges() {
     this.hasChanges =
       this.rows.some((r) => {
