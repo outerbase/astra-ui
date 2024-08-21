@@ -35,8 +35,8 @@ export class AstraEditor extends LitElement {
   static styles = css`
     .cm-tooltip-autocomplete ul::-webkit-scrollbar,
     .cm-scroller::-webkit-scrollbar {
-      width: 10px;
-      height: 10px;
+      width: 6px;
+      height: 6px;
     }
 
     .cm-scroller::-webkit-scrollbar-thumb {
