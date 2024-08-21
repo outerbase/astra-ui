@@ -52,7 +52,7 @@ declare global {
       }
       'astra-editor-sql': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { dialect?: string; schema?: string }
       'astra-editor-handlebar': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { variables?: string }
-      'astra-editor-prompt': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
+      'astra-editor-prompt': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { token?: string }
     }
   }
 }
