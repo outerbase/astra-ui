@@ -245,6 +245,8 @@ export default class OuterbaseTable extends AstraTable {
   }
 
   override async updated(changedProperties: PropertyValueMap<this>) {
+    super.updated(changedProperties)
+
     const has = changedProperties.has.bind(changedProperties)
 
     // extract and set props from starlink url
