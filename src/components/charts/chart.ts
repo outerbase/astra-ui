@@ -52,9 +52,8 @@ const gradients = [
 // const cobaltValues = ['#5956E2', '#A99AFF', '#82DBFF']
 // const afterburnValues = ['#E75F98', '#FFA285', '#CCB8F2']
 
-// const mercuryValuesDark = ['#fafafa', '#e5e5e5', '#a3a3a3', '#525252', '#262626']
 const mercuryValuesDark = ['#fafafa', '#525252', '#a3a3a3', '#e5e5e5', '#262626']
-const mercuryValuesLight = ['#0a0a0a', '#262626', '#525252', '#a3a3a3', '#e5e5e5']
+const mercuryValuesLight = ['#0a0a0a', '#a3a3a3', '#525252', '#262626', '#e5e5e5']
 
 @customElement('astra-chart')
 export default class AstraChart extends ClassifiedElement {
@@ -489,11 +488,14 @@ export default class AstraChart extends ClassifiedElement {
         sort = { x: 'y', reverse: true }
       }
 
+      const group = this.data?.options?.groupBy ?? this.groupBy
       options.marks.push(
         barY(d, {
           x: this.keyX,
           y: this.keyY,
-          fill: this.colorValues[0],
+          //   inset: 0.5,
+          //   fill: this.colorValues[0],
+          fill: group ? group : this.colorValues[0],
           tip,
           sort,
         })
