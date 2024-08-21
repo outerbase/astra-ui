@@ -1,4 +1,4 @@
-import { css, html, type PropertyValueMap } from 'lit'
+import { css, html, nothing, type PropertyValueMap } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { isEqual } from 'lodash-es'
@@ -36,6 +36,8 @@ export default class OuterbaseTable extends AstraTable {
   @property({ attribute: 'schema-name', type: String }) schemaName?: string
   @property({ attribute: 'table-name', type: String }) tableName?: string
   @property({ attribute: 'side-bar', type: Boolean }) showSidebar = false
+  @property({ attribute: 'show-editor', type: Boolean }) showEditor = false
+  @property({ attribute: 'sql', type: Boolean }) codeEditorValue = ''
   @property({ type: Number }) offset = 0
   @property({ type: Number }) limit = 50
   @property({ type: Number }) total = 0
@@ -378,6 +380,37 @@ export default class OuterbaseTable extends AstraTable {
   public override render() {
     const table = super.render()
 
+    const editor = html`
+      <div
+        id="container"
+        class="h-[200px]"
+        @keydown=${(event: KeyboardEvent) => {
+          const { code, metaKey } = event
+
+          if (metaKey && code === 'Enter') {
+            event.preventDefault()
+            console.info(this.codeEditorValue)
+          }
+        }}
+      >
+        <!-- @ts-ignore attributes -->
+        <astra-editor
+          id="editor"
+          client:only="lit"
+          value="SELECT 1 + 1;"
+          theme="freedom"
+          @change=${({ detail }: CustomEvent) => {
+            this.codeEditorValue = detail
+          }}
+        >
+          <!-- @ts-ignore attributes -->
+          <astra-editor-sql client:only="lit" dialect="sqlite" schema="{JSON.stringify(SCHEMA)}" />
+          <!-- @ts-ignore attributes -->
+          <astra-editor-handlebar client:only="lit" variables="variable1,variable2" />
+        </astra-editor>
+      </div>
+    `
+
     const deleteBtn = this.hasSelectedRows
       ? html`<astra-button size="compact" theme="${this.theme}" @click=${this.onDeleteRows}>Delete Rows</astra-button>`
       : null
@@ -431,15 +464,33 @@ export default class OuterbaseTable extends AstraTable {
         <!-- header; action bar -->
         <div
           id="action-bar"
-          class="h-12 font-medium bg-theme-table dark:bg-theme-table-dark items-center justify-end flex gap-2.5 text-sm p-2 border-t border-b border-r border-theme-table-border dark:border-theme-table-border-dark"
+          class="bg-theme-table dark:bg-theme-table-dark flex gap-2.5 text-sm p-2 border-t border-b border-r border-theme-table-border dark:border-theme-table-border-dark"
         >
-          <div class="flex items-center justify-center flex-auto font-bold text-xl">${this.tableName}</div>
-          ${discardBtn} ${deleteBtn} ${saveBtn}
-          <astra-button size="compact" theme="${this.theme}" @click=${this.onAddRow}>Add Row</astra-button>
-          <astra-button size="compact" theme="${this.theme}" @click=${this.onRefresh}>${ArrowsClockwise(16)}</astra-button>
+          <!-- hide/show editor button -->
+          <astra-button
+            size="compact"
+            theme="${this.theme}"
+            @click=${() => {
+              this.showEditor = !this.showEditor
+            }}
+          >
+            ${this.showEditor ? 'Hide Editor' : 'Edit Query'}
+          </astra-button>
+
+          <!-- editor run button -->
+          ${this.showEditor ? html`<astra-button size="compact" theme="${this.theme}" @click=${() => {}}>Run</astra-button>` : nothing}
+
+          <!-- table buttons -->
+          ${this.showEditor
+            ? nothing
+            : html`<div class="flex items-center justify-center flex-auto font-bold text-xl">${this.tableName}</div>
+                ${discardBtn} ${deleteBtn} ${saveBtn}
+                <astra-button size="compact" theme="${this.theme}" @click=${this.onAddRow}>Add Row</astra-button>
+                <astra-button size="compact" theme="${this.theme}" @click=${this.onRefresh}>${ArrowsClockwise(16)}</astra-button>`}
         </div>
 
         <!-- data -->
+        ${this.showEditor ? editor : nothing}
         <div class="relative flex-1 border-r border-theme-table-border dark:border-theme-table-border-dark">${table}</div>
 
         <!-- footer; pagination -->
