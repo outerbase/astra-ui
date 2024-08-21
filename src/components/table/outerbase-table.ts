@@ -2,8 +2,8 @@ import { css, html, type PropertyValueMap } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { isEqual } from 'lodash-es'
+
 import { ArrowsClockwise } from '../../icons/arrows-clockwise.js'
-import { CaretDown } from '../../icons/caret-down.js'
 import { CaretLeft } from '../../icons/caret-left.js'
 import { CaretRight } from '../../icons/caret-right.js'
 import { Table as TableIcon } from '../../icons/table.js'
@@ -13,9 +13,10 @@ import stringifyWithoutNewLines from '../../lib/stringify-without-new-lines.js'
 import type { APIResponse, CellUpdateEvent, Fields, MenuSelectedEvent, RowAsRecord, Rows, SourceSchema, Table } from '../../types.js'
 import '../button.js' // Ensure the button component is imported
 import AstraTable from './core/index.js'
+import './outerbase/table-list-item.js'
 
-// const OUTERBASE_API_DOMAIN = 'app.outerbase.com'
-const OUTERBASE_API_DOMAIN = 'app.dev.outerbase.com'
+const OUTERBASE_API_DOMAIN = 'app.outerbase.com'
+// const OUTERBASE_API_DOMAIN = 'app.dev.outerbase.com'
 
 @customElement('outerbase-table')
 export default class OuterbaseTable extends AstraTable {
@@ -333,29 +334,24 @@ export default class OuterbaseTable extends AstraTable {
     const schemaTables = Object.entries(schema)
 
     return html`<div
-      class="w-48 flex flex-col border rounded-tl rounded-bl text-theme-table-content dark:text-theme-table-content-dark bg-theme-table dark:bg-theme-table-dark border-theme-table-border dark:border-theme-table-border-dark"
+      class="w-48 flex flex-col border text-theme-table-content dark:text-theme-table-content-dark bg-theme-table dark:bg-theme-table-dark border-theme-table-border dark:border-theme-table-border-dark"
     >
       <h1
-        class="text-xl font-semibold h-12 flex-none flex items-center pl-2  text-theme-sidebar-header-content border-theme-table-border dark:border-theme-table-border-dark"
+        class="p-4 leading-none text-xl font-semibold flex-none flex items-center text-theme-sidebar-header-content border-theme-table-border dark:border-theme-table-border-dark"
       >
         Tables
       </h1>
-
       <div class="relative h-full">
         <astra-scroll-area>
-          <ul>
+          <ul class="text-sm">
             <!-- scroller content -->
             ${schemaTables.map(
               ([schema, tables]) =>
-                html`<div
-                    class="py-2 px-2 flex items-center gap-1 text-theme-sidebar-subheader-content dark:text-theme-sidebar-subheader-content-dark"
-                  >
-                    ${schema} ${CaretDown(16)}
-                  </div>
+                html`<outerbase-table-list-item label="${schema}" ?open=${schema === 'public'}>
                   ${tables?.map(
                     (t) =>
                       html`<li
-                        class="py-2 flex flex-row pl-5 pr-2 items-center gap-2 cursor-pointer focus:outline-none focus-visible:ring focus-visible:ring-blue-600  hover:bg-theme-sidebar-li-hover dark:bg-theme-sidebar-li-hover-dark dark:text-white dark:hover:bg-neutral-800 ${classMap(
+                        class="pl-7 pr-2 py-2 flex flex-row items-center gap-2 cursor-pointer focus:outline-none focus-visible:ring focus-visible:ring-blue-600  hover:bg-theme-sidebar-li-hover dark:bg-theme-sidebar-li-hover-dark dark:text-white dark:hover:bg-neutral-800 ${classMap(
                           {
                             'text-theme-sidebar-li-active': this.tableName === t.name,
                             'text-theme-sidebar-li-content': this.tableName !== t.name,
@@ -365,10 +361,11 @@ export default class OuterbaseTable extends AstraTable {
                         )}"
                         @click=${() => this.onTableSelection(schema, t.name)}
                       >
-                        <span class="flex-none">${TableIcon(16)}</span>
+                        <span class="flex-none">${TableIcon(14)}</span>
                         <span class="truncate text-sm">${t.name}</span>
                       </li>`
-                  )}`
+                  )}
+                </outerbase-table-list-item> `
             )}
           </ul>
         </astra-scroll-area>
@@ -432,7 +429,7 @@ export default class OuterbaseTable extends AstraTable {
         <!-- header; action bar -->
         <div
           id="action-bar"
-          class="h-12 font-medium bg-theme-table dark:bg-theme-table-dark items-center justify-end flex gap-2.5 text-sm p-2 rounded-tr border-t border-b border-r border-theme-table-border dark:border-theme-table-border-dark"
+          class="h-12 font-medium bg-theme-table dark:bg-theme-table-dark items-center justify-end flex gap-2.5 text-sm p-2 border-t border-b border-r border-theme-table-border dark:border-theme-table-border-dark"
         >
           <div class="flex items-center justify-center flex-auto font-bold text-xl">${this.tableName}</div>
           ${discardBtn} ${deleteBtn} ${saveBtn}
@@ -446,7 +443,7 @@ export default class OuterbaseTable extends AstraTable {
         <!-- footer; pagination -->
         <div
           id="footer"
-          class="h-12 font-medium bg-theme-table dark:bg-theme-table-dark items-center justify-end flex gap-2.5 text-sm py-2 rounded-br border-t border-b border-r border-theme-table-border dark:border-theme-table-border-dark p-2"
+          class="h-12 font-medium bg-theme-table dark:bg-theme-table-dark items-center justify-end flex gap-2.5 text-sm py-2 border-t border-b border-r border-theme-table-border dark:border-theme-table-border-dark p-2"
         >
           Viewing ${Math.min(this.offset + 1, this.total)}-${Math.min(this.offset + this.limit, this.total)} of ${this.total}
           <div class="select-none flex items-center">
