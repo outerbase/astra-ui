@@ -430,7 +430,10 @@ export default class OuterbaseTable extends AstraTable {
                               'font-semibold': this.tableName === t.name,
                             }
                           )}"
-                          @click=${() => this.onTableSelection(schema, t.name)}
+                          @click=${() => {
+                            if ((this.hasChanges && confirm('Discard unsaved changes?')) || !this.hasChanges)
+                              this.onTableSelection(schema, t.name)
+                          }}
                         >
                           <span class="flex-none">${TableIcon(14)}</span>
                           <span class="truncate text-sm">${t.name}</span>
