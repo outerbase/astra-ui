@@ -393,7 +393,6 @@ export default class OuterbaseTable extends AstraTable {
           }
         }}
       >
-        <!-- @ts-ignore attributes -->
         <astra-editor
           id="editor"
           value="SELECT 1 + 1;"
@@ -402,9 +401,7 @@ export default class OuterbaseTable extends AstraTable {
             this.codeEditorValue = detail
           }}
         >
-          <!-- @ts-ignore attributes -->
           <astra-editor-sql dialect="sqlite" schema="{JSON.stringify(SCHEMA)}" />
-          <!-- @ts-ignore attributes -->
           <astra-editor-handlebar variables="variable1,variable2" />
         </astra-editor>
       </div>
