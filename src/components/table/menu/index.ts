@@ -1,15 +1,15 @@
-import '../../hans-wormhole.js'
-
 import { html, type PropertyValueMap } from 'lit'
 import { property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
+import { createRef, ref, type Ref } from 'lit/directives/ref.js'
 import { repeat } from 'lit/directives/repeat.js'
 
-import { createRef, ref, type Ref } from 'lit/directives/ref.js'
-import classMapToClassName from '../../../lib/class-map-to-class-name.js'
 import { MenuCloseEvent, MenuOpenEvent, MenuSelectedEvent } from '../../../lib/events.js'
 import { type HeaderMenuOptions } from '../../../types.js'
 import { ClassifiedElement } from '../../classified-element.js'
+
+import '../../hans-wormhole.js'
+import './item.js'
 
 export class Menu extends ClassifiedElement {
   protected override classMap() {
@@ -73,20 +73,9 @@ export class Menu extends ClassifiedElement {
           html`<li
             @click=${this.onItemClick}
             data-value=${value}
-            class="text-ellipsis overflow-hidden rounded-md p-2.5 cursor-pointer hover:bg-theme-menu-background-color-active hover:text-theme-menu-content-color-active dark:hover:bg-theme-menu-background-color-active-dark dark:hover:text-theme-menu-content-color-active-dark ${classMapToClassName(
-              {
-                [classes ?? '']: !!classes,
-                // active states
-                'text-theme-menu-content-color-active': this.focused === value,
-                'bg-theme-menu-background-color-active': this.focused === value,
-                'dark:text-theme-menu-content-color-active-dark': this.focused === value,
-                'dark:bg-theme-menu-background-color-active-dark': this.focused === value,
-              }
-            )}"
             role="menuitem"
-            ?selected=${this.selection === value}
           >
-            ${label}
+            <astra-menu-item class="${classes}" ?focused=${value === this.focused} selected=${this.selection === label}>${label}</astra-list-item>
           </li>`
       )}
     </ul>`
