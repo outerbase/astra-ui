@@ -123,7 +123,9 @@ export class AstraEditor extends LitElement {
     }
   }
 
-  protected firstUpdated(): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
+    super.firstUpdated(changedProperties)
+
     // Default extensions
     this.extensions = [
       {
@@ -204,6 +206,8 @@ export class AstraEditor extends LitElement {
   }
 
   protected updated(properties: PropertyValues<this>): void {
+    super.updated(properties)
+
     if (properties.has('color')) {
       if (this.color === 'dark') {
         this.containerRef?.value?.classList.add('dark')

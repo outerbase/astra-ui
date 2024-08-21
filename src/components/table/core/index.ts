@@ -494,7 +494,9 @@ export default class AstraTable extends ClassifiedElement {
     return Math.ceil((this.scrollableEl?.value?.scroller?.value?.clientHeight ?? 0) / this.rowHeight) + 1
   }
 
-  public override firstUpdated(_changedProperties: PropertyValueMap<this>): void {
+  public override firstUpdated(changedProperties: PropertyValueMap<this>): void {
+    super.firstUpdated(changedProperties)
+
     if (this.keyboardShortcuts) {
       document.addEventListener('keydown', this.onKeyDown)
     }

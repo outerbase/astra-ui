@@ -318,7 +318,7 @@ export default class OuterbaseTable extends AstraTable {
   }
 
   override disconnectedCallback(): void {
-    super.disconnectedCallback
+    super.disconnectedCallback()
     this.removeEventListener('cell-updated', this.onCellUpdated)
     this.removeEventListener('menu-selection', this.onMenuSelection)
   }
