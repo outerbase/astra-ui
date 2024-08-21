@@ -396,7 +396,6 @@ export default class OuterbaseTable extends AstraTable {
         <!-- @ts-ignore attributes -->
         <astra-editor
           id="editor"
-          client:only="lit"
           value="SELECT 1 + 1;"
           theme="freedom"
           @change=${({ detail }: CustomEvent) => {
@@ -404,9 +403,9 @@ export default class OuterbaseTable extends AstraTable {
           }}
         >
           <!-- @ts-ignore attributes -->
-          <astra-editor-sql client:only="lit" dialect="sqlite" schema="{JSON.stringify(SCHEMA)}" />
+          <astra-editor-sql dialect="sqlite" schema="{JSON.stringify(SCHEMA)}" />
           <!-- @ts-ignore attributes -->
-          <astra-editor-handlebar client:only="lit" variables="variable1,variable2" />
+          <astra-editor-handlebar variables="variable1,variable2" />
         </astra-editor>
       </div>
     `
