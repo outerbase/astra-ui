@@ -25,7 +25,7 @@ function decorateHandlebar(view: EditorView) {
 
 @customElement('astra-editor-handlebar')
 export class AstraEditorHandlerbarPlugin extends AstraEditorPlugin {
-  @property({ type: 'String' }) variables: string = ''
+  @property() variables: string = ''
 
   protected updated(properties: PropertyValues): void {
     if (properties.has('variables')) {
