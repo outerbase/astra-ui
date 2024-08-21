@@ -352,23 +352,25 @@ export default class OuterbaseTable extends AstraTable {
             ${schemaTables.map(
               ([schema, tables]) =>
                 html`<outerbase-table-list-item label="${schema}" ?open=${schema === 'public'}>
-                  ${tables?.map(
-                    (t) =>
-                      html`<li
-                        class="pl-7 pr-2 py-2 flex flex-row items-center gap-2 cursor-pointer focus:outline-none focus-visible:ring focus-visible:ring-blue-600  hover:bg-theme-sidebar-li-hover dark:bg-theme-sidebar-li-hover-dark dark:text-white dark:hover:bg-neutral-800 ${classMap(
-                          {
-                            'text-theme-sidebar-li-active': this.tableName === t.name,
-                            'text-theme-sidebar-li-content': this.tableName !== t.name,
-                            'dark:text-theme-sidebar-li-content-dark': this.tableName !== t.name,
-                            'font-semibold': this.tableName === t.name,
-                          }
-                        )}"
-                        @click=${() => this.onTableSelection(schema, t.name)}
-                      >
-                        <span class="flex-none">${TableIcon(14)}</span>
-                        <span class="truncate text-sm">${t.name}</span>
-                      </li>`
-                  )}
+                  ${tables
+                    ?.sort((a, b) => a.name.localeCompare(b.name))
+                    .map(
+                      (t) =>
+                        html`<li
+                          class="pl-7 pr-2 py-2 flex flex-row items-center gap-2 cursor-pointer focus:outline-none focus-visible:ring focus-visible:ring-blue-600  hover:bg-theme-sidebar-li-hover dark:bg-theme-sidebar-li-hover-dark dark:text-white dark:hover:bg-neutral-800 ${classMap(
+                            {
+                              'text-theme-sidebar-li-active': this.tableName === t.name,
+                              'text-theme-sidebar-li-content': this.tableName !== t.name,
+                              'dark:text-theme-sidebar-li-content-dark': this.tableName !== t.name,
+                              'font-semibold': this.tableName === t.name,
+                            }
+                          )}"
+                          @click=${() => this.onTableSelection(schema, t.name)}
+                        >
+                          <span class="flex-none">${TableIcon(14)}</span>
+                          <span class="truncate text-sm">${t.name}</span>
+                        </li>`
+                    )}
                 </outerbase-table-list-item> `
             )}
           </ul>
