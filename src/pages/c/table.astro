@@ -1,7 +1,6 @@
 ---
-import AstraTable from '../../components/table/core'
-
 import { Code } from 'astro/components'
+import { NoFlickerElement } from '../../components/table/menu/trash.ts'
 import ComponentLayout from '../../layouts/Component.astro'
 import Layout from '../../layouts/Layout.astro'
 
@@ -10,11 +9,39 @@ const usage = `\
 `
 
 // test data
+import { NestedMenu, type MenuItem } from '../../components/table/menu/experiment'
 import spaceballs from '../../lib/sample-data.json'
 const rows = spaceballs
   .map((d) => ({ ...d, traits: JSON.stringify(d.traits) }))
   .map((values) => ({ id: crypto.randomUUID(), values, originalValues: values }))
 const columns = Object.keys(rows[0].values).map((name) => ({ name }))
+
+const menuItems: MenuItem[] = [
+  { label: 'Home', action: () => console.log('Home clicked') },
+  {
+    label: 'Products',
+    subItems: [
+      { label: 'Electronics', action: () => console.log('Electronics clicked') },
+      {
+        label: 'Clothing',
+        subItems: [
+          { label: 'Men', action: () => console.log("Men's clothing clicked") },
+          { label: 'Women', action: () => console.log("Women's clothing clicked") },
+        ],
+      },
+      { label: 'Books', action: () => console.log('Books clicked') },
+    ],
+  },
+  { label: 'About', action: () => console.log('About clicked') },
+  {
+    label: 'Services',
+    subItems: [
+      { label: 'Consulting', action: () => console.log('Consulting clicked') },
+      { label: 'Training', action: () => console.log('Training clicked') },
+    ],
+  },
+  { label: 'Contact', action: () => console.log('Contact clicked') },
+]
 ---
 
 <style>
@@ -47,9 +74,12 @@ const columns = Object.keys(rows[0].values).map((name) => ({ name }))
     <!-- @ts-ignore -->
 
     <div class="dark:bg-black w-full" slot="preview">
-      <div class="relative h-52 rounded-md overflow-clip">
+      <div class="rounded-md flex gap-8 bg-blue-400" id="foo">
+        <!-- <AstraTable id="blurred-table" client:load schema={{ columns }} data={rows} static-widths /> -->
         <!-- @ts-ignore Astro doesn't seem to understand some of the params being passed -->
-        <AstraTable id="blurred-table" client:load schema={{ columns }} data={rows} static-widths />
+
+        <NestedMenu items={menuItems} client:only="lit" />
+        <NoFlickerElement client:load />
       </div>
     </div>
 
