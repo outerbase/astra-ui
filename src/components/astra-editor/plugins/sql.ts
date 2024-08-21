@@ -11,6 +11,8 @@ export class AstraEditorSqlPlugin extends AstraEditorPlugin {
   @property() schema: string = ''
 
   protected updated(properties: PropertyValues): void {
+    super.updated(properties)
+
     if (properties.has('dialect')) {
       this.updateExtension()
     }

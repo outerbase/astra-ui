@@ -28,6 +28,8 @@ export class AstraEditorHandlerbarPlugin extends AstraEditorPlugin {
   @property({ type: 'String' }) variables: string = ''
 
   protected updated(properties: PropertyValues): void {
+    super.updated(properties)
+
     if (properties.has('variables')) {
       this.setupExtension()
     }
