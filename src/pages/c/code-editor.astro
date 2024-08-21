@@ -71,28 +71,12 @@ const SCHEMA = {
   const wrapElement = document.getElementById('wrap') as HTMLInputElement
   const darkElement = document.getElementById('dark') as HTMLInputElement
   const themeElement = document.getElementById('theme') as HTMLSelectElement
+  const tokenElement = document.getElementById('token') as HTMLInputElement
 
-  setTimeout(() => {
-    const promptElement = document.getElementById('prompt-plugin') as any
-    promptElement.handleSuggestion(async (instruction: string) => {
-      const token = (document.getElementById('token') as any).value ?? ''
-
-      const r = await fetch('https://app.outerbase.com/api/v1/ezql', {
-        headers: {
-          'x-source-token': token,
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({ query: instruction, run: false }),
-        method: 'POST',
-      })
-
-      const json = await r.json()
-
-      if (json.error) throw json.error.description
-
-      return json?.response?.query
-    })
-  }, 2000)
+  tokenElement.onchange = () => {
+    const plugin = document.getElementById('prompt-plugin') as any
+    plugin.token = tokenElement.value
+  }
 
   readonlyElement.onchange = () => {
     const editor = document.getElementById('editor') as any

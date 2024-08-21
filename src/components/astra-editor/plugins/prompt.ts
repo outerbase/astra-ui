@@ -1,7 +1,7 @@
 import { Prec, StateEffect, StateField } from '@codemirror/state'
 import { Decoration, keymap, WidgetType } from '@codemirror/view'
 import { EditorView } from 'codemirror'
-import { customElement } from 'lit/decorators.js'
+import { customElement, property } from 'lit/decorators.js'
 import { AstraEditorPlugin } from './base.js'
 
 const effectHidePrompt = StateEffect.define()
@@ -93,7 +93,7 @@ class PromptWidget extends WidgetType {
       errorMessage.style.display = 'none'
 
       this.plugin
-        .promptCallback(input.value)
+        .getSuggestion(input.value)
         .then((r) => {
           if (!this.plugin.isActive) return
 
@@ -161,6 +161,14 @@ class PromptWidget extends WidgetType {
     generateButton.addEventListener('click', generateQuery)
 
     input.addEventListener('mousedown', (e) => {
+      e.stopPropagation()
+    })
+
+    input.addEventListener('paste', (e) => {
+      e.stopPropagation()
+    })
+
+    input.addEventListener('copy', (e) => {
       e.stopPropagation()
     })
 
@@ -295,10 +303,9 @@ const promptKeyBinding = Prec.highest(
 export class AstraEditorPromptPlugin extends AstraEditorPlugin {
   isActive: boolean = false
 
-  promptCallback: PromptCallback = async () => {
-    await new Promise((r) => setTimeout(r, 1000))
-    return 'Not implemented'
-  }
+  @property() token: string = ''
+
+  promptCallback?: PromptCallback
 
   connectedCallback() {
     super.connectedCallback()
@@ -413,6 +420,28 @@ export class AstraEditorPromptPlugin extends AstraEditorPlugin {
   disconnectedCallback() {
     this.editor.removeStyle('prompt')
     this.editor.removeExtension('prompt')
+  }
+
+  async getSuggestion(promptQuery: string) {
+    // If token is supplied, we will fallback to ezql public API
+    if (this.token) {
+      const ezqlRawResponse = await fetch('https://app.outerbase.com/api/v1/ezql', {
+        headers: {
+          'x-source-token': this.token,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ query: promptQuery, run: false }),
+        method: 'POST',
+      })
+
+      const ezqlResponse = await ezqlRawResponse.json()
+      if (ezqlResponse.error) throw ezqlResponse.error.description
+      return ezqlResponse?.response?.query
+    } else if (this.promptCallback) {
+      return this.promptCallback(promptQuery)
+    }
+
+    throw new Error('No token provided')
   }
 
   handleSuggestion(callback: PromptCallback) {
