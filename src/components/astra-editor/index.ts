@@ -14,7 +14,7 @@ import {
 } from '@codemirror/view'
 import { EditorView } from 'codemirror'
 import { css, html, LitElement, type PropertyValues } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
+import { customElement, property, state } from 'lit/decorators.js'
 import { createRef, ref, type Ref } from 'lit/directives/ref.js'
 import { getPredefineTheme } from './theme.js'
 
@@ -26,13 +26,31 @@ export class AstraEditor extends LitElement {
   protected previousValue: string = ''
 
   @property() color: string = 'light'
-  @property({ type: 'Boolean' }) wrap: boolean = false
+  @property({ type: Boolean }) wrap: boolean = false
   @property() theme: string = 'moondust'
   @property() placeholder: string = ''
   @property() value: string = ''
-  @property({ type: 'Boolean' }) readonly: boolean = false
+  @property({ type: Boolean }) readonly: boolean = false
+
+  @state() styleSheets: { name: string; styles: string }[] = []
 
   static styles = css`
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .spin {
+      animation-name: spin;
+      animation-duration: 1000ms;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear;
+    }
+
     .cm-tooltip-autocomplete ul::-webkit-scrollbar,
     .cm-scroller::-webkit-scrollbar {
       width: 6px;
@@ -173,8 +191,16 @@ export class AstraEditor extends LitElement {
         ],
         comp: new Compartment(),
       },
-      { name: 'placeholder', ext: placeholder(this.placeholder), comp: new Compartment() },
-      { name: 'readonly', ext: EditorState.readOnly.of(this.readonly), comp: new Compartment() },
+      {
+        name: 'placeholder',
+        ext: placeholder(this.placeholder),
+        comp: new Compartment(),
+      },
+      {
+        name: 'readonly',
+        ext: EditorState.readOnly.of(this.readonly),
+        comp: new Compartment(),
+      },
       {
         name: 'theme',
         ext: getPredefineTheme(this.color === 'dark' ? 'dark' : 'light', this.theme),
@@ -252,7 +278,15 @@ export class AstraEditor extends LitElement {
   }
 
   render() {
-    return html`<div id="container" style="height:100%" ${ref(this.containerRef)}></div>`
+    return html`
+      ${this.styleSheets.map(
+        ({ styles }) =>
+          html`<style>
+            ${styles}
+          </style>`
+      )}
+      <div id="container" style="height:100%" ${ref(this.containerRef)}></div>
+    `
   }
 
   private getExtensions() {
@@ -320,5 +354,13 @@ export class AstraEditor extends LitElement {
         })
       }
     }
+  }
+
+  addStyle(name: string, styles: string) {
+    this.styleSheets = [...this.styleSheets, { name, styles }]
+  }
+
+  removeStyle(name: string) {
+    this.styleSheets = this.styleSheets.filter((s) => s.name !== name)
   }
 }
