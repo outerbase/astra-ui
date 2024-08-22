@@ -10,7 +10,17 @@ import { Table as TableIcon } from '../../icons/table.js'
 import { diffObjects } from '../../lib/diff-objects.js'
 import { normalizeKeys } from '../../lib/normalize-object-keys.js'
 import stringifyWithoutNewLines from '../../lib/stringify-without-new-lines.js'
-import type { APIResponse, CellUpdateEvent, Fields, MenuSelectedEvent, RowAsRecord, Rows, SourceSchema, Table } from '../../types.js'
+import type {
+  APIResponse,
+  CellUpdateEvent,
+  Fields,
+  MenuSelectedEvent,
+  RowAsRecord,
+  Rows,
+  Schema,
+  SourceSchema,
+  Table,
+} from '../../types.js'
 import '../button.js' // Ensure the button component is imported
 import AstraTable from './core/index.js'
 import './outerbase/table-list-item.js'
@@ -48,10 +58,14 @@ export default class OuterbaseTable extends AstraTable {
   @state() hasSelectedRows = false
   @state() hasChanges = false
 
+  private previousData?: Array<RowAsRecord>
+  private previousSchema?: Schema
+
   constructor() {
     super()
     this.onCellUpdated = this.onCellUpdated.bind(this)
     this.onMenuSelection = this.onMenuSelection.bind(this)
+    this.onRunQuery = this.onRunQuery.bind(this)
   }
 
   protected async fetchSchema() {
@@ -142,7 +156,7 @@ export default class OuterbaseTable extends AstraTable {
 
     const data: APIResponse<Rows> = await // TODO replace `1234567890` with a valid source id
     (
-      await fetch(`https://${OUTERBASE_API_DOMAIN}/api/v1/workspace/${this.workspaceId}/source/${1234567890}/query/raw`, {
+      await fetch(`https://${OUTERBASE_API_DOMAIN}/api/v1/workspace/${this.workspaceId}/base/${this.baseId}/query/raw`, {
         body: JSON.stringify({ query: this.codeEditorValue, options: {} }),
         headers: {
           'content-type': 'application/json',
@@ -186,8 +200,8 @@ export default class OuterbaseTable extends AstraTable {
     this.addNewRow()
   }
 
-  protected async refreshData() {
-    const data = await this.fetchData()
+  protected async refreshData(_data?: { items: Record<string, string>[]; count: number; query?: string; name?: string }) {
+    const data = _data ?? (await this.fetchData())
 
     this.data = data.items.map((r) => ({
       id: self.crypto.randomUUID(),
@@ -309,6 +323,18 @@ export default class OuterbaseTable extends AstraTable {
     }
   }
 
+  protected async onRunQuery(_event?: Event) {
+    // save current data for when user stops editing the query
+    this.previousData = this.data
+    this.previousSchema = this.schema
+
+    // submit query and create a pseudo-schema
+    const data = await this.queryData()
+    this.refreshData(data)
+    const columns = Object.keys(data.items[0]).map((name) => ({ name }))
+    this.schema = { columns }
+  }
+
   override async updated(changedProperties: PropertyValueMap<this>) {
     super.updated(changedProperties)
 
@@ -364,6 +390,7 @@ export default class OuterbaseTable extends AstraTable {
 
     // fetch data when any params change
     if (
+      !this.showEditor && // skip when query editing
       (has('apiKey') || has('baseId') || has('workspaceId') || has('fields') || has('offset')) &&
       this.apiKey &&
       this.baseId &&
@@ -537,6 +564,13 @@ export default class OuterbaseTable extends AstraTable {
             size="compact"
             theme="${this.theme}"
             @click=${() => {
+              if (this.showEditor) {
+                if (this.previousData) this.data = this.previousData
+                if (this.previousSchema) this.schema = this.previousSchema
+
+                delete this.previousData
+                delete this.previousSchema
+              }
               this.showEditor = !this.showEditor
             }}
           >
@@ -544,7 +578,9 @@ export default class OuterbaseTable extends AstraTable {
           </astra-button>
 
           <!-- editor run button -->
-          ${this.showEditor ? html`<astra-button size="compact" theme="${this.theme}" @click=${() => {}}>Run</astra-button>` : nothing}
+          ${this.showEditor
+            ? html`<astra-button size="compact" theme="${this.theme}" @click=${this.onRunQuery}>Run</astra-button>`
+            : nothing}
 
           <!-- table buttons -->
           ${this.showEditor
