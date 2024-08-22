@@ -5,14 +5,14 @@ import { customElement, property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import createGradient from '../../lib/create-gradient.js'
 import type {
-  ChartTypeV3,
-  DashboardV3Chart,
-  DashboardV3ChartLabelDisplayX,
-  DashboardV3ChartLabelDisplayY,
-  DashboardV3ChartLegend,
-  DashboardV3ChartSortOrder,
-  DashboardV3HighlightType,
-  Row,
+    ChartTypeV3,
+    DashboardV3Chart,
+    DashboardV3ChartLabelDisplayX,
+    DashboardV3ChartLabelDisplayY,
+    DashboardV3ChartLegend,
+    DashboardV3ChartSortOrder,
+    DashboardV3HighlightType,
+    Row,
 } from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
 
@@ -488,18 +488,92 @@ export default class AstraChart extends ClassifiedElement {
         sort = { x: 'y', reverse: true }
       }
 
-      const group = this.data?.options?.groupBy ?? this.groupBy
-      options.marks.push(
-        barY(d, {
-          x: this.keyX,
-          y: this.keyY,
-          //   inset: 0.5,
-          //   fill: this.colorValues[0],
-          fill: group ? group : this.colorValues[0],
-          tip,
-          sort,
+    // START NEW WORK
+    const yAxisKeys = this.data?.options?.yAxisKeys ?? [this.keyY]
+    
+    if (yAxisKeys.length > 1) {
+        let legendColors: any[] = []
+        let legendValues: any[] = []
+
+        this.data?.options?.yAxisKeys?.forEach((key, index) => {
+            const desiredColor = this.data?.options?.yAxisKeyColors?.[key] ?? this.colorValues[index % this.colorValues.length]
+
+            legendColors.push(desiredColor)
+            legendValues.push(key)
         })
-      )
+
+        const group = this.data?.options?.groupBy ?? this.groupBy
+
+        options.color = {
+            ...options.color,
+            domain: legendValues,
+            range: legendColors,
+            // legend: true,
+        }
+
+        // To stack bars on top of each other, we need to reshape the data
+        // to fit what the expected format is for the barY function.
+        const reshapedData: any[] = [];
+
+        d.forEach(row => {
+            legendValues.forEach(userKey => {
+                reshapedData.push({
+                    x: row.date,
+                    g: userKey,
+                    y: row[userKey]
+                });
+            });
+        });
+
+        options.marks.push(
+            barY(reshapedData, {
+                x: 'x',
+                y: 'y',
+                fill: 'g',
+                tip,
+                sort,
+            })
+        )
+    } else {
+        const group = this.data?.options?.groupBy ?? this.groupBy
+        const firstRecord = this.data?.layers?.[0].result?.[0]
+        const firstRecordKey = firstRecord ? Object.keys(firstRecord)[0] : ''
+        const legendValues = group ? Array.from(new Set(d?.map((r) => r[group]))) : [firstRecordKey]
+        const legendColors = legendValues.map((_, i) => this.colorValues[i % this.colorValues.length])
+
+        options.color = {
+            ...options.color,
+            domain: legendValues,
+            range: legendColors,
+        }
+
+        options.marks.push(
+            barY(d, {
+                x: this.keyX,
+                y: this.keyY,
+                fill: group ? group : this.colorValues[0],
+                tip,
+                sort,
+            })
+        )
+    }
+    // END NEW WORK
+
+        // const group = this.data?.options?.groupBy ?? this.groupBy
+        // const firstRecord = this.data?.layers?.[0].result?.[0]
+        // const firstRecordKey = firstRecord ? Object.keys(firstRecord)[0] : ''
+        // const legendValues = group ? Array.from(new Set(d?.map((r) => r[group]))) : [firstRecordKey]
+        // const legendColors = legendValues.map((_, i) => this.colorValues[i % this.colorValues.length])
+
+        // options.marks.push(
+        //     barY(d, {
+        //         x: this.keyX,
+        //         y: this.keyY,
+        //         fill: group ? legendColors : this.colorValues[0],
+        //         tip,
+        //         sort,
+        //     })
+        // )
     }
 
     // TYPE: LINE
@@ -661,7 +735,7 @@ export default class AstraChart extends ClassifiedElement {
       ticks: this.ticksY,
       nice: this.niceY,
       axis: yAxisDisplay,
-      tickFormat: showYTicks ? undefined : () => '',
+      tickFormat: showYTicks ? "s" : () => '',
       tickSize: showYTicks ? 5 : 0,
     }
 
