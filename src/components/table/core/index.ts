@@ -123,6 +123,12 @@ export default class AstraTable extends ClassifiedElement {
   @property({ attribute: 'blurry', type: Boolean })
   public blurry = false
 
+  @property({ attribute: 'column-menus', type: Boolean })
+  public hasColumnMenus = false
+
+  @property({ attribute: 'cell-menus', type: Boolean })
+  public hasCellMenus = false
+
   @state() protected scrollableEl: Ref<ScrollArea> = createRef()
   @state() public rows: Array<RowAsRecord> = []
   @state() public newRows: Array<RowAsRecord> = []
@@ -432,7 +438,7 @@ export default class AstraTable extends ClassifiedElement {
                       ?is-last-column=${idx === this.visibleColumns.length - 1}
                       ?is-first-row=${rowIndex === 0}
                       ?is-first-column=${idx === 0}
-                      ?menu=${!this.isNonInteractive && !this.readonly}
+                      ?menu=${!this.isNonInteractive && !this.readonly && this.hasCellMenus}
                       ?interactive=${!this.isNonInteractive}
                       ?hide-dirt=${isNew}
                       ?read-only=${this.readonly}
@@ -672,7 +678,7 @@ export default class AstraTable extends ClassifiedElement {
                                   width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
                                   ?separate-cells=${true}
                                   ?outer-border=${this.outerBorder}
-                                  ?menu=${!this.isNonInteractive && !this.readonly}
+                                  ?menu=${!this.isNonInteractive && !this.readonly && this.hasColumnMenus}
                                   ?with-resizer=${!this.isNonInteractive && !this.staticWidths}
                                   ?is-first-column=${idx === 0}
                                   ?is-last-column=${idx === this.visibleColumns.length - 1}
