@@ -25,8 +25,8 @@ import '../button.js' // Ensure the button component is imported
 import AstraTable from './core/index.js'
 import './outerbase/table-list-item.js'
 
-const OUTERBASE_API_DOMAIN = 'app.outerbase.com'
-// const OUTERBASE_API_DOMAIN = 'app.dev.outerbase.com'
+// const OUTERBASE_API_DOMAIN = 'app.outerbase.com'
+const OUTERBASE_API_DOMAIN = 'app.dev.outerbase.com'
 
 @customElement('outerbase-table')
 export default class OuterbaseTable extends AstraTable {
