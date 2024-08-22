@@ -64,20 +64,19 @@ export enum DBType {
 }
 
 export type TableColumn = {
+  name: string
   model?: 'column'
   type?: string
-  name: string
-  position: number
+  position?: number
   default?: string // has `::type` appended / casting quirks
   defaultValue?: string
   comment?: string
   // plugins: Array<PluginInstallationModel>
-  is_nullable: boolean
-  unique: boolean
-  primaryKey: boolean
-  autoIncrement: boolean
-
-  status: ColumnStatus | undefined
+  is_nullable?: boolean
+  unique?: boolean
+  primaryKey?: boolean
+  autoIncrement?: boolean
+  status?: ColumnStatus | undefined
 }
 
 export type Schema = {

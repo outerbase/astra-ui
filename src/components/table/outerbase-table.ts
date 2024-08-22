@@ -60,6 +60,7 @@ export default class OuterbaseTable extends AstraTable {
 
   private previousData?: Array<RowAsRecord>
   private previousSchema?: Schema
+  private previousTotal?: number
 
   constructor() {
     super()
@@ -324,15 +325,18 @@ export default class OuterbaseTable extends AstraTable {
   }
 
   protected async onRunQuery(_event?: Event) {
-    // save current data for when user stops editing the query
-    this.previousData = this.data
-    this.previousSchema = this.schema
-
     // submit query and create a pseudo-schema
     const data = await this.queryData()
+    data.count = data.items.length // API doesn't set `count` for queries
     this.refreshData(data)
-    const columns = Object.keys(data.items[0]).map((name) => ({ name }))
+
+    // assumes every item has the same columns/schema
+    const columns = Object.keys(data.items[0] ?? {}).map((name) => ({ name }))
+
     this.schema = { columns }
+    this.isNonInteractive = true
+    this.readonly = true
+    this.selectableRows = false
   }
 
   override async updated(changedProperties: PropertyValueMap<this>) {
@@ -478,18 +482,7 @@ export default class OuterbaseTable extends AstraTable {
     const table = super.render()
 
     const editor = html`
-      <div
-        id="container"
-        class="h-[200px]"
-        @keydown=${(event: KeyboardEvent) => {
-          const { code, metaKey } = event
-
-          if (metaKey && code === 'Enter') {
-            event.preventDefault()
-            console.info(this.codeEditorValue)
-          }
-        }}
-      >
+      <div id="container" class="h-1/3">
         <astra-editor
           id="editor"
           value="SELECT 1 + 1;"
@@ -552,6 +545,19 @@ export default class OuterbaseTable extends AstraTable {
     }
 
     const sidebar = this.showSidebar ? this.renderSidebar() : null
+    const footer = this.showEditor
+      ? nothing
+      : html`<div
+          id="footer"
+          class="h-12 font-medium bg-theme-table dark:bg-theme-table-dark items-center justify-end flex gap-2.5 text-sm py-2 border-t border-b border-r border-theme-table-border dark:border-theme-table-border-dark p-2"
+        >
+          Viewing ${Math.min(this.offset + 1, this.total)}-${Math.min(this.offset + this.limit, this.total)} of ${this.total}
+          <div class="select-none flex items-center">
+            <span class=${classMap(prevBtnClasses)} @click=${this.onClickPreviousPage}>${CaretLeft(16)}</span>
+            <span class="w-8 text-center">${this.total ? this.offset / this.limit + 1 : 1}</span>
+            <span class=${classMap(nextBtnClasses)} @click=${this.onClickNextPage}>${CaretRight(16)}</span>
+          </div>
+        </div>`
     const tableWithHeaderFooter = html`
       <div class="relative flex flex-col flex-1 text-theme-secondary-content dark:text-theme-secondary-content-dark">
         <!-- header; action bar -->
@@ -564,13 +570,32 @@ export default class OuterbaseTable extends AstraTable {
             size="compact"
             theme="${this.theme}"
             @click=${() => {
+              // when hiding the editor
               if (this.showEditor) {
+                // restore original state
+                if (this.previousTotal) this.total = this.previousTotal
                 if (this.previousData) this.data = this.previousData
                 if (this.previousSchema) this.schema = this.previousSchema
 
+                // restore interactivity
+                this.isNonInteractive = false
+                this.readonly = false
+                this.selectableRows = true
+
+                delete this.previousTotal
                 delete this.previousData
                 delete this.previousSchema
               }
+
+              // when showing the editor
+              if (!this.showEditor) {
+                this.previousTotal = this.total
+                this.previousData = this.data
+                this.previousSchema = this.schema
+                this.data = []
+                this.schema = { columns: [] }
+              }
+
               this.showEditor = !this.showEditor
             }}
           >
@@ -596,17 +621,7 @@ export default class OuterbaseTable extends AstraTable {
         <div class="relative flex-1 border-r border-theme-table-border dark:border-theme-table-border-dark">${table}</div>
 
         <!-- footer; pagination -->
-        <div
-          id="footer"
-          class="h-12 font-medium bg-theme-table dark:bg-theme-table-dark items-center justify-end flex gap-2.5 text-sm py-2 border-t border-b border-r border-theme-table-border dark:border-theme-table-border-dark p-2"
-        >
-          Viewing ${Math.min(this.offset + 1, this.total)}-${Math.min(this.offset + this.limit, this.total)} of ${this.total}
-          <div class="select-none flex items-center">
-            <span class=${classMap(prevBtnClasses)} @click=${this.onClickPreviousPage}>${CaretLeft(16)}</span>
-            <span class="w-8 text-center">${this.total ? this.offset / this.limit + 1 : 1}</span>
-            <span class=${classMap(nextBtnClasses)} @click=${this.onClickNextPage}>${CaretRight(16)}</span>
-          </div>
-        </div>
+        ${footer}
       </div>
     `
 
