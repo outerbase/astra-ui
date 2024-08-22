@@ -1,6 +1,6 @@
 import { html, nothing } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
-import { ClassifiedElement } from '../../classified-element'
+import { ClassifiedElement } from '../../classified-element.js'
 
 import { CaretDown } from '../../../icons/caret-down.js'
 import { CaretRight } from '../../../icons/caret-right.js'
