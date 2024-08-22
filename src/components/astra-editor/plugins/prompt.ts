@@ -418,6 +418,7 @@ export class AstraEditorPromptPlugin extends AstraEditorPlugin {
   }
 
   disconnectedCallback() {
+    super.disconnectedCallback()
     this.editor.removeStyle('prompt')
     this.editor.removeExtension('prompt')
   }
