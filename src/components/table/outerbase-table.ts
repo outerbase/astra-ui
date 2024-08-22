@@ -482,11 +482,12 @@ export default class OuterbaseTable extends AstraTable {
     const table = super.render()
 
     const editor = html`
-      <div id="container" class="h-1/3">
+      <div id="container" class="h-1/3 bg-[#141b21]">
         <astra-editor
           id="editor"
           value="SELECT 1 + 1;"
           theme="freedom"
+          color="dark"
           @change=${({ detail }: CustomEvent) => {
             this.codeEditorValue = detail
           }}
