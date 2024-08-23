@@ -448,32 +448,11 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     if (this.type === 'scatter') {
-      options.marks.push(
-        dot(d, {
-          x: this.keyX,
-          y: this.keyY,
-          stroke: this.colorValues[0],
-          tip,
-        })
-      )
+        options = this.constructScatterChart(options, d, sort, tip)
     }
 
     if (this.type === 'area') {
-      options.marks.push(
-        lineY(d, {
-          x: this.keyX,
-          y: this.keyY,
-          stroke: this.colorValues[0],
-          tip,
-        }),
-
-        areaY(d, {
-          x: this.keyX,
-          y2: this.keyY,
-          fill: this.colorValues[1],
-          fillOpacity: 0.1,
-        })
-      )
+        options = this.constructAreaChart(options, d, sort, tip)
     }
 
     let showXTicks = true
@@ -495,8 +474,6 @@ export default class AstraChart extends ClassifiedElement {
         showYTicks = false
     }
 
-    // Determine if the legend should be shown and what values to use
-    // based on the data options or the data itself.
     if (showLegend) {
         options.color = {
             ...options.color,
@@ -504,18 +481,6 @@ export default class AstraChart extends ClassifiedElement {
         }
 
         options.marginBottom = 60
-
-        // const { domain, range } = this.constructLegendProperties()
-
-        // if (domain.length > 0 && range.length > 0) {
-        //     options.color = {
-        //         domain: domain,
-        //         range: range,
-        //         legend: true,
-        //     }
-
-        //     options.marginBottom = 60
-        // }
     }
 
     // LABELS
@@ -540,7 +505,7 @@ export default class AstraChart extends ClassifiedElement {
         ticks: this.ticksY,
         nice: this.niceY,
         axis: yAxisDisplay,
-        tickFormat: showYTicks ? "s" : () => '',
+        tickFormat: showYTicks && this.type !== 'bar' ? "s" : () => '',
         tickSize: showYTicks ? 5 : 0,
     }
 
@@ -769,34 +734,35 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     constructBarChart(options: Record<string, any>, d: Row[], sort: any, tip: any): Record<string, any> {
-        // const yAxisKeys = this.data?.options?.yAxisKeys ?? [this.keyY]
-        // let legendColors: any[] = []
-        // let legendValues: any[] = []
+        // Setup the bar chart
+        const { data: reshapedData, legend } = this.normalizeData(d, this.keyX ?? '', this.keyY ?? '')
+        const fill = reshapedData?.[0]?.g ? 'g' : this.colorValues[0]
+        const { isDate: isYAxisKeyDate, interval, tickValues } = this.isAxisKeyDate(d, this.keyX ?? '')
+        const isStacked = reshapedData?.[0]?.g
 
-        // if (yAxisKeys.length > 1) {
+        if (isYAxisKeyDate) {
+            options.y = {
+                ...options.y,
+                type: isStacked ? "band" : undefined,
+                interval: isStacked ? undefined : interval,
+                tickValues: tickValues
+            };
+        }
 
-        // } else {
-
-        // }
+        options.color = {
+            ...options.color,
+            ...legend
+        }
 
         options.marks.push(
-            barX(d, {
-                x: this.keyX,
-                y: this.keyY,
-                fill: this.colorValues[0],
+            barX(reshapedData, {
+                x: 'y',
+                y: 'x',
+                fill: fill,
                 tip,
                 sort,
             })
         )
-
-        const truncate = (str: string, maxLength: number) => (str.length > maxLength ? str.substring(0, maxLength) + '...' : str)
-
-        options.y = {
-            ...options.y,
-            tickFormat: (d: any) => truncate(d, 6),
-        }
-
-        options.marginLeft = 50
         
         return options
     }
@@ -869,6 +835,82 @@ export default class AstraChart extends ClassifiedElement {
             )
         }
         
+        return options
+    }
+
+    constructAreaChart(options: Record<string, any>, d: Row[], sort: any, tip: any): Record<string, any> {
+        // Setup the area chart
+        const { data: reshapedData, legend } = this.normalizeData(d, this.keyX ?? '', this.keyY ?? '')
+        const stroke = reshapedData?.[0]?.g ? 'g' : this.colorValues[0]
+        const yAxisKeys = this.data?.options?.yAxisKeys ?? [this.keyY]
+        const multipleLines = yAxisKeys.length > 1
+        
+        options.color = {
+            ...options.color,
+            ...legend
+        }
+
+        if (multipleLines) {
+            yAxisKeys.forEach((key, index) => {
+                options.marks.push(
+                    areaY(reshapedData, {
+                      x: 'x',
+                      y2: 'y',
+                      fill: stroke,
+                      fillOpacity: 0.1,
+                      stroke: stroke,
+                    })
+                )
+            })
+        } else {
+            options.marks.push(
+                areaY(reshapedData, {
+                  x: 'x',
+                  y2: 'y',
+                  fill: stroke,
+                  fillOpacity: 0.1,
+                  stroke: stroke,
+                })
+            )
+        }
+
+        return options
+    }
+
+    constructScatterChart(options: Record<string, any>, d: Row[], sort: any, tip: any): Record<string, any> {
+        // Setup the scatter chart
+        const { data: reshapedData, legend } = this.normalizeData(d, this.keyX ?? '', this.keyY ?? '')
+        const stroke = reshapedData?.[0]?.g ? 'g' : this.colorValues[0]
+        const yAxisKeys = this.data?.options?.yAxisKeys ?? [this.keyY]
+        const multipleLines = yAxisKeys.length > 1
+
+        options.color = {
+            ...options.color,
+            ...legend
+        }
+
+        if (multipleLines) {
+            yAxisKeys.forEach((key, index) => {
+                options.marks.push(
+                    dot(reshapedData, {
+                        x: 'x',
+                        y: 'y',
+                        stroke: stroke,
+                        tip,
+                    })
+                )
+            })
+        } else {
+            options.marks.push(
+                dot(reshapedData, {
+                    x: 'x',
+                    y: 'y',
+                    stroke: stroke,
+                    tip,
+                })
+            )
+        }
+
         return options
     }
 }
