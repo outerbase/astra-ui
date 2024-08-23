@@ -225,12 +225,14 @@ export class TH extends MutableElement {
   }
 
   public override disconnectedCallback(): void {
-    super.disconnectedCallback
+    super.disconnectedCallback()
     this.removeEventListener('contextmenu', this.onContextMenu)
     this.removeEventListener('click', this.onClick)
   }
 
-  public override firstUpdated(_changedProperties: PropertyValueMap<this>): void {
+  public override firstUpdated(changedProperties: PropertyValueMap<this>): void {
+    super.firstUpdated(changedProperties)
+
     if (this.width && this.style) {
       this.style.width = this.width
     }

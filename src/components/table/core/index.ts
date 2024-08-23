@@ -89,6 +89,9 @@ export default class AstraTable extends ClassifiedElement {
   @property({ attribute: 'outer-border', type: Boolean })
   public outerBorder = false
 
+  @property({ attribute: 'border-b', type: Boolean })
+  public bottomBorder = false
+
   // TODO @johnny make this a Set
   @property({ attribute: 'hidden-columns', type: Array })
   public hiddenColumnNames: Array<string> = []
@@ -370,6 +373,7 @@ export default class AstraTable extends ClassifiedElement {
                     theme=${this.theme}
                     ?separate-cells=${true}
                     ?outer-border=${this.outerBorder}
+                    ?border-b=${this.bottomBorder}
                     ?blank=${true}
                     ?is-last-row=${rowIndex === this.rows.length - 1}
                     ?is-last-column=${false}
@@ -422,6 +426,7 @@ export default class AstraTable extends ClassifiedElement {
                       plugin-attributes=${this.installedPlugins?.[name]?.supportingAttributes ?? ''}
                       ?separate-cells=${true}
                       ?outer-border=${this.outerBorder}
+                      ?border-b=${this.bottomBorder}
                       ?resizable=${!this.staticWidths}
                       ?is-last-row=${rowIndex === this.rows.length - 1}
                       ?is-last-column=${idx === this.visibleColumns.length - 1}
@@ -445,6 +450,7 @@ export default class AstraTable extends ClassifiedElement {
                     ?interactive=${false}
                     ?menu=${false}
                     ?blank=${true}
+                    ?is-last-row=${rowIndex === this.rows.length - 1}
                   ></astra-td>`
                 : ''}
             </astra-tr>`
@@ -488,7 +494,9 @@ export default class AstraTable extends ClassifiedElement {
     return Math.ceil((this.scrollableEl?.value?.scroller?.value?.clientHeight ?? 0) / this.rowHeight) + 1
   }
 
-  public override firstUpdated(_changedProperties: PropertyValueMap<this>): void {
+  public override firstUpdated(changedProperties: PropertyValueMap<this>): void {
+    super.firstUpdated(changedProperties)
+
     if (this.keyboardShortcuts) {
       document.addEventListener('keydown', this.onKeyDown)
     }
@@ -503,6 +511,7 @@ export default class AstraTable extends ClassifiedElement {
     // measure the height of each row
     const elem = document.createElement('astra-td') as TableData
     elem.outerBorder = this.outerBorder
+    elem.bottomBorder = this.bottomBorder
     elem.isInteractive = true
 
     // Temporarily add to the DOM to measure

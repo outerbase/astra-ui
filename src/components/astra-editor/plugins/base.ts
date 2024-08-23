@@ -1,9 +1,8 @@
 import { LitElement } from 'lit'
-import { property } from 'lit/decorators.js'
 import { AstraEditor } from '../index.js'
 
 export class AstraEditorPlugin extends LitElement {
-  @property() editor!: AstraEditor
+  editor!: AstraEditor
 
   connectedCallback() {
     super.connectedCallback()

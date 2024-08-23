@@ -3,6 +3,8 @@
 import { createComponent } from '@lit/react'
 
 import { AstraEditor } from './components/astra-editor/index.js'
+import { AstraEditorHandlerbarPlugin } from './components/astra-editor/plugins/handlebar.js'
+import { AstraEditorSqlPlugin } from './components/astra-editor/plugins/sql.js'
 import AstraButton from './components/button.js'
 import AstraCalendar from './components/calendar/calendar.js'
 import AstraCard from './components/card.js'
@@ -76,5 +78,15 @@ export default function LitComponents(React: any) {
       elementClass: AstraEditor,
       react: React,
     }),
+    EditorSql: createComponent({
+      tagName: 'astra-editor-sql',
+      elementClass: AstraEditorSqlPlugin,
+      react: React,
+    }),
+    EditorHandlebars: createComponent({
+      tagName: 'astra-editor-handlebar',
+      elementClass: AstraEditorHandlerbarPlugin,
+      react: React,
+    })
   }
 }

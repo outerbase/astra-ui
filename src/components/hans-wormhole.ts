@@ -49,6 +49,8 @@ export class HansWormhole extends LitElement {
   }
 
   updated(changedProperties: Map<string, any>) {
+    super.updated(changedProperties)
+
     if (changedProperties.has('open')) {
       if (this.open) {
         this.showWormhole()
