@@ -11,6 +11,8 @@ import '../../table/menu/cell-menu.js' // <astra-td-menu />
 import type { CellMenu } from '../../table/menu/cell-menu.js'
 import { JSON_TYPES, MutableElement } from '../mutable-element.js'
 
+import '../../hans-wormhole.js'
+
 type PluginActionEvent = CustomEvent<{ action: PluginEvent.onEdit | PluginEvent.onStopEdit | PluginEvent.onCancelEdit; value: any }>
 
 const isAlphanumericOrSpecial = (key: string): boolean => {
