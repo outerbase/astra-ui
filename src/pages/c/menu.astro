@@ -1,0 +1,50 @@
+---
+import Layout from '../../layouts/Layout.astro'
+
+// test data
+import { Menu as AMenu, type MenuItem } from '../../components/table/menu/experiment'
+
+const menuItems: MenuItem[] = [
+  { label: 'Home', action: () => console.log('Home clicked') },
+  {
+    label: 'Products',
+    subItems: [
+      { label: 'Electronics', action: () => console.log('Electronics clicked') },
+      {
+        label: 'Clothing',
+        subItems: [
+          { label: 'Men', action: () => console.log("Men's clothing clicked") },
+          { label: 'Women', action: () => console.log("Women's clothing clicked") },
+        ],
+      },
+      { label: 'Books', action: () => console.log('Books clicked') },
+    ],
+  },
+  { label: 'About', action: () => console.log('About clicked') },
+  {
+    label: 'Services',
+    subItems: [
+      { label: 'Consulting', action: () => console.log('Consulting clicked') },
+      { label: 'Training', action: () => console.log('Training clicked') },
+    ],
+  },
+  { label: 'Contact', action: () => console.log('Contact clicked') },
+]
+---
+
+<Layout title="Astra-UI">
+  <div class="flex items-center justify-end gap-2 bg-blue-400 py-4 px-2 rounded-md" id="foo">
+    <!-- @ts-ignore -->
+    <AMenu items={menuItems} client:only="lit" />
+    <!-- @ts-ignore -->
+    <AMenu items={menuItems} client:only="lit" />
+    <!-- @ts-ignore -->
+    <AMenu items={menuItems} client:only="lit" />
+    <!-- @ts-ignore -->
+    <AMenu items={menuItems} client:only="lit" />
+    <!-- @ts-ignore -->
+    <AMenu items={menuItems} client:only="lit" />
+    <!-- @ts-ignore -->
+    <AMenu items={menuItems} client:only="lit" />
+  </div>
+</Layout>

@@ -1,44 +1,82 @@
 import { LitElement, css, html } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
+import { createRef, ref } from 'lit/directives/ref.js'
 
-interface MenuItem {
+export interface MenuItem {
   label: string
   action?: () => void
   subItems?: MenuItem[]
 }
 
-@customElement('nested-menu')
-export class NestedMenu extends LitElement {
+@customElement('astra-menu')
+export class Menu extends LitElement {
   @property({ type: Array }) items: MenuItem[] = []
-  @property({ type: Object }) parentMenu: NestedMenu | null = null
-  @state() private activeIndex: number | null = null
-  @state() private isSubmenu = false
   @state() private isOpen = false
-  @state() private submenuDimensions: Map<number, { width: number; height: number }> = new Map()
+
+  protected nestedMenu = createRef<NestedMenu>()
 
   static styles = css`
     :host {
-      display: inline-block;
       position: relative;
+      display: inline-block;
+      margin-top: -2px;
     }
     button {
-      // padding: 8px 16px;
       cursor: pointer;
+      border-radius: 2px;
+      border: none;
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    .menu-wrapper {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin: 0;
+      padding: 0;
+    }
+  `
+
+  render() {
+    return html`
+      <button @click="${this.toggleMenu}">Toggle Menu</button>
+
+      <div class="menu-wrapper" ?open="${this.isOpen}">
+        <astra-nested-menu .items="${this.items}" .depth="${3}" ${ref(this.nestedMenu)}></astra-nested-menu>
+      </div>
+    `
+  }
+
+  private toggleMenu(e: Event) {
+    e.stopPropagation()
+    this.isOpen = true
+    this.nestedMenu.value?._toggleMenu(e)
+  }
+}
+
+@customElement('astra-nested-menu')
+export class NestedMenu extends LitElement {
+  @property({ type: Array }) items: MenuItem[] = []
+  @property({ type: Object }) parentMenu: NestedMenu | null = null
+  @property({ type: Number }) depth = 0
+  @property() private isOpen = false
+  @state() private activeIndex: number | null = null
+  @state() private isSubmenu = false
+
+  static styles = css`
+    :host {
+      display: block;
+      z-index: 0;
     }
     ul {
+      display: none;
       list-style: none;
       padding: 0;
       margin: 0;
       background: rgba(255, 255, 255, 0.7);
-      // border: 1px solid rgba(127, 127, 127, 0.1);
-      position: absolute;
-      // top: calc(100% - 1px); // this 1px fixes list item alignment / shifts the border up
-      // left: 0;
-      z-index: 1000;
-      display: none;
-      // border-radius: 2px;
-      // backdrop-filter: blur(5px);
-      // -webkit-backdrop-filter: blur(5px);
+      border: 1px solid rgba(127, 127, 127, 0.1);
+      border-radius: 2px;
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
     }
     ul.open {
       display: block;
@@ -48,30 +86,26 @@ export class NestedMenu extends LitElement {
       margin: 0;
       cursor: pointer;
       position: relative;
-      // white-space: nowrap;
+      white-space: nowrap;
     }
     li:hover,
     li:focus {
       background: #f0f0f0;
     }
     .submenu {
-      position: absolute;
       display: none;
+      position: absolute;
       top: 0;
+    }
+    .submenu.right {
       left: 100%;
     }
     .submenu.left {
-      left: unset;
       right: 100%;
     }
     li:hover > .submenu,
     li:focus-within > .submenu {
       display: block;
-    }
-    .measure-submenu {
-      position: absolute;
-      visibility: hidden;
-      pointer-events: none;
     }
   `
 
@@ -81,7 +115,6 @@ export class NestedMenu extends LitElement {
     if (!this.isSubmenu) {
       document.addEventListener('click', this._handleOutsideClick)
     }
-    this.measureSubmenus()
   }
 
   disconnectedCallback() {
@@ -91,31 +124,8 @@ export class NestedMenu extends LitElement {
     }
   }
 
-  async firstUpdated() {
-    await this.measureSubmenus()
-  }
-
-  async measureSubmenus() {
-    for (let i = 0; i < this.items.length; i++) {
-      if (this.items[i].subItems) {
-        const submenu = document.createElement('nested-menu') as NestedMenu
-        submenu.items = this.items[i].subItems!
-        submenu.classList.add('measure-submenu')
-        this.shadowRoot!.appendChild(submenu)
-
-        await submenu.updateComplete
-        const rect = submenu.getBoundingClientRect()
-        this.submenuDimensions.set(i, { width: rect.width, height: rect.height })
-
-        this.shadowRoot!.removeChild(submenu)
-      }
-    }
-    this.requestUpdate()
-  }
-
   render() {
     return html`
-      ${this.isSubmenu ? '' : html`<button @click="${this._toggleMenu}">Menu</button>`}
       <ul class="${this.isOpen || this.isSubmenu ? 'open' : ''}" @keydown="${this._handleKeyDown}" role="menu">
         ${this.items.map(
           (item, index) => html`
@@ -132,12 +142,9 @@ export class NestedMenu extends LitElement {
               ${item.label}
               ${item.subItems
                 ? html`
-                    <nested-menu
-                      class="submenu"
-                      .items="${item.subItems}"
-                      .parentMenu="${this}"
-                      style="${this._getSubmenuStyle(index)}"
-                    ></nested-menu>
+                    <div class="submenu ${this._getSubmenuSide(index)}" style="z-index: ${this.depth};">
+                      <astra-nested-menu .items="${item.subItems}" .parentMenu="${this}" .depth="${this.depth + 1}"></astra-nested-menu>
+                    </div>
                   `
                 : ''}
             </li>
@@ -147,17 +154,31 @@ export class NestedMenu extends LitElement {
     `
   }
 
-  private _getSubmenuStyle(index: number): string {
-    const dimensions = this.submenuDimensions.get(index)
-    return dimensions ? `width: ${dimensions.width}px; height: ${dimensions.height}px;` : ''
+  private _getSubmenuSide(index: number): string {
+    if (!this.shadowRoot) return 'right'
+
+    const listItem = this.shadowRoot.querySelectorAll('li')[index]
+    if (!listItem) return 'right'
+
+    const rect = listItem.getBoundingClientRect()
+    const rightSpace = window.innerWidth - rect.right
+
+    // Assuming 200px as a minimum width for the submenu
+    const minSubmenuWidth = 200
+
+    return rightSpace >= minSubmenuWidth ? 'right' : 'left'
   }
 
-  _toggleMenu = (e: Event) => {
-    e.stopPropagation()
+  public _toggleMenu = (e?: Event) => {
+    e?.stopPropagation()
     this.isOpen = !this.isOpen
     if (this.isOpen) {
-      this.updateComplete.then(() => this._focusItem(0)) // Set focus to the first item after the menu opens
+      this.updateComplete.then(() => this._focusItem(0))
     }
+  }
+
+  focus() {
+    this._focusItem(0)
   }
 
   _handleOutsideClick = (e: MouseEvent) => {
@@ -225,11 +246,11 @@ export class NestedMenu extends LitElement {
       const items = this.shadowRoot?.querySelectorAll('li')
       if (items) {
         const activeItem = items[this.activeIndex] as HTMLElement
-        const submenu = activeItem.querySelector('nested-menu') as NestedMenu
+        const submenu = activeItem.querySelector('astra-nested-menu') as NestedMenu
         if (submenu) {
           submenu.isOpen = true
           submenu.requestUpdate()
-          submenu.updateComplete.then(() => submenu._focusItem(0)) // Focus the first item in the submenu
+          submenu.updateComplete.then(() => submenu._focusItem(0))
         }
       }
     }
@@ -259,7 +280,7 @@ export class NestedMenu extends LitElement {
       menu.activeIndex = null
       menu.isOpen = false
       menu.requestUpdate()
-      const submenus = menu.shadowRoot!.querySelectorAll('nested-menu') as NodeListOf<NestedMenu>
+      const submenus = menu.shadowRoot!.querySelectorAll('astra-nested-menu') as NodeListOf<NestedMenu>
       submenus.forEach((submenu) => {
         submenu.activeIndex = null
         submenu.isOpen = false
@@ -310,9 +331,5 @@ export class NestedMenu extends LitElement {
         this._closeAllMenusNonRecursive()
       }
     }
-  }
-
-  focus() {
-    this._focusItem(0)
   }
 }

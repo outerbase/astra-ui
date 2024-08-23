@@ -1,4 +1,4 @@
-import { LitElement, css, html, type PropertyValues } from 'lit'
+import { LitElement, css, html } from 'lit'
 import { customElement, property, query } from 'lit/decorators.js'
 import { createRef, ref } from 'lit/directives/ref.js'
 
@@ -56,18 +56,18 @@ export class HansWormhole extends LitElement {
     }
   }
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
-    console.log('wormhole', this.wormhole)
-    this.wormhole.addEventListener('toggle', (event) => {
-      console.log('event.newState', event.newState)
-      if (event.newState === 'closed') {
-        console.log('Popover was closed')
-        this.open = false
-        this.dispatchEvent(new Event('close'))
-        // Your code here for when the popover closes
-      }
-    })
-  }
+  // protected firstUpdated(_changedProperties: PropertyValues): void {
+  //   console.log('wormhole', this.wormhole)
+  //   this.wormhole.addEventListener('toggle', (event) => {
+  //     console.log('event.newState', event.newState)
+  //     if (event.newState === 'closed') {
+  //       console.log('Popover was closed')
+  //       this.open = false
+  //       this.dispatchEvent(new Event('close'))
+  //       // Your code here for when the popover closes
+  //     }
+  //   })
+  // }
 
   render() {
     return html`
