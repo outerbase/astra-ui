@@ -1,5 +1,3 @@
-import '../../hans-wormhole.js'
-
 import { html, type PropertyValueMap } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
