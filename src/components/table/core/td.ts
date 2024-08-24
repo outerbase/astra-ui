@@ -428,11 +428,12 @@ export class TableData extends MutableElement {
 
   public override render() {
     let value = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value) : this.value
+    let displayValue = value
     let pluginAccessory: DirectiveResult<typeof UnsafeHTMLDirective> | typeof nothing = nothing
     if (value && typeof value === 'string') {
       // Replace single, double, and backticks with their HTML entity equivalents
-      //   value = value.replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/`/g, '&#96;')
-      value = value?.replace(/&quot;/g, '"')?.replace(/&#39;/g, "'")
+      value = value.replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/`/g, '&#96;')
+      displayValue = value?.replace(/&quot;/g, '"')?.replace(/&#39;/g, "'")
     }
 
     let cellContents: TemplateResult<1>
@@ -442,13 +443,13 @@ export class TableData extends MutableElement {
       value === null || value === undefined ? 'nbsp text-neutral-400 dark:text-neutral-600' : 'nbsp overflow-hidden text-ellipsis'
 
     const commonCellContents = html`<div class=${classes} style="line-height: 34px;">
-      ${value === null
+      ${displayValue === null
         ? 'NULL'
-        : value === undefined
+        : displayValue === undefined
           ? 'DEFAULT'
-          : typeof value === 'string'
-            ? value.replace(/\n/g, returnCharacterPlaceholderRead)
-            : value}
+          : typeof displayValue === 'string'
+            ? displayValue.replace(/\n/g, returnCharacterPlaceholderRead)
+            : displayValue}
     </div>`
 
     if (this.plugin) {
@@ -458,7 +459,7 @@ export class TableData extends MutableElement {
       //      we can resolve this by omitting `cellvalue` to represent null, but as of today, that renders `undefined` in our plugins
       //      `<${tagName} ${value !== null ? `cellvalue='${value}` : ''} configuration='${config}' ${this.pluginAttributes}></${tagName}>`
       const pluginAsString = unsafeHTML(
-        `<${tagName} cellvalue='${value}' columnName='${this.column}'  configuration='${config}' ${this.pluginAttributes}></${tagName}>`
+        `<${tagName} cellvalue='${value}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
       )
 
       const pluginAccessoryTag = tagName.replace('outerbase-plugin-cell', 'outerbase-plugin-cell-accessory')
@@ -488,7 +489,7 @@ export class TableData extends MutableElement {
 
     const themeClass = this.theme === 'dark' ? 'dark' : ''
     const inputEl = this.isEditing // &nbsp; prevents the row from collapsing (in height) when there is only 1 column
-      ? html`<div class="${themeClass}" style="line-height: 34px;">&nbsp;<input .value=${typeof value === 'string' ? value : (value ?? '')} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
+      ? html`<div class="${themeClass}" style="line-height: 34px;">&nbsp;<input .value=${typeof displayValue === 'string' ? displayValue : (displayValue ?? '')} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
       : html``
     const emptySlot = this.blank ? html`<slot></slot>` : html``
     const menuOptions = this.dirty
