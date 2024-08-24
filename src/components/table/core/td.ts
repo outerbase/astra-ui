@@ -429,9 +429,10 @@ export class TableData extends MutableElement {
   public override render() {
     let value = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value) : this.value
     let pluginAccessory: DirectiveResult<typeof UnsafeHTMLDirective> | typeof nothing = nothing
-    if (this.plugin && value && typeof value === 'string') {
+    if (value && typeof value === 'string') {
       // Replace single, double, and backticks with their HTML entity equivalents
-      value = value.replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/`/g, '&#96;')
+      //   value = value.replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/`/g, '&#96;')
+      value = value?.replace(/&quot;/g, '"')?.replace(/&#39;/g, "'")
     }
 
     let cellContents: TemplateResult<1>
