@@ -1,4 +1,4 @@
-import { LitElement, html, type PropertyValueMap } from 'lit'
+import { LitElement, html, type PropertyValueMap, type TemplateResult } from 'lit'
 import { property } from 'lit/decorators.js'
 import { TWStyles } from '../lib/.tw-styles.js'
 import classMapToClassName from '../lib/class-map-to-class-name.js'
@@ -35,7 +35,7 @@ export class ClassifiedElement extends LitElement {
   // but our component itself is being rendered,
   // and it's appearance/style is provided by each component's `get _componentsInitialClassAttribute() {}` override
   // i.e. `table` vs `table-row-group` vs `table-cell` vs ...etc...
-  public override render() {
+  public override render(): TemplateResult | symbol {
     return html`<slot></slot>`
   }
 }

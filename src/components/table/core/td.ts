@@ -276,6 +276,9 @@ export class TableData extends MutableElement {
   @property({ attribute: 'resizable', type: Boolean })
   public resizable = false
 
+  @property({ attribute: 'menu', type: Boolean })
+  public hasMenu = false
+
   @state() isContentEditable = true // this property is to toggle off the contenteditableness of to resolve quirky focus and text selection that can happen when, say, right-clicking to trigger the context menu
   @state() protected options = RW_OPTIONS
   @state() protected isHoveringCell = false
@@ -509,35 +512,55 @@ export class TableData extends MutableElement {
       : this.options
 
     this.tabIndex = this.blank ? -1 : 0
+
     // the outer div is contenteditable, allowing us to get the `paste` event that an arbitrary element cannot otherwise receive
     // astra-td-menu wraps our content and provides a right-click menu
     const menuEl =
-      !this.isEditing && !this.blank
-        ? html`<span
-            ${ref(this.contentEditableWrapper)}
-            class="outline-none caret-transparent select-none"
-            contenteditable="${this.isContentEditable}"
-            spellcheck="false"
-            autocorrect="off"
-            @dragover=${TableData.onDragOver}
-            @drop=${TableData.onDrop}
-            @paste=${this.onPaste}
-            @pointerenter=${this.onPointerEnter}
-            @pointerleave=${this.onPointerLeave}
-            tabindex="-1"
-          >
-            <astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
+      this.isEditing || this.blank
+        ? nothing
+        : this.hasMenu
+          ? html`<span
+              ${ref(this.contentEditableWrapper)}
+              class="outline-none caret-transparent select-none"
+              contenteditable="${this.isContentEditable}"
+              spellcheck="false"
+              autocorrect="off"
+              @dragover=${TableData.onDragOver}
+              @drop=${TableData.onDrop}
+              @paste=${this.onPaste}
+              @pointerenter=${this.onPointerEnter}
+              @pointerleave=${this.onPointerLeave}
+              tabindex="-1"
+            >
+              <astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
+                <div class="flex items-center px-cell-padding-x">
+                  <span class="flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
+                  ${pluginAccessory}
+                </div>
+
+                <hans-wormhole .open=${this.isDisplayingPluginEditor} .anchorId=${this.id}>
+                  <span id="plugin-editor" class="caret-current cursor-auto z-10">${cellEditorContents}</span>
+                </hans-wormhole>
+              </astra-td-menu>
+            </span>`
+          : html`<span
+              ${ref(this.contentEditableWrapper)}
+              class="outline-none caret-transparent select-none"
+              contenteditable="${this.isContentEditable}"
+              spellcheck="false"
+              autocorrect="off"
+              @dragover=${TableData.onDragOver}
+              @drop=${TableData.onDrop}
+              @paste=${this.onPaste}
+              @pointerenter=${this.onPointerEnter}
+              @pointerleave=${this.onPointerLeave}
+              tabindex="-1"
+            >
               <div class="flex items-center px-cell-padding-x">
                 <span class="flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
                 ${pluginAccessory}
               </div>
-
-              <hans-wormhole .open=${this.isDisplayingPluginEditor} .anchorId=${this.id}>
-                <span id="plugin-editor" class="caret-current cursor-auto z-10">${cellEditorContents}</span>
-              </hans-wormhole>
-            </astra-td-menu>
-          </span>`
-        : html``
+            </span>`
 
     return this.isEditing ? inputEl : this.blank ? emptySlot : menuEl
   }

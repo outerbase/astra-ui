@@ -1,4 +1,4 @@
-import { css, html, type PropertyValueMap } from 'lit'
+import { css, html, nothing, type PropertyValueMap } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { isEqual } from 'lodash-es'
@@ -10,13 +10,23 @@ import { Table as TableIcon } from '../../icons/table.js'
 import { diffObjects } from '../../lib/diff-objects.js'
 import { normalizeKeys } from '../../lib/normalize-object-keys.js'
 import stringifyWithoutNewLines from '../../lib/stringify-without-new-lines.js'
-import type { APIResponse, CellUpdateEvent, Fields, MenuSelectedEvent, RowAsRecord, Rows, SourceSchema, Table } from '../../types.js'
+import type {
+  APIResponse,
+  CellUpdateEvent,
+  Fields,
+  MenuSelectedEvent,
+  RowAsRecord,
+  Rows,
+  Schema,
+  SourceSchema,
+  Table,
+} from '../../types.js'
 import '../button.js' // Ensure the button component is imported
 import AstraTable from './core/index.js'
 import './outerbase/table-list-item.js'
 
-const OUTERBASE_API_DOMAIN = 'app.outerbase.com'
-// const OUTERBASE_API_DOMAIN = 'app.dev.outerbase.com'
+// const OUTERBASE_API_DOMAIN = 'app.outerbase.com'
+const OUTERBASE_API_DOMAIN = 'app.dev.outerbase.com'
 
 @customElement('outerbase-table')
 export default class OuterbaseTable extends AstraTable {
@@ -36,6 +46,8 @@ export default class OuterbaseTable extends AstraTable {
   @property({ attribute: 'schema-name', type: String }) schemaName?: string
   @property({ attribute: 'table-name', type: String }) tableName?: string
   @property({ attribute: 'side-bar', type: Boolean }) showSidebar = false
+  @property({ attribute: 'show-editor', type: Boolean }) showEditor = false
+  @property({ attribute: 'sql', type: Boolean }) codeEditorValue = ''
   @property({ type: Number }) offset = 0
   @property({ type: Number }) limit = 50
   @property({ type: Number }) total = 0
@@ -46,10 +58,15 @@ export default class OuterbaseTable extends AstraTable {
   @state() hasSelectedRows = false
   @state() hasChanges = false
 
+  private previousData?: Array<RowAsRecord>
+  private previousSchema?: Schema
+  private previousTotal?: number
+
   constructor() {
     super()
     this.onCellUpdated = this.onCellUpdated.bind(this)
     this.onMenuSelection = this.onMenuSelection.bind(this)
+    this.onRunQuery = this.onRunQuery.bind(this)
   }
 
   protected async fetchSchema() {
@@ -105,6 +122,69 @@ export default class OuterbaseTable extends AstraTable {
     return { ...data.response, items: stringifiedData }
   }
 
+  // Note: this is returning `[]`
+  protected async fetchConnections() {
+    if (!this.apiKey) throw new Error('Fetching data requires an api-key')
+
+    const data: APIResponse<Rows> = await (
+      await fetch(`https://${OUTERBASE_API_DOMAIN}/api/v1/workspace/${this.workspaceId}/connection`, {
+        headers: {
+          'content-type': 'application/json',
+          'x-auth-token': this.apiKey,
+        },
+        method: 'GET',
+      })
+    ).json()
+
+    let items = data?.response?.items ?? []
+
+    if (this.baseId) {
+      // ensure this is a uuid or throw
+      const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(this.baseId)
+
+      if (!isValidUUID) throw new Error('attempted to fetch connection source with non-uuid for base; this endpoint only works with UUIDs?')
+
+      items = items.filter((connection) => connection.base_id === this.baseId)
+    }
+
+    return items
+  }
+
+  // Note: this is untested, pending `sourceId`
+  protected async queryData() {
+    if (!this.apiKey) throw new Error('Fetching data requires an api-key')
+    if (!this.codeEditorValue) throw new Error('Missing SQL query')
+
+    const data: APIResponse<Rows> = await // TODO replace `1234567890` with a valid source id
+    (
+      await fetch(`https://${OUTERBASE_API_DOMAIN}/api/v1/workspace/${this.workspaceId}/base/${this.baseId}/query/raw`, {
+        body: JSON.stringify({ query: this.codeEditorValue, options: {} }),
+        headers: {
+          'content-type': 'application/json',
+          'x-auth-token': this.apiKey,
+        },
+        method: 'POST',
+      })
+    ).json()
+
+    // stringify all the values so user modifications are consistent with the "OG" data
+    // i.e. +46 <=> "46"
+    const stringifiedData: Record<string, string>[] = []
+    data.response.items.forEach((row) => {
+      const _row: Record<string, string> = {}
+      Object.entries(row).forEach(([key, value]) => {
+        const _key = key.toString()
+        if (!_key || !value) return
+
+        _row[_key] = typeof value === 'object' ? stringifyWithoutNewLines(value) : value?.toString()
+      })
+
+      stringifiedData.push(_row)
+    })
+
+    return { ...data.response, items: stringifiedData }
+  }
+
   protected detectChanges() {
     this.hasChanges =
       this.rows.some((r) => {
@@ -121,8 +201,8 @@ export default class OuterbaseTable extends AstraTable {
     this.addNewRow()
   }
 
-  protected async refreshData() {
-    const data = await this.fetchData()
+  protected async refreshData(_data?: { items: Record<string, string>[]; count: number; query?: string; name?: string }) {
+    const data = _data ?? (await this.fetchData())
 
     this.data = data.items.map((r) => ({
       id: self.crypto.randomUUID(),
@@ -244,6 +324,21 @@ export default class OuterbaseTable extends AstraTable {
     }
   }
 
+  protected async onRunQuery(_event?: Event) {
+    // submit query and create a pseudo-schema
+    const data = await this.queryData()
+    data.count = data.items.length // API doesn't set `count` for queries
+    this.refreshData(data)
+
+    // assumes every item has the same columns/schema
+    const columns = Object.keys(data.items[0] ?? {}).map((name) => ({ name }))
+
+    this.schema = { columns }
+    this.isNonInteractive = true
+    this.readonly = true
+    this.selectableRows = false
+  }
+
   override async updated(changedProperties: PropertyValueMap<this>) {
     super.updated(changedProperties)
 
@@ -299,6 +394,7 @@ export default class OuterbaseTable extends AstraTable {
 
     // fetch data when any params change
     if (
+      !this.showEditor && // skip when query editing
       (has('apiKey') || has('baseId') || has('workspaceId') || has('fields') || has('offset')) &&
       this.apiKey &&
       this.baseId &&
@@ -322,6 +418,8 @@ export default class OuterbaseTable extends AstraTable {
   override disconnectedCallback(): void {
     super.disconnectedCallback()
     this.removeEventListener('cell-updated', this.onCellUpdated)
+    this.removeEventListener('cell-blurred', this.onCellBlurred)
+    this.removeEventListener('row-added', this.onRowAdded)
     this.removeEventListener('menu-selection', this.onMenuSelection)
   }
 
@@ -350,23 +448,28 @@ export default class OuterbaseTable extends AstraTable {
             ${schemaTables.map(
               ([schema, tables]) =>
                 html`<outerbase-table-list-item label="${schema}" ?open=${schema === 'public'}>
-                  ${tables?.map(
-                    (t) =>
-                      html`<li
-                        class="pl-7 pr-2 py-2 flex flex-row items-center gap-2 cursor-pointer focus:outline-none focus-visible:ring focus-visible:ring-blue-600  hover:bg-theme-sidebar-li-hover dark:bg-theme-sidebar-li-hover-dark dark:text-white dark:hover:bg-neutral-800 ${classMap(
-                          {
-                            'text-theme-sidebar-li-active': this.tableName === t.name,
-                            'text-theme-sidebar-li-content': this.tableName !== t.name,
-                            'dark:text-theme-sidebar-li-content-dark': this.tableName !== t.name,
-                            'font-semibold': this.tableName === t.name,
-                          }
-                        )}"
-                        @click=${() => this.onTableSelection(schema, t.name)}
-                      >
-                        <span class="flex-none">${TableIcon(14)}</span>
-                        <span class="truncate text-sm">${t.name}</span>
-                      </li>`
-                  )}
+                  ${tables
+                    ?.sort((a, b) => a.name.localeCompare(b.name))
+                    .map(
+                      (t) =>
+                        html`<li
+                          class="pl-7 pr-2 py-2 flex flex-row items-center gap-2 cursor-pointer focus:outline-none focus-visible:ring focus-visible:ring-blue-600  hover:bg-theme-sidebar-li-hover dark:bg-theme-sidebar-li-hover-dark dark:text-white dark:hover:bg-neutral-800 ${classMap(
+                            {
+                              'text-theme-sidebar-li-active': this.tableName === t.name,
+                              'text-theme-sidebar-li-content': this.tableName !== t.name,
+                              'dark:text-theme-sidebar-li-content-dark': this.tableName !== t.name,
+                              'font-semibold': this.tableName === t.name,
+                            }
+                          )}"
+                          @click=${() => {
+                            if ((this.hasChanges && confirm('Discard unsaved changes?')) || !this.hasChanges)
+                              this.onTableSelection(schema, t.name)
+                          }}
+                        >
+                          <span class="flex-none">${TableIcon(14)}</span>
+                          <span class="truncate text-sm">${t.name}</span>
+                        </li>`
+                    )}
                 </outerbase-table-list-item> `
             )}
           </ul>
@@ -377,6 +480,23 @@ export default class OuterbaseTable extends AstraTable {
 
   public override render() {
     const table = super.render()
+
+    const editor = html`
+      <div id="container" class="h-1/3 bg-[#141b21] border-b border-theme-table-border">
+        <astra-editor
+          id="editor"
+          value="SELECT 1 + 1;"
+          theme="freedom"
+          color="dark"
+          @change=${({ detail }: CustomEvent) => {
+            this.codeEditorValue = detail
+          }}
+        >
+          <astra-editor-sql dialect="sqlite" schema="{JSON.stringify(SCHEMA)}" />
+          <astra-editor-handlebar variables="variable1,variable2" />
+        </astra-editor>
+      </div>
+    `
 
     const deleteBtn = this.hasSelectedRows
       ? html`<astra-button size="compact" theme="${this.theme}" @click=${this.onDeleteRows}>Delete Rows</astra-button>`
@@ -426,24 +546,9 @@ export default class OuterbaseTable extends AstraTable {
     }
 
     const sidebar = this.showSidebar ? this.renderSidebar() : null
-    const tableWithHeaderFooter = html`
-      <div class="relative flex flex-col flex-1 text-theme-secondary-content dark:text-theme-secondary-content-dark">
-        <!-- header; action bar -->
-        <div
-          id="action-bar"
-          class="h-12 font-medium bg-theme-table dark:bg-theme-table-dark items-center justify-end flex gap-2.5 text-sm p-2 border-t border-b border-r border-theme-table-border dark:border-theme-table-border-dark"
-        >
-          <div class="flex items-center justify-center flex-auto font-bold text-xl">${this.tableName}</div>
-          ${discardBtn} ${deleteBtn} ${saveBtn}
-          <astra-button size="compact" theme="${this.theme}" @click=${this.onAddRow}>Add Row</astra-button>
-          <astra-button size="compact" theme="${this.theme}" @click=${this.onRefresh}>${ArrowsClockwise(16)}</astra-button>
-        </div>
-
-        <!-- data -->
-        <div class="relative flex-1 border-r border-theme-table-border dark:border-theme-table-border-dark">${table}</div>
-
-        <!-- footer; pagination -->
-        <div
+    const footer = this.showEditor
+      ? nothing
+      : html`<div
           id="footer"
           class="h-12 font-medium bg-theme-table dark:bg-theme-table-dark items-center justify-end flex gap-2.5 text-sm py-2 border-t border-b border-r border-theme-table-border dark:border-theme-table-border-dark p-2"
         >
@@ -453,7 +558,71 @@ export default class OuterbaseTable extends AstraTable {
             <span class="w-8 text-center">${this.total ? this.offset / this.limit + 1 : 1}</span>
             <span class=${classMap(nextBtnClasses)} @click=${this.onClickNextPage}>${CaretRight(16)}</span>
           </div>
+        </div>`
+    const tableWithHeaderFooter = html`
+      <div class="relative flex flex-col flex-1 text-theme-secondary-content dark:text-theme-secondary-content-dark">
+        <!-- header; action bar -->
+        <div
+          id="action-bar"
+          class="bg-theme-table dark:bg-theme-table-dark flex gap-2.5 text-sm p-2 border-t border-b border-r border-theme-table-border dark:border-theme-table-border-dark"
+        >
+          <!-- hide/show editor button -->
+          <astra-button
+            size="compact"
+            theme="${this.theme}"
+            @click=${() => {
+              // when hiding the editor
+              if (this.showEditor) {
+                // restore original state
+                if (this.previousTotal) this.total = this.previousTotal
+                if (this.previousData) this.data = this.previousData
+                if (this.previousSchema) this.schema = this.previousSchema
+
+                // restore interactivity
+                this.isNonInteractive = false
+                this.readonly = false
+                this.selectableRows = true
+
+                delete this.previousTotal
+                delete this.previousData
+                delete this.previousSchema
+              }
+
+              // when showing the editor
+              if (!this.showEditor) {
+                this.previousTotal = this.total
+                this.previousData = this.data
+                this.previousSchema = this.schema
+                this.data = []
+                this.schema = { columns: [] }
+              }
+
+              this.showEditor = !this.showEditor
+            }}
+          >
+            ${this.showEditor ? 'Hide Editor' : 'Edit Query'}
+          </astra-button>
+
+          <!-- editor run button -->
+          ${this.showEditor
+            ? html`<astra-button size="compact" theme="${this.theme}" @click=${this.onRunQuery}>Run</astra-button>`
+            : nothing}
+
+          <!-- table buttons -->
+          ${this.showEditor
+            ? nothing
+            : html`<div class="flex items-center justify-center flex-auto font-bold text-xl">${this.tableName}</div>
+                ${discardBtn} ${deleteBtn} ${saveBtn}
+                <astra-button size="compact" theme="${this.theme}" @click=${this.onAddRow}>Add Row</astra-button>
+                <astra-button size="compact" theme="${this.theme}" @click=${this.onRefresh}>${ArrowsClockwise(16)}</astra-button>`}
         </div>
+
+        <!-- data -->
+        ${this.showEditor ? editor : nothing}
+        <div class="relative flex-1 border-r border-theme-table-border dark:border-theme-table-border-dark">${table}</div>
+
+        <!-- footer; pagination -->
+        ${footer}
       </div>
     `
 
