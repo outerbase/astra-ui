@@ -82,6 +82,6 @@ export default function LitComponents(React: any) {
       tagName: 'astra-editor-handlebar',
       elementClass: AstraEditorHandlerbarPlugin,
       react: React,
-    })
+    }),
   }
 }

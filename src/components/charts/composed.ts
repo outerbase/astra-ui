@@ -50,8 +50,12 @@ export default class AstraComposedChart extends AstraChart {
         ${this.header || this.subheader
           ? html`
               <div id="header-labels" class="flex flex-col">
-                ${this.header ? html`<h1 class="text-xl dark:text-neutral-200 text-neutral-800 font-medium">${this.header}</h1>` : null}
-                ${this.subheader ? html`<h2 class="text-md text-neutral-600 dark:text-neutral-400">${this.subheader}</h2>` : null}
+                ${this.header
+                  ? html`<h1 class="text-xl dark:text-neutral-200 text-neutral-800 font-medium line-clamp-1">${this.header}</h1>`
+                  : null}
+                ${this.subheader
+                  ? html`<h2 class="text-md text-neutral-600 dark:text-neutral-400 line-clamp-1">${this.subheader}</h2>`
+                  : null}
               </div>
             `
           : null}
@@ -123,7 +127,7 @@ export default class AstraComposedChart extends AstraChart {
                   : null}
                 ${callout === 'percent_change'
                   ? html`<div class="space-mono-regular" style="font-size: 20px; line-height: 28px; margin-top: 4px;">
-                      ${highlightPercentChange}%
+                      ${isNaN(highlightPercentChange) ? 0 : highlightPercentChange}%
                     </div>`
                   : null}
               </div>
@@ -168,7 +172,7 @@ export default class AstraComposedChart extends AstraChart {
         >
           ${layer?.type === 'single_value'
             ? // Single value charts show the highlights at the bottom of the card
-              html`${headerSection} ${chartSection} ${highlightSection}`
+              html`${headerSection} ${chartSection}` // ${highlightSection} - Until more meaningful highlights are available, disabling for single value
             : // All other charts show the highlights above the chart rendering
               html`<div class=${`${layer?.type === 'table' ? 'p-5' : ''}`}>${headerSection} ${highlightSection}</div>
                 ${chartSection}`}

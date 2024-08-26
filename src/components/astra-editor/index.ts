@@ -157,7 +157,7 @@ export class AstraEditor extends LitElement {
           syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
           autocompletion(),
           highlightActiveLine(),
-          indentUnit.of('  '),
+          indentUnit.of('    '),
           keymap.of([
             {
               key: 'Tab',

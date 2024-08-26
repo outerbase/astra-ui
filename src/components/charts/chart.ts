@@ -3,6 +3,7 @@ import { max, min, timeDay, utcDay, utcMinute, utcMonth, utcWeek, utcYear } from
 import { css, html, type PropertyValueMap } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
+import { unsafeHTML } from 'lit/directives/unsafe-html.js'
 import createGradient from '../../lib/create-gradient.js'
 import type {
   ChartTypeV3,
@@ -52,9 +53,8 @@ const gradients = [
 // const cobaltValues = ['#5956E2', '#A99AFF', '#82DBFF']
 // const afterburnValues = ['#E75F98', '#FFA285', '#CCB8F2']
 
-// const mercuryValuesDark = ['#fafafa', '#e5e5e5', '#a3a3a3', '#525252', '#262626']
 const mercuryValuesDark = ['#fafafa', '#525252', '#a3a3a3', '#e5e5e5', '#262626']
-const mercuryValuesLight = ['#0a0a0a', '#262626', '#525252', '#a3a3a3', '#e5e5e5']
+const mercuryValuesLight = ['#0a0a0a', '#a3a3a3', '#525252', '#262626', '#e5e5e5']
 
 @customElement('astra-chart')
 export default class AstraChart extends ClassifiedElement {
@@ -369,7 +369,7 @@ export default class AstraChart extends ClassifiedElement {
     let showLegend = this.data?.options?.legend && this.data?.options?.legend !== 'none'
     const defaultGridStyle = { strokeDasharray: '2', strokeOpacity: 0.1, stroke: this.theme === 'light' ? 'black' : 'white' }
 
-    const options: Record<string, any> = {
+    let options: Record<string, any> = {
       // Layout options: https://observablehq.com/plot/features/plots#layout-options
       width: this.width,
       height: this.height,
@@ -405,181 +405,55 @@ export default class AstraChart extends ClassifiedElement {
       color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
     }
 
+    let sort = undefined
+
     // TYPE: BAR
     if (this.type === 'bar') {
-      // include grid along X-axis unless explicitly disabled
+      // Set the sort order rendering, if a sort order exists
+      sort = this.createSortOrder('y', 'x', this.sortOrder)
+
+      // Setup the bar chart
+      options = this.constructBarChart(options, d, sort, tip)
+
+      // Render the grid along the X-axis unless explicitly disabled
       if (this.gridX !== false) {
         options.marks.push(gridX(defaultGridStyle))
       }
-
-      options.marks.push(
-        barX(d, {
-          x: this.keyX,
-          y: this.keyY,
-          // stroke: this.keyX,
-          // fill: 'url(#teal)',
-          fill: this.colorValues[0],
-          tip,
-        })
-      )
-
-      const truncate = (str: string, maxLength: number) => (str.length > maxLength ? str.substring(0, maxLength) + '...' : str)
-
-      options.y = {
-        ...options.y,
-        tickFormat: (d: any) => truncate(d, 6),
-      }
-
-      options.marginLeft = 50
     }
 
     // TYPE: COLUMN
     if (this.type === 'column') {
-      // include grid along Y-axis unless explicitly disabled
+      // Set the sort order rendering, if a sort order exists
+      sort = this.createSortOrder('x', 'y', this.sortOrder)
+
+      // Setup the bar chart
+      options = this.constructColumnChart(options, d, sort, tip)
+
+      // Render the grid along the Y-axis unless explicitly disabled
       if (this.gridY !== false) {
         options.marks.push(gridY(defaultGridStyle))
       }
-      let sort = undefined
-
-      // Loop through every item in the data layers [0].result and check if the data is a date
-      const tempKeyX: string = this.keyX ?? ''
-      const newArray: any[] | undefined = this.data?.layers?.[0].result?.map((r: Record<string, any>) => {
-        const isDate = !isNaN(Date.parse(r[tempKeyX]))
-
-        if (isDate) return new Date(r[tempKeyX])
-        return undefined
-      })
-
-      // Is the data in the xAxisKey a date?
-      const isXAxisKeyDate = newArray?.length && newArray.every((d) => d instanceof Date)
-
-      if (isXAxisKeyDate) {
-        const startDate = min(newArray)
-        const endDate = max(newArray)
-        let tickValues = undefined
-
-        if (startDate && endDate) {
-          tickValues = utcMonth.range(startDate, endDate)
-        }
-
-        const interval = isXAxisKeyDate ? this.determineInterval(newArray) : undefined
-
-        options.x = {
-          ...options.x,
-          interval: interval,
-          tickValues: isXAxisKeyDate ? tickValues : undefined,
-        }
-      } else {
-        if (this.sortOrder && this.sortOrder === 'asc') {
-          sort = { x: 'y', reverse: false }
-        } else if (this.sortOrder && this.sortOrder === 'desc') {
-          sort = { x: 'y', reverse: true }
-        }
-      }
-
-      //   let legendColors: any[] = []
-      //   let legendValues: any[] = []
-
-      //   legendColors.push('#1f77b4')
-      //   legendValues.push(tempKeyX)
-
-      //   options.color = {
-      //     domain: legendValues,
-      //     range: legendColors,
-      //     legend: true,
-      //   }
-
-      //   options.marginBottom = 60
-
-      options.marks.push(
-        barY(d, {
-          x: this.keyX,
-          y: this.keyY,
-          //   stroke: this.groupBy,
-          //   fill: 'url(#mercury)',
-          fill: this.colorValues[0],
-          inset: 0.5,
-          tip,
-          sort,
-        })
-      )
     }
 
     // TYPE: LINE
     if (this.type === 'line') {
+      // Setup the line chart
+      options = this.constructLineChart(options, d, sort, tip)
+
       // include grid along X-axis unless explicitly disabled
       if (this.gridX !== false) {
         options.marks.push(gridX(defaultGridStyle))
-      }
-
-      const yAxisKeys = this.data?.options?.yAxisKeys ?? [this.keyY]
-
-      if (yAxisKeys.length > 1) {
-        let legendColors: any[] = []
-        let legendValues: any[] = []
-
-        this.data?.options?.yAxisKeys?.forEach((key, index) => {
-          const desiredColor = this.data?.options?.yAxisKeyColors?.[key] ?? this.colorValues[index % this.colorValues.length]
-
-          legendColors.push(desiredColor)
-          legendValues.push(key)
-
-          options.marks.push(
-            lineY(d, {
-              x: this.keyX,
-              y: key,
-              stroke: desiredColor,
-              // TODO: Custom tooltip that shows all line values in one box instead of N boxes?
-              tip,
-            })
-          )
-        })
-      } else {
-        const group = this.data?.options?.groupBy ?? this.groupBy
-        options.marks.push(
-          lineY(d, {
-            x: this.keyX,
-            y: this.keyY,
-            stroke: group ? group : this.colorValues[0],
-            tip,
-          })
-        )
-
-        options.color = {
-          range: this.colorValues,
-        }
       }
 
       if (this.niceY !== false) this.niceY = true
     }
 
     if (this.type === 'scatter') {
-      options.marks.push(
-        dot(d, {
-          x: this.keyX,
-          y: this.keyY,
-          stroke: this.colorValues[0],
-          tip,
-        })
-      )
+      options = this.constructScatterChart(options, d, sort, tip)
     }
 
     if (this.type === 'area') {
-      options.marks.push(
-        lineY(d, {
-          x: this.keyX,
-          y: this.keyY,
-          stroke: this.colorValues[0],
-          tip,
-        }),
-
-        areaY(d, {
-          x: this.keyX,
-          y2: this.keyY,
-          fill: this.colorValues[1],
-          fillOpacity: 0.1,
-        })
-      )
+      options = this.constructAreaChart(options, d, sort, tip)
     }
 
     let showXTicks = true
@@ -601,46 +475,13 @@ export default class AstraChart extends ClassifiedElement {
       showYTicks = false
     }
 
-    // Determine if the legend should be shown and what values to use
-    // based on the data options or the data itself.
     if (showLegend) {
-      // Multiple Y axis keys
-      const yAxisKeys = this.data?.options?.yAxisKeys ?? [this.keyY]
-      // Alternatively, group by key
-      const group = this.data?.options?.groupBy ?? this.groupBy
-
-      let legendValues: any[] = []
-      let legendColors: any[] = []
-
-      if (yAxisKeys.length > 1) {
-        yAxisKeys.forEach((key, index) => {
-          if (!key) return
-          const desiredColor = this.data?.options?.yAxisKeyColors?.[key] ?? this.colorValues[index % this.colorValues.length]
-
-          legendColors.push(desiredColor)
-          legendValues.push(key)
-        })
-      } else if (group) {
-        const firstRecord = this.data?.layers?.[0].result?.[0]
-        const firstRecordKey = firstRecord ? Object.keys(firstRecord)[0] : ''
-        legendValues = group ? Array.from(new Set(d?.map((r) => r[group]))) : [firstRecordKey]
-        legendColors = legendValues.map((_, i) => this.colorValues[i % this.colorValues.length])
-      } else {
-        const firstRecord = this.data?.layers?.[0].result?.[0]
-        const firstRecordKey = firstRecord ? Object.keys(firstRecord)[0] : ''
-        legendValues = [firstRecordKey]
-        legendColors = [this.colorValues[0]]
+      options.color = {
+        ...options.color,
+        legend: true,
       }
 
-      if (legendValues.length > 0 && legendColors.length > 0) {
-        options.color = {
-          domain: legendValues,
-          range: legendColors,
-          legend: true,
-        }
-
-        options.marginBottom = 60
-      }
+      options.marginBottom = 60
     }
 
     // LABELS
@@ -665,7 +506,7 @@ export default class AstraChart extends ClassifiedElement {
       ticks: this.ticksY,
       nice: this.niceY,
       axis: yAxisDisplay,
-      tickFormat: showYTicks ? undefined : () => '',
+      tickFormat: showYTicks && this.type !== 'bar' ? 's' : () => '',
       tickSize: showYTicks ? 5 : 0,
     }
 
@@ -683,7 +524,6 @@ export default class AstraChart extends ClassifiedElement {
     const sizeXChanged = _changedProperties.has('sizeX') && _changedProperties.get('sizeX') !== undefined
     const sizeYChanged = _changedProperties.has('sizeY') && _changedProperties.get('sizeY') !== undefined
     if ((sizeXChanged || sizeYChanged) && this.hasUpdatedHeight) {
-      console.log('_changedProperties', _changedProperties)
       this.hasUpdatedHeight = false
     }
   }
@@ -713,12 +553,19 @@ export default class AstraChart extends ClassifiedElement {
         )}"
         theme=${this.theme}
         keyboard-shortcuts
-        selectable-rows
         blank-fill
       ></astra-table>`
     } else if (this.type === 'single_value') {
       const firstRecord = this.data?.layers?.[0].result?.[0]
-      const firstRecordValue = firstRecord ? firstRecord[this.keyX ?? ''] : ''
+      let firstRecordValue = firstRecord ? firstRecord[this.keyX ?? ''] : ''
+
+      if (firstRecordValue && !isNaN(Number(firstRecordValue))) {
+        let number = Number(firstRecordValue)
+
+        // Show number with commas
+        firstRecordValue = number.toLocaleString()
+      }
+
       const style = this.sizeX === 1 && this.sizeY === 1 ? 'font-size: 30px; line-height: 36px;' : 'font-size: 60px; line-height: 68px;'
       plot = html`<div
         style=${`font-family: Inter, sans-serif; ${style}`}
@@ -731,12 +578,29 @@ export default class AstraChart extends ClassifiedElement {
       let lineClamp = Math.floor(height / 21)
       let variant = 'p'
 
-      plot = html`<label
+      let markdown = this.data?.options?.text ?? ''
+
+      // Bold (**text** or __text__)
+      markdown = markdown.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+      markdown = markdown.replace(/__(.*?)__/g, '<b>$1</b>')
+
+      // Italic (*text* or _text_)
+      markdown = markdown.replace(/\*(.*?)\*/g, '<i>$1</i>')
+      markdown = markdown.replace(/_(.*?)_/g, '<i>$1</i>')
+
+      // Underline (__text__)
+      markdown = markdown.replace(/~~(.*?)~~/g, '<u>$1</u>')
+
+      // Line break (double space followed by a newline)
+      markdown = markdown.replace(/  \n/g, '<br>')
+
+      plot = html`<div
         variant=${variant}
         style=${`display: -webkit-box; -webkit-line-clamp: ${lineClamp}; -webkit-box-orient: vertical; overflow: hidden; font-family: Inter, sans-serif;`}
         class=${`text-neutral-900 dark:text-neutral-100`}
-        >${this.data?.options?.text}</label
-      >`
+      >
+        ${unsafeHTML(markdown)}
+      </div>`
     } else plot = this.getLatestPlot()
 
     const decoratedPlot = html`<div class=${`flex-col h-full flex`}>${plot}</div>`
@@ -774,5 +638,309 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     return html`${gradients} ${themedPlot}`
+  }
+
+  createSortOrder(byAxis: 'x' | 'y', axisValue: string, order: 'asc' | 'desc' | string | undefined) {
+    if (!order || (order !== 'asc' && order !== 'desc')) {
+      return undefined
+    }
+
+    return {
+      [byAxis]: axisValue,
+      reverse: order === 'asc' ? false : true,
+    }
+  }
+
+  normalizeData(_data: Row[], xAxis: string, yAxis: string): { data: Row[]; legend: { domain: any[]; range: any[] } } {
+    const yAxisKeys = this.data?.options?.yAxisKeys ?? [this.keyY]
+    const group = this.data?.options?.groupBy ?? this.groupBy
+    const normalizedGroup = group === this.keyX ? 'x' : group === this.keyY ? 'y' : group
+    const reshapedData: Row[] = []
+    const legendProperties = this.constructLegendProperties()
+
+    if (yAxisKeys.length > 1) {
+      return this.normalizeSeriesData(_data, xAxis, legendProperties)
+    }
+
+    _data.forEach((row) => {
+      let item: any = {
+        x: row[xAxis],
+        y: row[yAxis],
+        g: normalizedGroup ? row[normalizedGroup] : undefined,
+      }
+
+      reshapedData.push(item)
+    })
+
+    return {
+      data: reshapedData,
+      legend: legendProperties,
+    }
+  }
+
+  /**
+   * When data is provided for a chart that has multiple series, the data needs to be reshaped
+   * to fit the expected format for the barY function.
+   *
+   * @param data
+   * @param xAxis
+   * @param legendValues
+   * @returns Row[]
+   */
+  normalizeSeriesData(
+    data: Row[],
+    xAxis: string,
+    legendProperties?: { domain: any[]; range: any[] }
+  ): { data: Row[]; legend: { domain: any[]; range: any[] } } {
+    const reshapedData: Row[] = []
+    legendProperties = legendProperties ?? this.constructLegendProperties()
+
+    data.forEach((row) => {
+      legendProperties.domain.forEach((userKey: string) => {
+        reshapedData.push({
+          x: row[xAxis],
+          y: row[userKey],
+          g: userKey,
+        })
+      })
+    })
+
+    return {
+      data: reshapedData,
+      legend: legendProperties,
+    }
+  }
+
+  constructLegendProperties() {
+    const yAxisKeys = this.data?.options?.yAxisKeys ?? [this.keyY]
+    let legendColors: any[] = []
+    let legendValues: any[] = []
+
+    if (yAxisKeys.length > 1) {
+      this.data?.options?.yAxisKeys?.forEach((key, index) => {
+        const desiredColor = this.data?.options?.yAxisKeyColors?.[key] ?? this.colorValues[index % this.colorValues.length]
+        legendColors.push(desiredColor)
+        legendValues.push(key)
+      })
+    } else {
+      const group = this.data?.options?.groupBy ?? this.groupBy
+      const firstRecord = this.data?.layers?.[0].result?.[0]
+      const firstRecordKey = firstRecord ? Object.keys(firstRecord)[0] : ''
+      legendValues = group ? Array.from(new Set(this.data?.layers?.[0].result?.map((r) => r[group])) ?? []) : [firstRecordKey]
+      legendColors = legendValues.map((_, i) => this.colorValues[i % this.colorValues.length])
+    }
+
+    return {
+      domain: legendValues,
+      range: legendColors,
+    }
+  }
+
+  isAxisKeyDate(data: Row[], key: string): { isDate: boolean; interval: any; tickValues: any } {
+    const newArray: any[] | undefined = data.map((r: Record<string, any>) => {
+      const value = r[key]
+
+      // Check if the value is not a plain number and is a valid date
+      if (typeof value !== 'number' && !isNaN(Date.parse(value))) {
+        return new Date(value)
+      }
+      return undefined
+    })
+
+    const isDate = newArray.every((d) => d instanceof Date)
+    const startDate = min(newArray)
+    const endDate = max(newArray)
+    let tickValues = undefined
+
+    if (startDate && endDate) {
+      tickValues = utcMonth.range(startDate, endDate)
+    }
+
+    return {
+      isDate: isDate,
+      interval: isDate ? this.determineInterval(newArray) : undefined,
+      tickValues: isDate ? tickValues : undefined,
+    }
+  }
+
+  constructBarChart(options: Record<string, any>, d: Row[], sort: any, tip: any): Record<string, any> {
+    // Setup the bar chart
+    const { data: reshapedData, legend } = this.normalizeData(d, this.keyX ?? '', this.keyY ?? '')
+    const fill = reshapedData?.[0]?.g ? 'g' : this.colorValues[0]
+    const { isDate: isYAxisKeyDate, interval, tickValues } = this.isAxisKeyDate(d, this.keyX ?? '')
+    const isStacked = reshapedData?.[0]?.g
+
+    if (isYAxisKeyDate) {
+      options.y = {
+        ...options.y,
+        type: isStacked ? 'band' : undefined,
+        interval: isStacked ? undefined : interval,
+        tickValues: tickValues,
+      }
+    }
+
+    options.color = {
+      ...options.color,
+      ...legend,
+    }
+
+    options.marks.push(
+      barX(reshapedData, {
+        x: 'y',
+        y: 'x',
+        fill: fill,
+        tip,
+        sort,
+      })
+    )
+
+    return options
+  }
+
+  constructColumnChart(options: Record<string, any>, d: Row[], sort: any, tip: any): Record<string, any> {
+    // Setup the column chart
+    const { data: reshapedData, legend } = this.normalizeData(d, this.keyX ?? '', this.keyY ?? '')
+    const fill = reshapedData?.[0]?.g ? 'g' : this.colorValues[0]
+    const { isDate: isXAxisKeyDate, interval, tickValues } = this.isAxisKeyDate(d, this.keyX ?? '')
+    const isStacked = reshapedData?.[0]?.g
+
+    if (isXAxisKeyDate) {
+      options.x = {
+        ...options.x,
+        type: isStacked ? 'band' : undefined,
+        interval: isStacked ? undefined : interval,
+        tickValues: tickValues,
+      }
+    }
+
+    options.color = {
+      ...options.color,
+      ...legend,
+    }
+
+    options.marks.push(
+      barY(reshapedData, {
+        x: 'x',
+        y: 'y',
+        fill: fill,
+        tip,
+        sort,
+      })
+    )
+
+    return options
+  }
+
+  constructLineChart(options: Record<string, any>, d: Row[], sort: any, tip: any): Record<string, any> {
+    // Setup the line chart
+    const { data: reshapedData, legend } = this.normalizeData(d, this.keyX ?? '', this.keyY ?? '')
+    const stroke = reshapedData?.[0]?.g ? 'g' : this.colorValues[0]
+    const yAxisKeys = this.data?.options?.yAxisKeys ?? [this.keyY]
+    const multipleLines = yAxisKeys.length > 1
+
+    options.color = {
+      ...options.color,
+      ...legend,
+    }
+
+    if (multipleLines) {
+      yAxisKeys.forEach((key, index) => {
+        options.marks.push(
+          lineY(reshapedData, {
+            x: 'x',
+            y: 'y',
+            stroke: stroke,
+            tip,
+          })
+        )
+      })
+    } else {
+      options.marks.push(
+        lineY(reshapedData, {
+          x: 'x',
+          y: 'y',
+          stroke: stroke,
+          tip,
+        })
+      )
+    }
+
+    return options
+  }
+
+  constructAreaChart(options: Record<string, any>, d: Row[], sort: any, tip: any): Record<string, any> {
+    // Setup the area chart
+    const { data: reshapedData, legend } = this.normalizeData(d, this.keyX ?? '', this.keyY ?? '')
+    const stroke = reshapedData?.[0]?.g ? 'g' : this.colorValues[0]
+    const yAxisKeys = this.data?.options?.yAxisKeys ?? [this.keyY]
+    const multipleLines = yAxisKeys.length > 1
+
+    options.color = {
+      ...options.color,
+      ...legend,
+    }
+
+    if (multipleLines) {
+      yAxisKeys.forEach((key, index) => {
+        options.marks.push(
+          areaY(reshapedData, {
+            x: 'x',
+            y2: 'y',
+            fill: stroke,
+            fillOpacity: 0.1,
+            stroke: stroke,
+          })
+        )
+      })
+    } else {
+      options.marks.push(
+        areaY(reshapedData, {
+          x: 'x',
+          y2: 'y',
+          fill: stroke,
+          fillOpacity: 0.1,
+          stroke: stroke,
+        })
+      )
+    }
+
+    return options
+  }
+
+  constructScatterChart(options: Record<string, any>, d: Row[], sort: any, tip: any): Record<string, any> {
+    // Setup the scatter chart
+    const { data: reshapedData, legend } = this.normalizeData(d, this.keyX ?? '', this.keyY ?? '')
+    const stroke = reshapedData?.[0]?.g ? 'g' : this.colorValues[0]
+    const yAxisKeys = this.data?.options?.yAxisKeys ?? [this.keyY]
+    const multipleLines = yAxisKeys.length > 1
+
+    options.color = {
+      ...options.color,
+      ...legend,
+    }
+
+    if (multipleLines) {
+      yAxisKeys.forEach((key, index) => {
+        options.marks.push(
+          dot(reshapedData, {
+            x: 'x',
+            y: 'y',
+            stroke: stroke,
+            tip,
+          })
+        )
+      })
+    } else {
+      options.marks.push(
+        dot(reshapedData, {
+          x: 'x',
+          y: 'y',
+          stroke: stroke,
+          tip,
+        })
+      )
+    }
+
+    return options
   }
 }
