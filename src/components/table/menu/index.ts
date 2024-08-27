@@ -116,8 +116,6 @@ export class Menu extends ClassifiedElement {
     if (!value) throw new Error("onItemClick didn't recover a selection value")
     this.onSelection(event, value)
 
-    // close the menu
-    this.open = false
   }
 
   protected onSelection(event: Event, value: string) {
@@ -134,6 +132,7 @@ export class Menu extends ClassifiedElement {
       const selectionEvent = new MenuSelectedEvent(value)
       this.selection = value
       this.dispatchEvent(selectionEvent)
+      this.open = false
     }
   }
 
