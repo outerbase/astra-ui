@@ -475,7 +475,7 @@ export default class AstraChart extends ClassifiedElement {
       showYTicks = false
     }
 
-    if (showLegend) {
+    if (showLegend && options.color?.domain?.length && options.color?.range?.length) {
       options.color = {
         ...options.color,
         legend: true,
@@ -510,8 +510,11 @@ export default class AstraChart extends ClassifiedElement {
       tickSize: showYTicks ? 5 : 0,
     }
 
-    // render and append the plot
-    return plot(options)
+    try {
+      return plot(options)
+    } catch (error) {
+      console.error('Error rendering chart:', error)
+    }
   }
 
   protected updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
@@ -559,11 +562,10 @@ export default class AstraChart extends ClassifiedElement {
       const firstRecord = this.data?.layers?.[0].result?.[0]
       let firstRecordValue = firstRecord ? firstRecord[this.keyX ?? ''] : ''
 
-      if (firstRecordValue && !isNaN(Number(firstRecordValue))) {
-        let number = Number(firstRecordValue)
-
-        // Show number with commas
-        firstRecordValue = number.toLocaleString()
+      const isValidForFormatting = firstRecordValue && (!isNaN(Number(firstRecordValue)) || typeof firstRecordValue === 'string')
+      if (isValidForFormatting) {
+        const number = parseFloat(`${firstRecordValue}`)
+        firstRecordValue = number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
       }
 
       const style = this.sizeX === 1 && this.sizeY === 1 ? 'font-size: 30px; line-height: 36px;' : 'font-size: 60px; line-height: 68px;'
@@ -730,6 +732,9 @@ export default class AstraChart extends ClassifiedElement {
       legendColors = legendValues.map((_, i) => this.colorValues[i % this.colorValues.length])
     }
 
+    // Filter undefineds out of legendValues
+    legendValues = legendValues.filter((v) => v !== undefined)
+
     return {
       domain: legendValues,
       range: legendColors,
@@ -889,6 +894,7 @@ export default class AstraChart extends ClassifiedElement {
             fill: stroke,
             fillOpacity: 0.1,
             stroke: stroke,
+            tip,
           })
         )
       })
@@ -900,6 +906,7 @@ export default class AstraChart extends ClassifiedElement {
           fill: stroke,
           fillOpacity: 0.1,
           stroke: stroke,
+          tip,
         })
       )
     }
