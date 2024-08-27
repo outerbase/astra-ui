@@ -180,7 +180,7 @@ export class TH extends MutableElement {
 
   protected onClick(event: MouseEvent) {
     const path = event.composedPath() as Array<HTMLElement>
-    const hasTrigger = path.some((p) => p.getAttribute?.('id') === 'trigger')
+    const hasTrigger = path.some((p) => p.getAttribute?.('id') === 'wormhole')
     const name = this.originalValue ?? this.value
     const isNotResizer = !path.some((p) => p.tagName?.toLowerCase() === 'column-resizer')
 

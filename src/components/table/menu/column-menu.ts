@@ -6,26 +6,6 @@ import { Menu } from './index.js'
 
 @customElement('astra-th-menu')
 export class ColumnMenu extends Menu {
-  onClick(event: MouseEvent) {
-    // prevent the click from surfacing and triggering column sorting
-    event.stopPropagation()
-  }
-
-  constructor() {
-    super()
-    this.onClick = this.onClick.bind(this)
-  }
-
-  public connectedCallback(): void {
-    super.connectedCallback()
-    this.addEventListener('click', this.onClick)
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback()
-    this.removeEventListener('click', this.onClick)
-  }
-
   public override render() {
     return html`
       <div class="flex items-center justify-between gap-2">
