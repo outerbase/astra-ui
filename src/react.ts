@@ -17,11 +17,6 @@ import AstraTable from './components/table/core/index.js'
 import AstraText from './components/text.js'
 
 export default function LitComponents(React: any) {
-  // If window is not defined, we are not in a browser environment
-  if (typeof window === 'undefined') {
-    return {}
-  }
-
   return {
     Button: createComponent({
       tagName: 'astra-button',
