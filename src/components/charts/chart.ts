@@ -562,7 +562,8 @@ export default class AstraChart extends ClassifiedElement {
       const firstRecord = this.data?.layers?.[0].result?.[0]
       let firstRecordValue = firstRecord ? firstRecord[this.keyX ?? ''] : ''
 
-      if (firstRecordValue && !isNaN(Number(firstRecordValue))) {
+      const isValidForFormatting = firstRecordValue && (!isNaN(Number(firstRecordValue)) || typeof firstRecordValue === 'string')
+      if (isValidForFormatting) {
         const number = parseFloat(`${firstRecordValue}`)
         firstRecordValue = number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
       }
