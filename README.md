@@ -8,7 +8,7 @@
     <br />
     <a href="https://www.outerbase.com/">Website</a>
     <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
-    <a href="https://www.docs.outerbase.com/">Docs</a>
+    <a href="https://docs.outerbase.com/">Docs</a>
     <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
     <a href="https://www.outerbase.com/blog/">Blog</a>
     <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
