@@ -48,10 +48,10 @@ const gradients = [
   ]),
 ]
 
-// const iridiumValues = ['#87E9C0', '#B9D975', '#C9D69B']
-// const celestialValues = ['#D1FFFF', '#93FDFF', '#1A9EF5']
-// const cobaltValues = ['#5956E2', '#A99AFF', '#82DBFF']
-// const afterburnValues = ['#E75F98', '#FFA285', '#CCB8F2']
+const iridiumValues = ['#87E9C0', '#B9D975', '#C9D69B']
+const celestialValues = ['#D1FFFF', '#93FDFF', '#1A9EF5']
+const cobaltValues = ['#5956E2', '#A99AFF', '#82DBFF']
+const afterburnValues = ['#E75F98', '#FFA285', '#CCB8F2']
 
 const mercuryValuesDark = ['#fafafa', '#525252', '#a3a3a3', '#e5e5e5', '#262626']
 const mercuryValuesLight = ['#0a0a0a', '#a3a3a3', '#525252', '#262626', '#e5e5e5']
@@ -317,7 +317,26 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     if (changedProperties.has('theme')) {
-      this.colorValues = this.theme === 'dark' ? mercuryValuesDark : mercuryValuesLight
+      // const iridiumValues = ['#87E9C0', '#B9D975', '#C9D69B']
+      // const celestialValues = ['#D1FFFF', '#93FDFF', '#1A9EF5']
+      // const cobaltValues = ['#5956E2', '#A99AFF', '#82DBFF']
+      // const afterburnValues = ['#E75F98', '#FFA285', '#CCB8F2']
+
+      // const mercuryValuesDark = ['#fafafa', '#525252', '#a3a3a3', '#e5e5e5', '#262626']
+      // const mercuryValuesLight = ['#0a0a0a', '#a3a3a3', '#525252', '#262626', '#e5e5e5']
+
+      if (this.data?.options?.theme === 'iridium') {
+        this.colorValues = this.theme === 'dark' ? iridiumValues : iridiumValues
+      } else if (this.data?.options?.theme === 'celestial') {
+        this.colorValues = this.theme === 'dark' ? celestialValues : celestialValues
+      } else if (this.data?.options?.theme === 'cobalt') {
+        this.colorValues = this.theme === 'dark' ? cobaltValues : cobaltValues
+      } else if (this.data?.options?.theme === 'afterburn') {
+        this.colorValues = this.theme === 'dark' ? afterburnValues : afterburnValues
+      } else {
+        this.colorValues = this.theme === 'dark' ? mercuryValuesDark : mercuryValuesLight
+      }
+
       this.render()
     }
 
@@ -562,10 +581,51 @@ export default class AstraChart extends ClassifiedElement {
       const firstRecord = this.data?.layers?.[0].result?.[0]
       let firstRecordValue = firstRecord ? firstRecord[this.keyX ?? ''] : ''
 
-      const isValidForFormatting = firstRecordValue && (!isNaN(Number(firstRecordValue)) || typeof firstRecordValue === 'string')
-      if (isValidForFormatting) {
+      const formattedValue = this.data?.options?.format
+
+      if (formattedValue === 'percent') {
         const number = parseFloat(`${firstRecordValue}`)
-        firstRecordValue = number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        firstRecordValue = `${number.toFixed(2)}%`
+      } else if (formattedValue === 'number') {
+        const number = parseFloat(`${firstRecordValue}`)
+        firstRecordValue = `${Math.round(number)}`
+      } else if (formattedValue === 'decimal') {
+        const number = parseFloat(`${firstRecordValue}`)
+        firstRecordValue = `${number.toFixed(2)}`
+      } else if (formattedValue === 'date') {
+        // TEST
+        const stringDate = `${firstRecordValue}`
+
+        // Convert to a Date object to validate the input
+        const date = new Date(stringDate)
+
+        if (!isNaN(date.getTime())) {
+          // Check if the date is valid
+          // Extract the date components
+          const year = date.getUTCFullYear()
+          const month = String(date.getUTCMonth() + 1).padStart(2, '0') // Months are 0-based
+          const day = String(date.getUTCDate()).padStart(2, '0')
+
+          // Manually construct the formatted date string
+          const formattedDate = `${month}/${day}/${year}`
+
+          firstRecordValue = formattedDate
+        }
+      } else if (formattedValue === 'time') {
+        const date = new Date(`${firstRecordValue}`)
+        firstRecordValue = date.toLocaleTimeString('en-US')
+      } else if (formattedValue === 'dollar') {
+        const number = parseFloat(`${firstRecordValue}`)
+        firstRecordValue = `$${number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      } else if (formattedValue === 'euro') {
+        const number = parseFloat(`${firstRecordValue}`)
+        firstRecordValue = `€${number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      } else if (formattedValue === 'pound') {
+        const number = parseFloat(`${firstRecordValue}`)
+        firstRecordValue = `£${number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      } else if (formattedValue === 'yen') {
+        const number = parseFloat(`${firstRecordValue}`)
+        firstRecordValue = `¥${number.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
       }
 
       const style = this.sizeX === 1 && this.sizeY === 1 ? 'font-size: 30px; line-height: 36px;' : 'font-size: 60px; line-height: 68px;'

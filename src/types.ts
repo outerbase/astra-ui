@@ -349,6 +349,10 @@ export type DashboardV3ChartOptions = {
   percentage?: boolean
   // Text to display for text charts only
   text?: string
+  // Format the text chart with a specific format
+  format?: 'percent' | 'number' | 'decimal' | 'date' | 'time' | 'dollar' | 'euro' | 'pound' | 'yen'
+  // Theme of the chart
+  theme?: string
 }
 
 export type DashboardV3Highlight = {
