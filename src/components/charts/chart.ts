@@ -317,14 +317,6 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     if (changedProperties.has('theme')) {
-      // const iridiumValues = ['#87E9C0', '#B9D975', '#C9D69B']
-      // const celestialValues = ['#D1FFFF', '#93FDFF', '#1A9EF5']
-      // const cobaltValues = ['#5956E2', '#A99AFF', '#82DBFF']
-      // const afterburnValues = ['#E75F98', '#FFA285', '#CCB8F2']
-
-      // const mercuryValuesDark = ['#fafafa', '#525252', '#a3a3a3', '#e5e5e5', '#262626']
-      // const mercuryValuesLight = ['#0a0a0a', '#a3a3a3', '#525252', '#262626', '#e5e5e5']
-
       if (this.data?.options?.theme === 'iridium') {
         this.colorValues = this.theme === 'dark' ? iridiumValues : iridiumValues
       } else if (this.data?.options?.theme === 'celestial') {
