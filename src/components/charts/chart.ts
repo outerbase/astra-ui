@@ -559,7 +559,6 @@ export default class AstraChart extends ClassifiedElement {
         border-b
         blank-fill
         read-only
-        non-interactive
       ></astra-table>`
     } else if (this.type === 'single_value') {
       const firstRecord = this.castedData?.layers?.[0].result?.[0]
