@@ -285,6 +285,10 @@ export default class AstraChart extends ClassifiedElement {
   private castData(data: Row[]): Row[] {
     if (!data) return []
 
+    if (this.data?.layers?.[0].type === 'table') {
+      return data
+    }
+
     // For each row in the data, cast each value as the correct type such as Number, Date, or string.
     return data.map((row: any) => {
       const newRow: Row = {}
