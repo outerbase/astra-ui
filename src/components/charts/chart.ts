@@ -206,6 +206,7 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: String, attribute: 'api-key' }) apiKey: string | undefined
   @property({ type: String, attribute: 'chart-id' }) chartId: string | undefined
   @property({ type: Object }) data?: DashboardV3Chart
+  @property({ type: Object }) castedData?: DashboardV3Chart
   @property({ type: String }) type?: ChartTypeV3
   @property({ type: Array }) highlights?: Array<DashboardV3HighlightType>
 
@@ -327,7 +328,7 @@ export default class AstraChart extends ClassifiedElement {
       this.highlights = this.data?.highlights
       // this.apiKey = this.data?.apiKey // <-- this will switch from using passed-in data to making API requests
 
-      this.data = this.convertDataIntoCastedData(this.data)
+      this.castedData = this.convertDataIntoCastedData(this.data)
 
       const options = this.data?.options
       if (options) {
@@ -555,11 +556,10 @@ export default class AstraChart extends ClassifiedElement {
           }) ?? []
         )}"
         theme=${this.theme}
-        keyboard-shortcuts
         blank-fill
       ></astra-table>`
     } else if (this.type === 'single_value') {
-      const firstRecord = this.data?.layers?.[0].result?.[0]
+      const firstRecord = this.castedData?.layers?.[0].result?.[0]
       let firstRecordValue = firstRecord ? firstRecord[this.keyX ?? ''] : ''
 
       const isValidForFormatting = firstRecordValue && (!isNaN(Number(firstRecordValue)) || typeof firstRecordValue === 'string')
@@ -579,8 +579,7 @@ export default class AstraChart extends ClassifiedElement {
       let height = this.height ?? 0
       let lineClamp = Math.floor(height / 21)
       let variant = 'p'
-
-      let markdown = this.data?.options?.text ?? ''
+      let markdown = this.castedData?.options?.text ?? ''
 
       // Bold (**text** or __text__)
       markdown = markdown.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
@@ -726,9 +725,9 @@ export default class AstraChart extends ClassifiedElement {
       })
     } else {
       const group = this.data?.options?.groupBy ?? this.groupBy
-      const firstRecord = this.data?.layers?.[0].result?.[0]
+      const firstRecord = this.castedData?.layers?.[0].result?.[0]
       const firstRecordKey = firstRecord ? Object.keys(firstRecord)[0] : ''
-      legendValues = group ? Array.from(new Set(this.data?.layers?.[0].result?.map((r) => r[group])) ?? []) : [firstRecordKey]
+      legendValues = group ? Array.from(new Set(this.castedData?.layers?.[0].result?.map((r) => r[group])) ?? []) : [firstRecordKey]
       legendColors = legendValues.map((_, i) => this.colorValues[i % this.colorValues.length])
     }
 
