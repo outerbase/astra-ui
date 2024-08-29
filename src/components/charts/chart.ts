@@ -579,7 +579,8 @@ export default class AstraChart extends ClassifiedElement {
       let height = this.height ?? 0
       let lineClamp = Math.floor(height / 21)
       let variant = 'p'
-      let markdown = this.castedData?.options?.text ?? ''
+
+      let markdown = this.data?.options?.text ?? ''
 
       // Bold (**text** or __text__)
       markdown = markdown.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
