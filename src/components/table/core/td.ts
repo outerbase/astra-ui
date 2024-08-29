@@ -510,6 +510,17 @@ export class TableData extends MutableElement {
           },
         ]
       : this.options
+    const editorViaWormhole = html`
+      <hans-wormhole .open=${this.isDisplayingPluginEditor} .anchorId=${this.id}>
+        <span id="plugin-editor" class="caret-current cursor-auto z-10">${cellEditorContents}</span>
+      </hans-wormhole>
+    `
+    const contents = html`
+      <div class="flex items-center px-cell-padding-x">
+        <span class="flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
+        ${pluginAccessory}
+      </div>
+    `
 
     this.tabIndex = this.blank ? -1 : 0
 
@@ -518,49 +529,25 @@ export class TableData extends MutableElement {
     const menuEl =
       this.isEditing || this.blank
         ? nothing
-        : this.hasMenu
-          ? html`<span
-              ${ref(this.contentEditableWrapper)}
-              class="outline-none caret-transparent select-none"
-              contenteditable="${this.isContentEditable}"
-              spellcheck="false"
-              autocorrect="off"
-              @dragover=${TableData.onDragOver}
-              @drop=${TableData.onDrop}
-              @paste=${this.onPaste}
-              @pointerenter=${this.onPointerEnter}
-              @pointerleave=${this.onPointerLeave}
-              tabindex="-1"
-            >
-              <astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
-                <div class="flex items-center px-cell-padding-x">
-                  <span class="flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
-                  ${pluginAccessory}
-                </div>
-
-                <hans-wormhole .open=${this.isDisplayingPluginEditor} .anchorId=${this.id}>
-                  <span id="plugin-editor" class="caret-current cursor-auto z-10">${cellEditorContents}</span>
-                </hans-wormhole>
-              </astra-td-menu>
-            </span>`
-          : html`<span
-              ${ref(this.contentEditableWrapper)}
-              class="outline-none caret-transparent select-none"
-              contenteditable="${this.isContentEditable}"
-              spellcheck="false"
-              autocorrect="off"
-              @dragover=${TableData.onDragOver}
-              @drop=${TableData.onDrop}
-              @paste=${this.onPaste}
-              @pointerenter=${this.onPointerEnter}
-              @pointerleave=${this.onPointerLeave}
-              tabindex="-1"
-            >
-              <div class="flex items-center px-cell-padding-x">
-                <span class="flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
-                ${pluginAccessory}
-              </div>
-            </span>`
+        : html`<span
+            ${ref(this.contentEditableWrapper)}
+            class="outline-none caret-transparent select-none"
+            contenteditable="${this.isContentEditable}"
+            spellcheck="false"
+            autocorrect="off"
+            @dragover=${TableData.onDragOver}
+            @drop=${TableData.onDrop}
+            @paste=${this.onPaste}
+            @pointerenter=${this.onPointerEnter}
+            @pointerleave=${this.onPointerLeave}
+            tabindex="-1"
+          >
+            ${this.hasMenu
+              ? html`<astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
+                  ${contents} ${editorViaWormhole}
+                </astra-td-menu>`
+              : html`${contents} ${editorViaWormhole}`}
+          </span>`
 
     return this.isEditing ? inputEl : this.blank ? emptySlot : menuEl
   }
