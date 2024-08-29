@@ -594,6 +594,8 @@ export default class AstraChart extends ClassifiedElement {
         theme=${this.theme}
         keyboard-shortcuts
         blank-fill
+        border-b
+        read-only
       ></astra-table>`
     } else if (this.type === 'single_value') {
       const firstRecord = this.data?.layers?.[0].result?.[0]
