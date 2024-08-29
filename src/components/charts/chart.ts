@@ -580,7 +580,8 @@ export default class AstraChart extends ClassifiedElement {
         firstRecordValue = `${number.toFixed(2)}%`
       } else if (formattedValue === 'number') {
         const number = parseFloat(`${firstRecordValue}`)
-        firstRecordValue = `${Math.round(number)}`
+        const rounded = Math.round(number)
+        firstRecordValue = `${rounded.toLocaleString('en-US')}`
       } else if (formattedValue === 'decimal') {
         const number = parseFloat(`${firstRecordValue}`)
         firstRecordValue = `${number.toFixed(2)}`
