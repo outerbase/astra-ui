@@ -317,17 +317,17 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     if (changedProperties.has('theme')) {
-      if (this.data?.options?.theme === 'iridium') {
-        this.colorValues = this.theme === 'dark' ? iridiumValues : iridiumValues
-      } else if (this.data?.options?.theme === 'celestial') {
-        this.colorValues = this.theme === 'dark' ? celestialValues : celestialValues
-      } else if (this.data?.options?.theme === 'cobalt') {
-        this.colorValues = this.theme === 'dark' ? cobaltValues : cobaltValues
-      } else if (this.data?.options?.theme === 'afterburn') {
-        this.colorValues = this.theme === 'dark' ? afterburnValues : afterburnValues
-      } else {
-        this.colorValues = this.theme === 'dark' ? mercuryValuesDark : mercuryValuesLight
-      }
+      //   if (this.data?.options?.theme === 'iridium') {
+      //     this.colorValues = this.theme === 'dark' ? iridiumValues : iridiumValues
+      //   } else if (this.data?.options?.theme === 'celestial') {
+      //     this.colorValues = this.theme === 'dark' ? celestialValues : celestialValues
+      //   } else if (this.data?.options?.theme === 'cobalt') {
+      //     this.colorValues = this.theme === 'dark' ? cobaltValues : cobaltValues
+      //   } else if (this.data?.options?.theme === 'afterburn') {
+      //     this.colorValues = this.theme === 'dark' ? afterburnValues : afterburnValues
+      //   } else {
+      //     this.colorValues = this.theme === 'dark' ? mercuryValuesDark : mercuryValuesLight
+      //   }
 
       this.render()
     }
@@ -347,7 +347,29 @@ export default class AstraChart extends ClassifiedElement {
         this.keyX = options.xAxisKey
         this.keyY = options.yAxisKeys?.[0] // TODO don't assume 1
         this.sortOrder = options.sortOrder
-        // TODO xAxisLabelDisplay, yAxisLabelDisplay, groupBy
+        this.groupBy = options.groupBy
+
+        if (options.xAxisLabelDisplay) {
+          this.axisLabelDisplayX = options.xAxisLabelDisplay
+        }
+
+        if (options.yAxisLabelDisplay) {
+          this.axisLabelDisplay = options.yAxisLabelDisplay
+        }
+
+        if (options?.theme === 'iridium') {
+          this.colorValues = this.theme === 'dark' ? iridiumValues : iridiumValues
+        } else if (options?.theme === 'celestial') {
+          this.colorValues = this.theme === 'dark' ? celestialValues : celestialValues
+        } else if (options?.theme === 'cobalt') {
+          this.colorValues = this.theme === 'dark' ? cobaltValues : cobaltValues
+        } else if (options?.theme === 'afterburn') {
+          this.colorValues = this.theme === 'dark' ? afterburnValues : afterburnValues
+        } else {
+          this.colorValues = this.theme === 'dark' ? mercuryValuesDark : mercuryValuesLight
+        }
+
+        this.render()
       }
     }
   }
@@ -586,7 +608,6 @@ export default class AstraChart extends ClassifiedElement {
         const number = parseFloat(`${firstRecordValue}`)
         firstRecordValue = `${number.toFixed(2)}`
       } else if (formattedValue === 'date') {
-        // TEST
         const stringDate = `${firstRecordValue}`
 
         // Convert to a Date object to validate the input
