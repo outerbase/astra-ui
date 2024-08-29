@@ -321,18 +321,6 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     if (changedProperties.has('theme')) {
-      //   if (this.data?.options?.theme === 'iridium') {
-      //     this.colorValues = this.theme === 'dark' ? iridiumValues : iridiumValues
-      //   } else if (this.data?.options?.theme === 'celestial') {
-      //     this.colorValues = this.theme === 'dark' ? celestialValues : celestialValues
-      //   } else if (this.data?.options?.theme === 'cobalt') {
-      //     this.colorValues = this.theme === 'dark' ? cobaltValues : cobaltValues
-      //   } else if (this.data?.options?.theme === 'afterburn') {
-      //     this.colorValues = this.theme === 'dark' ? afterburnValues : afterburnValues
-      //   } else {
-      //     this.colorValues = this.theme === 'dark' ? mercuryValuesDark : mercuryValuesLight
-      //   }
-
       this.render()
     }
 
