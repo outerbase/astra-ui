@@ -169,7 +169,7 @@ export class NestedMenu extends LitElement {
     .submenu {
       display: none;
       position: absolute;
-      top: 0;
+      top: -1px;
     }
     .submenu.right {
       left: 100%;
