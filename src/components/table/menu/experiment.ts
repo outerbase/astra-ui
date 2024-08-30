@@ -2,8 +2,8 @@ import { LitElement, css, html, type PropertyValueMap } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { createRef, ref } from 'lit/directives/ref.js'
 import { MenuSelectedEvent } from '../../../types'
-import { ClassifiedElement } from '../../classified-element'
 
+import '../../hans-wormhole'
 export interface MenuItem {
   label: string
   value: string
@@ -11,32 +11,19 @@ export interface MenuItem {
 }
 
 @customElement('astra-menu')
-export class Menu extends ClassifiedElement {
+export class Menu extends LitElement {
   @property({ type: Array }) items: MenuItem[] = []
   @property({ attribute: 'open', type: Boolean }) isOpen = false
 
   protected nestedMenu = createRef<NestedMenu>()
 
   static styles = [
-    ...ClassifiedElement.styles,
     css`
       :host {
-        position: relative;
-        display: inline-block;
-        margin-top: -2px;
-        width: 100%;
-
         -webkit-user-select: none;
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
-      }
-      .menu-wrapper {
-        position: absolute;
-        top: 100%;
-        right: 0;
-        margin: 0;
-        padding: 0;
       }
     `,
   ]
@@ -83,10 +70,12 @@ export class Menu extends ClassifiedElement {
   }
 
   render() {
+    // id="asdf" is commented out because, when it's used, the menu magically disappears... SHRUG.
     return html`
       <span @click="${this.toggleMenu}"><slot></slot></span>
 
-      <div class="menu-wrapper">
+      <!-- <div id="asdf"> -->
+      <hans-wormhole .open=${this.isOpen} anchorId="asdf">
         <astra-nested-menu
           ?open="${this.isOpen}"
           .items="${this.items}"
@@ -95,7 +84,8 @@ export class Menu extends ClassifiedElement {
           ${ref(this.nestedMenu)}
         >
         </astra-nested-menu>
-      </div>
+      </hans-wormhole>
+      <!-- </div> -->
     `
   }
 
@@ -139,25 +129,20 @@ export class NestedMenu extends LitElement {
   @property({ type: Boolean, attribute: 'open' }) isOpen = false
 
   @state() private activeIndex: number | null = null
-  @state() private isSubmenu = false
+
+  get isSubmenu() {
+    return Boolean(this.parentMenu)
+  }
 
   static styles = css`
-    :host {
-      display: block;
-      z-index: 0;
-    }
     ul {
-      display: none;
       list-style: none;
       padding: 0;
       margin: 0;
       border: 1px solid rgba(127, 127, 127, 0.1);
-      border-radius: 2px;
+      border-radius: 4px;
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-    }
-    ul.open {
-      display: block;
     }
     li {
       padding: 8px 16px;
@@ -172,6 +157,14 @@ export class NestedMenu extends LitElement {
     li:hover,
     li:focus {
       background: rgba(0, 0, 0, 0.5);
+    }
+    li:first-child {
+      border-top-right-radius: 4px;
+      border-top-left-radius: 4px;
+    }
+    li:last-child {
+      border-bottom-right-radius: 4px;
+      border-bottom-left-radius: 4px;
     }
     .submenu {
       display: none;
@@ -190,11 +183,6 @@ export class NestedMenu extends LitElement {
     }
   `
 
-  connectedCallback() {
-    super.connectedCallback()
-    this.isSubmenu = Boolean(this.parentMenu)
-  }
-
   protected willUpdate(changedProperties: PropertyValueMap<this>): void {
     super.willUpdate(changedProperties)
     // accessibility
@@ -206,19 +194,15 @@ export class NestedMenu extends LitElement {
 
   render() {
     return html`
-      <ul class="${this.isOpen || this.isSubmenu ? 'open' : ''}" @keydown="${this._handleKeyDown}" role="menu">
+      <ul @keydown="${this._handleKeyDown}" role="menu">
         ${this.items.map(
           (item, index) => html`
             <li
-              @mouseenter="${() => this._handleMouseEnter(index)}"
-              @mouseleave="${this._handleMouseLeave}"
-              @click="${(e: MouseEvent) => this.onClickMenuItem(e, item)}"
-              @focus="${() => this._setActiveIndex(index)}"
+              @click="${(e: MouseEvent) => this._onClickMenuItem(e, item)}"
               tabindex="${index === 0 ? '0' : '-1'}"
               role="menuitem"
               aria-haspopup="${item.subItems ? 'true' : 'false'}"
               aria-expanded="${item.subItems && this.activeIndex === index ? 'true' : 'false'}"
-              data-value="${item.value}"
             >
               ${item.label}
               ${item.subItems
@@ -235,7 +219,11 @@ export class NestedMenu extends LitElement {
     `
   }
 
-  private _getSubmenuSide(index: number): string {
+  public override focus() {
+    this._focusItem(0)
+  }
+
+  _getSubmenuSide(index: number): string {
     if (!this.shadowRoot) return 'right'
 
     const listItem = this.shadowRoot.querySelectorAll('li')[index]
@@ -250,40 +238,14 @@ export class NestedMenu extends LitElement {
     return rightSpace >= minSubmenuWidth ? 'right' : 'left'
   }
 
-  public _toggleMenu = (e?: Event) => {
-    e?.stopPropagation()
-    this.isOpen = !this.isOpen
-    if (this.isOpen) {
-      this.updateComplete.then(() => this._focusItem(0))
-    }
-  }
-
-  public override focus() {
-    this._focusItem(0)
-  }
-
-  _handleMouseEnter(index: number) {
-    this._setActiveIndex(index)
-  }
-
-  _handleMouseLeave = () => {
-    if (this.isSubmenu) {
-      this.activeIndex = null
-    }
-  }
-
-  _setActiveIndex(index: number) {
-    this.activeIndex = index
-  }
-
-  onClickMenuItem(e: MouseEvent, item: MenuItem) {
+  _onClickMenuItem(e: MouseEvent, item: MenuItem) {
     e.stopPropagation()
     if (!item.subItems) {
-      this.onSelection(item)
+      this._onSelection(item)
     }
   }
 
-  protected onSelection(item: MenuItem) {
+  _onSelection(item: MenuItem) {
     const selectionEvent = new MenuSelectedEvent(item)
     this.dispatchEvent(selectionEvent)
   }
@@ -308,14 +270,11 @@ export class NestedMenu extends LitElement {
         e.preventDefault()
         this._handleArrowLeft()
         break
-      case 'Escape':
-        e.preventDefault()
-        this._handleEscape()
-        break
+
       case 'Enter':
       case ' ':
         e.preventDefault()
-        this._activateItem()
+        this._selectActiveItem()
         break
     }
   }
@@ -339,36 +298,6 @@ export class NestedMenu extends LitElement {
     if (this.isSubmenu && this.parentMenu) {
       this._closeCurrentSubmenu()
     }
-  }
-
-  _handleEscape() {
-    if (this.isSubmenu) {
-      this._closeCurrentSubmenu()
-    } else {
-      this._closeAllMenusNonRecursive()
-    }
-  }
-
-  _closeAllMenusNonRecursive() {
-    let rootMenu: NestedMenu = this
-    while (rootMenu.parentMenu) {
-      rootMenu = rootMenu.parentMenu
-    }
-
-    const closeMenu = (menu: NestedMenu) => {
-      menu.activeIndex = null
-      menu.isOpen = false
-      menu.requestUpdate()
-      const submenus = menu.shadowRoot!.querySelectorAll('astra-nested-menu') as NodeListOf<NestedMenu>
-      submenus.forEach((submenu) => {
-        submenu.activeIndex = null
-        submenu.isOpen = false
-        submenu.requestUpdate()
-        closeMenu(submenu)
-      })
-    }
-
-    closeMenu(rootMenu)
   }
 
   _focusNextItem(direction: 1 | -1) {
@@ -400,13 +329,13 @@ export class NestedMenu extends LitElement {
     }
   }
 
-  _activateItem() {
+  _selectActiveItem() {
     if (this.activeIndex !== null) {
       const item = this.items[this.activeIndex]
       if (item.subItems) {
         this._handleArrowRight()
       }
-      this.onSelection(item)
+      this._onSelection(item)
     }
   }
 }
