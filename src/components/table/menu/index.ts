@@ -1,8 +1,9 @@
-import { LitElement, css, html, type PropertyValueMap } from 'lit'
+import { css, html, type PropertyValueMap } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { createRef, ref } from 'lit/directives/ref.js'
 import { MenuSelectedEvent } from '../../../types'
 
+import { classMap } from 'lit/directives/class-map.js'
 import { ClassifiedElement } from '../../classified-element'
 import '../../hans-wormhole'
 export interface MenuItem {
@@ -80,6 +81,7 @@ export class Menu extends ClassifiedElement {
             ?open="${this.isOpen}"
             .items="${this.items}"
             .depth="${1}"
+            .theme="${this.theme}"
             @menu-selection="${this.onMenuSelection}"
             ${ref(this.nestedMenu)}
           />
@@ -121,7 +123,7 @@ export class Menu extends ClassifiedElement {
 }
 
 @customElement('astra-nested-menu')
-export class NestedMenu extends LitElement {
+export class NestedMenu extends ClassifiedElement {
   @property({ type: Array }) items: MenuItem[] = []
   @property({ type: Object }) parentMenu: NestedMenu | null = null
   @property({ type: Number }) depth = 0
@@ -133,56 +135,59 @@ export class NestedMenu extends LitElement {
     return Boolean(this.parentMenu)
   }
 
-  static styles = css`
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      border: 1px solid rgba(127, 127, 127, 0.1);
-      border-radius: 4px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
-    li {
-      padding: 8px 16px;
-      margin: 0;
-      cursor: pointer;
-      position: relative;
-      white-space: nowrap;
+  static styles = [
+    ...ClassifiedElement.styles,
+    css`
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        border: 1px solid rgba(127, 127, 127, 0.1);
+        border-radius: 4px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      li {
+        padding: 8px 16px;
+        margin: 0;
+        cursor: pointer;
+        position: relative;
+        white-space: nowrap;
 
-      font-weight: 500;
-      font-size: 12px;
-    }
-    li:hover,
-    li:focus {
-      background: rgba(0, 0, 0, 0.5);
-    }
-    li:first-child {
-      border-top-right-radius: 4px;
-      border-top-left-radius: 4px;
-    }
-    li:last-child {
-      border-bottom-right-radius: 4px;
-      border-bottom-left-radius: 4px;
-    }
-    .submenu {
-      display: none;
-      position: absolute;
-      top: -1px;
-    }
-    .submenu.right {
-      left: 100%;
-    }
-    .submenu.left {
-      right: 100%;
-    }
-    li:hover > .submenu,
-    li:focus-within > .submenu {
-      display: block;
-    }
-  `
+        font-weight: 500;
+        font-size: 12px;
+      }
+      li:hover,
+      li:focus {
+        background: rgba(0, 0, 0, 0.5);
+      }
+      li:first-child {
+        border-top-right-radius: 4px;
+        border-top-left-radius: 4px;
+      }
+      li:last-child {
+        border-bottom-right-radius: 4px;
+        border-bottom-left-radius: 4px;
+      }
+      .submenu {
+        display: none;
+        position: absolute;
+        top: -1px;
+      }
+      .submenu.right {
+        left: 100%;
+      }
+      .submenu.left {
+        right: 100%;
+      }
+      li:hover > .submenu,
+      li:focus-within > .submenu {
+        display: block;
+      }
+    `,
+  ]
 
-  protected willUpdate(changedProperties: PropertyValueMap<this>): void {
+  public override willUpdate(changedProperties: PropertyValueMap<this>): void {
     super.willUpdate(changedProperties)
     // accessibility
     if (changedProperties.has('isOpen')) {
@@ -191,17 +196,18 @@ export class NestedMenu extends LitElement {
     }
   }
 
-  render() {
+  public override render() {
     return html`
-      <ul @keydown="${this._handleKeyDown}" role="menu">
+      <ul @keydown="${this._handleKeyDown}" role="menu" class="${classMap({ dark: this.theme === 'dark' })}">
         ${this.items.map(
           (item, index) => html`
             <li
-              @click="${(e: MouseEvent) => this._onClickMenuItem(e, item)}"
+              class="text-black dark:text-white"
               tabindex="${index === 0 ? '0' : '-1'}"
               role="menuitem"
               aria-haspopup="${item.subItems ? 'true' : 'false'}"
               aria-expanded="${item.subItems && this.activeIndex === index ? 'true' : 'false'}"
+              @click="${(e: MouseEvent) => this._onClickMenuItem(e, item)}"
             >
               ${item.label}
               ${item.subItems
