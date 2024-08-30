@@ -11,10 +11,7 @@ export class HansWormhole extends LitElement {
       padding: 0;
       background-color: unset;
       border: 0;
-    }
-
-    #wormhole:not(:popover-open) {
-      display: none;
+      overflow: visible;
     }
   `
 
@@ -56,22 +53,9 @@ export class HansWormhole extends LitElement {
     }
   }
 
-  // protected firstUpdated(_changedProperties: PropertyValues): void {
-  //   console.log('wormhole', this.wormhole)
-  //   this.wormhole.addEventListener('toggle', (event) => {
-  //     console.log('event.newState', event.newState)
-  //     if (event.newState === 'closed') {
-  //       console.log('Popover was closed')
-  //       this.open = false
-  //       this.dispatchEvent(new Event('close'))
-  //       // Your code here for when the popover closes
-  //     }
-  //   })
-  // }
-
   render() {
     return html`
-      <div id="wormhole" popover ?open=${this.open}>
+      <div id="wormhole" popover>
         <slot ${ref(this.slotRef)}></slot>
       </div>
     `
