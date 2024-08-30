@@ -63,16 +63,18 @@ export class TableData extends MutableElement {
       event.stopPropagation()
       event.stopImmediatePropagation()
 
-      menu.isOpen = true
-      this.menuIsOpen = true
+      setTimeout(() => {
+        menu.isOpen = true
+        this.menuIsOpen = true
 
-      const onMenuClose = () => {
-        this.isContentEditable = true
-        this.menuIsOpen = false
-        menu.removeEventListener('menuclose', onMenuClose)
-      }
+        const onMenuClose = () => {
+          this.isContentEditable = true
+          this.menuIsOpen = false
+          menu.removeEventListener('menuclose', onMenuClose)
+        }
 
-      menu.addEventListener('menuclose', onMenuClose)
+        menu.addEventListener('menuclose', onMenuClose)
+      }, 100)
     }
   }
 
