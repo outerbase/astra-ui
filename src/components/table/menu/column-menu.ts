@@ -2,7 +2,7 @@ import { html } from 'lit'
 import { customElement } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { CaretDown } from '../../../icons/caret-down.js'
-import { Menu } from './experiment'
+import { Menu } from './index.js'
 
 @customElement('astra-th-menu')
 export class ColumnMenu extends Menu {

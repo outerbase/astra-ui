@@ -1,4 +1,4 @@
-import type { MenuItem } from '../components/table/menu/experiment'
+import type { MenuItem } from '../components/table/menu/index.js'
 import type { CellDetail, ColumnPlugin, PluginWorkspaceInstallationId, RowAsRecord, Serializable } from '../types'
 
 type ColumnAttributes = { name: string; data?: Record<string, Serializable> }
