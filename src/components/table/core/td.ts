@@ -31,10 +31,6 @@ const RW_OPTIONS = [
 
 const R_OPTIONS = [{ label: 'Copy', value: 'copy' }]
 
-if (customElements.get('astra-td')) {
-  // System has already registered `astra-td`
-}
-
 // tl;dr <td/>, table-cell
 @customElement('astra-td')
 export class TableData extends MutableElement {
@@ -67,10 +63,12 @@ export class TableData extends MutableElement {
       event.stopPropagation()
       event.stopImmediatePropagation()
 
-      menu.open = true
+      menu.isOpen = true
+      this.menuIsOpen = true
 
       const onMenuClose = () => {
         this.isContentEditable = true
+        this.menuIsOpen = false
         menu.removeEventListener('menuclose', onMenuClose)
       }
 
@@ -119,7 +117,7 @@ export class TableData extends MutableElement {
 
     // don't interfere with menu behavior
     const menu = self.shadowRoot?.querySelector('astra-td-menu') as CellMenu | null
-    if (menu?.open) {
+    if (menu?.isOpen) {
       return
     }
 
@@ -228,6 +226,7 @@ export class TableData extends MutableElement {
     return {
       ...super.classMap(),
       'table-cell relative focus:z-[1]': true,
+      'z-[2]': this.menuIsOpen,
       'px-5': this.blank,
       'border-theme-table-border dark:border-theme-table-border-dark': true,
       'bg-theme-table-row-selected dark:bg-theme-table-row-selected-dark': this.isActive && (!this.dirty || this.hideDirt), // i.e. this is the column being sorted
@@ -277,6 +276,7 @@ export class TableData extends MutableElement {
   @property({ attribute: 'menu', type: Boolean })
   public hasMenu = false
 
+  @state() menuIsOpen = false
   @state() isContentEditable = true // this property is to toggle off the contenteditableness of to resolve quirky focus and text selection that can happen when, say, right-clicking to trigger the context menu
   @state() protected options = RW_OPTIONS
   @state() protected isHoveringCell = false
@@ -322,7 +322,7 @@ export class TableData extends MutableElement {
   }
 
   protected async onMenuSelection(event: MenuSelectedEvent) {
-    switch (event.value) {
+    switch (event.value.value) {
       case 'edit':
         return (this.isEditing = true)
       case 'copy':
@@ -541,7 +541,7 @@ export class TableData extends MutableElement {
             tabindex="-1"
           >
             ${this.hasMenu
-              ? html`<astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
+              ? html`<astra-td-menu theme=${this.theme} .items=${menuOptions} @menu-selection=${this.onMenuSelection}>
                   ${contents} ${editorViaWormhole}
                 </astra-td-menu>`
               : html`${contents} ${editorViaWormhole}`}

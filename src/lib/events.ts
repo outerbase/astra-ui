@@ -1,3 +1,4 @@
+import type { MenuItem } from '../components/table/menu/experiment'
 import type { CellDetail, ColumnPlugin, PluginWorkspaceInstallationId, RowAsRecord, Serializable } from '../types'
 
 type ColumnAttributes = { name: string; data?: Record<string, Serializable> }
@@ -155,9 +156,9 @@ export class RowSelectedEvent extends RowsEvent {
 //  MENUS
 
 export class MenuSelectedEvent extends BubblyEvent {
-  value: string
+  value: MenuItem
 
-  constructor(value: string) {
+  constructor(value: MenuItem) {
     super('menu-selection')
     this.value = value
   }

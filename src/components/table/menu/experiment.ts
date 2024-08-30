@@ -1,55 +1,133 @@
-import { LitElement, css, html } from 'lit'
+import { LitElement, css, html, type PropertyValueMap } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { createRef, ref } from 'lit/directives/ref.js'
+import { MenuSelectedEvent } from '../../../types'
+import { ClassifiedElement } from '../../classified-element'
 
 export interface MenuItem {
   label: string
-  action?: () => void
+  value: string
   subItems?: MenuItem[]
 }
 
 @customElement('astra-menu')
-export class Menu extends LitElement {
+export class Menu extends ClassifiedElement {
   @property({ type: Array }) items: MenuItem[] = []
-  @state() private isOpen = false
+  @property({ attribute: 'open', type: Boolean }) isOpen = false
 
   protected nestedMenu = createRef<NestedMenu>()
 
-  static styles = css`
-    :host {
-      position: relative;
-      display: inline-block;
-      margin-top: -2px;
+  static styles = [
+    ...ClassifiedElement.styles,
+    css`
+      :host {
+        position: relative;
+        display: inline-block;
+        margin-top: -2px;
+        width: 100%;
+
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      .menu-wrapper {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin: 0;
+        padding: 0;
+      }
+    `,
+  ]
+
+  constructor() {
+    super()
+    this.onResize = this.onResize.bind(this)
+    this.onOutsideClick = this.onOutsideClick.bind(this)
+    this.onMenuSelection = this.onMenuSelection.bind(this)
+    this.onKeyDown = this.onKeyDown.bind(this)
+  }
+
+  willUpdate(changedProperties: PropertyValueMap<this>): void {
+    super.willUpdate(changedProperties)
+
+    // set accessibility attributes
+    if (changedProperties.has('isOpen')) {
+      if (this.isOpen) this.setAttribute('aria-expanded', '')
+      else this.removeAttribute('aria-expanded')
     }
-    button {
-      cursor: pointer;
-      border-radius: 2px;
-      border: none;
-      background-color: rgba(255, 255, 255, 0.2);
+
+    // close on outside click
+    if (changedProperties.has('isOpen')) {
+      if (this.isOpen) {
+        window.addEventListener('click', this.onOutsideClick)
+        window.addEventListener('mousedown', this.onMouseDown)
+      } else {
+        window.removeEventListener('click', this.onOutsideClick)
+        window.removeEventListener('mousedown', this.onMouseDown)
+      }
     }
-    .menu-wrapper {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      margin: 0;
-      padding: 0;
+
+    // close on window resize
+    if (changedProperties.has('isOpen')) {
+      if (this.isOpen) window.addEventListener('resize', this.onResize)
+      else window.removeEventListener('resize', this.onResize)
     }
-  `
+
+    // close on Escape key
+    if (changedProperties.has('isOpen')) {
+      if (this.isOpen) window.addEventListener('keydown', this.onKeyDown)
+      else window.removeEventListener('keydown', this.onKeyDown)
+    }
+  }
 
   render() {
     return html`
-      <button @click="${this.toggleMenu}">Toggle Menu</button>
+      <span @click="${this.toggleMenu}"><slot></slot></span>
 
-      <div class="menu-wrapper" ?open="${this.isOpen}">
-        <astra-nested-menu .items="${this.items}" .depth="${3}" ${ref(this.nestedMenu)}></astra-nested-menu>
+      <div class="menu-wrapper">
+        <astra-nested-menu
+          ?open="${this.isOpen}"
+          .items="${this.items}"
+          .depth="${1}"
+          @menu-selection="${this.onMenuSelection}"
+          ${ref(this.nestedMenu)}
+        >
+        </astra-nested-menu>
       </div>
     `
   }
 
-  private toggleMenu(e: Event) {
-    e.stopPropagation()
-    this.isOpen = true
-    this.nestedMenu.value?._toggleMenu(e)
+  private toggleMenu(_event: Event) {
+    this.isOpen = !this.isOpen
+  }
+
+  protected onResize() {
+    if (this.isOpen) this.isOpen = false
+  }
+
+  protected onOutsideClick = (event: MouseEvent) => {
+    if (this.isOpen && !this.contains(event.target as Node)) {
+      this.isOpen = false
+    }
+  }
+
+  protected onMouseDown = (event: MouseEvent) => {
+    // closes the menu on any outside click, including double click and contextmenu
+    const path = event.composedPath()
+    const isWithinComponent = path.some((element) => {
+      return element instanceof Node && (this.contains(element) || element === this)
+    })
+    if (!isWithinComponent) this.isOpen = false
+  }
+
+  protected onMenuSelection(_event: MenuSelectedEvent) {
+    this.isOpen = false
+  }
+
+  protected onKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Escape') this.isOpen = false
   }
 }
 
@@ -58,7 +136,8 @@ export class NestedMenu extends LitElement {
   @property({ type: Array }) items: MenuItem[] = []
   @property({ type: Object }) parentMenu: NestedMenu | null = null
   @property({ type: Number }) depth = 0
-  @property() private isOpen = false
+  @property({ type: Boolean, attribute: 'open' }) isOpen = false
+
   @state() private activeIndex: number | null = null
   @state() private isSubmenu = false
 
@@ -72,11 +151,10 @@ export class NestedMenu extends LitElement {
       list-style: none;
       padding: 0;
       margin: 0;
-      background: rgba(255, 255, 255, 0.7);
       border: 1px solid rgba(127, 127, 127, 0.1);
       border-radius: 2px;
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     ul.open {
       display: block;
@@ -87,10 +165,13 @@ export class NestedMenu extends LitElement {
       cursor: pointer;
       position: relative;
       white-space: nowrap;
+
+      font-weight: 500;
+      font-size: 12px;
     }
     li:hover,
     li:focus {
-      background: #f0f0f0;
+      background: rgba(0, 0, 0, 0.5);
     }
     .submenu {
       display: none;
@@ -112,15 +193,14 @@ export class NestedMenu extends LitElement {
   connectedCallback() {
     super.connectedCallback()
     this.isSubmenu = Boolean(this.parentMenu)
-    if (!this.isSubmenu) {
-      document.addEventListener('click', this._handleOutsideClick)
-    }
   }
 
-  disconnectedCallback() {
-    super.disconnectedCallback()
-    if (!this.isSubmenu) {
-      document.removeEventListener('click', this._handleOutsideClick)
+  protected willUpdate(changedProperties: PropertyValueMap<this>): void {
+    super.willUpdate(changedProperties)
+    // accessibility
+    if (changedProperties.has('isOpen')) {
+      if (this.isOpen) this.setAttribute('aria-expanded', '')
+      else this.removeAttribute('aria-expanded')
     }
   }
 
@@ -132,12 +212,13 @@ export class NestedMenu extends LitElement {
             <li
               @mouseenter="${() => this._handleMouseEnter(index)}"
               @mouseleave="${this._handleMouseLeave}"
-              @click="${(e: MouseEvent) => this._handleClick(e, item)}"
+              @click="${(e: MouseEvent) => this.onClickMenuItem(e, item)}"
               @focus="${() => this._setActiveIndex(index)}"
               tabindex="${index === 0 ? '0' : '-1'}"
               role="menuitem"
               aria-haspopup="${item.subItems ? 'true' : 'false'}"
-              aria-expanded="${this.activeIndex === index ? 'true' : 'false'}"
+              aria-expanded="${item.subItems && this.activeIndex === index ? 'true' : 'false'}"
+              data-value="${item.value}"
             >
               ${item.label}
               ${item.subItems
@@ -177,14 +258,8 @@ export class NestedMenu extends LitElement {
     }
   }
 
-  focus() {
+  public override focus() {
     this._focusItem(0)
-  }
-
-  _handleOutsideClick = (e: MouseEvent) => {
-    if (!this.contains(e.target as Node)) {
-      this._closeAllMenusNonRecursive()
-    }
   }
 
   _handleMouseEnter(index: number) {
@@ -201,12 +276,16 @@ export class NestedMenu extends LitElement {
     this.activeIndex = index
   }
 
-  _handleClick(e: MouseEvent, item: MenuItem) {
+  onClickMenuItem(e: MouseEvent, item: MenuItem) {
     e.stopPropagation()
-    if (!item.subItems && item.action) {
-      item.action()
-      this._closeAllMenusNonRecursive()
+    if (!item.subItems) {
+      this.onSelection(e, item)
     }
+  }
+
+  protected onSelection(_event: Event, item: MenuItem) {
+    const selectionEvent = new MenuSelectedEvent(item)
+    this.dispatchEvent(selectionEvent)
   }
 
   _handleKeyDown(e: KeyboardEvent) {

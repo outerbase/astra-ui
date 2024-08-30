@@ -5,46 +5,63 @@ import Layout from '../../layouts/Layout.astro'
 import { Menu as AMenu, type MenuItem } from '../../components/table/menu/experiment'
 
 const menuItems: MenuItem[] = [
-  { label: 'Home', action: () => console.log('Home clicked') },
+  { value: 'Home', label: 'Home' },
   {
+    value: 'Products',
     label: 'Products',
     subItems: [
-      { label: 'Electronics', action: () => console.log('Electronics clicked') },
+      { value: 'Electronics', label: 'Electronics' },
       {
+        value: '',
         label: 'Clothing',
         subItems: [
-          { label: 'Men', action: () => console.log("Men's clothing clicked") },
-          { label: 'Women', action: () => console.log("Women's clothing clicked") },
+          { value: 'Men', label: 'Men' },
+          { value: 'Women', label: 'Women' },
         ],
       },
-      { label: 'Books', action: () => console.log('Books clicked') },
+      { value: 'Books', label: 'Books' },
     ],
   },
-  { label: 'About', action: () => console.log('About clicked') },
+  { value: 'About', label: 'About' },
   {
+    value: '',
     label: 'Services',
     subItems: [
-      { label: 'Consulting', action: () => console.log('Consulting clicked') },
-      { label: 'Training', action: () => console.log('Training clicked') },
+      { value: 'Consulting', label: 'Consulting' },
+      { value: 'Training', label: 'Training' },
     ],
   },
-  { label: 'Contact', action: () => console.log('Contact clicked') },
+  { value: 'Contact', label: 'Contact' },
 ]
 ---
 
 <Layout title="Astra-UI">
   <div class="flex items-center justify-end gap-2 bg-blue-400 py-4 px-2 rounded-md" id="foo">
     <!-- @ts-ignore -->
-    <AMenu items={menuItems} client:only="lit" />
+    <AMenu items={menuItems} client:only="lit"
+      ><button class="rounded-sm bg-neutral-50 hover:bg-neutral-200 px-1 text-sm">Toggle Menu</button></AMenu
+    >
     <!-- @ts-ignore -->
-    <AMenu items={menuItems} client:only="lit" />
+    <AMenu items={menuItems} client:only="lit"
+      ><button class="rounded-sm bg-neutral-50 hover:bg-neutral-200 px-1 text-sm">Toggle Menu</button></AMenu
+    >
     <!-- @ts-ignore -->
-    <AMenu items={menuItems} client:only="lit" />
+    <AMenu items={menuItems} client:only="lit"
+      ><button class="rounded-sm bg-neutral-50 hover:bg-neutral-200 px-1 text-sm">Toggle Menu</button></AMenu
+    >
     <!-- @ts-ignore -->
-    <AMenu items={menuItems} client:only="lit" />
+    <AMenu items={menuItems} client:only="lit"
+      ><button class="rounded-sm bg-neutral-50 hover:bg-neutral-200 px-1 text-sm">Toggle Menu</button></AMenu
+    >
+
     <!-- @ts-ignore -->
-    <AMenu items={menuItems} client:only="lit" />
+    <AMenu items={menuItems} client:only="lit">
+      <button class="rounded-sm bg-neutral-50 hover:bg-neutral-200 px-1 text-sm">Toggle Menu</button>
+    </AMenu>
+
     <!-- @ts-ignore -->
-    <AMenu items={menuItems} client:only="lit" />
+    <AMenu items={menuItems} client:only="lit"
+      ><button class="rounded-sm bg-neutral-50 hover:bg-neutral-200 px-1 text-sm">Toggle Menu</button></AMenu
+    >
   </div>
 </Layout>

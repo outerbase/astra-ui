@@ -1,6 +1,6 @@
 import { html } from 'lit'
 import { customElement } from 'lit/decorators.js'
-import { Menu } from './index.js'
+import { Menu } from './experiment'
 
 @customElement('astra-td-menu')
 export class CellMenu extends Menu {
