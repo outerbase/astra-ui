@@ -76,7 +76,13 @@ export class Menu extends ClassifiedElement {
       <span @click="${this.toggleMenu}"><slot></slot></span>
       <div id="asdf">
         <hans-wormhole .open=${this.isOpen} anchorId="asdf">
-          <astra-nested-menu .items="${this.items}" .depth="${1}" @menu-selection="${this.onMenuSelection}" ${ref(this.nestedMenu)} />
+          <astra-nested-menu
+            ?open="${this.isOpen}"
+            .items="${this.items}"
+            .depth="${1}"
+            @menu-selection="${this.onMenuSelection}"
+            ${ref(this.nestedMenu)}
+          />
         </hans-wormhole>
       </div>
     `
