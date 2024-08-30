@@ -72,7 +72,6 @@ export class Menu extends ClassifiedElement {
   }
 
   render() {
-    // id="asdf" is commented out because, when it's used, the menu magically disappears... SHRUG.
     return html`
       <span @click="${this.toggleMenu}"><slot></slot></span>
       <div id="asdf">
