@@ -124,13 +124,13 @@ export class TH extends MutableElement {
     const columnName = this.originalValue ?? this.value ?? ''
 
     // handle (potential) plugin selection
-    const plugin = this.plugins?.find(({ tagName }) => event.value === tagName)
+    const plugin = this.plugins?.find(({ tagName }) => event.value.value === tagName)
     if (plugin) {
       return this.dispatchEvent(new ColumnPluginActivatedEvent(columnName, { ...plugin, columnName }))
     }
 
     // look for the 'none' plugin and delete installed column plugin as a result when chosen
-    if (event.value === 'uninstall-column-plugin') {
+    if (event.value.value === 'uninstall-column-plugin') {
       // starboard can immediately update it's state
       // dashboard will also receive this event
 
@@ -140,7 +140,7 @@ export class TH extends MutableElement {
       this.dispatchEvent(new ColumnPluginDeactivatedEvent(columnName, installedPlugin))
     }
 
-    switch (event.value) {
+    switch (event.value.value) {
       case 'hide':
         return this.hideColumn()
       case 'rename':
@@ -164,7 +164,7 @@ export class TH extends MutableElement {
       this.dispatchEvent(
         new ColumnUpdatedEvent({
           name: this.originalValue ?? this.value ?? '',
-          data: { action: event.value },
+          data: { action: event.value.value },
         })
       )
     }
