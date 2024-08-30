@@ -291,6 +291,7 @@ export class TableData extends MutableElement {
     this.onMenuSelection = this.onMenuSelection.bind(this)
     this.onPaste = this.onPaste.bind(this)
     this.onClick = this.onClick.bind(this)
+    this.onContextMenu = this.onContextMenu.bind(this)
   }
 
   protected onDisplayEditor(event: MouseEvent) {
@@ -365,9 +366,9 @@ export class TableData extends MutableElement {
 
     this.stopHoverCheck()
 
+    this.removeEventListener('click', this.onClick)
     this.removeEventListener('contextmenu', this.onContextMenu)
     this.removeEventListener('keydown', TableData.onKeyDown)
-    this.removeEventListener('click', this.onClick)
     this.removeEventListener('dblclick', TableData.onDoubleClick)
 
     // @ts-ignore insists on `Event` instead of `PluginActionEvent`
