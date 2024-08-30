@@ -118,7 +118,7 @@ export class Menu extends ClassifiedElement {
     }
 
     if (typeof value === 'string') {
-      const selectionEvent = new MenuSelectedEvent(value)
+      const selectionEvent = new MenuSelectedEvent({ value: value })
       this.selection = value
       this.dispatchEvent(selectionEvent)
       this.open = false

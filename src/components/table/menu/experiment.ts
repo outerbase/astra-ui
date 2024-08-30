@@ -5,7 +5,7 @@ import { MenuSelectedEvent } from '../../../types'
 
 import '../../hans-wormhole'
 export interface MenuItem {
-  label: string
+  label?: string
   value: string
   subItems?: MenuItem[]
 }

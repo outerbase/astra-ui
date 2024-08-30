@@ -3,7 +3,7 @@ import { customElement, property } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 
 import { CaretDown } from '../../../icons/caret-down.js'
-import { ChangeEvent, MenuSelectedEvent } from '../../../lib/events.js'
+import { ChangeEvent } from '../../../lib/events.js'
 import { Menu } from './index.js'
 
 @customElement('astra-input-menu')
@@ -16,9 +16,10 @@ export class InputMenu extends Menu {
   }
 
   protected onMenuSelection(event: Event) {
+    // TODO needs updated to work with newer menu
     // event.stopPropagation()
-    const { value } = event as MenuSelectedEvent
-    this.value = value
+    // const { value } = event as MenuSelectedEvent
+    // this.value = value
   }
 
   protected onKeyDown(event: KeyboardEvent) {
