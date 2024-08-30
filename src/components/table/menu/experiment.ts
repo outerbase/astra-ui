@@ -279,11 +279,11 @@ export class NestedMenu extends LitElement {
   onClickMenuItem(e: MouseEvent, item: MenuItem) {
     e.stopPropagation()
     if (!item.subItems) {
-      this.onSelection(e, item)
+      this.onSelection(item)
     }
   }
 
-  protected onSelection(_event: Event, item: MenuItem) {
+  protected onSelection(item: MenuItem) {
     const selectionEvent = new MenuSelectedEvent(item)
     this.dispatchEvent(selectionEvent)
   }
@@ -405,10 +405,8 @@ export class NestedMenu extends LitElement {
       const item = this.items[this.activeIndex]
       if (item.subItems) {
         this._handleArrowRight()
-      } else if (item.action) {
-        item.action()
-        this._closeAllMenusNonRecursive()
       }
+      this.onSelection(item)
     }
   }
 }
