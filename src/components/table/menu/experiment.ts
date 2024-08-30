@@ -3,6 +3,7 @@ import { customElement, property, state } from 'lit/decorators.js'
 import { createRef, ref } from 'lit/directives/ref.js'
 import { MenuSelectedEvent } from '../../../types'
 
+import { ClassifiedElement } from '../../classified-element'
 import '../../hans-wormhole'
 export interface MenuItem {
   label?: string
@@ -11,13 +12,14 @@ export interface MenuItem {
 }
 
 @customElement('astra-menu')
-export class Menu extends LitElement {
+export class Menu extends ClassifiedElement {
   @property({ type: Array }) items: MenuItem[] = []
   @property({ attribute: 'open', type: Boolean }) isOpen = false
 
   protected nestedMenu = createRef<NestedMenu>()
 
   static styles = [
+    ...ClassifiedElement.styles,
     css`
       :host {
         -webkit-user-select: none;
@@ -73,23 +75,15 @@ export class Menu extends LitElement {
     // id="asdf" is commented out because, when it's used, the menu magically disappears... SHRUG.
     return html`
       <span @click="${this.toggleMenu}"><slot></slot></span>
-
-      <!-- <div id="asdf"> -->
-      <hans-wormhole .open=${this.isOpen} anchorId="asdf">
-        <astra-nested-menu
-          ?open="${this.isOpen}"
-          .items="${this.items}"
-          .depth="${1}"
-          @menu-selection="${this.onMenuSelection}"
-          ${ref(this.nestedMenu)}
-        >
-        </astra-nested-menu>
-      </hans-wormhole>
-      <!-- </div> -->
+      <div id="asdf">
+        <hans-wormhole .open=${this.isOpen} anchorId="asdf">
+          <astra-nested-menu .items="${this.items}" .depth="${1}" @menu-selection="${this.onMenuSelection}" ${ref(this.nestedMenu)} />
+        </hans-wormhole>
+      </div>
     `
   }
 
-  private toggleMenu(_event: Event) {
+  public toggleMenu(_event?: Event) {
     this.isOpen = !this.isOpen
   }
 
