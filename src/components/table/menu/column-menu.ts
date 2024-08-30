@@ -1,13 +1,11 @@
 import { html } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
+import { customElement } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { CaretDown } from '../../../icons/caret-down.js'
 import { Menu } from './experiment'
 
 @customElement('astra-th-menu')
 export class ColumnMenu extends Menu {
-  @property() theme = 'light'
-
   public override render() {
     return html`
       <div class="flex items-center justify-between gap-2">
