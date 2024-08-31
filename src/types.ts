@@ -116,7 +116,8 @@ export type HeaderMenuOptions = Array<{
   value: string
   classes?: string
   icon?: string | null
-  options?: HeaderMenuOptions // sub menu
+  subItems?: HeaderMenuOptions // sub menu
+  scrollSubItems?: Boolean
 }>
 
 export type ColumnPlugin = {

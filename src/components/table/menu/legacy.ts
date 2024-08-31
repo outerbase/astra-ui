@@ -104,16 +104,15 @@ export class Menu extends ClassifiedElement {
     const value = parent.getAttribute('data-value')
     if (!value) throw new Error("onItemClick didn't recover a selection value")
     this.onSelection(event, value)
-
   }
 
   protected onSelection(event: Event, value: string) {
     const submenu = this.options.find((opt) => opt.value === value)
-    if (submenu && submenu.options) {
+    if (submenu && submenu.subItems) {
       event.stopPropagation()
       event.preventDefault()
       this.historyStack.push(this.options)
-      this.options = submenu.options
+      this.options = submenu.subItems
       return
     }
 

@@ -10,6 +10,7 @@ export interface MenuItem {
   label?: string
   value: string
   subItems?: MenuItem[]
+  scrollSubItems?: Boolean
 }
 
 @customElement('astra-menu')
@@ -128,6 +129,7 @@ export class NestedMenu extends ClassifiedElement {
   @property({ type: Object }) parentMenu: NestedMenu | null = null
   @property({ type: Number }) depth = 0
   @property({ type: Boolean, attribute: 'open' }) isOpen = false
+  @property({ type: Boolean, attribute: 'scroll' }) scrollSubItems = false
 
   @state() private activeIndex: number | null = null
 
@@ -198,9 +200,13 @@ export class NestedMenu extends ClassifiedElement {
 
   public override render() {
     return html`
-      <ul @keydown="${this._handleKeyDown}" role="menu" class="${classMap({ dark: this.theme === 'dark' })}">
-        ${this.items.map(
-          (item, index) => html`
+      <ul
+        @keydown="${this._handleKeyDown}"
+        role="menu"
+        class="max-h-[320px] ${classMap({ dark: this.theme === 'dark', 'overflow-y-scroll': this.scrollSubItems })}"
+      >
+        ${this.items.map((item, index) => {
+          return html`
             <li
               class="text-black dark:text-white"
               tabindex="${index === 0 ? '0' : '-1'}"
@@ -213,13 +219,18 @@ export class NestedMenu extends ClassifiedElement {
               ${item.subItems
                 ? html`
                     <div class="submenu ${this._getSubmenuSide(index)}" style="z-index: ${this.depth};">
-                      <astra-nested-menu .items="${item.subItems}" .parentMenu="${this}" .depth="${this.depth + 1}"></astra-nested-menu>
+                      <astra-nested-menu
+                        .items="${item.subItems}"
+                        .parentMenu="${this}"
+                        .depth="${this.depth + 1}"
+                        ?scroll="${item.scrollSubItems}"
+                      ></astra-nested-menu>
                     </div>
                   `
                 : ''}
             </li>
           `
-        )}
+        })}
       </ul>
     `
   }

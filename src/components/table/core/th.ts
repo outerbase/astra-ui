@@ -338,7 +338,8 @@ export class TH extends MutableElement {
           : {
               label: html`<div class="flex items-center justify-between">Plugins ${CaretRight(16)}</div>`,
               value: 'plugins',
-              options: this._pluginOptions,
+              subItems: this._pluginOptions,
+              scrollSubItems: true,
             }
       )
     }
