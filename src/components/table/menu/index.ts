@@ -6,6 +6,7 @@ import { classMap } from 'lit/directives/class-map.js'
 import { MenuSelectedEvent } from '../../../types.js'
 import { ClassifiedElement } from '../../classified-element.js'
 import '../../hans-wormhole.js'
+import '../../scroll2.js'
 
 export interface MenuItem {
   label?: string
@@ -205,44 +206,42 @@ export class NestedMenu extends ClassifiedElement {
   }
 
   public override render() {
+    const list = html`<ul @keydown="${this._handleKeyDown}" role="menu" class=" bg-white text-black dark:bg-black dark:text-white">
+      ${this.items.map((item, index) => {
+        return html`
+          <li
+            tabindex="${index === 0 ? '0' : '-1'}"
+            role="menuitem"
+            aria-haspopup="${item.subItems ? 'true' : 'false'}"
+            aria-expanded="${item.subItems && this.activeIndex === index ? 'true' : 'false'}"
+            class="hover:bg-neutral-200 focus:bg-neutral-200 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
+            @click="${(e: MouseEvent) => this._onClickMenuItem(e, item)}"
+          >
+            ${item.label}
+            ${item.subItems
+              ? html`
+                  <div class="submenu ${this._getSubmenuSide(index)}" style="z-index: ${this.depth};">
+                    <astra-nested-menu
+                      .items="${item.subItems}"
+                      .parentMenu="${this}"
+                      .depth="${this.depth + 1}"
+                      .theme="${this.theme}"
+                      ?scroll="${item.scrollSubItems}"
+                      @closed="${() => {
+                        this.isOpen = false
+                      }}"
+                    ></astra-nested-menu>
+                  </div>
+                `
+              : ''}
+          </li>
+        `
+      })}
+    </ul>`
+
     return html`
       <div class="${classMap({ dark: this.theme === 'dark' })}">
-        <ul
-          @keydown="${this._handleKeyDown}"
-          role="menu"
-          class="max-h-[320px] bg-white text-black dark:bg-black dark:text-white ${classMap({ 'overflow-y-scroll': this.scrollSubItems })}"
-        >
-          ${this.items.map((item, index) => {
-            return html`
-              <li
-                tabindex="${index === 0 ? '0' : '-1'}"
-                role="menuitem"
-                aria-haspopup="${item.subItems ? 'true' : 'false'}"
-                aria-expanded="${item.subItems && this.activeIndex === index ? 'true' : 'false'}"
-                class="hover:bg-neutral-200 focus:bg-neutral-200 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
-                @click="${(e: MouseEvent) => this._onClickMenuItem(e, item)}"
-              >
-                ${item.label}
-                ${item.subItems
-                  ? html`
-                      <div class="submenu ${this._getSubmenuSide(index)}" style="z-index: ${this.depth};">
-                        <astra-nested-menu
-                          .items="${item.subItems}"
-                          .parentMenu="${this}"
-                          .depth="${this.depth + 1}"
-                          .theme="${this.theme}"
-                          ?scroll="${item.scrollSubItems}"
-                          @closed="${() => {
-                            this.isOpen = false
-                          }}"
-                        ></astra-nested-menu>
-                      </div>
-                    `
-                  : ''}
-              </li>
-            `
-          })}
-        </ul>
+        ${this.scrollSubItems ? html`<custom-scrollbar><div style="max-height: 180px;">${list}</div></custom-scrollbar>` : list}
       </div>
     `
   }
