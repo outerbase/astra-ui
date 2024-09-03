@@ -219,6 +219,7 @@ export class NestedMenu extends ClassifiedElement {
                         .items="${item.subItems}"
                         .parentMenu="${this}"
                         .depth="${this.depth + 1}"
+                        .theme="${this.theme}"
                         ?scroll="${item.scrollSubItems}"
                       ></astra-nested-menu>
                     </div>
