@@ -82,36 +82,27 @@ export class HansWormhole extends LitElement {
   private adjustPosition() {
     if (!this.wormhole) return
 
-    // use anchored position, when available
+    const rect = this.wormhole.getBoundingClientRect()
+    const viewportWidth = window.innerWidth
+    const viewportHeight = window.innerHeight
+
+    let x: number
+    let y: number
+
     const anchor = this.findAnchor()
     if (anchor) {
-      const { x: anchorX, y: anchorY } = this.calculateMenuPosition(anchor)
-
-      this.wormhole.style.left = `${anchorX}px`
-      this.wormhole.style.top = `${anchorY}px`
-      return
+      ;({ x, y } = this.calculateMenuPosition(anchor))
+    } else {
+      x = this.atX ?? this.x
+      y = this.atY ?? this.y
     }
 
-    const rect = this.wormhole.getBoundingClientRect()
-    const windowWidth = window.innerWidth
-    const windowHeight = window.innerHeight
-    let adjustedX = this.atX ?? this.x
-    let adjustedY = this.atY ?? this.y
+    // Ensure the wormhole stays within the viewport
+    x = Math.max(0, Math.min(x, viewportWidth - rect.width))
+    y = Math.max(0, Math.min(y, viewportHeight - rect.height))
 
-    if (adjustedX + rect.width > windowWidth) {
-      adjustedX = windowWidth - rect.width
-    }
-
-    if (adjustedY + rect.height > windowHeight) {
-      adjustedY = windowHeight - rect.height
-    }
-
-    // Ensure the wormhole doesn't go off the left or top edge
-    adjustedX = Math.max(0, adjustedX)
-    adjustedY = Math.max(0, adjustedY)
-
-    this.wormhole.style.left = `${adjustedX}px`
-    this.wormhole.style.top = `${adjustedY}px`
+    this.wormhole.style.left = `${x}px`
+    this.wormhole.style.top = `${y}px`
   }
 
   findAnchor(): HTMLElement | null {
