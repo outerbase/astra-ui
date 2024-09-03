@@ -74,7 +74,7 @@ export class TableData extends MutableElement {
         }
 
         menu.addEventListener('menuclose', onMenuClose)
-      }, 100)
+      }, 200)
     }
   }
 
