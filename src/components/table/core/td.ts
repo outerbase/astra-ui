@@ -63,18 +63,7 @@ export class TableData extends MutableElement {
       event.stopPropagation()
       event.stopImmediatePropagation()
 
-      setTimeout(() => {
-        menu.isOpen = true
-        this.menuIsOpen = true
-
-        const onMenuClose = () => {
-          this.isContentEditable = true
-          this.menuIsOpen = false
-          menu.removeEventListener('menuclose', onMenuClose)
-        }
-
-        menu.addEventListener('menuclose', onMenuClose)
-      }, 200)
+      this.menuIsOpen = true
     }
   }
 
@@ -543,7 +532,15 @@ export class TableData extends MutableElement {
             tabindex="-1"
           >
             ${this.hasMenu
-              ? html`<astra-td-menu theme=${this.theme} .items=${menuOptions} @menu-selection=${this.onMenuSelection}>
+              ? html`<astra-td-menu
+                  theme=${this.theme}
+                  .items=${menuOptions}
+                  ?open="${this.menuIsOpen}"
+                  @closed=${() => {
+                    this.menuIsOpen = false
+                  }}
+                  @menu-selection=${this.onMenuSelection}
+                >
                   ${contents} ${editorViaWormhole}
                 </astra-td-menu>`
               : html`${contents} ${editorViaWormhole}`}

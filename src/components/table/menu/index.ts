@@ -44,13 +44,13 @@ export class Menu extends ClassifiedElement {
     super.willUpdate(changedProperties)
 
     // set accessibility attributes
-    if (changedProperties.has('isOpen')) {
+    if (changedProperties.has('isOpen') && changedProperties.get('isOpen') !== undefined) {
       if (this.isOpen) this.setAttribute('aria-expanded', '')
       else this.removeAttribute('aria-expanded')
     }
 
     // close on outside click
-    if (changedProperties.has('isOpen')) {
+    if (changedProperties.has('isOpen') && changedProperties.get('isOpen') !== undefined) {
       if (this.isOpen) {
         window.addEventListener('click', this.onOutsideClick)
         window.addEventListener('mousedown', this.onMouseDown)
@@ -61,13 +61,13 @@ export class Menu extends ClassifiedElement {
     }
 
     // close on window resize
-    if (changedProperties.has('isOpen')) {
+    if (changedProperties.has('isOpen') && changedProperties.get('isOpen') !== undefined) {
       if (this.isOpen) window.addEventListener('resize', this.onResize)
       else window.removeEventListener('resize', this.onResize)
     }
 
     // close on Escape key
-    if (changedProperties.has('isOpen')) {
+    if (changedProperties.has('isOpen') && changedProperties.get('isOpen') !== undefined) {
       if (this.isOpen) window.addEventListener('keydown', this.onKeyDown)
       else window.removeEventListener('keydown', this.onKeyDown)
     }
@@ -79,11 +79,15 @@ export class Menu extends ClassifiedElement {
       <div id="asdf">
         <hans-wormhole .open=${this.isOpen} anchorId="asdf">
           <astra-nested-menu
-            ?open="${this.isOpen}"
+            ?open=${this.isOpen}
             .items="${this.items}"
             .depth="${1}"
             .theme="${this.theme}"
             @menu-selection="${this.onMenuSelection}"
+            @closed="${() => {
+              this.isOpen = false
+              this.dispatchEvent(new Event('closed'))
+            }}"
             ${ref(this.nestedMenu)}
           />
         </hans-wormhole>
@@ -123,6 +127,8 @@ export class Menu extends ClassifiedElement {
   }
 }
 
+// ---------------
+
 @customElement('astra-nested-menu')
 export class NestedMenu extends ClassifiedElement {
   @property({ type: Array }) items: MenuItem[] = []
@@ -146,7 +152,6 @@ export class NestedMenu extends ClassifiedElement {
         margin: 0;
         border: 1px solid rgba(127, 127, 127, 0.1);
         border-radius: 4px;
-        
       }
       li {
         padding: 8px 16px;
@@ -191,44 +196,53 @@ export class NestedMenu extends ClassifiedElement {
       if (this.isOpen) this.setAttribute('aria-expanded', '')
       else this.removeAttribute('aria-expanded')
     }
+
+    // isOpen changed, and is not the initial rendering (i.e. undefined)
+    if (changedProperties.has('isOpen') && changedProperties.get('isOpen') !== undefined && this.isOpen === false) {
+      this.dispatchEvent(new Event('closed'))
+    }
   }
 
   public override render() {
     return html`
-    <div class="${classMap({'dark': this.theme === 'dark'})}">
-      <ul
-        @keydown="${this._handleKeyDown}"
-        role="menu"
-        class="max-h-[320px] bg-white text-black dark:bg-black dark:text-white ${classMap({ 'overflow-y-scroll': this.scrollSubItems })}"
-      >
-        ${this.items.map((item, index) => {
-          return html`
-            <li
-              tabindex="${index === 0 ? '0' : '-1'}"
-              role="menuitem"
-              aria-haspopup="${item.subItems ? 'true' : 'false'}"
-              aria-expanded="${item.subItems && this.activeIndex === index ? 'true' : 'false'}"
-              class="hover:bg-neutral-200 focus:bg-neutral-200 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
-              @click="${(e: MouseEvent) => this._onClickMenuItem(e, item)}"
-            >
-              ${item.label}
-              ${item.subItems
-                ? html`
-                    <div class="submenu ${this._getSubmenuSide(index)}" style="z-index: ${this.depth};">
-                      <astra-nested-menu
-                        .items="${item.subItems}"
-                        .parentMenu="${this}"
-                        .depth="${this.depth + 1}"
-                        .theme="${this.theme}"
-                        ?scroll="${item.scrollSubItems}"
-                      ></astra-nested-menu>
-                    </div>
-                  `
-                : ''}
-            </li>
-          `
-        })}
-      </ul></div>
+      <div class="${classMap({ dark: this.theme === 'dark' })}">
+        <ul
+          @keydown="${this._handleKeyDown}"
+          role="menu"
+          class="max-h-[320px] bg-white text-black dark:bg-black dark:text-white ${classMap({ 'overflow-y-scroll': this.scrollSubItems })}"
+        >
+          ${this.items.map((item, index) => {
+            return html`
+              <li
+                tabindex="${index === 0 ? '0' : '-1'}"
+                role="menuitem"
+                aria-haspopup="${item.subItems ? 'true' : 'false'}"
+                aria-expanded="${item.subItems && this.activeIndex === index ? 'true' : 'false'}"
+                class="hover:bg-neutral-200 focus:bg-neutral-200 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
+                @click="${(e: MouseEvent) => this._onClickMenuItem(e, item)}"
+              >
+                ${item.label}
+                ${item.subItems
+                  ? html`
+                      <div class="submenu ${this._getSubmenuSide(index)}" style="z-index: ${this.depth};">
+                        <astra-nested-menu
+                          .items="${item.subItems}"
+                          .parentMenu="${this}"
+                          .depth="${this.depth + 1}"
+                          .theme="${this.theme}"
+                          ?scroll="${item.scrollSubItems}"
+                          @closed="${() => {
+                            this.isOpen = false
+                          }}"
+                        ></astra-nested-menu>
+                      </div>
+                    `
+                  : ''}
+              </li>
+            `
+          })}
+        </ul>
+      </div>
     `
   }
 

@@ -174,9 +174,7 @@ export class TH extends MutableElement {
     const menu = this.shadowRoot?.querySelector('astra-th-menu') as ColumnMenu | null
     if (menu) {
       event.preventDefault()
-      // 100ms delay or else the menu closes itself
-      // figure out why? johnny'll write you a check for $2!
-      setTimeout(() => (menu.isOpen = true), 200)
+      menu.isOpen = true
     }
   }
 

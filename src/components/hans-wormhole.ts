@@ -44,7 +44,7 @@ export class HansWormhole extends LitElement {
   updated(changedProperties: Map<string, any>) {
     super.updated(changedProperties)
 
-    if (changedProperties.has('open')) {
+    if (changedProperties.has('open') && changedProperties.get('open') !== undefined) {
       if (this.open) {
         this.showWormhole()
       } else {
@@ -55,7 +55,7 @@ export class HansWormhole extends LitElement {
 
   render() {
     return html`
-      <div id="wormhole" popover>
+      <div id="wormhole" popover="manual">
         <slot ${ref(this.slotRef)}></slot>
       </div>
     `
@@ -162,7 +162,6 @@ export class HansWormhole extends LitElement {
     const spaceRight = viewportWidth - anchorRect.right
     const spaceBelow = viewportHeight - anchorRect.bottom
     const spaceAbove = anchorRect.top
-  
 
     // Determine horizontal position
     let x: number
