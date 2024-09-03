@@ -158,10 +158,6 @@ export class NestedMenu extends ClassifiedElement {
         font-weight: 500;
         font-size: 12px;
       }
-      li:hover,
-      li:focus {
-        background: rgba(0, 0, 0, 0.5);
-      }
       li:first-child {
         border-top-right-radius: 4px;
         border-top-left-radius: 4px;
@@ -199,19 +195,20 @@ export class NestedMenu extends ClassifiedElement {
 
   public override render() {
     return html`
+    <div class="${classMap({'dark': this.theme === 'dark'})}">
       <ul
         @keydown="${this._handleKeyDown}"
         role="menu"
-        class="max-h-[320px] ${classMap({ dark: this.theme === 'dark', 'overflow-y-scroll': this.scrollSubItems })}"
+        class="max-h-[320px] bg-white text-black dark:bg-black dark:text-white ${classMap({ 'overflow-y-scroll': this.scrollSubItems })}"
       >
         ${this.items.map((item, index) => {
           return html`
             <li
-              class="text-black dark:text-white"
               tabindex="${index === 0 ? '0' : '-1'}"
               role="menuitem"
               aria-haspopup="${item.subItems ? 'true' : 'false'}"
               aria-expanded="${item.subItems && this.activeIndex === index ? 'true' : 'false'}"
+              class="hover:bg-neutral-200 focus:bg-neutral-200 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
               @click="${(e: MouseEvent) => this._onClickMenuItem(e, item)}"
             >
               ${item.label}
@@ -230,7 +227,7 @@ export class NestedMenu extends ClassifiedElement {
             </li>
           `
         })}
-      </ul>
+      </ul></div>
     `
   }
 
