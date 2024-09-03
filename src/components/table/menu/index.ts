@@ -1,11 +1,12 @@
 import { css, html, type PropertyValueMap } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { createRef, ref } from 'lit/directives/ref.js'
-import { MenuSelectedEvent } from '../../../types'
 
 import { classMap } from 'lit/directives/class-map.js'
-import { ClassifiedElement } from '../../classified-element'
-import '../../hans-wormhole'
+import { MenuSelectedEvent } from '../../../types.js'
+import { ClassifiedElement } from '../../classified-element.js'
+import '../../hans-wormhole.js'
+
 export interface MenuItem {
   label?: string
   value: string

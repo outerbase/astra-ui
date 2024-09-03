@@ -1,5 +1,5 @@
 import type { MenuItem } from '../components/table/menu/index.js'
-import type { CellDetail, ColumnPlugin, PluginWorkspaceInstallationId, RowAsRecord, Serializable } from '../types'
+import type { CellDetail, ColumnPlugin, PluginWorkspaceInstallationId, RowAsRecord, Serializable } from '../types.js'
 
 type ColumnAttributes = { name: string; data?: Record<string, Serializable> }
 class BubblyEvent extends Event {
