@@ -87,11 +87,9 @@ export class HansWormhole extends LitElement {
     if (anchor) {
       const { x: anchorX, y: anchorY } = this.calculateMenuPosition(anchor)
 
-      if (anchorX && anchorY) {
-        this.wormhole.style.left = `${anchorX}px`
-        this.wormhole.style.top = `${anchorY}px`
-        return
-      }
+      this.wormhole.style.left = `${anchorX}px`
+      this.wormhole.style.top = `${anchorY}px`
+      return
     }
 
     const rect = this.wormhole.getBoundingClientRect()
@@ -100,11 +98,11 @@ export class HansWormhole extends LitElement {
     let adjustedX = this.atX ?? this.x
     let adjustedY = this.atY ?? this.y
 
-    if (this.x + rect.width > windowWidth) {
+    if (adjustedX + rect.width > windowWidth) {
       adjustedX = windowWidth - rect.width
     }
 
-    if (this.y + rect.height > windowHeight) {
+    if (adjustedY + rect.height > windowHeight) {
       adjustedY = windowHeight - rect.height
     }
 
@@ -191,6 +189,11 @@ export class HansWormhole extends LitElement {
       y = spaceBelow > spaceAbove ? viewportHeight - menuRect.height : 0
     }
 
+    // Ensure the menu stays within the viewport
+    x = Math.max(0, Math.min(x, viewportWidth - menuRect.width))
+    y = Math.max(0, Math.min(y, viewportHeight - menuRect.height))
+
     return { x, y }
   }
+
 }
