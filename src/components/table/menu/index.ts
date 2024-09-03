@@ -146,8 +146,7 @@ export class NestedMenu extends ClassifiedElement {
         margin: 0;
         border: 1px solid rgba(127, 127, 127, 0.1);
         border-radius: 4px;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        
       }
       li {
         padding: 8px 16px;
