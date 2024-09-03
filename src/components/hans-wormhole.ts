@@ -143,39 +143,39 @@ export class HansWormhole extends LitElement {
 
   calculateMenuPosition(anchor: HTMLElement): { x: number; y: number } {
     if (!this.slotRef.value) return { x: 0, y: 0 }
-
+  
     const anchorRect = anchor.getBoundingClientRect()
-
+  
     // Get the assigned elements of the slot
     const assignedElements = this.slotRef.value.assignedElements()
     if (assignedElements.length === 0) return { x: 0, y: 0 }
-
+  
     // Measure the first assigned element (assuming it's our menu content)
     const menuElement = assignedElements[0] as HTMLElement
     const menuRect = menuElement.getBoundingClientRect()
-
+  
     const viewportWidth = window.innerWidth
     const viewportHeight = window.innerHeight
-
+  
     // Calculate available space in each direction
-    const spaceRight = viewportWidth - anchorRect.right
     const spaceLeft = anchorRect.left
+    const spaceRight = viewportWidth - anchorRect.right
     const spaceBelow = viewportHeight - anchorRect.bottom
     const spaceAbove = anchorRect.top
-
+  
     // Determine horizontal position
     let x: number
-    if (spaceRight >= menuRect.width) {
-      // Position to the right if there's enough space
-      x = anchorRect.left
-    } else if (spaceLeft >= menuRect.width) {
-      // Position to the left if there's enough space
+    if (spaceLeft >= menuRect.width) {
+      // Position to the left if there's enough space, aligning right edges
       x = anchorRect.right - menuRect.width
+    } else if (spaceRight >= menuRect.width) {
+      // Position to the right if there's not enough space on the left
+      x = anchorRect.right
     } else {
       // If neither side has enough space, align with the side that has more space
-      x = spaceRight > spaceLeft ? viewportWidth - menuRect.width : 0
+      x = spaceLeft > spaceRight ? 0 : viewportWidth - menuRect.width
     }
-
+  
     // Determine vertical position
     let y: number
     if (spaceBelow >= menuRect.height) {
@@ -188,11 +188,11 @@ export class HansWormhole extends LitElement {
       // If neither above nor below has enough space, align with the side that has more space
       y = spaceBelow > spaceAbove ? viewportHeight - menuRect.height : 0
     }
-
+  
     // Ensure the menu stays within the viewport
     x = Math.max(0, Math.min(x, viewportWidth - menuRect.width))
     y = Math.max(0, Math.min(y, viewportHeight - menuRect.height))
-
+  
     return { x, y }
   }
 
