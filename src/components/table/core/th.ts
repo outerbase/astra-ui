@@ -176,7 +176,7 @@ export class TH extends MutableElement {
       event.preventDefault()
       // 100ms delay or else the menu closes itself
       // figure out why? johnny'll write you a check for $2!
-      setTimeout(() => (menu.isOpen = true), 100)
+      setTimeout(() => (menu.isOpen = true), 200)
     }
   }
 
