@@ -14,9 +14,6 @@ export class MenuItem extends ClassifiedElement {
   }
 
   public override render() {
-    // console.log('this.class', this.class)
-    console.log('this.focused', this.focused)
-    // console.log('this.selected', this.selected)
     return html`<div
       class="group text-ellipsis rounded-md p-2.5 cursor-pointer hover:bg-theme-menu-background-color-active hover:text-theme-menu-content-color-active dark:hover:bg-theme-menu-background-color-active-dark dark:hover:text-theme-menu-content-color-active-dark ${classMap(
         {

@@ -31,7 +31,7 @@ export class NoFlickerElement extends LitElement {
 
     // Perform the measurement
     const width = this.offsetWidth
-    console.log(width)
+
     // Reset styles
     this.style.display = ''
     this.style.visibility = ''
