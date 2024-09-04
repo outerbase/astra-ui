@@ -295,6 +295,10 @@ export class AstraEditor extends LitElement {
         '&': {
           height: '100%',
         },
+        '& .cm-line': {
+          borderLeft: '3px solid transparent',
+          paddingLeft: '10px',
+        },
         '&.cm-scroller': {
           height: '100% !important',
         },
@@ -314,6 +318,10 @@ export class AstraEditor extends LitElement {
     if (this.editor) {
       return this.editor.state.facet(language)
     }
+  }
+
+  getEditorView() {
+    return this.editor
   }
 
   updateExtension(extensionName: string, ext: any) {

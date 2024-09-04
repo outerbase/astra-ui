@@ -5,19 +5,23 @@ import { AstraEditorSqlPlugin } from '../../components/astra-editor/plugins/sql'
 import { AstraEditorPromptPlugin } from '../../components/astra-editor/plugins/prompt'
 //
 
-const SAMPLE_TEXT = `-- Creating a table with various data types and constraints
-CREATE TABLE employees (
-    employee_id INT PRIMARY KEY, -- Primary key constraint
-    first_name VARCHAR(50) NOT NULL, -- Not null constraint
-    last_name VARCHAR(50) NOT NULL, -- Not null constraint
-    email VARCHAR(100) NOT NULL UNIQUE, -- Unique constraint
-    hire_date DATE NOT NULL, -- Not null constraint
-    job_id INT NOT NULL, -- Not null constraint
-    salary DECIMAL(10, 2) DEFAULT 0.00, -- Default value
-    department_id INT, -- Column without constraint
-    FOREIGN KEY (department_id) REFERENCES departments(department_id), -- Foreign key constraint
-    CHECK (salary >= 0) -- Check constraint
+const SAMPLE_TEXT = `CREATE TABLE customer(
+  cust_id INTEGER PRIMARY KEY,
+  cust_name TEXT,
+  cust_addr TEXT
 );
+
+-- some comment here that should be ignore
+
+
+CREATE VIEW customer_address AS
+   SELECT cust_id, cust_addr FROM customer;
+CREATE TRIGGER cust_addr_chng
+INSTEAD OF UPDATE OF cust_addr ON customer_address
+BEGIN
+  UPDATE customer SET cust_addr=NEW.cust_addr
+   WHERE cust_id=NEW.cust_id;
+END;
 `
 
 const SCHEMA = {
@@ -30,7 +34,7 @@ const SCHEMA = {
   <!-- @ts-ignore attributes -->
   <AstraEditor id="editor" client:only="lit" value={SAMPLE_TEXT} theme="freedom">
     <!-- @ts-ignore attributes -->
-    <AstraEditorSqlPlugin client:only="lit" dialect="sqlite" schema={JSON.stringify(SCHEMA)} />
+    <AstraEditorSqlPlugin id="sql" client:only="lit" dialect="sqlite" schema={JSON.stringify(SCHEMA)} />
     <!-- @ts-ignore attributes -->
     <AstraEditorHandlerbarPlugin client:only="lit" variables="variable1,variable2" />
     <!-- @ts-ignore attributes -->
@@ -59,6 +63,11 @@ const SCHEMA = {
     <input type="checkbox" id="dark" />
     Dark
   </label>
+</div>
+
+<div class="px-4 py-2 flex gap-4">
+  <button id="current-statement" class="border p-2 rounded">Current Statement</button>
+  <button id="all-statement" class="border p-2 rounded">All Statements</button>
 </div>
 
 <div class="px-4 py-2">
@@ -102,5 +111,15 @@ const SCHEMA = {
   themeElement.onchange = () => {
     const editor = document.getElementById('editor') as any
     editor.theme = themeElement.value
+  }
+
+  const currentStatementButton = document.getElementById('current-statement') as HTMLButtonElement
+  currentStatementButton.onclick = () => {
+    console.log((document.getElementById('sql') as any).getCurrentStatement())
+  }
+
+  const allStatementButton = document.getElementById('all-statement') as HTMLButtonElement
+  allStatementButton.onclick = () => {
+    console.log((document.getElementById('sql') as any).getAllStatements())
   }
 </script>
