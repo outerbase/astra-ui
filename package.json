@@ -25,7 +25,8 @@
     "bundle": "rollup -c ./.build/rollup.config.js",
     "preview": "astro preview --config .build/astro.config.mjs",
     "prepack": "pnpm tailwind:build && pnpm compile && pnpm bundle",
-    "publish-npm-module": "npm publish --access public"
+    "publish-npm-module": "npm publish --access public",
+    "test": "glob -c \"node --import tsx --test\" **/*/*.test.ts"
   },
   "devDependencies": {
     "@astrojs/check": "^0.8.1",
@@ -46,6 +47,7 @@
     "astro": "^4.11.5",
     "chokidar": "^3.6.0",
     "concurrently": "^8.2.2",
+    "glob": "^11.0.0",
     "lit": "^3.1.4",
     "lodash-es": "^4.17.21",
     "prettier": "^3.3.3",
@@ -53,6 +55,7 @@
     "prismjs": "^1.29.0",
     "rollup": "^4.18.1",
     "tailwindcss": "^3.4.6",
+    "tsx": "^4.19.0",
     "typescript": "^5.5.3"
   },
   "peerDependencies": {

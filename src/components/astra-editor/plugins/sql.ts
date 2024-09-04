@@ -2,6 +2,7 @@ import { MSSQL, MySQL, PostgreSQL, sql, SQLDialect, SQLite, StandardSQL, type SQ
 import type { PropertyValues } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { AstraEditorPlugin } from './base.js'
+import SqlStatementHighlightPlugin, { resolveToNearestStatement, splitSqlQuery } from './sql-statement-highlight.js'
 
 @customElement('astra-editor-sql')
 export class AstraEditorSqlPlugin extends AstraEditorPlugin {
@@ -32,13 +33,13 @@ export class AstraEditorSqlPlugin extends AstraEditorPlugin {
     if (this.editor) {
       let dialect: SQLDialect = { mysql: MySQL, sqlite: SQLite, postgre: PostgreSQL, mssql: MSSQL }[this.dialect] ?? StandardSQL
 
-      this.editor.updateExtension(
-        'sql-plugin',
+      this.editor.updateExtension('sql-plugin', [
         sql({
           dialect,
           schema: this._schema,
-        })
-      )
+        }),
+        ...SqlStatementHighlightPlugin,
+      ])
     }
   }
 
@@ -50,5 +51,21 @@ export class AstraEditorSqlPlugin extends AstraEditorPlugin {
   disconnectedCallback() {
     super.disconnectedCallback()
     this.editor.removeExtension('sql-plugin')
+  }
+
+  getCurrentStatement() {
+    const editor = this.editor.getEditorView()
+    if (editor) {
+      const segment = resolveToNearestStatement(editor.state)
+      const text = editor.state.doc.sliceString(segment.from, segment.to)
+      return { ...segment, text }
+    }
+
+    return { from: 0, to: 0, text: '' }
+  }
+
+  getAllStatements() {
+    const editor = this.editor.getEditorView()
+    return editor ? splitSqlQuery(editor.state) : []
   }
 }
