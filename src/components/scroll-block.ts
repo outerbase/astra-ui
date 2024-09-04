@@ -20,10 +20,7 @@ export class CustomScrollbar extends ClassifiedElement {
     css`
       :host {
         display: block;
-        overflow: hidden;
         position: relative;
-        width: 100%;
-        height: 100%;
       }
 
       .content-wrapper {
