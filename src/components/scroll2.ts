@@ -1,6 +1,6 @@
 import { css, html } from 'lit'
 import { customElement, property, query } from 'lit/decorators.js'
-import { ClassifiedElement } from './classified-element'
+import { ClassifiedElement } from './classified-element.js'
 
 @customElement('custom-scrollbar')
 export class CustomScrollbar extends ClassifiedElement {
