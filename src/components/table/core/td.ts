@@ -120,10 +120,6 @@ export class TableData extends MutableElement {
     if (menu?.open) {
       return
     }
-    if (self.plugin && event.code === 'Enter' && event.target instanceof HTMLElement) {
-      MutableElement.moveFocusToNextRow(event.target)
-      return
-    }
 
     MutableElement.onKeyDown(event)
 
