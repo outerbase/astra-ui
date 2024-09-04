@@ -13,12 +13,28 @@ export class HansWormhole extends LitElement {
       border: 0;
       overflow: visible;
     }
+
+    dialog::backdrop {
+      display: none;
+    }
+
+    :host([backdrop]) dialog::backdrop {
+      display: block;
+      background-color: var(--astra-menu-backdrop-color, rgba(0, 0, 0, 0.2));
+      backdrop-filter: blur(var(--astra-menu-backdrop-blur, 1px));
+      -webkit-backdrop-filter: blur(var(--astra-menu-backdrop-blur, 1px));
+      -moz-backdrop-filter: blur(var(--astra-menu-backdrop-blur, 1px));
+      -o-backdrop-filter: blur(var(--astra-menu-backdrop-blur, 1px));
+      -ms-backdrop-filter: blur(var(--astra-menu-backdrop-blur, 1px));
+    }
   `
 
   @property({ type: Boolean }) public open = false
   @property({ type: Number }) public atX?: number
   @property({ type: Number }) public atY?: number
   @property({ type: String }) public anchorId: string | null = null
+  @property({ type: Boolean, attribute: 'backdrop' }) public backdrop = false
+  @property({ type: Boolean, attribute: 'modal' }) public modal = false
   @query('#wormhole') private wormhole!: HTMLElement
 
   // last mouse coordinates; does NOT trigger re-render
@@ -54,29 +70,33 @@ export class HansWormhole extends LitElement {
   }
 
   render() {
-    return html`
-      <div id="wormhole" popover="manual">
-        <slot ${ref(this.slotRef)}></slot>
-      </div>
-    `
+    return this.modal
+      ? html`
+          <dialog id="wormhole">
+            <slot ${ref(this.slotRef)}></slot>
+          </dialog>
+        `
+      : html`
+          <div id="wormhole" popover="manual">
+            <slot ${ref(this.slotRef)}></slot>
+          </div>
+        `
+  }
+
+  private showWormhole() {
+    if (this.modal) (this.wormhole as any).showModal()
+    else (this.wormhole as any).showPopover()
+    this.adjustPosition()
+  }
+
+  private hideWormhole() {
+    if (this.modal as any) (this.wormhole as any).close()
+    else (this.wormhole as any).hidePopover()
   }
 
   private onMouseMove(event: MouseEvent) {
     this.x = event.clientX
     this.y = event.clientY
-  }
-
-  private showWormhole() {
-    if ('showPopover' in this.wormhole) {
-      ;(this.wormhole as any).showPopover()
-    }
-    this.adjustPosition()
-  }
-
-  private hideWormhole() {
-    if ('hidePopover' in this.wormhole) {
-      ;(this.wormhole as any).hidePopover()
-    }
   }
 
   private adjustPosition() {
