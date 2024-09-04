@@ -6,7 +6,7 @@ import { classMap } from 'lit/directives/class-map.js'
 import { MenuSelectedEvent } from '../../../types.js'
 import { ClassifiedElement } from '../../classified-element.js'
 import '../../hans-wormhole.js'
-import '../../scroll2.js'
+import '../../scroll-block.js'
 
 export interface MenuItem {
   label?: string
@@ -241,7 +241,7 @@ export class NestedMenu extends ClassifiedElement {
 
     return html`
       <div class="${classMap({ dark: this.theme === 'dark' })}">
-        ${this.scrollSubItems ? html`<custom-scrollbar><div style="max-height: 180px;">${list}</div></custom-scrollbar>` : list}
+        ${this.scrollSubItems ? html`<astra-scroll-block max-height="180px">${list}</astra-scroll-block>` : list}
       </div>
     `
   }

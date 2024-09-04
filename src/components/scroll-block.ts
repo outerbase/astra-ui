@@ -1,8 +1,9 @@
 import { css, html } from 'lit'
 import { customElement, property, query } from 'lit/decorators.js'
+import { styleMap } from 'lit/directives/style-map.js'
 import { ClassifiedElement } from './classified-element.js'
 
-@customElement('custom-scrollbar')
+@customElement('astra-scroll-block')
 export class CustomScrollbar extends ClassifiedElement {
   @property({ type: Number }) scrollLeft = 0
   @property({ type: Number }) scrollTop = 0
@@ -10,6 +11,7 @@ export class CustomScrollbar extends ClassifiedElement {
   @property({ type: Number }) scrollHeight = 0
   @property({ type: Number }) clientWidth = 0
   @property({ type: Number }) clientHeight = 0
+  @property({ type: String, attribute: 'max-height' }) maxHeight?: String
 
   @query('.content-wrapper') private contentWrapper!: HTMLElement
 
@@ -148,8 +150,10 @@ export class CustomScrollbar extends ClassifiedElement {
 
     const scrollGrabHandleClasses = `bg-neutral-200/60 dark:bg-neutral-700/50 hover:bg-neutral-300 dark:hover:bg-neutral-700 active:bg-neutral-300 dark:active:bg-neutral-700`
 
+    const styles = typeof this.maxHeight !== 'undefined' ? { maxHeight: `${this.maxHeight}` } : {}
+
     return html`
-      <div class="content-wrapper">
+      <div class="content-wrapper" style=${styleMap(styles)}>
         <slot></slot>
       </div>
       ${showX
