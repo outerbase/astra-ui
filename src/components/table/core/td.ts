@@ -500,7 +500,7 @@ export class TableData extends MutableElement {
         ]
       : this.options
     const editorViaWormhole = html`
-      <hans-wormhole .open=${this.isDisplayingPluginEditor} .anchorId=${this.id}>
+      <hans-wormhole .open=${this.isDisplayingPluginEditor} .anchorId=${this.id} modal>
         <span id="plugin-editor" class="caret-current cursor-auto z-10">${cellEditorContents}</span>
       </hans-wormhole>
     `
