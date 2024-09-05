@@ -3,6 +3,7 @@ import { Decoration, keymap, WidgetType } from '@codemirror/view'
 import { EditorView } from 'codemirror'
 import { customElement, property } from 'lit/decorators.js'
 import { AstraEditorPlugin } from './base.js'
+import PromptDialog from './prompt-dialog.js'
 
 const effectHidePrompt = StateEffect.define()
 const effectShowPrompt = StateEffect.define<number>()
@@ -31,6 +32,7 @@ class PlaceholderWidget extends WidgetType {
 
 class PromptWidget extends WidgetType {
   plugin: AstraEditorPromptPlugin
+  themeHandler?: () => void
 
   constructor(plugin: AstraEditorPromptPlugin) {
     super()
@@ -45,56 +47,45 @@ class PromptWidget extends WidgetType {
     // when we want to generate another suggestion or reject suggestion
     let previousSuggestion = ''
 
-    const container = document.createElement('div')
-    container.className = 'prompt-container'
+    const container = document.createElement('astra-editor-prompt-dialog') as PromptDialog
 
-    const buttonGenerateContent = 'Generate <i>⌘ + ↩</i>'
-    container.innerHTML = `
-      <div class='prompt-wrap'>
-        <textarea class='prompt-fake-editor' style='visibility:hidden; position:absolute; height:1px;'></textarea>
-        <textarea class='prompt-editor' style='height:50px;' placeholder='I am EZQL, your personal database assistant, how can I help you?'></textarea>
-        <div class='prompt-error' style='display:none'></div>
-        <div class='prompt-action'>
-          <div>
-            <button id='prompt-generate'>${buttonGenerateContent}</button>
-          </div>
-          <div>
-            <button id='prompt-reject'>Reject <i>⌘ + Z</i></button>
-          </div>
-          <div style='flex-grow:1; justify-content: end; align-items:center;'>Esc to close</div>
-        </div>
-      </div>
-    `
+    container.theme = this.plugin.editor.color ?? 'light'
 
-    const input = container.querySelector('.prompt-editor') as HTMLTextAreaElement
+    this.themeHandler = () => {
+      container.theme = this.plugin.editor.color ?? 'light'
+    }
 
-    const fakeInput = container.querySelector('.prompt-fake-editor') as HTMLTextAreaElement
+    this.plugin.editor.addEventListener('color-changed', this.themeHandler)
 
-    const errorMessage = container.querySelector('.prompt-error') as HTMLDivElement
+    container.addEventListener('close', () => {
+      view.dispatch({ effects: [effectHidePrompt.of(null)] })
+      setTimeout(() => view.focus(), 50)
+    })
 
-    const generateButton = container.querySelector('#prompt-generate') as HTMLButtonElement
+    container.addEventListener('accept', () => {
+      view.dispatch({ effects: [effectHidePrompt.of(null)] })
+      setTimeout(() => {
+        view.focus()
+        view.dispatch({
+          selection: {
+            anchor: cursorPosition + 1,
+            head: cursorPosition + previousSuggestion.length,
+          },
+        })
+      }, 50)
+    })
 
-    const rejectButton = container.querySelector('#prompt-reject') as HTMLButtonElement
-
-    const generateQuery = () => {
-      generateButton.innerHTML = `
-        <svg class='spin' xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader">
-          <path d="M12 2v4"/>
-          <path d="m16.2 7.8 2.9-2.9"/>
-          <path d="M18 12h4"/>
-          <path d="m16.2 16.2 2.9 2.9"/>
-          <path d="M12 18v4"/>
-          <path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/>
-          <path d="m4.9 4.9 2.9 2.9"/>
-        </svg> ${buttonGenerateContent}`
-
-      input.disabled = true
-      generateButton.disabled = true
-      errorMessage.style.display = 'none'
+    container.addEventListener('generate', ((e: CustomEvent<string>) => {
+      container.loading = true
+      container.previousPrompt = ''
+      container.error = ''
 
       this.plugin
-        .getSuggestion(input.value)
+        .getSuggestion(e.detail)
         .then((r) => {
+          // This prevent when we close the widget before
+          // the suggestion return result which cause
+          // us to suggestion code to the editor
           if (!this.plugin.isActive) return
 
           // This plugin works on empty line. We need to add one dummy line
@@ -124,21 +115,20 @@ class PromptWidget extends WidgetType {
           view.dispatch({ effects: lineEffect })
 
           previousSuggestion = suggestion
+          container.showReject = true
+          container.previousPrompt = e.detail
         })
         .catch((e) => {
-          errorMessage.style.display = 'flex'
-          errorMessage.innerText = e.toString()
+          container.error = e.toString()
         })
         .finally(() => {
-          input.disabled = false
-          input.focus()
-          input.select()
-          generateButton.disabled = false
-          generateButton.innerHTML = buttonGenerateContent
+          container.loading = false
+          container.focus()
+          container.select()
         })
-    }
+    }) as EventListener)
 
-    const rejectQuery = () => {
+    container.addEventListener('reject', () => {
       view.dispatch({
         changes: {
           from: cursorPosition,
@@ -153,62 +143,20 @@ class PromptWidget extends WidgetType {
         effects: [effectClearHighlight.of(null)],
       })
 
-      input.focus()
-      input.select()
-    }
-
-    rejectButton.addEventListener('click', rejectQuery)
-    generateButton.addEventListener('click', generateQuery)
-
-    input.addEventListener('mousedown', (e) => {
-      e.stopPropagation()
+      container.showReject = true
     })
 
-    input.addEventListener('paste', (e) => {
-      e.stopPropagation()
-    })
-
-    input.addEventListener('copy', (e) => {
-      e.stopPropagation()
-    })
-
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        view.dispatch({ effects: [effectHidePrompt.of(null)] })
-        setTimeout(() => view.focus(), 50)
-        e.preventDefault()
-      } else if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-        generateQuery()
-        e.preventDefault()
-      } else if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
-        rejectQuery()
-        e.preventDefault()
-      }
-
-      e.stopPropagation()
-    })
-
-    input.addEventListener('keyup', (e) => {
-      // Adjust the height input
-      fakeInput.value = input.value
-      input.style.height = Math.max(fakeInput.scrollHeight, 50) + 'px'
-      e.stopPropagation()
-    })
-
-    input.addEventListener('keypress', (e) => {
-      e.stopPropagation()
-    })
-
-    setTimeout(() => input.focus(), 20)
-
-    container.addEventListener('mousedown', (e) => {
-      e.stopPropagation()
-    })
+    setTimeout(() => {
+      container.focus()
+    }, 50)
 
     return container
   }
 
   destroy(): void {
+    if (this.themeHandler) {
+      this.plugin.editor.removeEventListener('color-changed', this.themeHandler)
+    }
     this.plugin.isActive = false
   }
 
@@ -301,6 +249,7 @@ const promptKeyBinding = Prec.highest(
 
 @customElement('astra-editor-prompt')
 export class AstraEditorPromptPlugin extends AstraEditorPlugin {
+  // Tracking if there is any active prompt widget
   isActive: boolean = false
 
   @property() token: string = ''
@@ -313,103 +262,12 @@ export class AstraEditorPromptPlugin extends AstraEditorPlugin {
     this.editor.addStyle(
       'prompt',
       `
-      .prompt-container {
-        display: flex;
-        flex-direction: column;
-        padding: 5px 10px;
-      }
-
-      .prompt-wrap {
-        position: relative;
-        border: 1px solid #aaa;
-        border-radius: 5px;
-        width: 100%;
-        max-width: 500px;
-        height: auto;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .dark .prompt-wrap {
-        border: 1px solid #555;
-      }
-
-      .prompt-error {
-        display: flex;
-        padding: 5px 8px;
-        color: red;
-      }
-
-      .prompt-wrap textarea {
-        resize: none;
-        overflow: hidden;
-        border: none;
-        padding: 5px 10px;
-        outline: none;
-        box-sizing: border-box;
-        width: 100%;
-        background: inherit;
-        color: inherit;
-      }
-
-      .prompt-action {
-        display: flex;
-        padding: 5px 10px;
-        gap: 5px;
-      }
-
-      .prompt-action button {
-        cursor: pointer;
-        display: flex;
-        background: #404040;
-        color: white;
-        border-radius: 4px;
-        border: none;
-        padding: 5px;
-      }
-
-      .prompt-action button:hover {
-        background: #171717;
-      }
-
-      .prompt-action button i {
-        display: inline-flex;
-        align-items: center;
-        height: 100%;
-        padding: 0 5px;
-        font-style: normal;
-        font-size: 0.6rem;
-        background: #606060;
-        border-radius: 3px;
-      }
-
-      .dark .prompt-action button {
-        background: #e5e5e5;
-        color: black;
-      }
-
-      .dark .prompt-action button:hover {
-        background: white;
-      }
-
-      .dark .prompt-action button i {
-        background: #c5c5c5;
-      }
-
-      .prompt-action div {
-        display: flex;
-      }
-
       .prompt-line-preview {
         background: #abf7b1;
       }
 
       .dark .prompt-line-preview {
         background: #4C5A2C;
-      }
-
-      #prompt-generate {
-        display: flex;
       }
     `
     )
