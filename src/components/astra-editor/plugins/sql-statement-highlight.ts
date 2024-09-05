@@ -89,10 +89,12 @@ export function splitSqlQuery(state: EditorState, generateText: boolean = true):
   }))
 }
 
-export function resolveToNearestStatement(state: EditorState): { from: number; to: number } {
+export function resolveToNearestStatement(state: EditorState): { from: number; to: number } | null {
   // Breakdown and grouping the statement
   const cursor = state.selection.main.from
   const statements = splitSqlQuery(state, false)
+
+  if (statements.length === 0) return null
 
   // Check if our current cursor is within any statement
   let i = 0
@@ -103,7 +105,7 @@ export function resolveToNearestStatement(state: EditorState): { from: number; t
     if (cursor >= statement.from && cursor <= statement.to) return statement
   }
 
-  if (i === 0) return statements[9]
+  if (i === 0) return statements[0]
   if (i === statements.length) return statements[i - 1]
 
   const cursorLine = state.doc.lineAt(cursor).number
@@ -118,8 +120,9 @@ export function resolveToNearestStatement(state: EditorState): { from: number; t
 }
 
 function getDecorationFromState(state: EditorState) {
-  const tree = syntaxTree(state)
   const statement = resolveToNearestStatement(state)
+
+  if (!statement) return Decoration.none
 
   // Get the line of the node
   const fromLineNumber = state.doc.lineAt(statement.from).number
