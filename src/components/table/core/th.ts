@@ -124,13 +124,13 @@ export class TH extends MutableElement {
     const columnName = this.originalValue ?? this.value ?? ''
 
     // handle (potential) plugin selection
-    const plugin = this.plugins?.find(({ tagName }) => event.value === tagName)
+    const plugin = this.plugins?.find(({ tagName }) => event.value.value === tagName)
     if (plugin) {
       return this.dispatchEvent(new ColumnPluginActivatedEvent(columnName, { ...plugin, columnName }))
     }
 
     // look for the 'none' plugin and delete installed column plugin as a result when chosen
-    if (event.value === 'uninstall-column-plugin') {
+    if (event.value.value === 'uninstall-column-plugin') {
       // starboard can immediately update it's state
       // dashboard will also receive this event
 
@@ -140,7 +140,7 @@ export class TH extends MutableElement {
       this.dispatchEvent(new ColumnPluginDeactivatedEvent(columnName, installedPlugin))
     }
 
-    switch (event.value) {
+    switch (event.value.value) {
       case 'hide':
         return this.hideColumn()
       case 'rename':
@@ -164,7 +164,7 @@ export class TH extends MutableElement {
       this.dispatchEvent(
         new ColumnUpdatedEvent({
           name: this.originalValue ?? this.value ?? '',
-          data: { action: event.value },
+          data: { action: event.value.value },
         })
       )
     }
@@ -174,7 +174,7 @@ export class TH extends MutableElement {
     const menu = this.shadowRoot?.querySelector('astra-th-menu') as ColumnMenu | null
     if (menu) {
       event.preventDefault()
-      menu.open = true
+      menu.isOpen = true
     }
   }
 
@@ -336,7 +336,8 @@ export class TH extends MutableElement {
           : {
               label: html`<div class="flex items-center justify-between">Plugins ${CaretRight(16)}</div>`,
               value: 'plugins',
-              options: this._pluginOptions,
+              subItems: this._pluginOptions,
+              scrollSubItems: true,
             }
       )
     }
@@ -356,7 +357,7 @@ export class TH extends MutableElement {
       const body = this.isEditing
         ? html`<input .value=${this.value} @input=${this.onChange} @keydown=${MutableElement.onKeyDown} class="z-[1] absolute top-0 bottom-0 right-0 left-0 bg-blue-50 dark:bg-blue-950 outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-cell-padding-x font-normal" @blur=${this.onBlur}></input>`
         : this.hasMenu
-          ? html`<astra-th-menu theme=${this.theme} .options=${options} @menu-selection=${this.onMenuSelection}
+          ? html`<astra-th-menu theme=${this.theme} .items=${options} @menu-selection=${this.onMenuSelection}
               ><span class="font-normal truncate">${this.value}</span></astra-th-menu
             >`
           : html`<span class="font-normal truncate">${this.value}</span>`

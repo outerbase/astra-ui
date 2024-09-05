@@ -3,13 +3,13 @@ import type { DirectiveResult } from 'lit/async-directive.js'
 import { customElement, property, state } from 'lit/decorators.js'
 import { createRef, ref, type Ref } from 'lit/directives/ref.js'
 import { unsafeHTML } from 'lit/directives/unsafe-html.js'
+import debounce from 'lodash-es/debounce'
 import * as Prism from 'prismjs'
 import 'prismjs/components/prism-sql'
 
 import { classMap } from 'lit/directives/class-map.js'
-import debounce from 'lodash-es/debounce'
-import { ClassifiedElement } from '../classified-element'
-import SQL_EXAMPLE_TEXT from './sql-text-snippet'
+import { ClassifiedElement } from '../classified-element.js'
+import SQL_EXAMPLE_TEXT from './sql-text-snippet.js'
 
 @customElement('text-editor')
 export class TextEditor extends ClassifiedElement {

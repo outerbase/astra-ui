@@ -11,6 +11,8 @@ import '../../table/menu/cell-menu.js' // <astra-td-menu />
 import type { CellMenu } from '../../table/menu/cell-menu.js'
 import { JSON_TYPES, MutableElement } from '../mutable-element.js'
 
+import '../../hans-wormhole.js'
+
 type PluginActionEvent = CustomEvent<{ action: PluginEvent.onEdit | PluginEvent.onStopEdit | PluginEvent.onCancelEdit; value: any }>
 
 const isAlphanumericOrSpecial = (key: string): boolean => {
@@ -28,10 +30,6 @@ const RW_OPTIONS = [
 ]
 
 const R_OPTIONS = [{ label: 'Copy', value: 'copy' }]
-
-if (customElements.get('astra-td')) {
-  // System has already registered `astra-td`
-}
 
 // tl;dr <td/>, table-cell
 @customElement('astra-td')
@@ -65,14 +63,7 @@ export class TableData extends MutableElement {
       event.stopPropagation()
       event.stopImmediatePropagation()
 
-      menu.open = true
-
-      const onMenuClose = () => {
-        this.isContentEditable = true
-        menu.removeEventListener('menuclose', onMenuClose)
-      }
-
-      menu.addEventListener('menuclose', onMenuClose)
+      this.menuIsOpen = true
     }
   }
 
@@ -117,7 +108,7 @@ export class TableData extends MutableElement {
 
     // don't interfere with menu behavior
     const menu = self.shadowRoot?.querySelector('astra-td-menu') as CellMenu | null
-    if (menu?.open) {
+    if (menu?.isOpen) {
       return
     }
 
@@ -275,6 +266,7 @@ export class TableData extends MutableElement {
   @property({ attribute: 'menu', type: Boolean })
   public hasMenu = false
 
+  @state() menuIsOpen = false
   @state() isContentEditable = true // this property is to toggle off the contenteditableness of to resolve quirky focus and text selection that can happen when, say, right-clicking to trigger the context menu
   @state() protected options = RW_OPTIONS
   @state() protected isHoveringCell = false
@@ -290,6 +282,7 @@ export class TableData extends MutableElement {
     this.onMenuSelection = this.onMenuSelection.bind(this)
     this.onPaste = this.onPaste.bind(this)
     this.onClick = this.onClick.bind(this)
+    this.onContextMenu = this.onContextMenu.bind(this)
   }
 
   protected onDisplayEditor(event: MouseEvent) {
@@ -320,7 +313,7 @@ export class TableData extends MutableElement {
   }
 
   protected async onMenuSelection(event: MenuSelectedEvent) {
-    switch (event.value) {
+    switch (event.value.value) {
       case 'edit':
         return (this.isEditing = true)
       case 'copy':
@@ -364,9 +357,9 @@ export class TableData extends MutableElement {
 
     this.stopHoverCheck()
 
+    this.removeEventListener('click', this.onClick)
     this.removeEventListener('contextmenu', this.onContextMenu)
     this.removeEventListener('keydown', TableData.onKeyDown)
-    this.removeEventListener('click', this.onClick)
     this.removeEventListener('dblclick', TableData.onDoubleClick)
 
     // @ts-ignore insists on `Event` instead of `PluginActionEvent`
@@ -507,7 +500,7 @@ export class TableData extends MutableElement {
         ]
       : this.options
     const editorViaWormhole = html`
-      <hans-wormhole .open=${this.isDisplayingPluginEditor} .anchorId=${this.id}>
+      <hans-wormhole .open=${this.isDisplayingPluginEditor} .anchorId=${this.id} modal>
         <span id="plugin-editor" class="caret-current cursor-auto z-10">${cellEditorContents}</span>
       </hans-wormhole>
     `
@@ -539,7 +532,15 @@ export class TableData extends MutableElement {
             tabindex="-1"
           >
             ${this.hasMenu
-              ? html`<astra-td-menu theme=${this.theme} .options=${menuOptions} @menu-selection=${this.onMenuSelection}>
+              ? html`<astra-td-menu
+                  theme=${this.theme}
+                  .items=${menuOptions}
+                  ?open="${this.menuIsOpen}"
+                  @closed=${() => {
+                    this.menuIsOpen = false
+                  }}
+                  @menu-selection=${this.onMenuSelection}
+                >
                   ${contents} ${editorViaWormhole}
                 </astra-td-menu>`
               : html`${contents} ${editorViaWormhole}`}

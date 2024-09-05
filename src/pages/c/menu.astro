@@ -1,0 +1,67 @@
+---
+import Layout from '../../layouts/Layout.astro'
+
+// test data
+import { Menu as AMenu, type MenuItem } from '../../components/table/menu'
+
+const menuItems: MenuItem[] = [
+  { value: 'Home', label: 'Home' },
+  {
+    value: 'Products',
+    label: 'Products',
+    subItems: [
+      { value: 'Electronics', label: 'Electronics' },
+      {
+        value: '',
+        label: 'Clothing',
+        subItems: [
+          { value: 'Men', label: 'Men' },
+          { value: 'Women', label: 'Women' },
+        ],
+      },
+      { value: 'Books', label: 'Books' },
+    ],
+  },
+  { value: 'About', label: 'About' },
+  {
+    value: '',
+    label: 'Services',
+    subItems: [
+      { value: 'Consulting', label: 'Consulting' },
+      { value: 'Training', label: 'Training' },
+    ],
+  },
+  { value: 'Contact', label: 'Contact' },
+]
+---
+
+<Layout title="Astra-UI">
+  <div class="flex items-center justify-end gap-2 bg-blue-400 py-4 px-2 rounded-md">
+    <!-- @ts-ignore -->
+    <AMenu items={menuItems} client:only="lit"
+      ><button class="rounded-sm bg-neutral-50 hover:bg-neutral-200 px-1 text-sm">Toggle Menu</button></AMenu
+    >
+    <!-- @ts-ignore -->
+    <AMenu items={menuItems} client:only="lit"
+      ><button class="rounded-sm bg-neutral-50 hover:bg-neutral-200 px-1 text-sm">Toggle Menu</button></AMenu
+    >
+    <!-- @ts-ignore -->
+    <AMenu items={menuItems} client:only="lit"
+      ><button class="rounded-sm bg-neutral-50 hover:bg-neutral-200 px-1 text-sm">Toggle Menu</button></AMenu
+    >
+    <!-- @ts-ignore -->
+    <AMenu items={menuItems} client:only="lit"
+      ><button class="rounded-sm bg-neutral-50 hover:bg-neutral-200 px-1 text-sm">Toggle Menu</button></AMenu
+    >
+
+    <!-- @ts-ignore -->
+    <AMenu items={menuItems} client:only="lit">
+      <button class="rounded-sm bg-neutral-50 hover:bg-neutral-200 px-1 text-sm">Toggle Menu</button>
+    </AMenu>
+
+    <!-- @ts-ignore -->
+    <AMenu items={menuItems} client:only="lit"
+      ><button class="rounded-sm bg-neutral-50 hover:bg-neutral-200 px-1 text-sm">Toggle Menu</button></AMenu
+    >
+  </div>
+</Layout>

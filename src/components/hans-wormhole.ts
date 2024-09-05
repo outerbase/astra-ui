@@ -6,19 +6,26 @@ import { createRef, ref } from 'lit/directives/ref.js'
 @customElement('hans-wormhole')
 export class HansWormhole extends LitElement {
   static styles = css`
-    :host {
-      display: contents;
-    }
-
     #wormhole {
       margin: 0;
       padding: 0;
       background-color: unset;
       border: 0;
+      overflow: visible;
     }
 
-    #wormhole:not(:popover-open) {
+    dialog::backdrop {
       display: none;
+    }
+
+    :host([backdrop]) dialog::backdrop {
+      display: block;
+      background-color: var(--astra-menu-backdrop-color, rgba(0, 0, 0, 0.2));
+      backdrop-filter: blur(var(--astra-menu-backdrop-blur, 1px));
+      -webkit-backdrop-filter: blur(var(--astra-menu-backdrop-blur, 1px));
+      -moz-backdrop-filter: blur(var(--astra-menu-backdrop-blur, 1px));
+      -o-backdrop-filter: blur(var(--astra-menu-backdrop-blur, 1px));
+      -ms-backdrop-filter: blur(var(--astra-menu-backdrop-blur, 1px));
     }
   `
 
@@ -26,6 +33,8 @@ export class HansWormhole extends LitElement {
   @property({ type: Number }) public atX?: number
   @property({ type: Number }) public atY?: number
   @property({ type: String }) public anchorId: string | null = null
+  @property({ type: Boolean, attribute: 'backdrop' }) public backdrop = false
+  @property({ type: Boolean, attribute: 'modal' }) public modal = false
   @query('#wormhole') private wormhole!: HTMLElement
 
   // last mouse coordinates; does NOT trigger re-render
@@ -51,7 +60,7 @@ export class HansWormhole extends LitElement {
   updated(changedProperties: Map<string, any>) {
     super.updated(changedProperties)
 
-    if (changedProperties.has('open')) {
+    if (changedProperties.has('open') && changedProperties.get('open') !== undefined) {
       if (this.open) {
         this.showWormhole()
       } else {
@@ -61,11 +70,28 @@ export class HansWormhole extends LitElement {
   }
 
   render() {
-    return html`
-      <dialog id="wormhole" popover="manual">
-        <slot ${ref(this.slotRef)}></slot>
-      </dialog>
-    `
+    return this.modal
+      ? html`
+          <dialog id="wormhole">
+            <slot ${ref(this.slotRef)}></slot>
+          </dialog>
+        `
+      : html`
+          <div id="wormhole" popover="manual">
+            <slot ${ref(this.slotRef)}></slot>
+          </div>
+        `
+  }
+
+  private showWormhole() {
+    if (this.modal) (this.wormhole as any).showModal()
+    else (this.wormhole as any).showPopover()
+    this.adjustPosition()
+  }
+
+  private hideWormhole() {
+    if (this.modal as any) (this.wormhole as any).close()
+    else (this.wormhole as any).hidePopover()
   }
 
   private onMouseMove(event: MouseEvent) {
@@ -73,54 +99,30 @@ export class HansWormhole extends LitElement {
     this.y = event.clientY
   }
 
-  private showWormhole() {
-    if ('showPopover' in this.wormhole) {
-      ;(this.wormhole as any).showPopover()
-    }
-    this.adjustPosition()
-  }
-
-  private hideWormhole() {
-    if ('hidePopover' in this.wormhole) {
-      ;(this.wormhole as any).hidePopover()
-    }
-  }
-
   private adjustPosition() {
     if (!this.wormhole) return
 
-    // use anchored position, when available
+    const rect = this.wormhole.getBoundingClientRect()
+    const viewportWidth = window.innerWidth
+    const viewportHeight = window.innerHeight
+
+    let x: number
+    let y: number
+
     const anchor = this.findAnchor()
     if (anchor) {
-      const { x: anchorX, y: anchorY } = this.calculateMenuPosition(anchor)
-
-      if (anchorX && anchorY) {
-        this.wormhole.style.left = `${anchorX}px`
-        this.wormhole.style.top = `${anchorY}px`
-        return
-      }
+      ;({ x, y } = this.calculateMenuPosition(anchor))
+    } else {
+      x = this.atX ?? this.x
+      y = this.atY ?? this.y
     }
 
-    const rect = this.wormhole.getBoundingClientRect()
-    const windowWidth = window.innerWidth
-    const windowHeight = window.innerHeight
-    let adjustedX = this.atX ?? this.x
-    let adjustedY = this.atY ?? this.y
+    // Ensure the wormhole stays within the viewport
+    x = Math.max(0, Math.min(x, viewportWidth - rect.width))
+    y = Math.max(0, Math.min(y, viewportHeight - rect.height))
 
-    if (this.x + rect.width > windowWidth) {
-      adjustedX = windowWidth - rect.width
-    }
-
-    if (this.y + rect.height > windowHeight) {
-      adjustedY = windowHeight - rect.height
-    }
-
-    // Ensure the wormhole doesn't go off the left or top edge
-    adjustedX = Math.max(0, adjustedX)
-    adjustedY = Math.max(0, adjustedY)
-
-    this.wormhole.style.left = `${adjustedX}px`
-    this.wormhole.style.top = `${adjustedY}px`
+    this.wormhole.style.left = `${x}px`
+    this.wormhole.style.top = `${y}px`
   }
 
   findAnchor(): HTMLElement | null {
@@ -167,22 +169,22 @@ export class HansWormhole extends LitElement {
     const viewportHeight = window.innerHeight
 
     // Calculate available space in each direction
-    const spaceRight = viewportWidth - anchorRect.right
     const spaceLeft = anchorRect.left
+    const spaceRight = viewportWidth - anchorRect.right
     const spaceBelow = viewportHeight - anchorRect.bottom
     const spaceAbove = anchorRect.top
 
     // Determine horizontal position
     let x: number
-    if (spaceRight >= menuRect.width) {
-      // Position to the right if there's enough space
-      x = anchorRect.left
-    } else if (spaceLeft >= menuRect.width) {
-      // Position to the left if there's enough space
+    if (spaceLeft >= menuRect.width) {
+      // Position to the left if there's enough space, aligning right edges
       x = anchorRect.right - menuRect.width
+    } else if (spaceRight >= menuRect.width) {
+      // Position to the right if there's not enough space on the left
+      x = anchorRect.right
     } else {
       // If neither side has enough space, align with the side that has more space
-      x = spaceRight > spaceLeft ? viewportWidth - menuRect.width : 0
+      x = spaceLeft > spaceRight ? 0 : viewportWidth - menuRect.width
     }
 
     // Determine vertical position
@@ -197,6 +199,10 @@ export class HansWormhole extends LitElement {
       // If neither above nor below has enough space, align with the side that has more space
       y = spaceBelow > spaceAbove ? viewportHeight - menuRect.height : 0
     }
+
+    // Ensure the menu stays within the viewport
+    x = Math.max(0, Math.min(x, viewportWidth - menuRect.width))
+    y = Math.max(0, Math.min(y, viewportHeight - menuRect.height))
 
     return { x, y }
   }

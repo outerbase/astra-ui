@@ -1,7 +1,8 @@
 import { html, nothing } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
-import { ClassifiedElement } from '../../classified-element'
-import UniversePlugin from './base'
+
+import { ClassifiedElement } from '../../classified-element.js'
+import UniversePlugin from './base.js'
 
 @customElement('universe-handlebars-plugin')
 export class HandlebarsPlugin extends UniversePlugin {

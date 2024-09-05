@@ -1,265 +1,376 @@
-import '../../hans-wormhole.js'
+import { css, html, type PropertyValueMap } from 'lit'
+import { customElement, property, state } from 'lit/decorators.js'
+import { createRef, ref } from 'lit/directives/ref.js'
 
-import { html, type PropertyValueMap } from 'lit'
-import { property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
-import { repeat } from 'lit/directives/repeat.js'
-
-import { createRef, ref, type Ref } from 'lit/directives/ref.js'
-import classMapToClassName from '../../../lib/class-map-to-class-name.js'
-import { MenuCloseEvent, MenuOpenEvent, MenuSelectedEvent } from '../../../lib/events.js'
-import { type HeaderMenuOptions } from '../../../types.js'
+import { MenuSelectedEvent } from '../../../types.js'
 import { ClassifiedElement } from '../../classified-element.js'
+import '../../hans-wormhole.js'
+import '../../scroll-block.js'
 
+export interface MenuItem {
+  label?: string
+  value: string
+  subItems?: MenuItem[]
+  scrollSubItems?: Boolean
+}
+
+@customElement('astra-menu')
 export class Menu extends ClassifiedElement {
-  protected override classMap() {
-    return {
-      ...super.classMap(),
-      'font-medium select-none whitespace-nowrap': true,
-    }
-  }
+  @property({ type: Array }) items: MenuItem[] = []
+  @property({ attribute: 'open', type: Boolean }) isOpen = false
 
-  @property({ type: Boolean, attribute: 'open', reflect: true })
-  public open = false
+  anchored = true
 
-  @property({ attribute: 'selection', type: String })
-  public selection?: string
+  protected nestedMenu = createRef<NestedMenu>()
 
-  @property({ type: Array, attribute: 'options' })
-  public options: HeaderMenuOptions = []
-
-  @property({ type: Object })
-  public anchorId: string | null = null
-
-  @state() protected anchor: HTMLElement | null = null
-  @state() protected activeOptions: HeaderMenuOptions = []
-  @state() protected historyStack: Array<HeaderMenuOptions> = []
-  @state() protected focused?: string
-
-  private menuRef: Ref<HTMLElement> = createRef()
-
-  // this function is intended to be overriden in a subclass
-  // and not accessed otherwise
-  protected get menuPositionClasses() {
-    return ''
-  }
-
-  // for closing menus when an ousside click occurs
-  private outsideClicker: ((event: MouseEvent) => void) | undefined
-  private activeEvent: Event | undefined
+  static styles = [
+    ...ClassifiedElement.styles,
+    css`
+      :host {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+    `,
+  ]
 
   constructor() {
     super()
     this.onResize = this.onResize.bind(this)
+    this.onOutsideClick = this.onOutsideClick.bind(this)
+    this.onMenuSelection = this.onMenuSelection.bind(this)
+    this.onKeyDown = this.onKeyDown.bind(this)
   }
 
-  // storing this as a variable instead of anonymous function
-  // so that the listener can determine if it's the same closer or not
-  // for the scenario when the same menu is repeatedly opened
-  private close = () => (this.open = false)
+  willUpdate(changedProperties: PropertyValueMap<this>): void {
+    super.willUpdate(changedProperties)
 
-  protected get listElement() {
-    if (!this.open) return null
-
-    return html`<ul
-      tabindex="0"
-      class="z-[2] overflow-hidden rounded-xl p-1.5 text-sm font-medium shadow-lg shadow-black/5 border border-neutral-200 dark:border-neutral-800 bg-theme-menu-background-color dark:bg-theme-menu-background-color-dark text-theme-menu-content-color dark:text-theme-menu-content-color-dark backdrop-blur-astra-menu"
-      role="menu"
-    >
-      ${repeat(
-        this.activeOptions,
-        ({ label }) => label,
-        ({ label, value, classes }) =>
-          html`<li
-            @click=${this.onItemClick}
-            data-value=${value}
-            class="text-ellipsis overflow-hidden rounded-md p-2.5 cursor-pointer hover:bg-theme-menu-background-color-active hover:text-theme-menu-content-color-active dark:hover:bg-theme-menu-background-color-active-dark dark:hover:text-theme-menu-content-color-active-dark ${classMapToClassName(
-              {
-                [classes ?? '']: !!classes,
-                // active states
-                'text-theme-menu-content-color-active': this.focused === value,
-                'bg-theme-menu-background-color-active': this.focused === value,
-                'dark:text-theme-menu-content-color-active-dark': this.focused === value,
-                'dark:bg-theme-menu-background-color-active-dark': this.focused === value,
-              }
-            )}"
-            role="menuitem"
-            ?selected=${this.selection === value}
-          >
-            ${label}
-          </li>`
-      )}
-    </ul>`
-  }
-
-  protected onTrigger(event: MouseEvent) {
-    // prevent the click from surfacing and triggering column sorting
-    event.stopPropagation()
-
-    this.open = !this.open
-    this.activeEvent = event
-  }
-
-  protected onItemClick(event: MouseEvent) {
-    const el = event.target as HTMLElement
-
-    // look for someone with a `data-value`
-    // this was necessary when passing in a label that
-    // is itself another html element such that the literal thing
-    // being clicked does NOT have the value
-    let parent = el
-    while (parent && !parent.hasAttribute('data-value') && parent.parentElement) {
-      parent = parent.parentElement
+    // set accessibility attributes
+    if (changedProperties.has('isOpen') && changedProperties.get('isOpen') !== undefined) {
+      if (this.isOpen) this.setAttribute('aria-expanded', '')
+      else this.removeAttribute('aria-expanded')
     }
 
-    const value = parent.getAttribute('data-value')
-    if (!value) throw new Error("onItemClick didn't recover a selection value")
-    this.onSelection(event, value)
-
-  }
-
-  protected onSelection(event: Event, value: string) {
-    const submenu = this.options.find((opt) => opt.value === value)
-    if (submenu && submenu.options) {
-      event.stopPropagation()
-      event.preventDefault()
-      this.historyStack.push(this.options)
-      this.options = submenu.options
-      return
-    }
-
-    if (typeof value === 'string') {
-      const selectionEvent = new MenuSelectedEvent(value)
-      this.selection = value
-      this.dispatchEvent(selectionEvent)
-      this.open = false
-    }
-  }
-
-  protected onKeyDown(event: KeyboardEvent & { didCloseMenu: boolean }) {
-    const { code } = event
-
-    if (code === 'Escape') {
-      this.open = false
-    } else if (code === 'Space' || code === 'Enter') {
-      event.preventDefault()
-      this.open = !this.open
-      event.didCloseMenu = true
-
-      if (!this.open && this.focused) this.onSelection(event, this.focused)
-    } else if (code === 'ArrowDown' || code === 'ArrowRight') {
-      event.preventDefault()
-      if (!this.focused) this.focused = this.activeOptions[0]?.value
-      else {
-        const idx = this.activeOptions.findIndex(({ value }, _idx) => value === this.focused)
-        if (idx > -1 && idx < this.activeOptions.length - 1) this.focused = this.activeOptions[idx + 1].value
-        else if (idx === this.activeOptions.length - 1) this.focused = this.activeOptions[0].value
+    // close on outside click
+    if (changedProperties.has('isOpen') && changedProperties.get('isOpen') !== undefined) {
+      if (this.isOpen) {
+        window.addEventListener('click', this.onOutsideClick)
+        window.addEventListener('mousedown', this.onMouseDown)
+      } else {
+        window.removeEventListener('click', this.onOutsideClick)
+        window.removeEventListener('mousedown', this.onMouseDown)
       }
-    } else if (code === 'ArrowUp' || code === 'ArrowLeft') {
-      event.preventDefault()
-      if (!this.focused) this.focused = this.activeOptions[this.activeOptions.length - 1]?.value
-      else {
-        const idx = this.activeOptions.findIndex(({ value }, _idx) => value === this.focused)
-        if (idx > 0) this.focused = this.activeOptions[idx - 1].value
-        else if (idx === 0) this.focused = this.activeOptions[this.activeOptions.length - 1].value
-      }
-    } else if (code === 'Tab') {
-      // prevent tabbing focus away from an open menu
-      if (this.open) event.preventDefault()
+    }
+
+    // close on window resize
+    if (changedProperties.has('isOpen') && changedProperties.get('isOpen') !== undefined) {
+      if (this.isOpen) window.addEventListener('resize', this.onResize)
+      else window.removeEventListener('resize', this.onResize)
+    }
+
+    // close on Escape key
+    if (changedProperties.has('isOpen') && changedProperties.get('isOpen') !== undefined) {
+      if (this.isOpen) window.addEventListener('keydown', this.onKeyDown)
+      else window.removeEventListener('keydown', this.onKeyDown)
     }
   }
 
-  private onResize() {
-    this.open = false
+  render() {
+    const content = html`<span @click="${this.toggleMenu}"><slot></slot></span>`
+    const menu = html`<astra-nested-menu
+      ?open="${this.isOpen}"
+      .items="${this.items}"
+      .depth="${1}"
+      .theme="${this.theme}"
+      @menu-selection="${this.onMenuSelection}"
+      @closed="${() => {
+        this.isOpen = false
+        this.dispatchEvent(new Event('closed'))
+      }}"
+      ${ref(this.nestedMenu)}
+    />`
+
+    return this.anchored
+      ? html`
+          ${content}
+          <div id="asdf">
+            <hans-wormhole .open="${this.isOpen}" anchorId="asdf" modal> ${menu} </hans-wormhole>
+          </div>
+        `
+      : html`
+          ${content}
+          <hans-wormhole .open="${this.isOpen}" modal> ${menu} </hans-wormhole>
+        `
   }
 
-  public override connectedCallback(): void {
-    super.connectedCallback()
-    window.addEventListener('resize', this.onResize)
+  public toggleMenu(_event?: Event) {
+    this.isOpen = !this.isOpen
   }
 
-  public override disconnectedCallback(): void {
-    super.disconnectedCallback()
-    window.removeEventListener('resize', this.onResize)
+  protected onResize() {
+    if (this.isOpen) this.isOpen = false
   }
+
+  protected onOutsideClick = (event: MouseEvent) => {
+    if (this.isOpen && !this.contains(event.target as Node)) {
+      this.isOpen = false
+    }
+  }
+
+  protected onMouseDown = (event: MouseEvent) => {
+    // closes the menu on any outside click, including double click and contextmenu
+    const path = event.composedPath()
+    const isWithinComponent = path.some((element) => {
+      return element instanceof Node && (this.contains(element) || element === this)
+    })
+    if (!isWithinComponent) this.isOpen = false
+  }
+
+  protected onMenuSelection(_event: MenuSelectedEvent) {
+    this.isOpen = false
+  }
+
+  protected onKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Escape') this.isOpen = false
+  }
+}
+
+// ---------------
+
+@customElement('astra-nested-menu')
+export class NestedMenu extends ClassifiedElement {
+  @property({ type: Array }) items: MenuItem[] = []
+  @property({ type: Object }) parentMenu: NestedMenu | null = null
+  @property({ type: Number }) depth = 0
+  @property({ type: Boolean, attribute: 'open' }) isOpen = false
+  @property({ type: Boolean, attribute: 'scroll' }) scrollSubItems = false
+
+  @state() private activeIndex: number | null = null
+
+  get isSubmenu() {
+    return Boolean(this.parentMenu)
+  }
+
+  static styles = [
+    ...ClassifiedElement.styles,
+    css`
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        border: 1px solid rgba(127, 127, 127, 0.1);
+        border-radius: 4px;
+      }
+      li {
+        padding: 8px 16px;
+        margin: 0;
+        cursor: pointer;
+        position: relative;
+        white-space: nowrap;
+
+        font-weight: 500;
+        font-size: 12px;
+      }
+      li:first-child {
+        border-top-right-radius: 4px;
+        border-top-left-radius: 4px;
+      }
+      li:last-child {
+        border-bottom-right-radius: 4px;
+        border-bottom-left-radius: 4px;
+      }
+      .submenu {
+        display: none;
+        position: absolute;
+        top: -1px;
+      }
+      .submenu.right {
+        left: 100%;
+      }
+      .submenu.left {
+        right: 100%;
+      }
+      li:hover > .submenu,
+      li:focus-within > .submenu {
+        display: block;
+      }
+    `,
+  ]
 
   public override willUpdate(changedProperties: PropertyValueMap<this>): void {
     super.willUpdate(changedProperties)
-    // when the menu is being opened
-    if (changedProperties.has('open') && this.open) {
-      this.setAttribute('aria-expanded', '')
-      this.outsideClicker = ((event: MouseEvent) => {
-        if (event !== this.activeEvent) {
-          this.open = false
-          delete this.activeEvent
-          if (this.outsideClicker) document.removeEventListener('click', this.outsideClicker)
-        }
-      }).bind(this)
-      document.addEventListener('click', this.outsideClicker)
-
-      this.dispatchEvent(new MenuOpenEvent(this.close))
-    }
-    // when the menu is being closed
-    else if (changedProperties.has('open') && changedProperties.get('open') !== undefined && !this.open) {
-      this.removeAttribute('aria-expanded')
-
-      // reset history; restore root menu ietms
-      if (this.historyStack.length > 0) {
-        this.options = this.historyStack[0]
-        this.historyStack = []
-      }
-
-      if (this.outsideClicker) {
-        delete this.activeEvent
-        document.removeEventListener('click', this.outsideClicker)
-      }
-
-      this.dispatchEvent(new MenuCloseEvent())
+    // accessibility
+    if (changedProperties.has('isOpen')) {
+      if (this.isOpen) this.setAttribute('aria-expanded', '')
+      else this.removeAttribute('aria-expanded')
     }
 
-    if (changedProperties.has('options')) {
-      // reset the menu to it's root
-      this.activeOptions = this.options
-    }
-  }
-
-  public override updated(changedProperties: PropertyValueMap<this>): void {
-    super.updated(changedProperties)
-
-    // when closing
-    if (changedProperties.has('open') && !this.open) {
-      this.focused = undefined
-    }
-
-    // when opening
-    else if (this.open) {
-      // wait until it renders
-      setTimeout(() => {
-        if (this.open) {
-          // set focus so keyboard can navigate the menu
-          const list = this.menuRef.value?.firstElementChild as HTMLElement
-          list?.focus()
-        }
-      })
+    // isOpen changed, and is not the initial rendering (i.e. undefined)
+    if (changedProperties.has('isOpen') && changedProperties.get('isOpen') !== undefined && this.isOpen === false) {
+      if (!this.isSubmenu) this.dispatchEvent(new Event('closed'))
     }
   }
 
   public override render() {
-    // @dblclick prevents parent's dblclick
-    // @keydown navigates the menu
-    if (typeof window === 'undefined') return html``
+    const list = html`<ul @keydown="${this._handleKeyDown}" role="menu" class=" bg-white text-black dark:bg-black dark:text-white">
+      ${this.items.map((item, index) => {
+        return html`
+          <li
+            tabindex="${index === 0 ? '0' : '-1'}"
+            role="menuitem"
+            aria-haspopup="${item.subItems ? 'true' : 'false'}"
+            aria-expanded="${item.subItems && this.activeIndex === index ? 'true' : 'false'}"
+            class="hover:bg-neutral-200 focus:bg-neutral-200 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
+            @click="${(e: MouseEvent) => this._onClickMenuItem(e, item)}"
+          >
+            ${item.label}
+            ${item.subItems
+              ? html`
+                  <div class="submenu ${this._getSubmenuSide(index)}" style="z-index: ${this.depth};">
+                    <astra-nested-menu
+                      .items="${item.subItems}"
+                      .parentMenu="${this}"
+                      .depth="${this.depth + 1}"
+                      .theme="${this.theme}"
+                      ?scroll="${item.scrollSubItems}"
+                      @closed="${() => {
+                        this.isOpen = false
+                      }}"
+                    ></astra-nested-menu>
+                  </div>
+                `
+              : ''}
+          </li>
+        `
+      })}
+    </ul>`
 
-    const content = html`<span
-      ${ref(this.menuRef)}
-      aria-haspopup="menu"
-      class=${classMap({ dark: this.theme === 'dark' })}
-      @dblclick=${(e: MouseEvent) => e.stopPropagation()}
-      @keydown=${this.onKeyDown}
-    >
-      ${this.listElement}
-    </span>`
+    return html`
+      <div class="${classMap({ dark: this.theme === 'dark' })}">
+        ${this.scrollSubItems ? html`<astra-scroll-block max-height="180px">${list}</astra-scroll-block>` : list}
+      </div>
+    `
+  }
 
-    if (this.anchorId) return html`<hans-wormhole .open=${this.open} .anchorId=${this.anchorId}>${content}</hans-wormhole>`
-    return html`<hans-wormhole .open=${this.open}>${content}</hans-wormhole>`
+  public override focus() {
+    this._focusItem(0)
+  }
+
+  _getSubmenuSide(index: number): string {
+    if (!this.shadowRoot) return 'right'
+
+    const listItem = this.shadowRoot.querySelectorAll('li')[index]
+    if (!listItem) return 'right'
+
+    const rect = listItem.getBoundingClientRect()
+    const rightSpace = window.innerWidth - rect.right
+
+    // Assuming 200px as a minimum width for the submenu
+    const minSubmenuWidth = 200
+
+    return rightSpace >= minSubmenuWidth ? 'right' : 'left'
+  }
+
+  _onClickMenuItem(e: MouseEvent, item: MenuItem) {
+    e.stopPropagation()
+    if (!item.subItems) {
+      this._onSelection(item)
+    }
+  }
+
+  _onSelection(item: MenuItem) {
+    const selectionEvent = new MenuSelectedEvent(item)
+    this.dispatchEvent(selectionEvent)
+  }
+
+  _handleKeyDown(e: KeyboardEvent) {
+    e.stopPropagation()
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault()
+        this._focusNextItem(1)
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        this._focusNextItem(-1)
+        break
+      case 'ArrowRight':
+        e.preventDefault()
+        this._handleArrowRight()
+        break
+      case 'ArrowLeft':
+        e.preventDefault()
+        this._handleArrowLeft()
+        break
+
+      case 'Enter':
+      case ' ':
+        e.preventDefault()
+        this._selectActiveItem()
+        break
+    }
+  }
+
+  _handleArrowRight() {
+    if (this.activeIndex !== null) {
+      const items = this.shadowRoot?.querySelectorAll('li')
+      if (items) {
+        const activeItem = items[this.activeIndex] as HTMLElement
+        const submenu = activeItem.querySelector('astra-nested-menu') as NestedMenu
+        if (submenu) {
+          submenu.isOpen = true
+          submenu.requestUpdate()
+          submenu.updateComplete.then(() => submenu._focusItem(0))
+        }
+      }
+    }
+  }
+
+  _handleArrowLeft() {
+    if (this.isSubmenu && this.parentMenu) {
+      this._closeCurrentSubmenu()
+    }
+  }
+
+  _focusNextItem(direction: 1 | -1) {
+    const itemCount = this.items.length
+    let newIndex = this.activeIndex !== null ? this.activeIndex + direction : 0
+    if (newIndex < 0) newIndex = itemCount - 1
+    if (newIndex >= itemCount) newIndex = 0
+    this._focusItem(newIndex)
+  }
+
+  _focusItem(index: number) {
+    this.activeIndex = index
+    const items = this.shadowRoot?.querySelectorAll('li')
+    if (items) {
+      const targetItem = items[index] as HTMLElement
+      targetItem.focus()
+    }
+  }
+
+  _closeCurrentSubmenu() {
+    if (this.isSubmenu && this.parentMenu) {
+      this.activeIndex = null
+      this.isOpen = false
+      this.requestUpdate()
+      const parentIndex = this.parentMenu.items.findIndex((item) => item.subItems === this.items)
+      if (parentIndex !== -1) {
+        this.parentMenu._focusItem(parentIndex)
+      }
+    }
+  }
+
+  _selectActiveItem() {
+    if (this.activeIndex !== null) {
+      const item = this.items[this.activeIndex]
+      if (item.subItems) {
+        this._handleArrowRight()
+      }
+      this._onSelection(item)
+    }
   }
 }

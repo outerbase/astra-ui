@@ -319,7 +319,7 @@ export default class OuterbaseTable extends AstraTable {
   protected onMenuSelection(event: Event) {
     const cellUpdateEvent = event as MenuSelectedEvent
 
-    if (cellUpdateEvent.value === 'reset') {
+    if (cellUpdateEvent.value.value === 'reset') {
       this.detectChanges()
     }
   }
