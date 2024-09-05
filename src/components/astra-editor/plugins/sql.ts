@@ -2,7 +2,7 @@ import { MSSQL, MySQL, PostgreSQL, sql, SQLDialect, SQLite, StandardSQL, type SQ
 import type { PropertyValues } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { AstraEditorPlugin } from './base.js'
-import SqlStatementHighlightPlugin, { resolveToNearestStatement, splitSqlQuery } from './sql-statement-highlight.js'
+import SqlStatementHighlightPlugin, { resolveToNearestStatement, splitSqlQuery, type StatementSegment } from './sql-statement-highlight.js'
 
 @customElement('astra-editor-sql')
 export class AstraEditorSqlPlugin extends AstraEditorPlugin {
@@ -64,7 +64,7 @@ export class AstraEditorSqlPlugin extends AstraEditorPlugin {
     return { from: 0, to: 0, text: '' }
   }
 
-  getAllStatements() {
+  getAllStatements(): StatementSegment[] {
     const editor = this.editor.getEditorView()
     return editor ? splitSqlQuery(editor.state) : []
   }

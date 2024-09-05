@@ -7,7 +7,7 @@ const statementLineHighlight = Decoration.line({
   class: 'cm-highlight-statement',
 })
 
-interface StatementSegment {
+export interface StatementSegment {
   from: number
   to: number
   text: string
