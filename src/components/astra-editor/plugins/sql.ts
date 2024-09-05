@@ -57,6 +57,8 @@ export class AstraEditorSqlPlugin extends AstraEditorPlugin {
     const editor = this.editor.getEditorView()
     if (editor) {
       const segment = resolveToNearestStatement(editor.state)
+      if (!segment) return { from: 0, to: 0, text: '' }
+
       const text = editor.state.doc.sliceString(segment.from, segment.to)
       return { ...segment, text }
     }
