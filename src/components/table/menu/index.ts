@@ -20,6 +20,8 @@ export class Menu extends ClassifiedElement {
   @property({ type: Array }) items: MenuItem[] = []
   @property({ attribute: 'open', type: Boolean }) isOpen = false
 
+  anchored = true
+
   protected nestedMenu = createRef<NestedMenu>()
 
   static styles = [
@@ -76,25 +78,31 @@ export class Menu extends ClassifiedElement {
   }
 
   render() {
-    return html`
-      <span @click="${this.toggleMenu}"><slot></slot></span>
-      <div id="asdf">
-        <hans-wormhole .open=${this.isOpen} anchorId="asdf" modal>
-          <astra-nested-menu
-            ?open=${this.isOpen}
-            .items="${this.items}"
-            .depth="${1}"
-            .theme="${this.theme}"
-            @menu-selection="${this.onMenuSelection}"
-            @closed="${() => {
-              this.isOpen = false
-              this.dispatchEvent(new Event('closed'))
-            }}"
-            ${ref(this.nestedMenu)}
-          />
-        </hans-wormhole>
-      </div>
-    `
+    const content = html`<span @click="${this.toggleMenu}"><slot></slot></span>`
+    const menu = html`<astra-nested-menu
+      ?open="${this.isOpen}"
+      .items="${this.items}"
+      .depth="${1}"
+      .theme="${this.theme}"
+      @menu-selection="${this.onMenuSelection}"
+      @closed="${() => {
+        this.isOpen = false
+        this.dispatchEvent(new Event('closed'))
+      }}"
+      ${ref(this.nestedMenu)}
+    />`
+
+    return this.anchored
+      ? html`
+          ${content}
+          <div id="asdf">
+            <hans-wormhole .open="${this.isOpen}" anchorId="asdf" modal> ${menu} </hans-wormhole>
+          </div>
+        `
+      : html`
+          ${content}
+          <hans-wormhole .open="${this.isOpen}" modal> ${menu} </hans-wormhole>
+        `
   }
 
   public toggleMenu(_event?: Event) {
