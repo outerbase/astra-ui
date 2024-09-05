@@ -209,7 +209,7 @@ export class NestedMenu extends ClassifiedElement {
 
     // isOpen changed, and is not the initial rendering (i.e. undefined)
     if (changedProperties.has('isOpen') && changedProperties.get('isOpen') !== undefined && this.isOpen === false) {
-      this.dispatchEvent(new Event('closed'))
+      if (!this.isSubmenu) this.dispatchEvent(new Event('closed'))
     }
   }
 
