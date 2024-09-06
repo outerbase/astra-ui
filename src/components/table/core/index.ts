@@ -458,7 +458,7 @@ export default class AstraTable extends ClassifiedElement {
                         ?checked="${this.selectedRowUUIDs.has(id)}"
                         @toggle-check="${() => this.toggleSelectedRow(id)}"
                         theme=${this.theme}
-                      />
+                      ></check-box>
                     </div>
                   </astra-td>`
                 : null}
@@ -697,7 +697,7 @@ export default class AstraTable extends ClassifiedElement {
               //   dispatch event that row selection changed
               this._onRowSelection()
             }}
-          />`
+          ></check-box>`
         : ''
 
     return html`<astra-scroll-area

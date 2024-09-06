@@ -75,7 +75,7 @@ export class AddColumnElement extends ClassifiedElement {
           autocomplete="off"
           .value=${this.columnName}
           @input=${this.onChange}
-        />
+        ></input>
         ${this.errorMessage}
       </div>
 

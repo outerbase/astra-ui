@@ -492,8 +492,8 @@ export default class OuterbaseTable extends AstraTable {
             this.codeEditorValue = detail
           }}
         >
-          <astra-editor-sql dialect="sqlite" schema="{JSON.stringify(SCHEMA)}" />
-          <astra-editor-handlebar variables="variable1,variable2" />
+          <astra-editor-sql dialect="sqlite" schema="{JSON.stringify(SCHEMA)}"></astra-editor-sql>
+          <astra-editor-handlebar variables="variable1,variable2"></astra-editor-handlebar>
         </astra-editor>
       </div>
     `

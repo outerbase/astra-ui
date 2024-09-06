@@ -48,7 +48,7 @@ export class CustomCheckbox extends LitElement {
     return html`
       <div class="flex flex-none items-center cursor-pointer ${this.theme === 'dark' ? 'dark' : ''}" @click="${this.toggleCheckbox}">
         ${this.checked ? CustomCheckbox.checkedTemplate : CustomCheckbox.uncheckedTemplate}
-        <input type="checkbox" ?checked="${this.checked}" @change="${this.toggleCheckbox}" class="hidden" />
+        <input type="checkbox" ?checked="${this.checked}" @change="${this.toggleCheckbox}" class="hidden"></input>
       </div>
     `
   }
