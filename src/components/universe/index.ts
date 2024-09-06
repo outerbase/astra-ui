@@ -141,7 +141,7 @@ export class TextEditor extends ClassifiedElement {
     return html`
       <div id="container" class="font-mono flex flex-row border-4 w-full h-full relative">
         <!-- positions a div immediately following the cursor; useful for, say, a context menu -->
-        <div class="absolute z-10 ml-12" style="top: ${this.cursorY}px; left: ${this.cursorX}px"><slot name="cursor" /></div>
+        <div class="absolute z-10 ml-12" style="top: ${this.cursorY}px; left: ${this.cursorX}px"><slot name="cursor"></slot></div>
 
         <div class="flex flex-none h-full w-full no-scrollbar">
           <!-- line numbers  -->
