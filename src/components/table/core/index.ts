@@ -1,4 +1,4 @@
-import { html, nothing, type PropertyValueMap } from 'lit'
+import { css, html, nothing, type PropertyValueMap } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { ifDefined } from 'lit/directives/if-defined.js'
@@ -147,11 +147,75 @@ export default class AstraTable extends ClassifiedElement {
   @state() private visibleStartIndex = 0
   @state() private _height?: number
 
+  @state() private horizontalScrollLeft = 0
+  @state() private visibleColumnStartIndex = 0
+  @state() private visibleColumnEndIndex = 0
+  @state() private totalTableWidth = 0
+  @state() private leftPlaceholderWidth = 0
+  @state() private rightPlaceholderWidth = 0
+
+  static styles = [
+    ...ClassifiedElement.styles,
+    css`
+      .placeholder-column {
+        padding: 0;
+        border: none;
+        pointer-events: none;
+      }
+    `,
+  ]
+
   protected updateVisibleColumns() {
     this.visibleColumns = this.columns.filter(
       ({ name, status }) =>
         status !== ColumnStatus.deleted && this.hiddenColumnNames.indexOf(name) === -1 && this.deletedColumnNames.indexOf(name) === -1
     )
+
+    const scrollLeft = this.scrollableEl?.value?.scroller?.value?.scrollLeft ?? 0
+    const viewportWidth = this.scrollableEl?.value?.scroller?.value?.clientWidth ?? 0
+    let accumulatedWidth = 0
+    let startIndex = 0
+    let endIndex = 0
+
+    for (let i = 0; i < this.visibleColumns.length; i++) {
+      const columnWidth = this.widthForColumnType(this.visibleColumns[i].name, this.columnWidthOffsets[this.visibleColumns[i].name])
+
+      if (accumulatedWidth + columnWidth > scrollLeft) {
+        startIndex = i
+        break
+      }
+      accumulatedWidth += columnWidth
+    }
+
+    this.leftPlaceholderWidth = accumulatedWidth
+
+    accumulatedWidth = 0
+    for (let i = startIndex; i < this.visibleColumns.length; i++) {
+      const columnWidth = this.widthForColumnType(this.visibleColumns[i].name, this.columnWidthOffsets[this.visibleColumns[i].name])
+      accumulatedWidth += columnWidth
+
+      if (accumulatedWidth > viewportWidth) {
+        endIndex = i + 1
+        break
+      }
+    }
+
+    // Ensure endIndex is always greater than startIndex
+    endIndex = Math.max(endIndex, startIndex + 1)
+
+    this.visibleColumnStartIndex = startIndex
+    this.visibleColumnEndIndex = endIndex
+
+    this.rightPlaceholderWidth = this.totalTableWidth - this.leftPlaceholderWidth - accumulatedWidth
+
+    // Calculate total table width
+    this.calculateTotalTableWidth()
+  }
+
+  private calculateTotalTableWidth() {
+    this.totalTableWidth = this.visibleColumns.reduce((total, column) => {
+      return total + this.widthForColumnType(column.name, this.columnWidthOffsets[column.name])
+    }, 0)
   }
 
   constructor() {
@@ -399,6 +463,11 @@ export default class AstraTable extends ClassifiedElement {
                   </astra-td>`
                 : null}
 
+              <!--  -->
+              ${this.leftPlaceholderWidth > 0
+                ? html`<td class="placeholder-column" style=${styleMap({ width: `${this.leftPlaceholderWidth}px` })}></td>`
+                : null}
+
               <!-- render a TableCell for each column of data in the current row -->
               ${repeat(
                 this.visibleColumns,
@@ -449,6 +518,8 @@ export default class AstraTable extends ClassifiedElement {
                   `
                 }
               )}
+
+              <!--  -->
               ${this.blankFill
                 ? html`<astra-td
                     ?outer-border=${false}
@@ -460,6 +531,11 @@ export default class AstraTable extends ClassifiedElement {
                     ?is-last-row=${rowIndex === this.rows.length - 1}
                   ></astra-td>`
                 : ''}
+
+              <!--  -->
+              ${this.rightPlaceholderWidth > 0
+                ? html`<astra-td class="placeholder-column" style=${styleMap({ width: `${this.rightPlaceholderWidth}px` })}></astra-td>`
+                : null}
             </astra-tr>`
           : null
       }
@@ -645,6 +721,10 @@ export default class AstraTable extends ClassifiedElement {
       >
         <astra-thead>
           <astra-tr header>
+            ${this.leftPlaceholderWidth > 0
+              ? html`<th class="placeholder-column" style=${styleMap({ width: `${this.leftPlaceholderWidth}px` })}></th>`
+              : null}
+
             <!-- first column of (optional) checkboxes -->
             ${this.selectableRows
               ? html`<astra-th
@@ -662,7 +742,7 @@ export default class AstraTable extends ClassifiedElement {
                       </div></astra-th>`
               : null}
             ${repeat(
-              this.visibleColumns,
+              this.visibleColumns.slice(this.visibleColumnStartIndex, this.visibleColumnEndIndex),
               ({ name }, _idx) => name,
               ({ name }, idx) => {
                 // omit column resizer on the last column because it's sort-of awkward
@@ -696,15 +776,16 @@ export default class AstraTable extends ClassifiedElement {
             )}
             ${this.blankFill
               ? html`<astra-th ?outer-border=${this.outerBorder} ?read-only=${true} fill .value=${null} .originalValue=${null}>
-                            ${
-                              this.isNonInteractive || !this.addableColumns
-                                ? ''
-                                : html`<span class="flex items-center absolute top-0 left-2 bottom-0 right-0">
-                                    <astra-add-column-trigger></astra-add-column-trigger>
-                                  </span>`
-                            }
-                            </<astra-th>`
+                  ${this.isNonInteractive || !this.addableColumns
+                    ? ''
+                    : html`<span class="flex items-center absolute top-0 left-2 bottom-0 right-0">
+                        <astra-add-column-trigger></astra-add-column-trigger>
+                      </span>`}
+                </astra-th>`
               : ''}
+            ${this.rightPlaceholderWidth > 0
+              ? html`<th class="placeholder-column" style=${styleMap({ width: `${this.rightPlaceholderWidth}px` })}></th>`
+              : null}
           </astra-tr>
         </astra-thead>
 
