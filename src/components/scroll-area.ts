@@ -93,15 +93,17 @@ export default class ScrollArea extends ClassifiedElement {
 
   // trigger `onScroll` when scrolling distance >= threshold (for the sake of optimizing performance)
   private _onScroll(_event: Event) {
-    const previous = this.previousScrollPosition ?? 0
-    const current = this.scroller.value?.scrollTop ?? 0
-    const difference = Math.abs(previous - current)
-    if (difference > this.threshold) {
-      this.previousScrollPosition = current
-      if (typeof this.onScroll === 'function') {
-        this.onScroll()
-      }
-    }
+    // const previous = this.previousScrollPosition ?? 0
+    // const current = this.scroller.value?.scrollTop ?? 0
+    // const difference = Math.abs(previous - current)
+    // if (difference > this.threshold) {
+    //   this.previousScrollPosition = current
+    //   if (typeof this.onScroll === 'function') {
+    //     this.onScroll()
+    //   }
+    // }
+
+    this.onScroll()
   }
 
   protected onClickVerticalScroller(event: MouseEvent) {

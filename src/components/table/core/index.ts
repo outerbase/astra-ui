@@ -1,7 +1,6 @@
-import { html, nothing, type PropertyValueMap } from 'lit'
+import { html, type PropertyValueMap } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
-import { ifDefined } from 'lit/directives/if-defined.js'
 import { repeat } from 'lit/directives/repeat.js'
 import arrayToObject from '../../../lib/array-to-object.js'
 import {
@@ -9,7 +8,6 @@ import {
   ColumnHiddenEvent,
   ColumnPluginDeactivatedEvent,
   ColumnRemovedEvent,
-  MenuOpenEvent,
   ResizeEvent,
   RowAddedEvent,
   RowRemovedEvent,
@@ -43,6 +41,7 @@ import './thead.js'
 import './tr.js'
 
 const SCROLL_BUFFER_SIZE = 2
+const SCROLL_BUFFER_SIZE_COL = 1
 
 @customElement('astra-table')
 export default class AstraTable extends ClassifiedElement {
@@ -70,7 +69,7 @@ export default class AstraTable extends ClassifiedElement {
   @property({ attribute: 'installed-plugins', type: Array })
   public installedPlugins?: Record<string, PluginWorkspaceInstallationId | undefined>
 
-  // @Brayden – this property represents the really array of installed plugins
+  // @Brayden – this property represents the really array of installed plugins
   @property({ attribute: 'real-installed-plugins', type: Array })
   public realInstalledPlugins?: Array<any>
 
@@ -149,6 +148,9 @@ export default class AstraTable extends ClassifiedElement {
   @state() private visibleColumnStartIndex = 0
   @state() private visibleColumnEndIndex = 0
   @state() private totalTableWidth = 0
+  @state() private containerWidth = 0
+
+  private resizeObserver: ResizeObserver | null = null
 
   protected updateVisibleColumns() {
     this.visibleColumns = this.columns.filter(
@@ -156,12 +158,17 @@ export default class AstraTable extends ClassifiedElement {
         status !== ColumnStatus.deleted && this.hiddenColumnNames.indexOf(name) === -1 && this.deletedColumnNames.indexOf(name) === -1
     )
 
-    // Calculate total table width
     this.calculateTotalTableWidth()
+    this.updateHorizontalView()
   }
 
   private calculateTotalTableWidth() {
     this.totalTableWidth = this.visibleColumns.reduce((total, column) => {
+      return total + this.widthForColumnType(column.name, this.columnWidthOffsets[column.name])
+    }, 0)
+  }
+  private getTotalTableWidth() {
+    return this.visibleColumns.reduce((total, column) => {
       return total + this.widthForColumnType(column.name, this.columnWidthOffsets[column.name])
     }, 0)
   }
@@ -170,6 +177,87 @@ export default class AstraTable extends ClassifiedElement {
     return this.visibleColumns
       .slice(0, columnIndex)
       .reduce((sum, { name }) => sum + this.widthForColumnType(name, this.columnWidthOffsets[name]), 0)
+  }
+
+  private updateHorizontalView() {
+    const container = this.scrollableEl?.value?.scroller?.value
+    if (!container) return
+
+    const scrollLeft = container.scrollLeft
+    const containerWidth = container.clientWidth
+
+    let currentWidth = 0
+    let visibleStartIndex = 0
+    let visibleEndIndex = 0
+
+    for (let i = 0; i < this.visibleColumns.length; i++) {
+      const columnWidth = this.widthForColumnType(this.visibleColumns[i].name, this.columnWidthOffsets[this.visibleColumns[i].name])
+      if (currentWidth + columnWidth > scrollLeft && visibleStartIndex === 0) {
+        visibleStartIndex = Math.max(0, i - SCROLL_BUFFER_SIZE_COL)
+      }
+      currentWidth += columnWidth
+      if (currentWidth > scrollLeft + containerWidth) {
+        visibleEndIndex = Math.min(this.visibleColumns.length, i + 1 + SCROLL_BUFFER_SIZE_COL)
+        break
+      }
+    }
+
+    if (visibleEndIndex === 0) visibleEndIndex = this.visibleColumns.length
+
+    this.visibleColumnStartIndex = visibleStartIndex
+    this.visibleColumnEndIndex = visibleEndIndex
+    this.containerWidth = containerWidth
+
+    this.requestUpdate()
+  }
+
+  private updateTableStructure() {
+    const container = this.scrollableEl?.value?.scroller?.value
+    const table = this.shadowRoot?.getElementById('table')
+    const leftSpacer = this.shadowRoot?.getElementById('leftSpacer')
+    const rightSpacer = this.shadowRoot?.getElementById('rightSpacer')
+
+    if (!container || !table || !leftSpacer || !rightSpacer) return
+
+    const totalWidth = this.getTotalTableWidth()
+    const containerWidth = container.clientWidth
+    const scrollLeft = container.scrollLeft
+
+    // Calculate visible columns
+    let visibleStartIndex = 0
+    let visibleEndIndex = 0
+    let currentWidth = 0
+
+    for (let i = 0; i < this.visibleColumns.length; i++) {
+      const columnWidth = this.widthForColumnType(this.visibleColumns[i].name, this.columnWidthOffsets[this.visibleColumns[i].name])
+      if (currentWidth + columnWidth > scrollLeft && visibleStartIndex === 0) {
+        visibleStartIndex = i
+      }
+      currentWidth += columnWidth
+      if (currentWidth > scrollLeft + containerWidth) {
+        visibleEndIndex = i + 1
+        break
+      }
+    }
+
+    if (visibleEndIndex === 0) visibleEndIndex = this.visibleColumns.length
+
+    this.visibleColumnStartIndex = visibleStartIndex
+    this.visibleColumnEndIndex = visibleEndIndex
+
+    // Set widths
+    const leftSpacerWidth = this.getColumnStartPosition(visibleStartIndex)
+    const visibleWidth = this.getColumnStartPosition(visibleEndIndex) - leftSpacerWidth
+    const rightSpacerWidth = Math.max(0, totalWidth - leftSpacerWidth - visibleWidth)
+
+    leftSpacer.style.width = `${leftSpacerWidth}px`
+    table.style.width = `${visibleWidth}px`
+    rightSpacer.style.width = `${rightSpacerWidth}px`
+
+    // Set container width to enable scrolling
+    container.style.width = `${totalWidth}px`
+
+    this.requestUpdate()
   }
 
   constructor() {
@@ -348,10 +436,8 @@ export default class AstraTable extends ClassifiedElement {
   }
 
   private _onColumnResized({ delta }: ResizeEvent) {
-    const table = this.shadowRoot?.getElementById('table')
-    if (!table) throw new Error('Unexpectedly missing a table')
-
-    table.style.width = `${this._previousWidth + delta}px`
+    this.totalTableWidth = this._previousWidth + delta
+    this.updateHorizontalView()
   }
 
   private _onColumnPluginDeactivated({ column }: ColumnPluginDeactivatedEvent) {
@@ -387,40 +473,10 @@ export default class AstraTable extends ClassifiedElement {
       ({ id, values, originalValues, isNew }, rowIndex) => {
         return !this.removedRowUUIDs.has(id)
           ? html`<astra-tr .selected=${this.selectedRowUUIDs.has(id)} ?new=${isNew} @on-selection=${this._onRowSelection}>
-              <!-- checkmark cell -->
-              ${this.selectableRows
-                ? html`<astra-td
-                    .position=${{
-                      row: id,
-                      column: '__selected', // our own; not expected to exist in DB
-                    }}
-                    .type=${null}
-                    theme=${this.theme}
-                    ?separate-cells=${true}
-                    ?outer-border=${this.outerBorder}
-                    ?border-b=${this.bottomBorder}
-                    ?blank=${true}
-                    ?is-last-row=${rowIndex === this.rows.length - 1}
-                    ?is-last-column=${false}
-                    ?row-selector="${true}"
-                    ?read-only=${true}
-                    ?interactive=${true}
-                    width="42px"
-                  >
-                    <div class="absolute top-0 bottom-0 right-0 left-0 flex items-center justify-center h-full">
-                      <check-box
-                        ?checked="${this.selectedRowUUIDs.has(id)}"
-                        @toggle-check="${() => this.toggleSelectedRow(id)}"
-                        theme=${this.theme}
-                      ></check-box>
-                    </div>
-                  </astra-td>`
-                : null}
-
-              <!-- render a TableCell for each column of data in the current row -->
+              <!-- render a TableCell for each visible column of data in the current row -->
               ${repeat(
-                this.visibleColumns,
-                ({ name }) => name, // use the column name as the unique identifier for each entry in this row
+                this.visibleColumns.slice(this.visibleColumnStartIndex, this.visibleColumnEndIndex),
+                ({ name }) => name,
                 ({ name }, idx) => {
                   const installedPlugin = this.plugins?.find(
                     ({ pluginWorkspaceId }) => pluginWorkspaceId === this.installedPlugins?.[name]?.plugin_workspace_id
@@ -454,7 +510,7 @@ export default class AstraTable extends ClassifiedElement {
                       ?border-b=${this.bottomBorder}
                       ?resizable=${!this.staticWidths}
                       ?is-last-row=${rowIndex === this.rows.length - 1}
-                      ?is-last-column=${idx === this.visibleColumns.length - 1}
+                      ?is-last-column=${idx === this.visibleColumnEndIndex - this.visibleColumnStartIndex - 1}
                       ?is-first-row=${rowIndex === 0}
                       ?is-first-column=${idx === 0}
                       ?menu=${!this.isNonInteractive && !this.readonly && this.hasCellMenus}
@@ -487,12 +543,16 @@ export default class AstraTable extends ClassifiedElement {
   }
 
   protected updateTableView(): void {
+    console.log('updateTableView')
     const scrollTop = this.scrollableEl?.value?.scroller?.value?.scrollTop ?? 0
+
     if (scrollTop) {
       this.updateVisibleRows(scrollTop)
     } else {
       setTimeout(() => this.updateVisibleRows(0), 0)
     }
+    this.updateHorizontalView()
+    this.requestUpdate()
   }
 
   public updateVisibleRows(scrollTop: number): void {
@@ -532,7 +592,7 @@ export default class AstraTable extends ClassifiedElement {
     const table = this.shadowRoot?.getElementById('table')
     if (!table) throw new Error('Unexpectedly missing a table')
     this._previousWidth = table.clientWidth
-    table.style.width = `${this._previousWidth}px`
+    table.style.width = `${this.getTotalTableWidth()}px`
 
     // ensure that `this.rowHeight` is correct
     // measure the height of each row
@@ -550,7 +610,12 @@ export default class AstraTable extends ClassifiedElement {
         this.rowHeight = offsetHeight
       }
     }, 0)
-    // end: ensure that `this.rowHeight` is correct
+
+    // Initialize horizontal view
+    this.updateHorizontalView()
+
+    this.setupResizeObserver()
+    this.updateTableStructure()
   }
 
   public override willUpdate(changedProperties: PropertyValueMap<this>): void {
@@ -603,11 +668,22 @@ export default class AstraTable extends ClassifiedElement {
     if (changedProperties.has('hiddenColumnNames')) {
       this.updateVisibleColumns()
     }
+
+    if (changedProperties.has('columns') || changedProperties.has('columnWidthOffsets')) {
+      this.updateVisibleColumns()
+      this.totalTableWidth = this.visibleColumns.reduce(
+        (total, column) => total + this.widthForColumnType(column.name, this.columnWidthOffsets[column.name]),
+        0
+      )
+    }
   }
 
   public override disconnectedCallback() {
     super.disconnectedCallback()
     document.removeEventListener('keydown', this.onKeyDown)
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect()
+    }
   }
 
   public override render() {
@@ -646,118 +722,60 @@ export default class AstraTable extends ClassifiedElement {
 
     return html`<astra-scroll-area
       ${ref(this.scrollableEl)}
-      threshold=${SCROLL_BUFFER_SIZE * this.rowHeight * 0.8}
+      threshold=${0}
       theme=${this.theme}
-      .onScroll=${this.updateTableView}
+      .onScroll=${() => this.updateHorizontalView()}
     >
-      <div class="scroll-spacer" id="leftSpacer"></div>
+      <div class="flex" style="width: ${this.totalTableWidth}px;">
+        <div class="scroll-spacer flex-none" style="width: ${this.getColumnStartPosition(this.visibleColumnStartIndex)}px;"></div>
 
-      <div
-        id="table"
-        class=${classMap(tableClasses)}
-        @menuopen=${(event: MenuOpenEvent) => {
-          // this special case is when the same menu is opened after being closed
-          // without this the menu is immediately closed on subsequent triggers
-          if (this.closeLastMenu === event.close) return
+        <div id="table" class=${classMap(tableClasses)} style="width: ${this.containerWidth}px;">
+          <astra-thead>
+            <astra-tr header>
+              ${repeat(
+                this.visibleColumns.slice(this.visibleColumnStartIndex, this.visibleColumnEndIndex),
+                ({ name }) => name,
+                ({ name }, idx) => html` <astra-th ... (existing attributes)></astra-th> `
+              )}
+            </astra-tr>
+          </astra-thead>
+          <astra-rowgroup>
+          <astra-rowgroup>
+            <div
+              style=${styleMap({
+                height: `${Math.max(this.visibleStartIndex * this.rowHeight, 0)}px`,
+                'will-change': 'transform, height',
+              })}
+            ></div>
 
-          // remember this menu and close it when a subsequent one is opened
-          this.closeLastMenu?.()
-          this.closeLastMenu = event.close
-        }}
-      >
-        <astra-thead>
-          <astra-tr header>
-            <!-- first column of (optional) checkboxes -->
-            ${this.selectableRows
-              ? html`<astra-th
-                  theme=${this.theme}
-                  table-height=${ifDefined(this._height)}
-                  width="42px"
-                  .value=${null}
-                  .originalValue=${null}
-                  ?separate-cells=${true}
-                  ?outer-border=${this.outerBorder}
-                  ?is-last-column=${0 === this.visibleColumns.length}
-                  ?blank=${true}
-                  ?read-only=${this.readonly}
-                >
-                  <div class="absolute top-0 bottom-0 right-0 left-0 flex items-center justify-center h-full">${selectAllCheckbox}</div>
-                </astra-th>`
-              : null}
-            ${repeat(
-              this.visibleColumns,
-              // this.visibleColumns.slice(this.visibleColumnStartIndex, this.visibleColumnEndIndex),
-              // this.visibleColumns,
-              ({ name }, _idx) => name,
-              ({ name }, idx) => {
-                // omit column resizer on the last column because it's sort-of awkward
-                return html`<astra-th
-                  .options=${this.columnOptions || nothing}
-                  .plugins="${this.plugins}"
-                  installed-plugins=${JSON.stringify(this.installedPlugins)}
-                  table-height=${ifDefined(this._height)}
-                  theme=${this.theme}
-                  value="${this.renamedColumnNames[name] ?? name}"
-                  original-value="${name}"
-                  width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
-                  ?separate-cells=${true}
-                  ?outer-border=${this.outerBorder}
-                  ?menu=${!this.isNonInteractive && !this.readonly && this.hasColumnMenus}
-                  ?with-resizer=${!this.isNonInteractive && !this.staticWidths}
-                  ?is-first-column=${idx === 0}
-                  ?is-last-column=${idx === this.visibleColumns.length - 1}
-                  ?removable=${true}
-                  ?interactive=${!this.isNonInteractive}
-                  ?is-active=${name === this.activeColumn}
-                  @column-hidden=${this._onColumnHidden}
-                  @column-removed=${this._onColumnRemoved}
-                  @column-plugin-deactivated=${this._onColumnPluginDeactivated}
-                  @resize-start=${this._onColumnResizeStart}
-                  @resize=${this._onColumnResized}
-                  ?read-only=${this.readonly}
-                >
-                </astra-th>`
-              }
-            )}
-            ${this.blankFill
-              ? html`<astra-th ?outer-border=${this.outerBorder} ?read-only=${true} fill .value=${null} .originalValue=${null}>
-                  ${this.isNonInteractive || !this.addableColumns
-                    ? ''
-                    : html`<span class="flex items-center absolute top-0 left-2 bottom-0 right-0">
-                        <astra-add-column-trigger></astra-add-column-trigger>
-                      </span>`}
-                </astra-th>`
-              : ''}
-          </astra-tr>
-        </astra-thead>
+            <!-- render a TableRow element for each row of data -->
+            ${this.renderRows(this.newRows)} ${this.renderRows(this.existingVisibleRows)}
 
-        <astra-rowgroup>
-          <div
-            style=${styleMap({
-              height: `${Math.max(this.visibleStartIndex * this.rowHeight, 0)}px`,
-              'will-change': 'transform, height',
-            })}
-          ></div>
+            <div
+              style=${styleMap({
+                height: `${Math.max((this.rows.length - this.visibleEndIndex) * this.rowHeight, 0)}px`,
+                'will-change': 'transform, height',
+              })}
+            ></div>
+          </astra-rowgroup>
+        </div>
 
-          <!-- render a TableRow element for each row of data -->
-          ${this.renderRows(this.newRows)} ${this.renderRows(this.existingVisibleRows)}
-
-          <div
-            style=${styleMap({
-              height: `${Math.max((this.rows.length - this.visibleEndIndex) * this.rowHeight, 0)}px`,
-              'will-change': 'transform, height',
-            })}
-          ></div>
-        </astra-rowgroup>
+        <div class="scroll-spacer flex-none" style="width: ${this.totalTableWidth - this.getColumnStartPosition(this.visibleColumnEndIndex)}px;"></div>
       </div>
-
-      <div class="scroll-spacer" id="rightSpacer"></div>
     </astra-scroll-area>`
   }
-}
 
-// declare global {
-//     interface HTMLElementTagNameMap {
-//         'astra-table': AstraTable
-//     }
-// }
+  private setupResizeObserver(): void {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect()
+    }
+
+    this.resizeObserver = new ResizeObserver(() => {
+      this.updateHorizontalView()
+    })
+
+    if (this.scrollableEl.value) {
+      this.resizeObserver.observe(this.scrollableEl.value)
+    }
+  }
+}
