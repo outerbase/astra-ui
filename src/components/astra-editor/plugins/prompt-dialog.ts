@@ -1,4 +1,4 @@
-import { css, html, LitElement, nothing } from 'lit'
+import { css, html, LitElement, nothing, type PropertyValues } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { createRef, ref, type Ref } from 'lit/directives/ref.js'
 import { unsafeHTML } from 'lit/directives/unsafe-html.js'
@@ -54,10 +54,11 @@ export default class PromptDialog extends LitElement {
       animation-timing-function: linear;
     }
 
-    .prompt-container {
+    .container {
       display: flex;
       flex-direction: column;
       padding: 5px 10px;
+      color: black;
       white-space: normal;
       font-family:
         Inter,
@@ -71,9 +72,13 @@ export default class PromptDialog extends LitElement {
         Noto Color Emoji;
     }
 
-    .prompt-wrap {
+    .dark.container {
+      color: white;
+    }
+
+    .wrap {
       position: relative;
-      border: 1px solid #aaa;
+      border: 1px solid #e5e5e5;
       border-radius: 5px;
       width: 100%;
       max-width: 500px;
@@ -83,8 +88,8 @@ export default class PromptDialog extends LitElement {
       padding: 5px;
     }
 
-    .dark .prompt-wrap {
-      border: 1px solid #555;
+    .dark .wrap {
+      border: 1px solid #262626;
     }
 
     .error {
@@ -108,14 +113,10 @@ export default class PromptDialog extends LitElement {
       color: inherit;
     }
 
-    .prompt-action {
+    .actions {
       display: flex;
       padding: 5px 10px;
       gap: 5px;
-    }
-
-    .prompt-action div {
-      display: flex;
     }
 
     button {
@@ -142,8 +143,20 @@ export default class PromptDialog extends LitElement {
 
     .primary:disabled,
     .primary:disabled:hover {
-      background: #ddd;
-      color: #888;
+      opacity: 0.4;
+    }
+
+    .dark .primary {
+      background: #e5e7eb;
+      color: black;
+    }
+
+    .muted {
+      color: #a3a3a3;
+    }
+
+    .dark .muted {
+      color: #737373;
     }
   `
 
@@ -178,22 +191,46 @@ export default class PromptDialog extends LitElement {
     return this.previousPrompt === this.text
   }
 
+  protected shouldShowSubmitEditButton() {
+    if (!this.previousPrompt) return false
+    return this.previousPrompt !== this.text
+  }
+
   protected shouldShowGenerateButton() {
-    return !this.previousPrompt || this.previousPrompt !== this.text
+    return !this.previousPrompt
+  }
+
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    super.firstUpdated(_changedProperties)
+    const inputRef = this.inputRef.value
+
+    // This prevent main editor to steal this event from input
+    if (inputRef) {
+      inputRef.addEventListener('paste', (e) => {
+        e.stopPropagation()
+      })
+
+      inputRef.addEventListener('copy', (e) => {
+        e.stopPropagation()
+      })
+    }
   }
 
   render() {
     return html`<div
-      class=${`prompt-container ${this.theme}`}
+      class=${`container ${this.theme}`}
       @mousedown=${(e: KeyboardEvent) => {
         // Prevent main editor from stealing focus
         // from our prompt text area
         e.stopPropagation()
       }}
     >
-      <div class="prompt-wrap">
+      <div class="wrap">
         <div class="close" @click=${this.triggerClose}>✕</div>
-        <textarea ${ref(this.inputFakeRef)} class="prompt-fake-editor" style="visibility:hidden; position:absolute; height:1px;"></textarea>
+        <textarea
+          ${ref(this.inputFakeRef)}
+          style="visibility:hidden; position:absolute; height:1px; right:5px; left: 5px; width:auto;"
+        ></textarea>
         <textarea
           ${ref(this.inputRef)}
           @input="${(e: any) => {
@@ -213,9 +250,14 @@ export default class PromptDialog extends LitElement {
             e.stopPropagation()
           }}
           @keydown=${(e: KeyboardEvent) => {
-            if (this.shouldShowAcceptButton() && (e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-              this.triggerAccept()
-              e.preventDefault()
+            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+              if (this.shouldShowAcceptButton()) {
+                this.triggerAccept()
+                e.preventDefault()
+              } else if (this.shouldShowSubmitEditButton()) {
+                this.triggerGenerate(this.text)
+                e.preventDefault()
+              }
             } else if (!e.shiftKey && e.key === 'Enter') {
               if (this.shouldShowGenerateButton()) {
                 this.triggerGenerate(this.text)
@@ -232,15 +274,14 @@ export default class PromptDialog extends LitElement {
             e.stopPropagation()
           }}
           .value="${this.text}"
-          class="prompt-editor"
           style="height:${this.inputHeight}px;"
           placeholder="Enter text to generate SQL..."
         ></textarea>
 
         ${this.error ? html`<div class="error">${this.error}</div>` : nothing}
 
-        <div class="prompt-action">
-          ${this.shouldShowGenerateButton()
+        <div class="actions">
+          ${this.shouldShowGenerateButton() || this.shouldShowSubmitEditButton()
             ? html`
                 <button
                   class="primary"
@@ -249,20 +290,25 @@ export default class PromptDialog extends LitElement {
                     this.triggerGenerate(this.text)
                   }}
                 >
-                  ${this.loading ? unsafeHTML(LoadingSvg) : html`<span style="width:13px">↩</span>`}
-                  ${!!this.previousPrompt ? 'Submit Edit' : 'Generate'}
+                  ${this.loading
+                    ? unsafeHTML(LoadingSvg)
+                    : html`<span style="min-width:13px">${this.shouldShowGenerateButton() ? '↩' : '⌘↩'}</span>`}
+                  ${this.shouldShowGenerateButton() ? 'Generate' : 'Submit Edit'}
                 </button>
               `
             : nothing}
-          <button class="primary" @click=${this.triggerAccept} style=${this.shouldShowAcceptButton() ? 'display:block' : 'display:none'}>
-            <span>⌘↩</span>
-            <span>Accept</span>
-          </button>
+          ${this.shouldShowAcceptButton()
+            ? html` <button class="primary" @click=${this.triggerAccept}>
+                <span>⌘↩</span>
+                <span>Accept</span>
+              </button>`
+            : nothing}
+
           <button style=${this.showReject ? 'display:block' : 'display:none'} @click=${this.triggerReject}>
             <span>⌘⌫</span>
             <span>Reject</span>
           </button>
-          <div style="flex-grow:1; justify-content: end; align-items:center; font-size: 13px;">
+          <div class="muted" style="display:flex; flex-grow:1; justify-content: end; align-items:center; font-size: 13px;">
             ${this.previousPrompt ? 'Edit prompt to continue chat' : 'esc to close'}
           </div>
         </div>
