@@ -3,7 +3,7 @@ import type { DirectiveResult } from 'lit/async-directive.js'
 import { customElement, property, state } from 'lit/decorators.js'
 import { createRef, ref, type Ref } from 'lit/directives/ref.js'
 import { UnsafeHTMLDirective, unsafeHTML } from 'lit/directives/unsafe-html.js'
-
+import { v4 as uuid } from 'uuid'
 import { eventTargetIsPlugin, eventTargetIsPluginEditor } from '../../../lib/event-target-is-plugin.js'
 import { type MenuSelectedEvent } from '../../../lib/events.js'
 import { PluginEvent, type ColumnPlugin, type Serializable } from '../../../types.js'
@@ -12,6 +12,7 @@ import type { CellMenu } from '../../table/menu/cell-menu.js'
 import { JSON_TYPES, MutableElement } from '../mutable-element.js'
 
 import '../../hans-wormhole.js'
+import type { MenuItem } from '../menu/index.js'
 
 type PluginActionEvent = CustomEvent<{ action: PluginEvent.onEdit | PluginEvent.onStopEdit | PluginEvent.onCancelEdit; value: any }>
 
@@ -22,11 +23,28 @@ const isAlphanumericOrSpecial = (key: string): boolean => {
 // const returnCharacterPlaceholderRead = '↩'
 const returnCharacterPlaceholderRead = ' '
 
-const RW_OPTIONS = [
-  { label: 'Edit', value: 'edit' },
-  { label: 'Copy', value: 'copy' },
-  { label: 'Paste', value: 'paste' },
-  { label: 'Clear', value: 'clear' },
+const RW_OPTIONS: MenuItem[] = [
+  {
+    label: 'Insert Value',
+    value: 'insert-value',
+    subItems: [
+      { label: 'NULL', value: null, monospaced: true },
+      { label: 'DEFAULT', value: undefined, monospaced: true },
+      { separator: true },
+      { label: Date.now().toString(), suplabel: 'Unix Timestamp', value: Date.now(), monospaced: true },
+      { separator: true },
+      { label: uuid(), suplabel: 'UUID', value: uuid(), monospaced: true },
+    ],
+    // TODO generate this when the menu is opened so that time/uuid is proper
+    // TODO add icon
+  },
+
+  { separator: true },
+
+  { label: 'Edit' },
+  { label: 'Copy' },
+  { label: 'Paste' },
+  { label: 'Clear' },
 ]
 
 const R_OPTIONS = [{ label: 'Copy', value: 'copy' }]
@@ -313,7 +331,7 @@ export class TableData extends MutableElement {
   }
 
   protected async onMenuSelection(event: MenuSelectedEvent) {
-    switch (event.value.value) {
+    switch (event.value?.label?.toString().toLowerCase()) {
       case 'edit':
         return (this.isEditing = true)
       case 'copy':
@@ -328,6 +346,26 @@ export class TableData extends MutableElement {
         return
       case 'reset':
         this.value = this.originalValue
+        this.dispatchChangedEvent()
+        return
+      case 'null':
+        this.value = event.value.value
+        this.dispatchChangedEvent()
+        return
+      case 'default':
+        this.value = event.value.value // `undefined` is "default"
+        this.dispatchChangedEvent()
+        return
+    }
+
+    // handle some by their "suplabel"
+    switch (event.value.suplabel) {
+      case 'Unix Timestamp':
+        this.value = Date.now()
+        this.dispatchChangedEvent()
+        return
+      case 'UUID':
+        this.value = uuid()
         this.dispatchChangedEvent()
         return
     }

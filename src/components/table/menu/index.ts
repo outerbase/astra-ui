@@ -1,8 +1,9 @@
-import { css, html, type PropertyValueMap } from 'lit'
+import { css, html, nothing, type PropertyValueMap } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { createRef, ref } from 'lit/directives/ref.js'
 
 import { classMap } from 'lit/directives/class-map.js'
+import { CaretRight } from '../../../icons/caret-right.js'
 import { MenuSelectedEvent } from '../../../types.js'
 import { ClassifiedElement } from '../../classified-element.js'
 import '../../hans-wormhole.js'
@@ -10,9 +11,12 @@ import '../../scroll-block.js'
 
 export interface MenuItem {
   label?: string
-  value: string
+  suplabel?: string
+  value?: any
   subItems?: MenuItem[]
   scrollSubItems?: Boolean
+  separator?: true
+  monospaced?: Boolean
 }
 
 @customElement('astra-menu')
@@ -160,8 +164,8 @@ export class NestedMenu extends ClassifiedElement {
         list-style: none;
         padding: 0;
         margin: 0;
-        border: 1px solid rgba(127, 127, 127, 0.1);
-        border-radius: 4px;
+
+        border-radius: 2px;
       }
       li {
         padding: 8px 16px;
@@ -172,14 +176,7 @@ export class NestedMenu extends ClassifiedElement {
 
         font-weight: 500;
         font-size: 12px;
-      }
-      li:first-child {
-        border-top-right-radius: 4px;
-        border-top-left-radius: 4px;
-      }
-      li:last-child {
-        border-bottom-right-radius: 4px;
-        border-bottom-left-radius: 4px;
+        border-radius: 2px;
       }
       .submenu {
         display: none;
@@ -214,36 +211,45 @@ export class NestedMenu extends ClassifiedElement {
   }
 
   public override render() {
-    const list = html`<ul @keydown="${this._handleKeyDown}" role="menu" class=" bg-white text-black dark:bg-black dark:text-white">
+    const list = html`<ul
+      @keydown="${this._handleKeyDown}"
+      role="menu"
+      class=" bg-white text-black dark:bg-black dark:text-white border border-neutral-200 dark:border-neutral-800 min-w-[256px]"
+    >
       ${this.items.map((item, index) => {
-        return html`
-          <li
-            tabindex="${index === 0 ? '0' : '-1'}"
-            role="menuitem"
-            aria-haspopup="${item.subItems ? 'true' : 'false'}"
-            aria-expanded="${item.subItems && this.activeIndex === index ? 'true' : 'false'}"
-            class="hover:bg-neutral-200 focus:bg-neutral-200 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
-            @click="${(e: MouseEvent) => this._onClickMenuItem(e, item)}"
-          >
-            ${item.label}
-            ${item.subItems
-              ? html`
-                  <div class="submenu ${this._getSubmenuSide(index)}" style="z-index: ${this.depth};">
-                    <astra-nested-menu
-                      .items="${item.subItems}"
-                      .parentMenu="${this}"
-                      .depth="${this.depth + 1}"
-                      .theme="${this.theme}"
-                      ?scroll="${item.scrollSubItems}"
-                      @closed="${() => {
-                        this.isOpen = false
-                      }}"
-                    ></astra-nested-menu>
-                  </div>
-                `
-              : ''}
-          </li>
-        `
+        return item.separator
+          ? html`<div class="border-b border-neutral-200 dark:border-neutral-800"></div>`
+          : html`
+              <li
+                tabindex="${index === 0 ? '0' : '-1'}"
+                role="menuitem"
+                aria-haspopup="${item.subItems ? 'true' : 'false'}"
+                aria-expanded="${item.subItems && this.activeIndex === index ? 'true' : 'false'}"
+                class="m-1 hover:bg-neutral-200 focus:bg-neutral-200 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800 focus:outline-none"
+                @click="${(e: MouseEvent) => this._onClickMenuItem(e, item)}"
+              >
+                ${item.suplabel && html` <div class="text-xs text-neutral-500">${item.suplabel}</div> `}
+                ${item.subItems
+                  ? html`<div class="flex justify-between">${item.label} ${CaretRight(16)}</div>`
+                  : html`<div class="${classMap({ 'font-mono': !!item.monospaced })}">${item.label}</div>`}
+                ${item.subItems
+                  ? html`
+                      <div class="submenu ${this._getSubmenuSide(index)}" style="z-index: ${this.depth};">
+                        <astra-nested-menu
+                          .items="${item.subItems}"
+                          .parentMenu="${this}"
+                          .depth="${this.depth + 1}"
+                          .theme="${this.theme}"
+                          ?scroll="${item.scrollSubItems}"
+                          @closed="${() => {
+                            this.isOpen = false
+                          }}"
+                        ></astra-nested-menu>
+                      </div>
+                    `
+                  : nothing}
+              </li>
+            `
       })}
     </ul>`
 

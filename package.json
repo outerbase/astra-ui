@@ -1,6 +1,6 @@
 {
   "name": "@outerbase/astra-ui",
-  "version": "0.3.3",
+  "version": "0.3.5",
   "type": "module",
   "main": "dist/js/index.js",
   "module": "dist/js/index.js",
@@ -43,6 +43,7 @@
     "@types/lodash-es": "^4.17.12",
     "@types/prismjs": "^1.26.4",
     "@types/react": "^18.3.3",
+    "@types/uuid": "^10.0.0",
     "@webcomponents/template-shadowroot": "^0.2.1",
     "astro": "^4.11.5",
     "chokidar": "^3.6.0",
@@ -62,7 +63,6 @@
     "lit": "^3.1.2"
   },
   "dependencies": {
-    "codemirror": "^6.0.1",
     "@codemirror/autocomplete": "^6.18.0",
     "@codemirror/commands": "^6.6.0",
     "@codemirror/lang-sql": "^6.7.0",
@@ -72,10 +72,11 @@
     "@lezer/common": "^1.2.1",
     "@lezer/highlight": "^1.2.1",
     "@observablehq/plot": "^0.6.15",
+    "codemirror": "^6.0.1",
     "d3": "^7.9.0",
     "d3-time": "^3.1.0",
     "d3-time-format": "^4.1.0",
-    "lodash-es": "^4.17.21"
+    "uuid": "^10.0.0"
   },
   "packageManager": "pnpm@9.5.0"
 }
