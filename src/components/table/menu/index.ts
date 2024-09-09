@@ -221,11 +221,11 @@ export class NestedMenu extends ClassifiedElement {
     const list = html`<ul
       @keydown="${this._handleKeyDown}"
       role="menu"
-      class=" bg-white text-black dark:bg-black dark:text-white border border-neutral-100 dark:border-neutral-90 min-w-[256px]"
+      class=" bg-white text-black dark:bg-black dark:text-white border border-neutral-200 dark:border-neutral-800 min-w-[256px]"
     >
       ${this.items.map((item, index) => {
         return item.separator
-          ? html`<div class="mb-0.5 pt-0.5 border-b border-neutral-100 dark:border-neutral-900"></div>`
+          ? html`<div class="mb-0.5 pt-0.5 border-b border-neutral-200 dark:border-neutral-800"></div>`
           : html`
               <li
                 tabindex="${index === 0 ? '0' : '-1'}"
