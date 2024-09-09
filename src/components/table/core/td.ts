@@ -31,7 +31,7 @@ const RW_OPTIONS: MenuItem[] = [
       { label: 'NULL', value: null, monospaced: true },
       { label: 'DEFAULT', value: undefined, monospaced: true },
       { separator: true },
-      { label: Date.now(), suplabel: 'Unix Timestamp', value: Date.now(), monospaced: true },
+      { label: Date.now().toString(), suplabel: 'Unix Timestamp', value: Date.now(), monospaced: true },
       { separator: true },
       { label: uuid(), suplabel: 'UUID', value: uuid(), monospaced: true },
     ],
