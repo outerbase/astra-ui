@@ -165,7 +165,7 @@ export class NestedMenu extends ClassifiedElement {
         padding: 0;
         margin: 0;
 
-        border-radius: 4px;
+        border-radius: 2px;
       }
       li {
         padding: 8px 16px;
@@ -176,14 +176,7 @@ export class NestedMenu extends ClassifiedElement {
 
         font-weight: 500;
         font-size: 12px;
-      }
-      li:first-child {
-        border-top-right-radius: 4px;
-        border-top-left-radius: 4px;
-      }
-      li:last-child {
-        border-bottom-right-radius: 4px;
-        border-bottom-left-radius: 4px;
+        border-radius: 2px;
       }
       .submenu {
         display: none;
