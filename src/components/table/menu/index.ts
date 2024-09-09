@@ -342,7 +342,7 @@ export class NestedMenu extends ClassifiedElement {
   }
 
   _focusNextItem(direction: 1 | -1) {
-    const itemCount = this.items.length
+    const itemCount = this.items.filter((i) => !i.separator).length // skip separator items
     let newIndex = this.activeIndex !== null ? this.activeIndex + direction : 0
     if (newIndex < 0) newIndex = itemCount - 1
     if (newIndex >= itemCount) newIndex = 0
