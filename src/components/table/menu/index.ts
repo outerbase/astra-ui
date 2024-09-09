@@ -218,7 +218,7 @@ export class NestedMenu extends ClassifiedElement {
     >
       ${this.items.map((item, index) => {
         return item.separator
-          ? html`<div class="mb-0.5 pt-0.5 border-b border-neutral-200 dark:border-neutral-800"></div>`
+          ? html`<div class="border-b border-neutral-200 dark:border-neutral-800"></div>`
           : html`
               <li
                 tabindex="${index === 0 ? '0' : '-1'}"
