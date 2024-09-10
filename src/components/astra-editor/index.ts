@@ -241,6 +241,8 @@ export class AstraEditor extends LitElement {
         this.containerRef?.value?.classList.remove('dark')
       }
 
+      this.dispatchEvent(new Event('color-changed'))
+
       this.updateExtension('theme', getPredefineTheme(this.color === 'dark' ? 'dark' : 'light', this.theme))
     }
     if (properties.has('theme')) {
