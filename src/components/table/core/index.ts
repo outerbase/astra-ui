@@ -159,12 +159,23 @@ export default class AstraTable extends ClassifiedElement {
     )
 
     const scrollContainer = this.scrollableEl?.value?.scroller?.value
-    if (!scrollContainer) return
+    if (!scrollContainer || this.visibleColumns.length === 0) {
+      this.visibleColumnStartIndex = 0
+      this.visibleColumnEndIndex = 0
+      this.leftSpacerWidth = 0
+      this.rightSpacerWidth = 0
+      return
+    }
 
     const scrollLeft = scrollContainer.scrollLeft
     const viewportWidth = scrollContainer.clientWidth
 
-    if (this.visibleColumns.length <= Math.ceil(viewportWidth / this.widthForColumnType(this.visibleColumns[0].name))) {
+    // If all columns fit in the viewport, show them all
+    const totalColumnsWidth = this.visibleColumns.reduce(
+      (sum, column) => sum + this.widthForColumnType(column.name, this.columnWidthOffsets[column.name]),
+      0
+    )
+    if (totalColumnsWidth <= viewportWidth) {
       this.visibleColumnStartIndex = 0
       this.visibleColumnEndIndex = this.visibleColumns.length
       this.leftSpacerWidth = 0
