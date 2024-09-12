@@ -46,7 +46,8 @@ export default class ScrollArea extends ClassifiedElement {
 
   protected horizontalScrollProgress = 0
   protected verticalScrollProgress = 0
-  protected previousScrollPosition?: number
+  protected previousScrollPositionY?: number
+  protected previousScrollPositionX?: number
 
   private pendingMouseLeave?: number
   private startX = 0
@@ -93,16 +94,20 @@ export default class ScrollArea extends ClassifiedElement {
 
   // trigger `onScroll` when scrolling distance >= threshold (for the sake of optimizing performance)
   private _onScroll(_event: Event) {
-    // const previous = this.previousScrollPosition ?? 0
-    // const current = this.scroller.value?.scrollTop ?? 0
-    // const difference = Math.abs(previous - current)
-    // if (difference > this.threshold) {
-    //   this.previousScrollPosition = current
-    //   if (typeof this.onScroll === 'function') {
-    //     this.onScroll()
-    //   }
-    // }
-    this.onScroll?.()
+    const previousVertical = this.previousScrollPositionY ?? 0
+    const previousHorizontal = this.previousScrollPositionX ?? 0
+    const currentVertical = this.scroller.value?.scrollTop ?? 0
+    const currentHorizontal = this.scroller.value?.scrollLeft ?? 0
+    const differenceVertical = Math.abs(previousVertical - currentVertical)
+    const differenceHorizontal = Math.abs(previousHorizontal - currentHorizontal)
+
+    if (differenceVertical > this.threshold || differenceHorizontal > this.threshold) {
+      this.previousScrollPositionY = currentVertical
+      this.previousScrollPositionX = currentHorizontal
+      if (typeof this.onScroll === 'function') {
+        this.onScroll()
+      }
+    }
   }
 
   protected onClickVerticalScroller(event: MouseEvent) {
