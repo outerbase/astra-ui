@@ -510,26 +510,43 @@ export default class AstraTable extends ClassifiedElement {
     this.updateVisibleColumns()
   }
 
-  public updateVisibleRows(): void {
+  protected updateVisibleRows(): void {
     const scrollTop = this.scrollableEl?.value?.scroller?.value?.scrollTop ?? 0
 
     const rows = this.oldRows
     const _startIndex = Math.max(Math.floor((scrollTop ?? 0) / this.rowHeight) - SCROLL_BUFFER_SIZE, 0)
-    if (this.visibleRowStartIndex !== _startIndex) {
-      this.visibleRowStartIndex = _startIndex
-    }
-    const possiblyVisibleRowEndIndex = _startIndex + this.numberOfVisibleRows() + 2 * SCROLL_BUFFER_SIZE // 2x because we need to re-add it to the start index
+    const possiblyVisibleRowEndIndex = _startIndex + this.numberOfVisibleRows() + 2 * SCROLL_BUFFER_SIZE
     const _endIndex = possiblyVisibleRowEndIndex < rows.length ? possiblyVisibleRowEndIndex : rows.length
-    if (this.visibleRowEndIndex !== _endIndex) {
-      this.visibleRowEndIndex = _endIndex
-    }
 
-    if (
-      this.visibleRowStartIndex !== _startIndex ||
-      this.visibleRowEndIndex !== _endIndex ||
-      this.existingVisibleRows.length !== _startIndex - _endIndex
-    ) {
-      this.existingVisibleRows = rows.slice(_startIndex, _endIndex)
+    if (this.visibleRowStartIndex !== _startIndex || this.visibleRowEndIndex !== _endIndex) {
+      // Calculate the number of rows to add or remove from the start and end
+      const startDiff = _startIndex - this.visibleRowStartIndex
+      const endDiff = _endIndex - this.visibleRowEndIndex
+
+      // Update the start index
+      if (startDiff > 0) {
+        // Remove rows from the start
+        this.existingVisibleRows.splice(0, startDiff)
+      } else if (startDiff < 0) {
+        // Add rows to the start
+        const rowsToAdd = rows.slice(_startIndex, this.visibleRowStartIndex)
+        this.existingVisibleRows.unshift(...rowsToAdd)
+      }
+
+      // Update the end index
+      if (endDiff > 0) {
+        // Add rows to the end
+        const rowsToAdd = rows.slice(this.visibleRowEndIndex, _endIndex)
+        this.existingVisibleRows.push(...rowsToAdd)
+      } else if (endDiff < 0) {
+        // Remove rows from the end
+        this.existingVisibleRows.splice(endDiff)
+      }
+
+      this.visibleRowStartIndex = _startIndex
+      this.visibleRowEndIndex = _endIndex
+
+      this.requestUpdate('existingVisibleRows')
     }
   }
 
