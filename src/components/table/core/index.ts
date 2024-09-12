@@ -144,15 +144,13 @@ export default class AstraTable extends ClassifiedElement {
   @state() protected columnTypes?: Record<string, string | number | boolean | undefined>
   @state() protected rowHeight: number = 38
 
-  @state() private visibleEndIndex = 0
-  @state() private visibleStartIndex = 0
-  @state() private _height?: number
-
+  @state() private _height?: number // TODO remove this?
+  @state() private visibleRowEndIndex = 0
+  @state() private visibleRowStartIndex = 0
   @state() private visibleColumnStartIndex = 0
   @state() private visibleColumnEndIndex = 0
   @state() private leftSpacerWidth = 0
   @state() private rightSpacerWidth = 0
-  @state() private visibleTableWidth = 0
 
   protected updateVisibleColumns() {
     this.visibleColumns = this.columns.filter(
@@ -160,10 +158,6 @@ export default class AstraTable extends ClassifiedElement {
         status !== ColumnStatus.deleted && this.hiddenColumnNames.indexOf(name) === -1 && this.deletedColumnNames.indexOf(name) === -1
     )
 
-    this.updateColumnVisibility()
-  }
-
-  protected updateColumnVisibility() {
     const scrollContainer = this.scrollableEl?.value?.scroller?.value
     if (!scrollContainer) return
 
@@ -219,10 +213,6 @@ export default class AstraTable extends ClassifiedElement {
     // Calculate widths
     this.leftSpacerWidth = this.visibleColumns
       .slice(0, this.visibleColumnStartIndex)
-      .reduce((sum, column) => sum + this.widthForColumnType(column.name, this.columnWidthOffsets[column.name]), 0)
-
-    this.visibleTableWidth = this.visibleColumns
-      .slice(this.visibleColumnStartIndex, this.visibleColumnEndIndex)
       .reduce((sum, column) => sum + this.widthForColumnType(column.name, this.columnWidthOffsets[column.name]), 0)
 
     this.rightSpacerWidth = this.visibleColumns
@@ -516,28 +506,27 @@ export default class AstraTable extends ClassifiedElement {
   }
 
   protected updateTableView(): void {
-    const scrollTop = this.scrollableEl?.value?.scroller?.value?.scrollTop ?? 0
-    const scrollLeft = this.scrollableEl?.value?.scroller?.value?.scrollLeft ?? 0
-
-    this.updateVisibleRows(scrollTop)
-    this.updateColumnVisibility()
+    this.updateVisibleRows()
+    this.updateVisibleColumns()
   }
 
-  public updateVisibleRows(scrollTop: number): void {
+  public updateVisibleRows(): void {
+    const scrollTop = this.scrollableEl?.value?.scroller?.value?.scrollTop ?? 0
+
     const rows = this.oldRows
     const _startIndex = Math.max(Math.floor((scrollTop ?? 0) / this.rowHeight) - SCROLL_BUFFER_SIZE, 0)
-    if (this.visibleStartIndex !== _startIndex) {
-      this.visibleStartIndex = _startIndex
+    if (this.visibleRowStartIndex !== _startIndex) {
+      this.visibleRowStartIndex = _startIndex
     }
-    const possiblyVisibleEndIndex = _startIndex + this.numberOfVisibleRows() + 2 * SCROLL_BUFFER_SIZE // 2x because we need to re-add it to the start index
-    const _endIndex = possiblyVisibleEndIndex < rows.length ? possiblyVisibleEndIndex : rows.length
-    if (this.visibleEndIndex !== _endIndex) {
-      this.visibleEndIndex = _endIndex
+    const possiblyVisibleRowEndIndex = _startIndex + this.numberOfVisibleRows() + 2 * SCROLL_BUFFER_SIZE // 2x because we need to re-add it to the start index
+    const _endIndex = possiblyVisibleRowEndIndex < rows.length ? possiblyVisibleRowEndIndex : rows.length
+    if (this.visibleRowEndIndex !== _endIndex) {
+      this.visibleRowEndIndex = _endIndex
     }
 
     if (
-      this.visibleStartIndex !== _startIndex ||
-      this.visibleEndIndex !== _endIndex ||
+      this.visibleRowStartIndex !== _startIndex ||
+      this.visibleRowEndIndex !== _endIndex ||
       this.existingVisibleRows.length !== _startIndex - _endIndex
     ) {
       this.existingVisibleRows = rows.slice(_startIndex, _endIndex)
@@ -630,7 +619,7 @@ export default class AstraTable extends ClassifiedElement {
 
     if (changedProperties.has('hiddenColumnNames') || changedProperties.has('schema')) {
       this.updateVisibleColumns()
-      this.updateColumnVisibility()
+      this.updateVisibleColumns()
     }
   }
 
@@ -747,7 +736,7 @@ export default class AstraTable extends ClassifiedElement {
           <astra-rowgroup>
             <div
               style=${styleMap({
-                height: `${Math.max(this.visibleStartIndex * this.rowHeight, 0)}px`,
+                height: `${Math.max(this.visibleRowStartIndex * this.rowHeight, 0)}px`,
                 'will-change': 'transform, height',
               })}
             ></div>
@@ -756,7 +745,7 @@ export default class AstraTable extends ClassifiedElement {
 
             <div
               style=${styleMap({
-                height: `${Math.max((this.rows.length - this.visibleEndIndex) * this.rowHeight, 0)}px`,
+                height: `${Math.max((this.rows.length - this.visibleRowEndIndex) * this.rowHeight, 0)}px`,
                 'will-change': 'transform, height',
               })}
             ></div>
@@ -768,9 +757,3 @@ export default class AstraTable extends ClassifiedElement {
     </astra-scroll-area>`
   }
 }
-
-// declare global {
-//     interface HTMLElementTagNameMap {
-//         'astra-table': AstraTable
-//     }
-// }
