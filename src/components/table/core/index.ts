@@ -144,6 +144,7 @@ export default class AstraTable extends ClassifiedElement {
   @state() protected columnTypes?: Record<string, string | number | boolean | undefined>
   @state() protected rowHeight: number = 38
 
+  // virtualized scrolling
   @state() private _height?: number // TODO remove this?
   @state() private visibleRowEndIndex = 0
   @state() private visibleRowStartIndex = 0
@@ -151,6 +152,9 @@ export default class AstraTable extends ClassifiedElement {
   @state() private visibleColumnEndIndex = 0
   @state() private leftSpacerWidth = 0
   @state() private rightSpacerWidth = 0
+
+  // prevent leaks
+  private rowHeightTimeoutId: number | null = null
 
   protected updateVisibleColumns() {
     this.visibleColumns = this.columns.filter(
@@ -581,7 +585,7 @@ export default class AstraTable extends ClassifiedElement {
 
     // Temporarily add to the DOM to measure
     this.scrollableEl?.value?.appendChild(elem)
-    setTimeout(() => {
+    this.rowHeightTimeoutId = window.setTimeout(() => {
       const offsetHeight = elem.offsetHeight
       this.scrollableEl?.value?.removeChild(elem)
       if (this.rowHeight !== offsetHeight) {
@@ -647,6 +651,9 @@ export default class AstraTable extends ClassifiedElement {
   public override disconnectedCallback() {
     super.disconnectedCallback()
     document.removeEventListener('keydown', this.onKeyDown)
+    if (this.rowHeightTimeoutId !== null) {
+      clearTimeout(this.rowHeightTimeoutId)
+    }
   }
 
   public override render() {
