@@ -170,6 +170,14 @@ export default class AstraTable extends ClassifiedElement {
     const scrollLeft = scrollContainer.scrollLeft
     const viewportWidth = scrollContainer.clientWidth
 
+    if (this.visibleColumns.length <= Math.ceil(viewportWidth / this.widthForColumnType(this.visibleColumns[0].name))) {
+      this.visibleColumnStartIndex = 0
+      this.visibleColumnEndIndex = this.visibleColumns.length
+      this.leftSpacerWidth = 0
+      this.rightSpacerWidth = 0
+      return
+    }
+
     let accumulatedWidth = 0
     let newStartIndex = 0
     let newEndIndex = 0
@@ -206,7 +214,7 @@ export default class AstraTable extends ClassifiedElement {
     const oldStartIndex = this.visibleColumnStartIndex
     const oldEndIndex = this.visibleColumnEndIndex
     this.visibleColumnStartIndex = Math.max(0, newStartIndex - COLUMN_BUFFER_SIZE)
-    this.visibleColumnEndIndex = Math.min(this.visibleColumns.length - 1, newEndIndex + COLUMN_BUFFER_SIZE)
+    this.visibleColumnEndIndex = Math.min(this.visibleColumns.length, newEndIndex + COLUMN_BUFFER_SIZE)
 
     // Calculate widths
     this.leftSpacerWidth = this.visibleColumns
@@ -443,7 +451,7 @@ export default class AstraTable extends ClassifiedElement {
         return !this.removedRowUUIDs.has(id)
           ? html`<astra-tr .selected=${this.selectedRowUUIDs.has(id)} ?new=${isNew} @on-selection=${this._onRowSelection}>
               ${repeat(
-                this.visibleColumns.slice(this.visibleColumnStartIndex, this.visibleColumnEndIndex),
+                this.visibleColumns.slice(this.visibleColumnStartIndex, this.visibleColumnEndIndex + 1),
                 ({ name }) => name,
                 ({ name }, idx) => {
                   const absoluteIdx = idx + this.visibleColumnStartIndex
@@ -691,7 +699,7 @@ export default class AstraTable extends ClassifiedElement {
               <!-- first column of (optional) checkboxes -->
 
               ${repeat(
-                this.visibleColumns.slice(this.visibleColumnStartIndex, this.visibleColumnEndIndex),
+                this.visibleColumns.slice(this.visibleColumnStartIndex, this.visibleColumnEndIndex + 1),
                 ({ name }, _idx) => name,
                 ({ name }, idx) => {
                   const absoluteIdx = idx + this.visibleColumnStartIndex
