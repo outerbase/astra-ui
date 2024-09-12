@@ -445,9 +445,37 @@ export default class AstraTable extends ClassifiedElement {
       ({ id, values, originalValues, isNew }, rowIndex) => {
         return !this.removedRowUUIDs.has(id)
           ? html`<astra-tr .selected=${this.selectedRowUUIDs.has(id)} ?new=${isNew} @on-selection=${this._onRowSelection}>
+              <!-- checkmark cell -->
+              ${this.selectableRows
+                ? html`<astra-td
+                    .position=${{
+                      row: id,
+                      column: '__selected', // our own; not expected to exist in DB
+                    }}
+                    .type=${null}
+                    theme=${this.theme}
+                    ?separate-cells=${true}
+                    ?outer-border=${this.outerBorder}
+                    ?border-b=${this.bottomBorder}
+                    ?blank=${true}
+                    ?is-last-row=${rowIndex === this.rows.length - 1}
+                    ?is-last-column=${false}
+                    ?row-selector="${true}"
+                    ?read-only=${true}
+                    ?interactive=${true}
+                    width="42px"
+                  >
+                    <div class="absolute top-0 bottom-0 right-0 left-0 flex items-center justify-center h-full">
+                      <check-box
+                        ?checked="${this.selectedRowUUIDs.has(id)}"
+                        @toggle-check="${() => this.toggleSelectedRow(id)}"
+                        theme=${this.theme}
+                      />
+                    </div>
+                  </astra-td>`
+                : null}
               ${repeat(
                 this.visibleColumns,
-
                 ({ name }) => name,
                 ({ name }, idx) => {
                   if (idx < this.visibleColumnStartIndex || idx >= this.visibleColumnEndIndex) return null
@@ -666,29 +694,32 @@ export default class AstraTable extends ClassifiedElement {
     }
 
     const selectAllCheckbox =
-      this.rows.length > 0
-        ? html`<check-box
-            theme=${this.theme}
-            ?checked=${this.allRowsSelected}
-            @click=${(event: MouseEvent) => {
-              event.preventDefault()
-            }}
-            @toggle-check=${() => {
-              const everyRowIsChecked = this.rows.length === this.selectedRowUUIDs.size
+      this.rows.length > 0 && this.selectableRows
+        ? html`
+            <check-box
+              theme=${this.theme}
+              ?checked=${this.allRowsSelected}
+              @click=${(event: MouseEvent) => {
+                event.preventDefault()
+              }}
+              @toggle-check=${() => {
+                const everyRowIsChecked = this.rows.length === this.selectedRowUUIDs.size
 
-              if (everyRowIsChecked) {
-                this.selectedRowUUIDs = new Set()
-                this.allRowsSelected = false
-              } else {
-                this.selectedRowUUIDs = new Set(this.rows.map(({ id }) => id))
-                this.allRowsSelected = true
-              }
+                if (everyRowIsChecked) {
+                  this.selectedRowUUIDs = new Set()
+                  this.allRowsSelected = false
+                } else {
+                  this.selectedRowUUIDs = new Set(this.rows.map(({ id }) => id))
+                  this.allRowsSelected = true
+                }
 
-              //   dispatch event that row selection changed
-              this._onRowSelection()
-            }}
-          ></check-box>`
-        : ''
+                //   dispatch event that row selection changed
+                this._onRowSelection()
+              }}
+            ></check-box>
+          `
+        : nothing
+
     return html`<astra-scroll-area
       ${ref(this.scrollableEl)}
       threshold=${SCROLL_BUFFER_SIZE * this.rowHeight * 0.8}
@@ -714,7 +745,22 @@ export default class AstraTable extends ClassifiedElement {
           <astra-thead>
             <astra-tr header>
               <!-- first column of (optional) checkboxes -->
-
+              <!-- first column of (optional) checkboxes -->
+              ${this.selectableRows
+                ? html`<astra-th
+                              theme=${this.theme}
+                              table-height=${ifDefined(this._height)}
+                              width="42px"
+                              .value=${null} .originalValue=${null}
+                              ?separate-cells=${true}
+                              ?outer-border=${this.outerBorder}
+                              ?is-last-column=${0 === this.visibleColumns.length}
+                              ?blank=${true}
+                              ?read-only=${this.readonly}
+                          /><div class="absolute top-0 bottom-0 right-0 left-0 flex items-center justify-center h-full">
+                          ${selectAllCheckbox}
+                      </div></astra-th>`
+                : null}
               ${repeat(
                 this.visibleColumns,
                 ({ name }, _idx) => name,
@@ -734,7 +780,7 @@ export default class AstraTable extends ClassifiedElement {
                     ?outer-border=${this.outerBorder}
                     ?menu=${!this.isNonInteractive && !this.readonly && this.hasColumnMenus}
                     ?with-resizer=${!this.isNonInteractive && !this.staticWidths}
-                    ?is-first-column=${idx === 0}
+                    ?is-first-column=${idx === 0 && !this.selectableRows}
                     ?is-last-column=${idx === this.visibleColumns.length - 1}
                     ?removable=${true}
                     ?interactive=${!this.isNonInteractive}
