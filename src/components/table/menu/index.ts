@@ -94,7 +94,7 @@ export class Menu extends ClassifiedElement {
         this.dispatchEvent(new Event('closed'))
       }}"
       ${ref(this.nestedMenu)}
-    />`
+    ></astra-nested-menu>`
 
     return this.anchored
       ? html`
