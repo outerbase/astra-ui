@@ -176,24 +176,14 @@ export default class AstraTable extends ClassifiedElement {
     let newStartIndex = 0
     let newEndIndex = 0
 
-    // Find newStartIndex
+    // Find newStartIndex and newEndIndex in a single pass
     for (let i = 0; i < this.visibleColumns.length; i++) {
       const columnWidth = this.widthForColumnType(this.visibleColumns[i].name, this.columnWidthOffsets[this.visibleColumns[i].name])
-      if (accumulatedWidth + columnWidth > scrollLeft) {
+      if (newStartIndex === 0 && accumulatedWidth + columnWidth > scrollLeft) {
         newStartIndex = i
-        break
       }
       accumulatedWidth += columnWidth
-    }
-
-    // Reset accumulatedWidth for endIndex calculation
-    accumulatedWidth = 0
-
-    // Find newEndIndex
-    for (let i = newStartIndex; i < this.visibleColumns.length; i++) {
-      const columnWidth = this.widthForColumnType(this.visibleColumns[i].name, this.columnWidthOffsets[this.visibleColumns[i].name])
-      accumulatedWidth += columnWidth
-      if (accumulatedWidth > viewportWidth) {
+      if (accumulatedWidth > scrollLeft + viewportWidth) {
         newEndIndex = i + 1 // Include the partially visible column
         break
       }
@@ -441,9 +431,12 @@ export default class AstraTable extends ClassifiedElement {
         return !this.removedRowUUIDs.has(id)
           ? html`<astra-tr .selected=${this.selectedRowUUIDs.has(id)} ?new=${isNew} @on-selection=${this._onRowSelection}>
               ${repeat(
-                this.visibleColumns.slice(this.visibleColumnStartIndex, this.visibleColumnEndIndex + 1),
+                this.visibleColumns,
+
                 ({ name }) => name,
                 ({ name }, idx) => {
+                  if (idx < this.visibleColumnStartIndex || idx >= this.visibleColumnEndIndex) return null
+
                   const absoluteIdx = idx + this.visibleColumnStartIndex
                   const installedPlugin = this.plugins?.find(
                     ({ pluginWorkspaceId }) => pluginWorkspaceId === this.installedPlugins?.[name]?.plugin_workspace_id
@@ -705,10 +698,11 @@ export default class AstraTable extends ClassifiedElement {
               <!-- first column of (optional) checkboxes -->
 
               ${repeat(
-                this.visibleColumns.slice(this.visibleColumnStartIndex, this.visibleColumnEndIndex + 1),
+                this.visibleColumns,
                 ({ name }, _idx) => name,
                 ({ name }, idx) => {
-                  const absoluteIdx = idx + this.visibleColumnStartIndex
+                  if (idx < this.visibleColumnStartIndex || idx >= this.visibleColumnEndIndex) return null
+
                   return html`<astra-th
                     .options=${this.columnOptions || nothing}
                     .plugins="${this.plugins}"
@@ -722,8 +716,8 @@ export default class AstraTable extends ClassifiedElement {
                     ?outer-border=${this.outerBorder}
                     ?menu=${!this.isNonInteractive && !this.readonly && this.hasColumnMenus}
                     ?with-resizer=${!this.isNonInteractive && !this.staticWidths}
-                    ?is-first-column=${absoluteIdx === 0}
-                    ?is-last-column=${absoluteIdx === this.visibleColumns.length - 1}
+                    ?is-first-column=${idx === 0}
+                    ?is-last-column=${idx === this.visibleColumns.length - 1}
                     ?removable=${true}
                     ?interactive=${!this.isNonInteractive}
                     ?is-active=${name === this.activeColumn}
