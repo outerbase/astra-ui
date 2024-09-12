@@ -2,7 +2,10 @@ import { html, nothing, type PropertyValueMap } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { ifDefined } from 'lit/directives/if-defined.js'
+import { createRef, ref, type Ref } from 'lit/directives/ref.js'
 import { repeat } from 'lit/directives/repeat.js'
+import { styleMap } from 'lit/directives/style-map.js'
+
 import arrayToObject from '../../../lib/array-to-object.js'
 import {
   ColumnAddedEvent,
@@ -30,8 +33,6 @@ import {
 import { ClassifiedElement } from '../../classified-element.js'
 
 // import subcomponents
-import { createRef, ref, type Ref } from 'lit/directives/ref.js'
-import { styleMap } from 'lit/directives/style-map.js'
 import type ScrollArea from '../../scroll-area.js'
 import '../add-column.js'
 import '../check-box.js'
@@ -623,31 +624,30 @@ export default class AstraTable extends ClassifiedElement {
           />`
         : ''
 
-    return html`
-            <astra-scroll-area ${ref(this.scrollableEl)}
-                threshold=${SCROLL_BUFFER_SIZE * this.rowHeight * 0.8}
-                theme=${this.theme}
-                .onScroll=${this.updateTableView}
-            >
-                <div
-                    id="table"
-                    class=${classMap(tableClasses)}
-                    @menuopen=${(event: MenuOpenEvent) => {
-                      // this special case is when the same menu is opened after being closed
-                      // without this the menu is immediately closed on subsequent triggers
-                      if (this.closeLastMenu === event.close) return
+    return html`<astra-scroll-area
+      ${ref(this.scrollableEl)}
+      threshold=${SCROLL_BUFFER_SIZE * this.rowHeight * 0.8}
+      theme=${this.theme}
+      .onScroll=${this.updateTableView}
+    >
+      <div
+        id="table"
+        class=${classMap(tableClasses)}
+        @menuopen=${(event: MenuOpenEvent) => {
+          // this special case is when the same menu is opened after being closed
+          // without this the menu is immediately closed on subsequent triggers
+          if (this.closeLastMenu === event.close) return
 
-                      // remember this menu and close it when a subsequent one is opened
-                      this.closeLastMenu?.()
-                      this.closeLastMenu = event.close
-                    }}
-                >
-                    <astra-thead>
-                        <astra-tr header>
-                            <!-- first column of (optional) checkboxes -->
-                            ${
-                              this.selectableRows
-                                ? html`<astra-th
+          // remember this menu and close it when a subsequent one is opened
+          this.closeLastMenu?.()
+          this.closeLastMenu = event.close
+        }}
+      >
+        <astra-thead>
+          <astra-tr header>
+            <!-- first column of (optional) checkboxes -->
+            ${this.selectableRows
+              ? html`<astra-th
                               theme=${this.theme}
                               table-height=${ifDefined(this._height)}
                               width="42px"
@@ -660,46 +660,42 @@ export default class AstraTable extends ClassifiedElement {
                           /><div class="absolute top-0 bottom-0 right-0 left-0 flex items-center justify-center h-full">
                           ${selectAllCheckbox}
                       </div></astra-th>`
-                                : null
-                            }
-                            ${repeat(
-                              this.visibleColumns,
-                              ({ name }, _idx) => name,
-                              ({ name }, idx) => {
-                                // omit column resizer on the last column because it's sort-of awkward
-                                return html`<astra-th
-                                  .options=${this.columnOptions || nothing}
-                                  .plugins="${this.plugins}"
-                                  installed-plugins=${JSON.stringify(this.installedPlugins)}
-                                  table-height=${ifDefined(this._height)}
-                                  theme=${this.theme}
-                                  value="${this.renamedColumnNames[name] ?? name}"
-                                  original-value="${name}"
-                                  width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
-                                  ?separate-cells=${true}
-                                  ?outer-border=${this.outerBorder}
-                                  ?menu=${!this.isNonInteractive && !this.readonly && this.hasColumnMenus}
-                                  ?with-resizer=${!this.isNonInteractive && !this.staticWidths}
-                                  ?is-first-column=${idx === 0}
-                                  ?is-last-column=${idx === this.visibleColumns.length - 1}
-                                  ?removable=${true}
-                                  ?interactive=${!this.isNonInteractive}
-                                  ?is-active=${name === this.activeColumn}
-                                  @column-hidden=${this._onColumnHidden}
-                                  @column-removed=${this._onColumnRemoved}
-                                  @column-plugin-deactivated=${this._onColumnPluginDeactivated}
-                                  @resize-start=${this._onColumnResizeStart}
-                                  @resize=${this._onColumnResized}
-                                  ?read-only=${this.readonly}
-                                >
-                                </astra-th>`
-                              }
-                            )}
-                            ${
-                              this.blankFill
-                                ? html`<astra-th ?outer-border=${
-                                    this.outerBorder
-                                  } ?read-only=${true} fill .value=${null} .originalValue=${null}>
+              : null}
+            ${repeat(
+              this.visibleColumns,
+              ({ name }, _idx) => name,
+              ({ name }, idx) => {
+                // omit column resizer on the last column because it's sort-of awkward
+                return html`<astra-th
+                  .options=${this.columnOptions || nothing}
+                  .plugins="${this.plugins}"
+                  installed-plugins=${JSON.stringify(this.installedPlugins)}
+                  table-height=${ifDefined(this._height)}
+                  theme=${this.theme}
+                  value="${this.renamedColumnNames[name] ?? name}"
+                  original-value="${name}"
+                  width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
+                  ?separate-cells=${true}
+                  ?outer-border=${this.outerBorder}
+                  ?menu=${!this.isNonInteractive && !this.readonly && this.hasColumnMenus}
+                  ?with-resizer=${!this.isNonInteractive && !this.staticWidths}
+                  ?is-first-column=${idx === 0}
+                  ?is-last-column=${idx === this.visibleColumns.length - 1}
+                  ?removable=${true}
+                  ?interactive=${!this.isNonInteractive}
+                  ?is-active=${name === this.activeColumn}
+                  @column-hidden=${this._onColumnHidden}
+                  @column-removed=${this._onColumnRemoved}
+                  @column-plugin-deactivated=${this._onColumnPluginDeactivated}
+                  @resize-start=${this._onColumnResizeStart}
+                  @resize=${this._onColumnResized}
+                  ?read-only=${this.readonly}
+                >
+                </astra-th>`
+              }
+            )}
+            ${this.blankFill
+              ? html`<astra-th ?outer-border=${this.outerBorder} ?read-only=${true} fill .value=${null} .originalValue=${null}>
                             ${
                               this.isNonInteractive || !this.addableColumns
                                 ? ''
@@ -708,31 +704,32 @@ export default class AstraTable extends ClassifiedElement {
                                   </span>`
                             }
                             </<astra-th>`
-                                : ''
-                            }
-                        </astra-tr>
-                    </astra-thead>
+              : ''}
+          </astra-tr>
+        </astra-thead>
 
-                    <astra-rowgroup>
-                        <div
-                            style=${styleMap({
-                              height: `${Math.max(this.visibleStartIndex * this.rowHeight, 0)}px`,
-                              'will-change': 'transform, height',
-                            })}
-                        ></div>
+        <astra-rowgroup sticky>${this.renderRows(this.newRows)}</astra-rowgroup>
 
-                        <!-- render a TableRow element for each row of data -->
-                        ${this.renderRows(this.newRows)} ${this.renderRows(this.existingVisibleRows)}
+        <astra-rowgroup>
+          <div
+            style=${styleMap({
+              height: `${Math.max(this.visibleStartIndex * this.rowHeight, 0)}px`,
+              'will-change': 'transform, height',
+            })}
+          ></div>
 
-                    <div
-                        style=${styleMap({
-                          height: `${Math.max((this.rows.length - this.visibleEndIndex) * this.rowHeight, 0)}px`,
-                          'will-change': 'transform, height',
-                        })}
-                    ></div>
-                </astra-rowgroup>
-            </div>
-        </div>`
+          <!-- render a TableRow element for each row of data -->
+          ${this.renderRows(this.existingVisibleRows)}
+
+          <div
+            style=${styleMap({
+              height: `${Math.max((this.rows.length - this.visibleEndIndex - this.newRows.length) * this.rowHeight, 0)}px`,
+              'will-change': 'transform, height',
+            })}
+          ></div>
+        </astra-rowgroup>
+      </div>
+    </astra-scroll-area>`
   }
 }
 
