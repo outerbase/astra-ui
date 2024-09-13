@@ -319,7 +319,8 @@ export class TH extends MutableElement {
           ...this.options,
           {
             label: html`Revert to <span class="pointer-events-none italic whitespace-nowrap">${this.originalValue}</span>`,
-            value: 'reset',
+            value: this.originalValue,
+            id: 'reset',
           },
         ]
       : [...this.options]
