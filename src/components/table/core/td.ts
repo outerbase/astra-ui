@@ -26,14 +26,14 @@ const returnCharacterPlaceholderRead = ' '
 const RW_OPTIONS: MenuItem[] = [
   {
     label: 'Insert Value',
-    value: 'insert-value',
+    id: 'insert-value',
     subItems: [
-      { label: 'NULL', value: null, monospaced: true },
-      { label: 'DEFAULT', value: undefined, monospaced: true },
+      { id: 'null', label: 'NULL', value: null, monospaced: true },
+      { id: 'default', label: 'DEFAULT', value: undefined, monospaced: true },
       { separator: true },
-      { label: Date.now().toString(), suplabel: 'Unix Timestamp', value: Date.now(), monospaced: true },
+      { id: 'timestamp', label: Date.now().toString(), suplabel: 'Unix Timestamp', value: Date.now(), monospaced: true },
       { separator: true },
-      { label: uuid(), suplabel: 'UUID', value: uuid(), monospaced: true },
+      { id: 'uuid', label: uuid(), suplabel: 'UUID', value: uuid(), monospaced: true },
     ],
     // TODO generate this when the menu is opened so that time/uuid is proper
     // TODO add icon
@@ -41,13 +41,13 @@ const RW_OPTIONS: MenuItem[] = [
 
   { separator: true },
 
-  { label: 'Edit' },
-  { label: 'Copy' },
-  { label: 'Paste' },
-  { label: 'Clear' },
+  { label: 'Edit', id: 'edit' },
+  { label: 'Copy', id: 'copy' },
+  { label: 'Paste', id: 'paste' },
+  { label: 'Clear', id: 'clear' },
 ]
 
-const R_OPTIONS = [{ label: 'Copy', value: 'copy' }]
+const R_OPTIONS = [{ label: 'Copy', id: 'copy' }]
 
 // tl;dr <td/>, table-cell
 @customElement('astra-td')
@@ -335,7 +335,7 @@ export class TableData extends MutableElement {
   }
 
   protected async onMenuSelection(event: MenuSelectedEvent) {
-    switch (event.value?.label?.toString().toLowerCase()) {
+    switch (event.value?.id) {
       case 'edit':
         return (this.isEditing = true)
       case 'copy':
@@ -348,28 +348,21 @@ export class TableData extends MutableElement {
         this.value = null
         this.dispatchChangedEvent()
         return
-      case 'reset':
-        this.value = this.originalValue
-        this.dispatchChangedEvent()
-        return
       case 'null':
         this.value = event.value.value
         this.dispatchChangedEvent()
         return
-      case 'default':
-        this.value = event.value.value // `undefined` is "default"
-        this.dispatchChangedEvent()
-        return
-    }
-
-    // handle some by their "suplabel"
-    switch (event.value.suplabel) {
-      case 'Unix Timestamp':
+      case 'timestamp':
         this.value = Date.now()
         this.dispatchChangedEvent()
         return
-      case 'UUID':
+      case 'uuid':
         this.value = uuid()
+        this.dispatchChangedEvent()
+        return
+      case 'default': // as in the database value DEFAULT
+      default: // this also handles `reset`
+        this.value = event.value.value // `undefined` is "default"
         this.dispatchChangedEvent()
         return
     }
@@ -541,7 +534,8 @@ export class TableData extends MutableElement {
                     <span class="pointer-events-none italic whitespace-nowrap">
                       ${this.originalValue === null ? 'NULL' : this.originalValue === undefined ? 'DEFAULT' : this.originalValue}
                     </span>`,
-            value: 'reset',
+            value: this.originalValue,
+            id: 'reset',
           },
         ]
       : this.options

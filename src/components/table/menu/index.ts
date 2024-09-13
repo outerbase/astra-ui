@@ -10,6 +10,7 @@ import '../../hans-wormhole.js'
 import '../../scroll-block.js'
 
 export interface MenuItem {
+  id?: string
   label?: string
   suplabel?: string
   value?: any
