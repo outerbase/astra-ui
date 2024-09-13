@@ -96,6 +96,10 @@ export class TableData extends MutableElement {
   static onDoubleClick(event: MouseEvent) {
     const self = event.currentTarget as TableData
 
+    if (self.blank) {
+      return
+    }
+
     if (self.isEditing) return // allow double-clicking to select text while editing
     if (!eventTargetIsPluginEditor(event)) {
       self.isEditing = true
