@@ -16,7 +16,7 @@ const LoadingSvg = `<svg class='spin' xmlns="http://www.w3.org/2000/svg" width="
 </svg>`
 
 @customElement('astra-editor-prompt-dialog')
-export default class PromptDialog extends LitElement {
+export default class AstraEditorPromptDialog extends LitElement {
   @property() theme: string = 'light'
   @property({ type: Boolean }) loading: boolean = false
   @property() error: string = ''

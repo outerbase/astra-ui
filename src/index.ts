@@ -1,5 +1,6 @@
 import { AstraEditor } from './components/astra-editor/index.js'
 import { AstraEditorHandlerbarPlugin } from './components/astra-editor/plugins/handlebar.js'
+import AstraEditorPromptDialog from './components/astra-editor/plugins/prompt-dialog.js'
 import { AstraEditorPromptPlugin } from './components/astra-editor/plugins/prompt.js'
 import { AstraEditorSqlPlugin } from './components/astra-editor/plugins/sql.js'
 import Button from './components/button.js'
@@ -18,6 +19,7 @@ import Text from './components/text.js'
 export {
   AstraEditor,
   AstraEditorHandlerbarPlugin,
+  AstraEditorPromptDialog,
   AstraEditorPromptPlugin,
   AstraEditorSqlPlugin,
   Button,
@@ -53,6 +55,7 @@ declare global {
       'astra-editor-sql': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { dialect?: string; schema?: string }
       'astra-editor-handlebar': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { variables?: string }
       'astra-editor-prompt': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { token?: string }
+      'astra-editor-prompt-dialog': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
     }
   }
 }
