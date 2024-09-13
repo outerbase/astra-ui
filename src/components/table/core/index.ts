@@ -687,6 +687,13 @@ export default class AstraTable extends ClassifiedElement {
         this.fromIdToRowMap[row.id] = row
       })
 
+      // Reset existingVisibleRows to force a re-render
+      // Before adding this, after adding virtualized column scrolling, running the query `SELECT 1 as a;` then `SELECT 2 as a;` would retain the first queries result. The following resolves that.
+      this.existingVisibleRows = []
+      this.visibleRowStartIndex = 0
+      this.visibleRowEndIndex = 0
+
+      // without the settimeout, toggling between two tabs in Dashboard causes us to see a flat/collapsed/empty table, while a delay of 0s resolves it
       setTimeout(() => this.updateTableView(), 0)
     }
 
