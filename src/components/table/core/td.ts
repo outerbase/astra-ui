@@ -360,11 +360,8 @@ export class TableData extends MutableElement {
         this.value = uuid()
         this.dispatchChangedEvent()
         return
-      case 'reset':
-        this.value = this.originalValue
-        this.dispatchChangedEvent()
-        return
-      case 'default':
+      case 'default': // as in the database value DEFAULT
+      default: // this also handles `reset`
         this.value = event.value.value // `undefined` is "default"
         this.dispatchChangedEvent()
         return
