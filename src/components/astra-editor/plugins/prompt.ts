@@ -3,7 +3,7 @@ import { Decoration, keymap, WidgetType } from '@codemirror/view'
 import { EditorView } from 'codemirror'
 import { customElement, property } from 'lit/decorators.js'
 import { AstraEditorPlugin } from './base.js'
-import type AstraEditorPromptDialog from './prompt-dialog.js'
+import AstraEditorPromptDialog from './prompt-dialog.js'
 
 const effectHidePrompt = StateEffect.define()
 const effectShowPrompt = StateEffect.define<number>()
