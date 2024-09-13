@@ -96,6 +96,10 @@ export class TableData extends MutableElement {
   static onDoubleClick(event: MouseEvent) {
     const self = event.currentTarget as TableData
 
+    if (self.blank) {
+      return
+    }
+
     if (self.isEditing) return // allow double-clicking to select text while editing
     if (!eventTargetIsPluginEditor(event)) {
       self.isEditing = true
@@ -452,7 +456,11 @@ export class TableData extends MutableElement {
   public override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties)
     if (changedProperties.has('blank')) {
-      this.tabIndex = this.blank ? -1 : 0
+      if (!this.blank) this.tabIndex = 0
+      // setting `-1` or `0` seems to have the same result
+      // i.e. if we ever set it, we can't unset it
+      // but if it's initially set to `-1` it works properly
+      // but if _we_ set it to `-1`, it act like its `0`
     }
   }
 
@@ -548,8 +556,6 @@ export class TableData extends MutableElement {
         ${pluginAccessory}
       </div>
     `
-
-    this.tabIndex = this.blank ? -1 : 0
 
     // the outer div is contenteditable, allowing us to get the `paste` event that an arbitrary element cannot otherwise receive
     // astra-td-menu wraps our content and provides a right-click menu
