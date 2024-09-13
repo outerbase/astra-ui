@@ -3,7 +3,7 @@ import { Decoration, keymap, WidgetType } from '@codemirror/view'
 import { EditorView } from 'codemirror'
 import { customElement, property } from 'lit/decorators.js'
 import { AstraEditorPlugin } from './base.js'
-import PromptDialog from './prompt-dialog.js'
+import AstraEditorPromptDialog from './prompt-dialog.js'
 
 const effectHidePrompt = StateEffect.define()
 const effectShowPrompt = StateEffect.define<number>()
@@ -47,7 +47,7 @@ class PromptWidget extends WidgetType {
     // when we want to generate another suggestion or reject suggestion
     let previousSuggestion = ''
 
-    const container = document.createElement('astra-editor-prompt-dialog') as PromptDialog
+    const container = document.createElement('astra-editor-prompt-dialog') as AstraEditorPromptDialog
 
     container.theme = this.plugin.editor.color ?? 'light'
 
