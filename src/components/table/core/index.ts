@@ -834,7 +834,7 @@ export default class AstraTable extends ClassifiedElement {
               })}
             ></div>
 
-            ${this.renderRows(this.newRows)} ${this.renderRows(this.existingVisibleRows)}
+            ${this.renderRows(this.existingVisibleRows)}
 
             <div
               style=${styleMap({
