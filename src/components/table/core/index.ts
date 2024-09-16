@@ -658,7 +658,7 @@ export default class AstraTable extends ClassifiedElement {
         this.fromIdToRowMap[row.id] = row
       })
 
-      this.updateTableView()
+      setTimeout(() => this.updateTableView(), 0)
     }
 
     if (changedProperties.has('hiddenColumnNames') || changedProperties.has('schema')) {
