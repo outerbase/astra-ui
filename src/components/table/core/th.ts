@@ -4,7 +4,6 @@ import { classMap } from 'lit/directives/class-map.js'
 import { ifDefined } from 'lit/directives/if-defined.js'
 
 // import subcomponents
-import { CaretRight } from '../../../icons/caret-right.js'
 import {
   ColumnHiddenEvent,
   ColumnPluginActivatedEvent,
@@ -335,7 +334,7 @@ export class TH extends MutableElement {
               value: 'uninstall-column-plugin',
             }
           : {
-              label: html`<div class="flex items-center justify-between">Plugins ${CaretRight(16)}</div>`,
+              label: html`<div class="flex items-center justify-between">Plugins</div>`,
               value: 'plugins',
               subItems: this._pluginOptions,
               scrollSubItems: true,
