@@ -5,7 +5,6 @@ import { ifDefined } from 'lit/directives/if-defined.js'
 import { createRef, ref, type Ref } from 'lit/directives/ref.js'
 import { repeat } from 'lit/directives/repeat.js'
 import { styleMap } from 'lit/directives/style-map.js'
-
 import arrayToObject from '../../../lib/array-to-object.js'
 import {
   ColumnAddedEvent,
@@ -575,34 +574,7 @@ export default class AstraTable extends ClassifiedElement {
     const _endIndex = possiblyVisibleRowEndIndex < rows.length ? possiblyVisibleRowEndIndex : rows.length
 
     if (this.visibleRowStartIndex !== _startIndex || this.visibleRowEndIndex !== _endIndex) {
-      // Calculate the number of rows to add or remove from the start and end
-      const startDiff = _startIndex - this.visibleRowStartIndex
-      const endDiff = _endIndex - this.visibleRowEndIndex
-
-      // Update the start index
-      if (startDiff > 0) {
-        // Remove rows from the start
-        this.existingVisibleRows.splice(0, startDiff)
-      } else if (startDiff < 0) {
-        // Add rows to the start
-        const rowsToAdd = rows.slice(_startIndex, this.visibleRowStartIndex)
-        this.existingVisibleRows.unshift(...rowsToAdd)
-      }
-
-      // Update the end index
-      if (endDiff > 0) {
-        // Add rows to the end
-        const rowsToAdd = rows.slice(this.visibleRowEndIndex, _endIndex)
-        this.existingVisibleRows.push(...rowsToAdd)
-      } else if (endDiff < 0) {
-        // Remove rows from the end
-        this.existingVisibleRows.splice(endDiff)
-      }
-
-      this.visibleRowStartIndex = _startIndex
-      this.visibleRowEndIndex = _endIndex
-
-      this.requestUpdate('existingVisibleRows')
+      this.existingVisibleRows = this.rows.slice(_startIndex, _endIndex)
     }
   }
 
@@ -669,7 +641,6 @@ export default class AstraTable extends ClassifiedElement {
         this.allRowsSelected = true
       }
     }
-
     if (changedProperties.has('rows')) {
       this.fromIdToRowMap = {}
       this.newRows = []
@@ -686,12 +657,6 @@ export default class AstraTable extends ClassifiedElement {
 
         this.fromIdToRowMap[row.id] = row
       })
-
-      // Reset existingVisibleRows to force a re-render
-      // Before adding this, after adding virtualized column scrolling, running the query `SELECT 1 as a;` then `SELECT 2 as a;` would retain the first queries result. The following resolves that.
-      this.existingVisibleRows = []
-      this.visibleRowStartIndex = 0
-      this.visibleRowEndIndex = 0
 
       // without the settimeout, toggling between two tabs in Dashboard causes us to see a flat/collapsed/empty table, while a delay of 0s resolves it
       setTimeout(() => this.updateTableView(), 0)
