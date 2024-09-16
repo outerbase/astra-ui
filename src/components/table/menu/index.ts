@@ -215,7 +215,7 @@ export class NestedMenu extends ClassifiedElement {
     const list = html`<ul
       @keydown="${this._handleKeyDown}"
       role="menu"
-      class=" bg-white text-black dark:bg-black dark:text-white border border-neutral-200 dark:border-neutral-800 min-w-[256px]"
+      class="bg-white text-black dark:bg-black dark:text-white min-w-[256px]"
     >
       ${this.items.map((item, index) => {
         return item.separator
@@ -255,7 +255,7 @@ export class NestedMenu extends ClassifiedElement {
     </ul>`
 
     return html`
-      <div class="${classMap({ dark: this.theme === 'dark' })}">
+      <div class="border border-neutral-200 dark:border-neutral-800 ${classMap({ dark: this.theme === 'dark' })}">
         ${this.scrollSubItems ? html`<astra-scroll-block max-height="180px">${list}</astra-scroll-block>` : list}
       </div>
     `
