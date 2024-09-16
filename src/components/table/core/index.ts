@@ -574,6 +574,36 @@ export default class AstraTable extends ClassifiedElement {
     const _endIndex = possiblyVisibleRowEndIndex < rows.length ? possiblyVisibleRowEndIndex : rows.length
 
     if (this.visibleRowStartIndex !== _startIndex || this.visibleRowEndIndex !== _endIndex) {
+      // Calculate the number of rows to add or remove from the start and end
+      const startDiff = _startIndex - this.visibleRowStartIndex
+      const endDiff = _endIndex - this.visibleRowEndIndex
+
+      // Update the start index
+      if (startDiff > 0) {
+        // Remove rows from the start
+        this.existingVisibleRows.splice(0, startDiff)
+      } else if (startDiff < 0) {
+        // Add rows to the start
+        const rowsToAdd = rows.slice(_startIndex, this.visibleRowStartIndex)
+        this.existingVisibleRows.unshift(...rowsToAdd)
+      }
+
+      // Update the end index
+      if (endDiff > 0) {
+        // Add rows to the end
+        const rowsToAdd = rows.slice(this.visibleRowEndIndex, _endIndex)
+        this.existingVisibleRows.push(...rowsToAdd)
+      } else if (endDiff < 0) {
+        // Remove rows from the end
+        this.existingVisibleRows.splice(endDiff)
+      }
+
+      this.visibleRowStartIndex = _startIndex
+      this.visibleRowEndIndex = _endIndex
+
+      this.requestUpdate('existingVisibleRows')
+    } else {
+      // assume the collection itself changed
       this.existingVisibleRows = this.rows.slice(_startIndex, _endIndex)
     }
   }
