@@ -3,6 +3,7 @@ import { AstraEditor } from '../../components/astra-editor'
 import { AstraEditorHandlerbarPlugin } from '../../components/astra-editor/plugins/handlebar'
 import { AstraEditorSqlPlugin } from '../../components/astra-editor/plugins/sql'
 import { AstraEditorPromptPlugin } from '../../components/astra-editor/plugins/prompt'
+import Layout from '../../layouts/Layout.astro'
 //
 
 const SAMPLE_TEXT = `CREATE TABLE customer(
@@ -30,96 +31,98 @@ const SCHEMA = {
 }
 ---
 
-<div id="container" class="h-[400px] w-full mt-2">
-  <!-- @ts-ignore attributes -->
-  <AstraEditor id="editor" client:only="lit" value={SAMPLE_TEXT} theme="freedom">
+<Layout title="Astra-UI">
+  <div id="container" class="h-[400px] w-full mt-2">
     <!-- @ts-ignore attributes -->
-    <AstraEditorSqlPlugin id="sql" client:only="lit" dialect="sqlite" schema={JSON.stringify(SCHEMA)} />
-    <!-- @ts-ignore attributes -->
-    <AstraEditorHandlerbarPlugin client:only="lit" variables="variable1,variable2" />
-    <!-- @ts-ignore attributes -->
-    <AstraEditorPromptPlugin id="prompt-plugin" client:only="lit" />
-  </AstraEditor>
-</div>
+    <AstraEditor id="editor" client:only="lit" value={SAMPLE_TEXT} theme="freedom">
+      <!-- @ts-ignore attributes -->
+      <AstraEditorSqlPlugin id="sql" client:only="lit" dialect="sqlite" schema={JSON.stringify(SCHEMA)} />
+      <!-- @ts-ignore attributes -->
+      <AstraEditorHandlerbarPlugin client:only="lit" variables="variable1,variable2" />
+      <!-- @ts-ignore attributes -->
+      <AstraEditorPromptPlugin id="prompt-plugin" client:only="lit" />
+    </AstraEditor>
+  </div>
 
-<div class="px-4 py-2">
-  <select id="theme">
-    <option value="freedom">Freedom</option>
-    <option value="moondust">Moondust</option>
-    <option value="invasion">Invasion</option>
-  </select>
+  <div class="px-4 py-2">
+    <select id="theme">
+      <option value="freedom">Freedom</option>
+      <option value="moondust">Moondust</option>
+      <option value="invasion">Invasion</option>
+    </select>
 
-  <label>
-    <input type="checkbox" id="readonly" />
-    Readonly
-  </label>
+    <label>
+      <input type="checkbox" id="readonly" />
+      Readonly
+    </label>
 
-  <label>
-    <input type="checkbox" id="wrap" />
-    Wrap
-  </label>
+    <label>
+      <input type="checkbox" id="wrap" />
+      Wrap
+    </label>
 
-  <label>
-    <input type="checkbox" id="dark" />
-    Dark
-  </label>
-</div>
+    <label>
+      <input type="checkbox" id="dark" />
+      Dark
+    </label>
+  </div>
 
-<div class="px-4 py-2 flex gap-4">
-  <button id="current-statement" class="border p-2 rounded">Current Statement</button>
-  <button id="all-statement" class="border p-2 rounded">All Statements</button>
-</div>
+  <div class="px-4 py-2 flex gap-4">
+    <button id="current-statement" class="border p-2 rounded">Current Statement</button>
+    <button id="all-statement" class="border p-2 rounded">All Statements</button>
+  </div>
 
-<div class="px-4 py-2">
-  <input id="token" type="text" placeholder="Outerbase Token" class="p-2 border w-full" />
-</div>
+  <div class="px-4 py-2">
+    <input id="token" type="text" placeholder="Outerbase Token" class="p-2 border w-full" />
+  </div>
 
-<script>
-  const container = document.getElementById('container')
-  const readonlyElement = document.getElementById('readonly') as HTMLInputElement
-  const wrapElement = document.getElementById('wrap') as HTMLInputElement
-  const darkElement = document.getElementById('dark') as HTMLInputElement
-  const themeElement = document.getElementById('theme') as HTMLSelectElement
-  const tokenElement = document.getElementById('token') as HTMLInputElement
+  <script>
+    const container = document.getElementById('container')
+    const readonlyElement = document.getElementById('readonly') as HTMLInputElement
+    const wrapElement = document.getElementById('wrap') as HTMLInputElement
+    const darkElement = document.getElementById('dark') as HTMLInputElement
+    const themeElement = document.getElementById('theme') as HTMLSelectElement
+    const tokenElement = document.getElementById('token') as HTMLInputElement
 
-  tokenElement.onchange = () => {
-    const plugin = document.getElementById('prompt-plugin') as any
-    plugin.token = tokenElement.value
-  }
-
-  readonlyElement.onchange = () => {
-    const editor = document.getElementById('editor') as any
-    editor.readonly = readonlyElement?.checked
-  }
-
-  wrapElement.onchange = () => {
-    const editor = document.getElementById('editor') as any
-    editor.wrap = wrapElement?.checked
-  }
-
-  darkElement.onchange = () => {
-    const editor = document.getElementById('editor') as any
-
-    if (darkElement?.checked) {
-      container?.classList.add('bg-black')
-    } else {
-      container?.classList.remove('bg-black')
+    tokenElement.onchange = () => {
+      const plugin = document.getElementById('prompt-plugin') as any
+      plugin.token = tokenElement.value
     }
-    editor.color = darkElement?.checked ? 'dark' : undefined
-  }
 
-  themeElement.onchange = () => {
-    const editor = document.getElementById('editor') as any
-    editor.theme = themeElement.value
-  }
+    readonlyElement.onchange = () => {
+      const editor = document.getElementById('editor') as any
+      editor.readonly = readonlyElement?.checked
+    }
 
-  const currentStatementButton = document.getElementById('current-statement') as HTMLButtonElement
-  currentStatementButton.onclick = () => {
-    console.log((document.getElementById('sql') as any).getCurrentStatement())
-  }
+    wrapElement.onchange = () => {
+      const editor = document.getElementById('editor') as any
+      editor.wrap = wrapElement?.checked
+    }
 
-  const allStatementButton = document.getElementById('all-statement') as HTMLButtonElement
-  allStatementButton.onclick = () => {
-    console.log((document.getElementById('sql') as any).getAllStatements())
-  }
-</script>
+    darkElement.onchange = () => {
+      const editor = document.getElementById('editor') as any
+
+      if (darkElement?.checked) {
+        container?.classList.add('bg-black')
+      } else {
+        container?.classList.remove('bg-black')
+      }
+      editor.color = darkElement?.checked ? 'dark' : undefined
+    }
+
+    themeElement.onchange = () => {
+      const editor = document.getElementById('editor') as any
+      editor.theme = themeElement.value
+    }
+
+    const currentStatementButton = document.getElementById('current-statement') as HTMLButtonElement
+    currentStatementButton.onclick = () => {
+      console.log((document.getElementById('sql') as any).getCurrentStatement())
+    }
+
+    const allStatementButton = document.getElementById('all-statement') as HTMLButtonElement
+    allStatementButton.onclick = () => {
+      console.log((document.getElementById('sql') as any).getAllStatements())
+    }
+  </script>
+</Layout>
