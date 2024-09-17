@@ -161,13 +161,6 @@ export class NestedMenu extends ClassifiedElement {
   static styles = [
     ...ClassifiedElement.styles,
     css`
-      ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-
-        border-radius: 2px;
-      }
       li {
         padding: 8px 16px;
         margin: 0;
@@ -177,12 +170,11 @@ export class NestedMenu extends ClassifiedElement {
 
         font-weight: 500;
         font-size: 12px;
-        border-radius: 2px;
       }
       .submenu {
         display: none;
         position: absolute;
-        top: -1px;
+        top: 0px;
       }
       .submenu.right {
         left: 100%;
@@ -226,7 +218,7 @@ export class NestedMenu extends ClassifiedElement {
                 role="menuitem"
                 aria-haspopup="${item.subItems ? 'true' : 'false'}"
                 aria-expanded="${item.subItems && this.activeIndex === index ? 'true' : 'false'}"
-                class="m-1 hover:bg-neutral-200 focus:bg-neutral-200 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800 focus:outline-none"
+                class="hover:bg-neutral-200 focus:bg-neutral-200 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800 focus:outline-none "
                 @click="${(e: MouseEvent) => this._onClickMenuItem(e, item)}"
               >
                 ${item.suplabel && html` <div class="text-xs text-neutral-500">${item.suplabel}</div> `}
@@ -255,7 +247,13 @@ export class NestedMenu extends ClassifiedElement {
     </ul>`
 
     return html`
-      <div class="border border-neutral-200 dark:border-neutral-800 ${classMap({ dark: this.theme === 'dark' })}">
+      <div
+        class="border rounded-sm ${classMap({
+          dark: this.theme === 'dark',
+          'border-neutral-200': this.theme !== 'dark',
+          'border-neutral-800': this.theme === 'dark',
+        })}"
+      >
         ${this.scrollSubItems ? html`<astra-scroll-block max-height="180px">${list}</astra-scroll-block>` : list}
       </div>
     `
