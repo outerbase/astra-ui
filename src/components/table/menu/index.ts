@@ -182,7 +182,7 @@ export class NestedMenu extends ClassifiedElement {
       .submenu {
         display: none;
         position: absolute;
-        top: -1px;
+        top: 0px;
       }
       .submenu.right {
         left: 100%;
