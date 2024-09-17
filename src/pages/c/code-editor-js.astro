@@ -1,0 +1,42 @@
+---
+import { AstraEditor } from '../../components/astra-editor'
+import { AstraEditorJavascriptPlugin } from '../../components/astra-editor/plugins/javascript'
+import Layout from '../../layouts/Layout.astro'
+//
+
+const TYPESCRIPT_TEXT = `let hasAnError: string = 10;
+
+function increment(num: number) {
+  return num + 1;
+}
+
+increment('not a number');
+`
+
+const JAVASCRIPT = `let hasAnError = 10;
+
+function increment(num) {
+  return num + 1;
+}
+
+increment('not a number');
+`
+---
+
+<Layout title="Astra-UI">
+  <div class="h-[200px] w-full mt-2">
+    <!-- @ts-ignore attributes -->
+    <AstraEditor id="editor" client:only="lit" value={TYPESCRIPT_TEXT} theme="invasion">
+      <!-- @ts-ignore attributes -->
+      <AstraEditorJavascriptPlugin client:only="lit" typescript={true} />
+    </AstraEditor>
+  </div>
+
+  <div class="h-[200px] w-full mt-2">
+    <!-- @ts-ignore attributes -->
+    <AstraEditor id="editor2" client:only="lit" value={JAVASCRIPT} theme="invasion">
+      <!-- @ts-ignore attributes -->
+      <AstraEditorJavascriptPlugin client:only="lit" />
+    </AstraEditor>
+  </div>
+</Layout>
