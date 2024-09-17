@@ -653,7 +653,7 @@ export default class AstraTable extends ClassifiedElement {
       if (this.schema) {
         this.columns = this.schema.columns
         this.columnTypes = arrayToObject(this.columns, 'name', 'type')
-        this.updateVisibleColumns()
+        // updateVisibleColumns called in later clause
       }
     }
 
@@ -671,6 +671,7 @@ export default class AstraTable extends ClassifiedElement {
         this.allRowsSelected = true
       }
     }
+
     if (changedProperties.has('rows')) {
       this.fromIdToRowMap = {}
       this.newRows = []
@@ -688,11 +689,10 @@ export default class AstraTable extends ClassifiedElement {
         this.fromIdToRowMap[row.id] = row
       })
 
-      this.updateTableView()
+      // updateVisibleColumns called in later clause
     }
 
-    if (changedProperties.has('hiddenColumnNames') || changedProperties.has('schema')) {
-      this.updateVisibleColumns()
+    if (changedProperties.has('hiddenColumnNames') || changedProperties.has('schema') || changedProperties.has('rows')) {
       this.updateVisibleColumns()
     }
   }
