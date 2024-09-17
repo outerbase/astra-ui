@@ -226,7 +226,7 @@ export class NestedMenu extends ClassifiedElement {
                 role="menuitem"
                 aria-haspopup="${item.subItems ? 'true' : 'false'}"
                 aria-expanded="${item.subItems && this.activeIndex === index ? 'true' : 'false'}"
-                class="m-1 hover:bg-neutral-200 focus:bg-neutral-200 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800 focus:outline-none"
+                class="hover:bg-neutral-200 focus:bg-neutral-200 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800 focus:outline-none "
                 @click="${(e: MouseEvent) => this._onClickMenuItem(e, item)}"
               >
                 ${item.suplabel && html` <div class="text-xs text-neutral-500">${item.suplabel}</div> `}
