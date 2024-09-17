@@ -161,13 +161,6 @@ export class NestedMenu extends ClassifiedElement {
   static styles = [
     ...ClassifiedElement.styles,
     css`
-      ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-
-        border-radius: 2px;
-      }
       li {
         padding: 8px 16px;
         margin: 0;
@@ -177,7 +170,6 @@ export class NestedMenu extends ClassifiedElement {
 
         font-weight: 500;
         font-size: 12px;
-        border-radius: 2px;
       }
       .submenu {
         display: none;
