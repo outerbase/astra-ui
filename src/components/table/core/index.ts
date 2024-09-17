@@ -643,6 +643,9 @@ export default class AstraTable extends ClassifiedElement {
       }
     }, 0)
     // end: ensure that `this.rowHeight` is correct
+
+    // without this setTimeout, toggling between Data/Strucuture in Dashboard will cause the header to disappear
+    setTimeout(() => this.updateTableView(), 0)
   }
 
   public override willUpdate(changedProperties: PropertyValueMap<this>): void {
