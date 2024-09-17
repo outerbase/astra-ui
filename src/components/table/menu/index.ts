@@ -255,7 +255,13 @@ export class NestedMenu extends ClassifiedElement {
     </ul>`
 
     return html`
-      <div class="border border-neutral-200 dark:border-neutral-800 ${classMap({ dark: this.theme === 'dark' })}">
+      <div
+        class="border rounded-sm ${classMap({
+          dark: this.theme === 'dark',
+          'border-neutral-200': this.theme !== 'dark',
+          'border-neutral-800': this.theme === 'dark',
+        })}"
+      >
         ${this.scrollSubItems ? html`<astra-scroll-block max-height="180px">${list}</astra-scroll-block>` : list}
       </div>
     `
