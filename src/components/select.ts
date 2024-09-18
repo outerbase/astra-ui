@@ -1,9 +1,9 @@
-import { LitElement, css, html, type PropertyValues } from 'lit'
+import { css, html, type PropertyValues } from 'lit'
 import { customElement, property, query, state } from 'lit/decorators.js'
 import { repeat } from 'lit/directives/repeat.js'
 
-import { TWStyles } from '../lib/.tw-styles.js'
 import baseStyles from '../lib/base-styles.js'
+import { ClassifiedElement } from './classified-element.js'
 
 type Option = { label: any; value: any }
 
@@ -19,9 +19,9 @@ const ToggleIcon = html`<svg
 </svg>`
 
 @customElement('astra-select')
-export default class AstraSelect extends LitElement {
+export default class AstraSelect extends ClassifiedElement {
   static styles = [
-    TWStyles,
+    ...ClassifiedElement.styles,
     baseStyles,
     css`
       #container {
@@ -67,6 +67,13 @@ export default class AstraSelect extends LitElement {
 
       li {
         list-style-type: none;
+        white-space: nowrap;
+      }
+
+      li,
+      .label-trigger {
+        text-overflow: ellipsis;
+        overflow: hidden;
       }
 
       ul {
@@ -182,14 +189,16 @@ export default class AstraSelect extends LitElement {
   }
 
   public override render() {
-    const displayedValue =
-      this.value.length > 0 ? html`<div class="flex-1">${this.label}</div>` : html`<div class="flex-1 opacity-50">${this.placeholder}</div>`
+    const displayedValue = this.value.length > 0 ? this.label : this.placeholder
+
     // TODO place a button in here that serves as the trigger instead of the container itself
-    // and then put aria-haspopup="listbox" on i
-    // TODO @johnny fix the label value selector
+    // and then put aria-haspopup="listbox" on it
     return html`
-      <div id="container" aria-haspopup="listbox" tabindex="0" @click=${this.onClickInside} role="listbox">
-        ${displayedValue} ${ToggleIcon}
+      <div id="container" class="" aria-haspopup="listbox" tabindex="0" @click=${this.onClickInside} role="listbox">
+        <div class="flex justify-between flex-auto items-center w-full gap-1">
+          <div class="label-trigger flex-auto truncate max-w-64">${displayedValue}</div>
+          <div class="flex-none">${ToggleIcon}</div>
+        </div>
 
         <ul id="options-list" aria-owns="container" role="menu">
           ${repeat(
