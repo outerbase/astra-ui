@@ -234,8 +234,15 @@ const columns = {
 ---
 
 <Layout title="Astra-UI - Table Component">
+  <h1>light</h1>
   <div class="relative h-96">
     <!-- @ts-ignore -->
     <FTable client:only="lit" schema={columns} data={data} selectable-rows outer-border blank-fill cell-menus column-menus />
+  </div>
+
+  <h1>dark</h1>
+  <div class="relative h-96">
+    <!-- @ts-ignore -->
+    <FTable client:only="lit" theme="dark" schema={columns} data={data} selectable-rows outer-border blank-fill cell-menus column-menus />
   </div>
 </Layout>
