@@ -207,18 +207,18 @@ export class NestedMenu extends ClassifiedElement {
     const list = html`<ul
       @keydown="${this._handleKeyDown}"
       role="menu"
-      class="bg-white text-black dark:bg-black dark:text-white min-w-[256px]"
+      class="rounded-sm min-w-[256px] bg-white dark:bg-black text-black dark:text-white border border-neutral-200 dark:border-neutral-800 shadow-[0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_8px_rgb(0,0,0)]"
     >
       ${this.items.map((item, index) => {
         return item.separator
-          ? html`<div class="border-b border-neutral-200 dark:border-neutral-800"></div>`
+          ? html`<div class="border-b border-neutral-200 dark:border-neutral-800 my-1"></div>`
           : html`
               <li
                 tabindex="${index === 0 ? '0' : '-1'}"
                 role="menuitem"
                 aria-haspopup="${item.subItems ? 'true' : 'false'}"
                 aria-expanded="${item.subItems && this.activeIndex === index ? 'true' : 'false'}"
-                class="hover:bg-neutral-200 focus:bg-neutral-200 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800 focus:outline-none "
+                class="m-1 hover:bg-neutral-200 focus:bg-neutral-200 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800 focus:outline-none first:rounded-t-sm last:rounded-b-sm"
                 @click="${(e: MouseEvent) => this._onClickMenuItem(e, item)}"
               >
                 ${item.suplabel && html` <div class="text-xs text-neutral-500">${item.suplabel}</div> `}
@@ -248,10 +248,8 @@ export class NestedMenu extends ClassifiedElement {
 
     return html`
       <div
-        class="border rounded-sm ${classMap({
+        class="${classMap({
           dark: this.theme === 'dark',
-          'border-neutral-200': this.theme !== 'dark',
-          'border-neutral-800': this.theme === 'dark',
         })}"
       >
         ${this.scrollSubItems ? html`<astra-scroll-block max-height="180px">${list}</astra-scroll-block>` : list}
