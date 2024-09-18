@@ -1,0 +1,184 @@
+---
+import { Code } from 'astro:components'
+import Layout from '../layouts/Layout.astro'
+
+const cssVariables = `
+:root {
+  --astra-font-family: 'Your Custom Font', sans-serif;
+  --astra-neutral-100: #f5f5f5;
+  --astra-neutral-200: #e5e5e5;
+  --astra-neutral-500: #737373;
+  --astra-neutral-700: #404040;
+  --astra-neutral-800: #262626;
+  --astra-neutral-900: #171717;
+  --astra-accent: #3b82f6;
+  --astra-red-600: #dc2626;
+  --astra-red-700: #b91c1c;
+  --astra-red-800: #991b1b;
+  --astra-red-900: #7f1d1d;
+}
+`
+
+const buttonExample = `
+/* Customizing button styles */
+astra-button::part(button) {
+  background: var(--astra-neutral-700);
+  color: white;
+  border-radius: 8px;
+}
+
+/* Dark mode customization */
+@media (prefers-color-scheme: dark) {
+  astra-button::part(button) {
+    background: var(--astra-neutral-200);
+    color: black;
+  }
+}
+`
+
+const inputExample = `
+/* Customizing input styles */
+astra-input::part(input) {
+  border: 1px solid var(--astra-neutral-200);
+  background: var(--astra-neutral-100);
+  color: var(--astra-neutral-900);
+}
+
+/* Dark mode customization */
+@media (prefers-color-scheme: dark) {
+  astra-input::part(input) {
+    border: 1px solid var(--astra-neutral-800);
+    background: var(--astra-neutral-900);
+    color: var(--astra-neutral-100);
+  }
+}
+`
+
+const textExample = `
+/* Customizing text styles */
+astra-text[variant="h1"] {
+  font-size: 36px;
+  line-height: 40px;
+  font-weight: 600;
+  color: var(--astra-neutral-900);
+}
+
+/* Dark mode customization */
+@media (prefers-color-scheme: dark) {
+  astra-text[variant="h1"] {
+    color: var(--astra-neutral-100);
+  }
+}
+`
+
+const shadowDomExample = `
+/* This won't work due to Shadow DOM encapsulation */
+astra-button {
+  background-color: red;
+}
+
+/* This will work, using ::part() */
+astra-button::part(button) {
+  background-color: red;
+}
+`
+---
+
+<Layout title="Theming Astra UI">
+  <div class="max-w-3xl mx-auto space-y-16 py-12">
+    <header class="space-y-4">
+      <h1 class="text-4xl font-bold text-neutral-900">Theming</h1>
+      <p class="text-xl text-neutral-600 leading-relaxed">
+        Customize the look and feel of Astra UI components to match your project's design.
+      </p>
+    </header>
+
+    <section class="space-y-6">
+      <h2 class="text-3xl font-semibold text-neutral-900">CSS Variables</h2>
+      <p class="text-neutral-600">
+        Astra UI components use CSS variables for theming. You can override these variables to customize the appearance of all components:
+      </p>
+      <Code code={cssVariables} lang="css" class="p-4 rounded-lg text-sm" theme="github-dark" />
+    </section>
+
+    <section class="space-y-6">
+      <h2 class="text-3xl font-semibold text-neutral-900">Understanding Shadow DOM</h2>
+      <p class="text-neutral-600">
+        Astra UI components use Shadow DOM, which encapsulates the component's HTML structure and styles. This encapsulation means that:
+      </p>
+      <ul class="list-disc list-inside space-y-2 text-neutral-600">
+        <li>Styles defined outside the component won't affect its internal elements</li>
+        <li>Styles defined inside the component won't leak out and affect other elements on the page</li>
+      </ul>
+      <p class="text-neutral-600">
+        To style elements within the Shadow DOM, we use the <code class="bg-gray-100 px-1 py-0.5 rounded">::part()</code> pseudo-element:
+      </p>
+      <Code code={shadowDomExample} lang="css" class="p-4 rounded-lg text-sm" theme="github-dark" />
+    </section>
+
+    <section class="space-y-6">
+      <h2 class="text-3xl font-semibold text-neutral-900">Customizing Components</h2>
+      <p class="text-neutral-600">Each component can be customized individually using CSS. Here are examples for some core components:</p>
+
+      <div class="space-y-8">
+        <div>
+          <h3 class="text-2xl font-semibold text-neutral-800 mb-4">Button</h3>
+          <Code code={buttonExample} lang="css" class="p-4 rounded-lg text-sm" theme="github-dark" />
+        </div>
+
+        <div>
+          <h3 class="text-2xl font-semibold text-neutral-800 mb-4">Input</h3>
+          <Code code={inputExample} lang="css" class="p-4 rounded-lg text-sm" theme="github-dark" />
+        </div>
+
+        <div>
+          <h3 class="text-2xl font-semibold text-neutral-800 mb-4">Text</h3>
+          <Code code={textExample} lang="css" class="p-4 rounded-lg text-sm" theme="github-dark" />
+        </div>
+      </div>
+    </section>
+
+    <section class="space-y-6">
+      <h2 class="text-3xl font-semibold text-neutral-900">Dark Mode</h2>
+      <p class="text-neutral-600">
+        Astra UI components support dark mode out of the box. They use the <code class="bg-gray-100 px-1 py-0.5 rounded"
+          >prefers-color-scheme</code
+        > media query to detect the user's preference. You can override this behavior or provide your own dark mode styles as shown in the examples
+        above.
+      </p>
+    </section>
+
+    <section class="space-y-6">
+      <h2 class="text-3xl font-semibold text-neutral-900">Best Practices</h2>
+      <ul class="list-disc list-inside space-y-2 text-neutral-600">
+        <li>Use CSS variables for global theming to ensure consistency across components.</li>
+        <li>
+          Customize individual components using the <code class="bg-gray-100 px-1 py-0.5 rounded">::part()</code> pseudo-element for more granular
+          control.
+        </li>
+        <li>Consider both light and dark modes when customizing components.</li>
+        <li>Test your customizations across different browsers and devices to ensure consistency.</li>
+      </ul>
+    </section>
+
+    <section class="space-y-6">
+      <h2 class="text-3xl font-semibold text-neutral-900">Advanced Styling</h2>
+      <p class="text-neutral-600">
+        For more complex styling needs, you can use CSS custom properties (variables) defined within the components. These variables are
+        exposed to the light DOM and can be overridden:
+      </p>
+      <Code
+        code={`
+astra-button {
+  --astra-button-background: #4a90e2;
+  --astra-button-color: white;
+}
+      `}
+        lang="css"
+        class="p-4 rounded-lg text-sm"
+        theme="github-dark"
+      />
+      <p class="text-neutral-600">Check each component's documentation for a list of available CSS custom properties.</p>
+    </section>
+  </div>
+</Layout>

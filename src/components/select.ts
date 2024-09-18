@@ -1,9 +1,11 @@
-import { LitElement, css, html } from 'lit'
+import { css, html, type PropertyValueMap } from 'lit'
 import { customElement, property, query, state } from 'lit/decorators.js'
 import { repeat } from 'lit/directives/repeat.js'
 
-import { TWStyles } from '../lib/.tw-styles.js'
 import baseStyles from '../lib/base-styles.js'
+import { ClassifiedElement } from './classified-element.js'
+
+type Option = { label: any; value: any }
 
 const ToggleIcon = html`<svg
   aria-hidden="true"
@@ -17,9 +19,9 @@ const ToggleIcon = html`<svg
 </svg>`
 
 @customElement('astra-select')
-export default class AstraSelect extends LitElement {
+export default class AstraSelect extends ClassifiedElement {
   static styles = [
-    TWStyles,
+    ...ClassifiedElement.styles,
     baseStyles,
     css`
       #container {
@@ -65,6 +67,13 @@ export default class AstraSelect extends LitElement {
 
       li {
         list-style-type: none;
+        white-space: nowrap;
+      }
+
+      li,
+      .label-trigger {
+        text-overflow: ellipsis;
+        overflow: hidden;
       }
 
       ul {
@@ -100,7 +109,8 @@ export default class AstraSelect extends LitElement {
   @property({ attribute: 'aria-expanded', reflect: true }) ariaExpanded = 'false'
   @property({ attribute: 'placeholder' }) public placeholder = ''
   @property({ attribute: 'value' }) public value = ''
-  @property({ attribute: 'options', type: Array }) public options: Array<{ label: any; value: any }> = [] // using `options` instead of `children` because the DOM keeps removing them unless you include `<slot>` (and its visible)
+  @state() protected label = ''
+  @property({ attribute: 'options', type: Array }) public options: Array<Option> = [] // using `options` instead of `children` because the DOM keeps removing them unless you include `<slot>` (and its visible)
   @property({ attribute: 'disabled', type: Boolean }) disabled = false
   @state() protected isOpen = false
   @query('#options-list') protected optionsListElement!: HTMLElement
@@ -142,15 +152,15 @@ export default class AstraSelect extends LitElement {
     }
   }
 
-  protected renderOption(text: string, value: string) {
+  protected renderOption(opt: Option) {
     return html`<li
       class="option"
       tabindex="0"
       @click=${() => {
-        this.value = value
+        this.value = opt.value
       }}
     >
-      ${text}
+      ${opt.label}
     </li>`
   }
 
@@ -165,25 +175,36 @@ export default class AstraSelect extends LitElement {
     this.removeEventListener('keydown', this.onKeyDown)
   }
 
+  override willUpdate(changedProperties: PropertyValueMap<this>): void {
+    super.willUpdate(changedProperties)
+
+    if (changedProperties.has('value')) {
+      this.label = this.options.find((opt) => opt.value === this.value)?.label
+    }
+  }
+
   constructor() {
     super()
     this.onKeyDown = this.onKeyDown.bind(this)
   }
 
   public override render() {
-    const displayedValue =
-      this.value.length > 0 ? html`<div class="flex-1">${this.value}</div>` : html`<div class="flex-1 opacity-50">${this.placeholder}</div>`
+    const displayedValue = this.value.length > 0 ? this.label : this.placeholder
+
     // TODO place a button in here that serves as the trigger instead of the container itself
     // and then put aria-haspopup="listbox" on it
     return html`
-      <div id="container" aria-haspopup="listbox" tabindex="0" @click=${this.onClickInside} role="listbox">
-        ${displayedValue} ${ToggleIcon}
+      <div id="container" class="" aria-haspopup="listbox" tabindex="0" @click=${this.onClickInside} role="listbox">
+        <div class="flex justify-between flex-auto items-center w-full gap-1">
+          <div class="label-trigger flex-auto truncate max-w-64">${displayedValue}</div>
+          <div class="flex-none">${ToggleIcon}</div>
+        </div>
 
         <ul id="options-list" aria-owns="container" role="menu">
           ${repeat(
             this.options,
             ({ label }) => label,
-            ({ label, value }) => this.renderOption(label, value)
+            (opt) => this.renderOption(opt)
           )}
         </ul>
       </div>

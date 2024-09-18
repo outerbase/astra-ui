@@ -1,0 +1,98 @@
+---
+import { Code } from 'astro/components'
+import AstraText from '../../components/text'
+import ComponentLayout from '../../layouts/Component.astro'
+import Layout from '../../layouts/Layout.astro'
+
+const basicUsage = `<astra-text>Default text</astra-text>`
+
+const variantUsage = `<astra-text variant="h1">Heading 1</astra-text>
+<astra-text variant="h2">Heading 2</astra-text>
+<astra-text variant="h3">Heading 3</astra-text>
+<astra-text variant="h4">Heading 4</astra-text>
+<astra-text variant="label">Label</astra-text>`
+---
+
+<Layout title="Astra-UI - Text Component">
+  <ComponentLayout
+    title="Text"
+    summary="The Text component provides a simple way to display text with different styles and sizes. It's useful for headings, labels, and general text content."
+    hasVariations={true}
+  >
+    <!-- @ts-ignore attributes -->
+    <AstraText variant="h1" slot="preview"><span class="text-white">Hello, world.</span></AstraText>
+
+    <Fragment slot="variations">
+      <div class="space-y-8 w-full text-variations">
+        <div class="space-y-4">
+          <!-- @ts-ignore attributes -->
+          <AstraText variant="h1"><span class="text-black">Heading 1</span></AstraText>
+          <!-- @ts-ignore attributes -->
+          <AstraText variant="h2"><span class="text-black">Heading 2</span></AstraText>
+          <!-- @ts-ignore attributes -->
+          <AstraText variant="h3"><span class="text-black">Heading 3</span></AstraText>
+          <!-- @ts-ignore attributes -->
+          <AstraText variant="h4"><span class="text-black">Heading 4</span></AstraText>
+          <!-- @ts-ignore attributes -->
+          <AstraText variant="label"><span class="text-black">Label</span></AstraText>
+        </div>
+      </div>
+    </Fragment>
+
+    <div slot="usage" class="space-y-12">
+      <section class="space-y-6">
+        <h2 class="text-3xl font-semibold text-neutral-900">Basic Usage</h2>
+        <p class="text-neutral-600">
+          To use the Astra Text component, add the <code class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded"
+            >&lt;astra-text&gt;</code
+          > tag to your HTML:
+        </p>
+        <Code code={basicUsage} lang="html" class="p-4 rounded-lg text-sm" theme="github-dark" />
+      </section>
+
+      <section class="space-y-6">
+        <h2 class="text-3xl font-semibold text-neutral-900">Variants</h2>
+        <p class="text-neutral-600">
+          Choose from different text styles using the <code class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded">variant</code> attribute:
+        </p>
+        <Code code={variantUsage} lang="html" class="p-4 rounded-lg text-sm" theme="github-dark" />
+      </section>
+
+      <section class="space-y-6">
+        <h2 class="text-3xl font-semibold text-neutral-900">Why Use Astra Text?</h2>
+        <ul class="space-y-2 text-neutral-600 list-disc list-inside">
+          <li><strong>Consistency:</strong> Ensures uniform text styles across your application.</li>
+          <li><strong>Simplicity:</strong> Easy to use with minimal setup.</li>
+          <li><strong>Flexibility:</strong> Multiple variants for different text needs.</li>
+          <li><strong>Responsive:</strong> Automatically adapts to light and dark color schemes.</li>
+        </ul>
+      </section>
+
+      <section class="space-y-6">
+        <h2 class="text-3xl font-semibold text-neutral-900">Accessibility</h2>
+        <p class="text-neutral-600">The Astra Text component is designed with accessibility in mind:</p>
+        <ul class="space-y-2 text-neutral-600 list-disc list-inside">
+          <li>It uses semantic HTML elements (label) for better screen reader support.</li>
+          <li>Color contrast ratios are maintained for readability in both light and dark modes.</li>
+          <li>Font sizes and weights are chosen for optimal legibility.</li>
+        </ul>
+      </section>
+    </div>
+  </ComponentLayout>
+</Layout>
+
+<style>
+  .text-variations {
+    --astra-text-color: var(--text-color, #000);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .text-variations {
+      --astra-text-color: var(--text-color, #fff);
+    }
+  }
+
+  .text-variations ::part(label) {
+    color: var(--astra-text-color);
+  }
+</style>

@@ -1,0 +1,159 @@
+---
+import { Code } from 'astro/components'
+import stocksData from '../../../public/stocks.json'
+import AstraComposedChart from '../../components/charts/composed'
+import ComponentLayout from '../../layouts/Component.astro'
+import Layout from '../../layouts/Layout.astro'
+
+const chartTypes = ['line', 'bar', 'column', 'scatter', 'area'] as const
+
+const basicUsage = `<astra-composed-chart
+  type="line"
+  data={stocksData}
+  keyX="Date"
+  keyY="Close"
+  width={600}
+  height={400}
+  header="Stock Prices"
+  subheader="Daily closing prices"
+/>`
+
+const getChartData = (type: (typeof chartTypes)[number]) => {
+  return {
+    layers: [
+      {
+        type: type,
+        result: stocksData.slice(0, 30),
+      },
+    ],
+    options: {
+      xAxisKey: 'Date',
+      yAxisKeys: ['Close'],
+      xAxisLabel: 'Date',
+      yAxisLabel: 'Close Price',
+    },
+    highlights: ['total', 'average', 'percent_change'],
+  }
+}
+---
+
+<Layout title="Astra-UI - Chart Component">
+  <ComponentLayout
+    title="Charts"
+    summary="Charts are powerful tools for visualizing data. They help users understand trends, patterns, and relationships in complex datasets at a glance."
+    hasVariations={true}
+  >
+    <div slot="preview" class="w-full h-[440px]">
+      <!-- @ts-ignore attributes -->
+      <AstraComposedChart
+        type="line"
+        showHighlights={false}
+        data={getChartData('line')}
+        keyX="Date"
+        keyY="Close"
+        width={400}
+        height={400}
+        header="Stock Prices"
+        subheader="Daily closing prices"
+        client:only="lit"
+      />
+    </div>
+
+    <Fragment slot="variations">
+      <div class="space-y-8 w-full">
+        <div class="space-y-4">
+          <h3 class="text-2xl font-semibold text-neutral-900">Chart Types</h3>
+          <div class="grid grid-cols-1 gap-4">
+            {
+              chartTypes.map((type) => (
+                <div class="py-8 w-full h-[300px]">
+                  <h4 class="text-lg font-semibold mb-2 capitalize">{type} Chart</h4>
+                  <!-- @ts-ignore attributes -->
+                  <AstraComposedChart
+                    type={type}
+                    data={getChartData(type)}
+                    showHighlights={false}
+                    keyX="Date"
+                    keyY="Close"
+                    width={800}
+                    height={250}
+                    header={`${type.charAt(0).toUpperCase() + type.slice(1)} Chart`}
+                    subheader="Stock Data Visualization"
+                    client:only="lit"
+                  />
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </Fragment>
+
+    <div slot="usage" class="space-y-12">
+      <section class="space-y-6">
+        <h2 class="text-3xl font-semibold text-neutral-900">Basic Usage</h2>
+        <p class="text-neutral-600">
+          To use the Astra Chart component, add the <code class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded"
+            >&lt;astra-composed-chart&gt;</code
+          > tag to your HTML:
+        </p>
+        <Code code={basicUsage} lang="html" class="p-4 rounded-lg text-sm" theme="github-dark" />
+      </section>
+
+      <section class="space-y-6">
+        <h2 class="text-3xl font-semibold text-neutral-900">Features</h2>
+        <p class="text-neutral-600">The Astra Chart component offers various customization options:</p>
+
+        <div class="space-y-8">
+          <div class="space-y-4">
+            <h3 class="text-2xl font-semibold text-neutral-900">Chart Types</h3>
+            <p class="text-neutral-600">
+              Choose from different chart types using the <code class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded">type</code>
+              attribute: line, bar, column, scatter, and area.
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            <h3 class="text-2xl font-semibold text-neutral-900">Customization</h3>
+            <p class="text-neutral-600">
+              Adjust the chart's appearance with attributes like <code class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded"
+                >width</code
+              >, <code class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded">height</code>,
+              <code class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded">header</code>, and
+              <code class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded">subheader</code>.
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            <h3 class="text-2xl font-semibold text-neutral-900">Data Binding</h3>
+            <p class="text-neutral-600">
+              Specify data keys using <code class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded">keyX</code> and
+              <code class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded">keyY</code> attributes.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="space-y-6">
+        <h2 class="text-3xl font-semibold text-neutral-900">Why Use Astra Charts?</h2>
+        <ul class="space-y-2 text-neutral-600 list-disc list-inside">
+          <li><strong>Simplicity:</strong> Easy to use with a declarative API.</li>
+          <li><strong>Flexibility:</strong> Support for various chart types and customizations.</li>
+          <li><strong>Responsive:</strong> Charts adapt to different screen sizes and color schemes.</li>
+          <li><strong>Performance:</strong> Efficient rendering for smooth user experience.</li>
+          <li><strong>Accessibility:</strong> Built with accessibility in mind for all users.</li>
+        </ul>
+      </section>
+
+      <section class="space-y-6">
+        <h2 class="text-3xl font-semibold text-neutral-900">Accessibility</h2>
+        <p class="text-neutral-600">Astra Charts are designed with accessibility in mind:</p>
+        <ul class="space-y-2 text-neutral-600 list-disc list-inside">
+          <li>Color schemes are chosen for readability and contrast.</li>
+          <li>Charts include proper ARIA labels for screen readers.</li>
+          <li>Interactive elements are keyboard-accessible.</li>
+        </ul>
+      </section>
+    </div>
+  </ComponentLayout>
+</Layout>

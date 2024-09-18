@@ -1,0 +1,56 @@
+---
+import { Code } from 'astro/components'
+import AstraInput from '../../components/input'
+import ComponentLayout from '../../layouts/Component.astro'
+import Layout from '../../layouts/Layout.astro'
+
+const basicUsage = `<astra-input placeholder="Enter your name"></astra-input>`
+---
+
+<Layout title="Astra UI - Input Component">
+  <ComponentLayout
+    title="Input"
+    summary="A flexible input component for collecting user data. It's designed to be simple, accessible, and customizable to fit various use cases in your web applications."
+    hasVariations={true}
+  >
+    <!-- @ts-ignore attributes -->
+    <AstraInput slot="preview" placeholder="Type something..." label="Demo Input" client:only="lit" />
+
+    <Fragment slot="variations">
+      <div class="space-y-8">
+        <div class="space-y-4">
+          <h3 class="text-2xl font-semibold text-neutral-900">Basic Input</h3>
+          <!-- @ts-ignore attributes -->
+          <AstraInput placeholder="Enter your name" client:only="lit" />
+        </div>
+      </div>
+    </Fragment>
+
+    <div slot="usage" class="space-y-12">
+      <section class="space-y-6">
+        <h2 class="text-3xl font-semibold text-neutral-900">Basic Usage</h2>
+        <p class="text-neutral-600">
+          The Astra Input component is straightforward to use. Just add the <code
+            class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded">&lt;astra-input&gt;</code
+          > tag to your HTML:
+        </p>
+        <Code code={basicUsage} lang="html" class="p-4 rounded-lg text-sm" theme="github-dark" />
+      </section>
+
+      <section class="space-y-6">
+        <h2 class="text-3xl font-semibold text-neutral-900">Features</h2>
+        <p class="text-neutral-600">The Astra Input component comes with several useful features:</p>
+      </section>
+
+      <section class="space-y-6">
+        <h2 class="text-3xl font-semibold text-neutral-900">Why Use Astra Input?</h2>
+        <ul class="space-y-2 text-neutral-600 list-disc list-inside">
+          <li><strong>Simplicity:</strong> Easy to use with minimal setup required.</li>
+          <li><strong>Accessibility:</strong> Built-in support for labels and ARIA attributes.</li>
+          <li><strong>Customization:</strong> Use slots to add icons or buttons easily.</li>
+          <li><strong>Responsive:</strong> Automatically adapts to light and dark color schemes.</li>
+        </ul>
+      </section>
+    </div>
+  </ComponentLayout>
+</Layout>

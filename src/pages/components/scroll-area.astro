@@ -1,0 +1,102 @@
+---
+import { Code } from 'astro/components'
+import AstraScrollArea from '../../components/scroll-area'
+import ComponentLayout from '../../layouts/Component.astro'
+import Layout from '../../layouts/Layout.astro'
+
+const basicUsage = `<astra-scroll-area>
+  <div class="h-[1200px] w-[2400px] bg-green-500">
+    <!-- Your scrollable content here -->
+  </div>
+</astra-scroll-area>`
+
+const axisUsage = `<astra-scroll-area axis="vertical">
+  <!-- Vertical scrolling content -->
+</astra-scroll-area>
+
+<astra-scroll-area axis="horizontal">
+  <!-- Horizontal scrolling content -->
+</astra-scroll-area>
+
+<astra-scroll-area axis="both">
+  <!-- Both vertical and horizontal scrolling content -->
+</astra-scroll-area>`
+
+const onScrollUsage = `<astra-scroll-area onScroll="handleScroll" threshold="100">
+  <!-- Scrollable content -->
+</astra-scroll-area>
+
+<script>
+function handleScroll() {
+  console.log('Scrolled more than 100 pixels');
+}
+</script>`
+---
+
+<Layout title="Astra-UI - Scroll Area Component">
+  <ComponentLayout
+    title="Scroll Area"
+    summary="Scroll Areas let you add custom, consistent scrollbars to any content. They're great for creating scrollable sections within your page."
+  >
+    <div class="relative h-52 w-full px-8" slot="preview">
+      <AstraScrollArea client:only="lit"><div class="h-[1200px] w-[2400px] bg-green-500"></div></AstraScrollArea>
+    </div>
+
+    <div slot="usage" class="space-y-12">
+      <section class="space-y-6">
+        <h2 class="text-3xl font-semibold text-neutral-900">Basic Usage</h2>
+        <p class="text-neutral-600">
+          To use the Astra Scroll Area component, wrap your content with the <code
+            class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded">&lt;astra-scroll-area&gt;</code
+          > tag:
+        </p>
+        <Code code={basicUsage} lang="html" class="p-4 rounded-lg text-sm" theme="github-dark" />
+      </section>
+
+      <section class="space-y-6">
+        <h2 class="text-3xl font-semibold text-neutral-900">Features</h2>
+        <p class="text-neutral-600">The Astra Scroll Area component offers some useful options:</p>
+
+        <div class="space-y-8">
+          <div class="space-y-4">
+            <h3 class="text-2xl font-semibold text-neutral-900">Scroll Direction</h3>
+            <p class="text-neutral-600">
+              Control the scroll direction using the <code class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded">axis</code> attribute:
+            </p>
+            <Code code={axisUsage} lang="html" class="p-4 rounded-lg text-sm" theme="github-dark" />
+          </div>
+
+          <div class="space-y-4">
+            <h3 class="text-2xl font-semibold text-neutral-900">Scroll Event Handling</h3>
+            <p class="text-neutral-600">
+              Use the <code class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded">onScroll</code> and <code
+                class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded">threshold</code
+              > attributes to handle scroll events:
+            </p>
+            <Code code={onScrollUsage} lang="html" class="p-4 rounded-lg text-sm" theme="github-dark" />
+          </div>
+        </div>
+      </section>
+
+      <section class="space-y-6">
+        <h2 class="text-3xl font-semibold text-neutral-900">Why Use Astra Scroll Area?</h2>
+        <ul class="space-y-2 text-neutral-600 list-disc list-inside">
+          <li><strong>Consistency:</strong> Same look and feel across different browsers and devices.</li>
+          <li><strong>Customization:</strong> Scrollbars that match your site's design.</li>
+          <li><strong>Flexibility:</strong> Control over scroll direction and event handling.</li>
+          <li><strong>Simplicity:</strong> Easy to implement with just a wrapper element.</li>
+        </ul>
+      </section>
+
+      <section class="space-y-6">
+        <h2 class="text-3xl font-semibold text-neutral-900">Accessibility</h2>
+        <p class="text-neutral-600">The Astra Scroll Area component is built with accessibility in mind:</p>
+        <ul class="space-y-2 text-neutral-600 list-disc list-inside">
+          <li>It uses native scrolling, ensuring compatibility with keyboard navigation and screen readers.</li>
+          <li>The custom scrollbars are purely visual and don't interfere with standard scrolling behavior.</li>
+          <li>Content within the scroll area remains accessible and can be interacted with normally.</li>
+        </ul>
+      </section>
+    </div>
+  </ComponentLayout>
+</Layout>
