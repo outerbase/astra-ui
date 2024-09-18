@@ -3,10 +3,11 @@ interface Props {
   title: string
   summary: string
   previewBg?: string
+  hasVariations?: boolean
 }
 import '../index'
 
-const { title, summary, previewBg } = Astro.props
+const { title, summary, previewBg, hasVariations = false } = Astro.props
 const previewClass = previewBg
   ? `flex items-center justify-center p-40 ${previewBg} rounded-lg`
   : 'flex items-center justify-center p-40 bg-black dark:bg-white rounded-lg'
@@ -14,21 +15,31 @@ const previewClass = previewBg
 
 <style>
   #foo {
-    background-image: url('https://images.unsplash.com/photo-1537420327992-d6e192287183?q=80&w=2576&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+    background: #121212;
   }
 </style>
 <div class="flex flex-col gap-8">
-  <span>Docs / {title}</span>
-  <h1 class="text-2xl font-semibold">{title}</h1>
+  <!-- <span>Docs / {title}</span> -->
+  <h1 class="text-4xl font-bold pt-12 text-neutral-900">{title}</h1>
+
   <p class="text-neutral-600 dark:text-neutral-400">{summary}</p>
 
   <!-- preview -->
   <h2 class="font-semibold">Preview</h2>
   <div id="foo" class={previewClass}><slot name="preview" /></div>
 
+  {
+    hasVariations && (
+      <div>
+        <h2 class="font-semibold mt-8 mb-4">Variations</h2>
+        <div class="grid grid-cols-1 gap-4">
+          <slot name="variations" />
+        </div>
+      </div>
+    )
+  }
+
   <!-- usage -->
-  <h1 class="text-2xl font-semibold">Usage</h1>
-  <p class="text-neutral-600 dark:text-neutral-400">It’s a web component, so it will work in any library.</p>
 
   <!-- answer here -->
   <slot name="usage" />

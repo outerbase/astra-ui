@@ -1,4 +1,6 @@
 ---
+import TableOfContents from './TableOfContents.astro'
+
 interface Props {
   title: string
 }
@@ -8,64 +10,72 @@ const { title } = Astro.props
 const instructions = [
   {
     label: 'Introduction',
-    href: '/i/intro',
+    href: '/',
   },
   {
     label: 'Installation',
-    href: '/i/install',
+    href: '/install',
   },
   {
-    label: 'Themeing',
-    href: '/i/theme',
+    label: 'Theming',
+    href: '/theme',
   },
   {
-    label: 'Changelog',
-    href: '/i/changes',
+    label: 'Changes',
+    href: '/changes',
   },
 ]
 const components = [
   {
     label: 'Button',
-    href: '/c/button',
+    href: '/components/button',
   },
   {
     label: 'Card',
-    href: '/c/card',
+    href: '/components/card',
   },
   {
     label: 'Input',
-    href: '/c/input',
+    href: '/components/input',
   },
   {
     label: 'Text',
-    href: '/c/text',
+    href: '/components/text',
   },
   {
     label: 'Scroll Area',
-    href: '/c/scroll-area',
+    href: '/components/scroll-area',
+  },
+  // {
+  //   label: 'Code Editor',
+  //   href: '/components/code-editor',
+  // },
+  // {
+  //   label: 'Code Editor (Javascript)',
+  //   href: '/components/code-editor-js',
+  // },
+  {
+    label: 'Charts',
+    href: '/components/charts',
   },
   {
-    label: 'Code Editor',
-    href: '/c/code-editor',
+    label: 'Select',
+    href: '/components/select',
   },
-  {
-    label: 'Code Editor (Javascript)',
-    href: '/c/code-editor-js',
-  },
+  // {
+  //   label: 'Modal',
+  //   href: '/components/modal',
+  // },
   //   {
-  //     label: 'Select',
-  //     href: 'select',
+  //     label: 'Table',
+  //     href: '/components/table',
   //   },
-  {
-    label: 'Table',
-    href: '/c/table',
-  },
 ]
 const clickableClasses = 'hover:underline'
 ---
 
 <!doctype html>
-<html lang="en" class="h-screen dark:bg-neutral-900 text-black dark:text-white cursor-default">
+<html lang="en" class="h-screen cursor-default">
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content="" />
@@ -76,7 +86,7 @@ const clickableClasses = 'hover:underline'
     <script>
       function setActiveLinkStyle(isDarkMode: boolean) {
         const element = document.getElementById(window.location.pathname)
-        if (element) element.style.color = isDarkMode ? 'white' : 'black'
+        if (element) element.style.color = isDarkMode ? 'black' : 'white'
       }
 
       document.addEventListener('DOMContentLoaded', () => {
@@ -103,37 +113,54 @@ const clickableClasses = 'hover:underline'
       <div
         class="overflow-scroll h-100 select-none w-72 border-r border-neutral-300 dark:border-neutral-700 p-10 flex-col gap-10 flex text-neutral-600 dark:text-neutral-400"
       >
-        <a href="/"><h1 class="text-2xl">Astra UI</h1></a>
+        <a href="/"><img src="/public/astra-ui.svg" alt="Astra UI" class="w-40" /></a>
         <div class="flex flex-col gap-4">
-          <h2 class="font-bold text-black dark:text-white">Getting Started</h2>
-          <ul class="flex flex-col gap-4">
+          <h3 class="text-neutral-900 font-bold dark:text-white">Getting Started</h3>
+          <ul class="flex text-neutral-600 flex-col gap-4">
             {
               instructions.map(({ label, href }) => (
                 <li id={href} class={clickableClasses}>
-                  <a href={href}>{label}</a>
+                  <a
+                    href={href}
+                    class={`${Astro.url.pathname === href ? 'font-medium text-neutral-900 dark:text-white' : ''} hover:text-neutral-900`}
+                  >
+                    {label}
+                  </a>
                 </li>
               ))
             }
-            <li class="text-neutral-500">Figma - Coming Soon!</li>
           </ul>
         </div>
 
-        <h2 class="font-bold text-black dark:text-white">Components</h2>
+        <h3 class="font-bold text-neutral-900 dark:text-white">Components</h3>
         <div class="flex flex-col gap-4">
-          <ul class="flex flex-col gap-4">
+          <ul class="text-neutral-600 flex flex-col gap-4">
             {
               components.map(({ label, href }) => (
                 <li id={href} class={clickableClasses}>
-                  <a href={href}>{label}</a>
+                  <a
+                    href={href}
+                    class={`${Astro.url.pathname === href ? 'font-medium text-neutral-900 dark:text-white' : ''} hover:text-neutral-900`}
+                  >
+                    {label}
+                  </a>
                 </li>
               ))
             }
-            <li class="text-neutral-500 dark:text-neutral-400">Figma - Coming Soon!</li>
           </ul>
         </div>
       </div>
 
-      <div class="flex-auto p-10 overflow-scroll"><slot /></div>
+      <div class="flex-auto overflow-y-auto relative">
+        <div class="flex">
+          <div class="flex-grow p-10">
+            <div class="max-w-3xl mx-auto">
+              <slot />
+            </div>
+          </div>
+          <TableOfContents />
+        </div>
+      </div>
     </div>
   </body>
 </html>

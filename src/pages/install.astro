@@ -1,0 +1,92 @@
+---
+import { Code } from 'astro:components'
+import Layout from '../layouts/Layout.astro'
+
+const htmlSrcExample = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>My Astra UI App</title>
+    <script src="https://cdn.outerbase.com/astra/latest/astra.js"></script>
+  </head>
+  <body>
+    <astra-text variant="h1">Hello, Astra UI!</astra-text>
+    <astra-button>Click me</astra-button>
+  </body>
+</html>`
+
+const htmlScriptAstraBundle = `<script src="https://cdn.outerbase.com/astra/latest/astra.js"></script>`
+const htmlAstraFromCDN = `<script src="/path/to/astra.js"></script>`
+const npmInstall = `npm install @outerbase/astra-ui`
+const importBundle = `import '@outerbase/astra-ui/bundle'`
+const importComponents = `import { Button, Card, Input, Label, ScrollArea, Select, Table } from '@outerbase/astra-ui/components'`
+---
+
+<Layout title="Installing Astra UI">
+  <div class="max-w-3xl mx-auto space-y-16 py-12">
+    <header class="space-y-4">
+      <h1 class="text-4xl font-bold text-neutral-900">Installation</h1>
+      <p class="text-xl text-neutral-600 leading-relaxed">Get started with Astra UI in your project using one of these simple methods.</p>
+    </header>
+
+    <section class="space-y-8">
+      <h2 class="text-3xl font-semibold text-neutral-900">Quick Start</h2>
+      <div class="space-y-4">
+        <p class="text-neutral-600">The fastest way to try Astra UI is to include it directly in your HTML file:</p>
+        <Code code={htmlSrcExample} lang="html" class="p-4 rounded-lg text-sm" theme="github-dark" />
+        <p class="text-neutral-600">
+          This example includes Astra UI from our CDN and uses two components: <code class="bg-gray-100 px-1 py-0.5 rounded"
+            >astra-text</code
+          > and <code class="bg-gray-100 px-1 py-0.5 rounded">astra-button</code>.
+        </p>
+      </div>
+    </section>
+
+    <section class="space-y-8">
+      <h2 class="text-3xl font-semibold text-neutral-900">Installation Methods</h2>
+
+      <div class="space-y-6">
+        <h3 class="text-2xl font-semibold text-neutral-800">1. CDN</h3>
+        <p class="text-neutral-600">Include Astra UI directly from our CDN by adding this script tag to your HTML:</p>
+        <Code code={htmlScriptAstraBundle} lang="html" class="p-4 rounded-lg text-sm" theme="github-dark" />
+      </div>
+
+      <div class="space-y-6">
+        <h3 class="text-2xl font-semibold text-neutral-800">2. Self-hosting</h3>
+        <p class="text-neutral-600">
+          Download <code class="bg-gray-100 px-1 py-0.5 rounded">astra.js</code> from our GitHub repository and host it yourself:
+        </p>
+        <Code code={htmlAstraFromCDN} lang="html" class="p-4 rounded-lg text-sm" theme="github-dark" />
+        <p class="text-neutral-600">
+          Replace <code class="bg-gray-100 px-1 py-0.5 rounded">/path/to/astra.js</code> with the actual path where you've placed the file.
+        </p>
+      </div>
+
+      <div class="space-y-6">
+        <h3 class="text-2xl font-semibold text-neutral-800">3. NPM</h3>
+        <p class="text-neutral-600">For projects using npm, you can install Astra UI as a package:</p>
+        <Code code={npmInstall} lang="bash" class="p-4 rounded-lg text-sm" theme="github-dark" />
+        <p class="text-neutral-600">Then, import the entire bundle in your JavaScript:</p>
+        <Code code={importBundle} lang="javascript" class="p-4 rounded-lg text-sm" theme="github-dark" />
+        <p class="text-neutral-600">Or import only the components you need:</p>
+        <Code code={importComponents} lang="javascript" class="p-4 rounded-lg text-sm" theme="github-dark" />
+      </div>
+    </section>
+
+    <section class="space-y-6">
+      <h2 class="text-3xl font-semibold text-neutral-900">Next Steps</h2>
+      <p class="text-neutral-600 leading-relaxed">
+        Now that you've installed Astra UI, you're ready to start building! Check out our <a
+          href="/components"
+          class="text-blue-500 hover:underline">component documentation</a
+        > to learn how to use each component in your project.
+      </p>
+      <a
+        href="/components"
+        class="inline-block bg-blue-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-600 transition-colors"
+      >
+        Explore Components
+      </a>
+    </section>
+  </div>
+</Layout>

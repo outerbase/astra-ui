@@ -174,7 +174,8 @@ export default class AstraSelect extends LitElement {
     const displayedValue =
       this.value.length > 0 ? html`<div class="flex-1">${this.value}</div>` : html`<div class="flex-1 opacity-50">${this.placeholder}</div>`
     // TODO place a button in here that serves as the trigger instead of the container itself
-    // and then put aria-haspopup="listbox" on it
+    // and then put aria-haspopup="listbox" on i
+    // TODO @johnny fix the label value selector
     return html`
       <div id="container" aria-haspopup="listbox" tabindex="0" @click=${this.onClickInside} role="listbox">
         ${displayedValue} ${ToggleIcon}

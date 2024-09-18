@@ -1,0 +1,100 @@
+---
+import { Code } from 'astro/components'
+import AstraCard from '../../components/card'
+import ComponentLayout from '../../layouts/Component.astro'
+import Layout from '../../layouts/Layout.astro'
+
+const basicUsage = `<astra-card>A simple card component</astra-card>`
+
+const sizeExample = `
+<astra-card size="base">Base size card</astra-card>
+<astra-card size="small">Small size card</astra-card>
+<astra-card size="compact">Compact size card</astra-card>
+`
+
+const contentExample = `
+<astra-card>
+  <h2>Card Title</h2>
+  <p>This card contains a title and some text content.</p>
+  <astra-button>Action</astra-button>
+</astra-card>
+`
+---
+
+<Layout title="Astra UI - Card Component">
+  <ComponentLayout
+    title="Card"
+    summary="A versatile container for grouping related content and actions. Cards are foundational elements for building interfaces, providing a simple way to organize and present information."
+    hasVariations={true}
+  >
+    <AstraCard slot="preview">
+      <h3 class="text-lg font-semibold mb-2">Card Title</h3>
+      <p class="mb-4">This is a preview of the Astra Card component. It can contain various types of content.</p>
+      <astra-button>Action</astra-button>
+    </AstraCard>
+
+    <Fragment slot="variations">
+      <div class="space-y-8">
+        <div class="space-y-4">
+          <h3 class="text-2xl font-semibold text-neutral-900">Sizes</h3>
+          <div class="space-y-4">
+            <AstraCard size="base">Base size card</AstraCard>
+            <AstraCard size="small">Small size card</AstraCard>
+            <AstraCard size="compact">Compact size card</AstraCard>
+          </div>
+        </div>
+      </div>
+    </Fragment>
+
+    <div slot="usage" class="space-y-12">
+      <section>
+        <h2 class="text-3xl font-semibold text-neutral-900 mb-4">Basic Usage</h2>
+        <p class="text-lg text-neutral-600 mb-6">
+          To use the Astra Card component, simply add the <code class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded"
+            >&lt;astra-card&gt;</code
+          > tag to your HTML. Here's a basic example:
+        </p>
+        <Code code={basicUsage} lang="html" class="p-4 rounded-lg text-sm" theme="github-dark" />
+      </section>
+
+      <section>
+        <h2 class="text-3xl font-semibold text-neutral-900 mb-4">Customization</h2>
+        <p class="text-lg text-neutral-600 mb-6">The Astra Card component offers various customization options:</p>
+
+        <div class="space-y-8">
+          <div>
+            <h3 class="text-2xl font-semibold text-neutral-900 mb-4">Sizes</h3>
+            <p class="text-lg text-neutral-600 mb-4">
+              Adjust the card size with the <code class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded">size</code> attribute:
+            </p>
+            <Code code={sizeExample} lang="html" class="p-4 rounded-lg text-sm" theme="github-dark" />
+          </div>
+
+          <div>
+            <h3 class="text-2xl font-semibold text-neutral-900 mb-4">Flexible Content</h3>
+            <p class="text-lg text-neutral-600 mb-4">
+              Cards can contain various types of content, including text, images, and other Astra UI components:
+            </p>
+            <Code code={contentExample} lang="html" class="p-4 rounded-lg text-sm" theme="github-dark" />
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-3xl font-semibold text-neutral-900 mb-4">Why Use Astra Cards?</h2>
+        <ul class="list-disc list-inside text-lg text-neutral-600 space-y-2">
+          <li><strong>Simplicity:</strong> Easy to use and customize without unnecessary complexity.</li>
+          <li><strong>Flexibility:</strong> Adapt to various content types and layout requirements.</li>
+          <li><strong>Consistency:</strong> Maintain a cohesive look across your application.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-3xl font-semibold text-neutral-900 mb-4">Responsive Design</h2>
+        <p class="text-lg text-neutral-600">
+          The Astra Card automatically adapts to light and dark color schemes, ensuring optimal visibility in different environments.
+        </p>
+      </section>
+    </div>
+  </ComponentLayout>
+</Layout>

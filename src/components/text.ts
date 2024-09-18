@@ -12,6 +12,8 @@ enum TextVariant {
   h4 = 'h4',
 }
 
+enum tailwindClass {}
+
 @customElement('astra-text')
 export default class AstraLabel extends LitElement {
   static styles = [
@@ -21,7 +23,7 @@ export default class AstraLabel extends LitElement {
         display: block;
         font-weight: 500;
         font-family: var(--astra-font-family);
-        color: black;
+        color: var;
         opacity: 0.8;
         cursor: text;
       }

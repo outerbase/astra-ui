@@ -1,0 +1,128 @@
+---
+import { Code } from 'astro/components'
+import AstraButton from '../../components/button'
+import ComponentLayout from '../../layouts/Component.astro'
+import Layout from '../../layouts/Layout.astro'
+
+const basicUsage = `<astra-button>Click me!</astra-button>`
+
+const variantUsage = `<astra-button variant="primary">Primary</astra-button>
+<astra-button variant="secondary">Secondary</astra-button>
+<astra-button variant="transparent">Transparent</astra-button>
+<astra-button variant="destructive">Destructive</astra-button>`
+
+const sizeUsage = `<astra-button size="base">Base</astra-button>
+<astra-button size="small">Small</astra-button>
+<astra-button size="compact">Compact</astra-button>`
+
+const shapeUsage = `<astra-button shape="default">Default</astra-button>
+<astra-button shape="square">Square</astra-button>
+<astra-button shape="circle">Circle</astra-button>`
+---
+
+<Layout title="Astra-UI - Button Component">
+  <ComponentLayout
+    title="Button"
+    summary="Buttons are interactive elements that allow users to trigger actions with a single click or tap. They're a fundamental part of any user interface, guiding users through tasks and interactions."
+    hasVariations={true}
+  >
+    <AstraButton slot="preview">Click me!</AstraButton>
+
+    <Fragment slot="variations">
+      <div class="space-y-8 w-full">
+        <div class="space-y-4">
+          <h3 class="text-2xl font-semibold text-neutral-900">Variants</h3>
+          <div class="flex flex-nowrap gap-4 overflow-x-auto pb-2">
+            <AstraButton variant="primary">Primary</AstraButton>
+            <AstraButton variant="secondary">Secondary</AstraButton>
+            <AstraButton variant="transparent">Transparent</AstraButton>
+            <AstraButton variant="destructive">Destructive</AstraButton>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <h3 class="text-2xl font-semibold text-neutral-900">Sizes</h3>
+          <div class="flex flex-wrap items-center gap-4">
+            <AstraButton size="base">Base</AstraButton>
+            <AstraButton size="small">Small</AstraButton>
+            <AstraButton size="compact">Compact</AstraButton>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <h3 class="text-2xl font-semibold text-neutral-900">Shapes</h3>
+          <div class="flex flex-wrap items-center gap-4">
+            <AstraButton shape="default">Default</AstraButton>
+            <AstraButton shape="square">□</AstraButton>
+            <AstraButton shape="circle">○</AstraButton>
+          </div>
+        </div>
+      </div>
+    </Fragment>
+
+    <div slot="usage" class="space-y-12">
+      <section class="space-y-6">
+        <h2 class="text-3xl font-semibold text-neutral-900">Basic Usage</h2>
+        <p class="text-neutral-600">
+          To use the Astra Button component, simply add the <code class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded"
+            >&lt;astra-button&gt;</code
+          > tag to your HTML:
+        </p>
+        <Code code={basicUsage} lang="html" class="p-4 rounded-lg text-sm" theme="github-dark" />
+      </section>
+
+      <section class="space-y-6">
+        <h2 class="text-3xl font-semibold text-neutral-900">Features</h2>
+        <p class="text-neutral-600">The Astra Button component offers various customization options:</p>
+
+        <div class="space-y-8">
+          <div class="space-y-4">
+            <h3 class="text-2xl font-semibold text-neutral-900">Variants</h3>
+            <p class="text-neutral-600">
+              Choose from different button styles using the <code class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded">variant</code>
+              attribute:
+            </p>
+            <Code code={variantUsage} lang="html" class="p-4 rounded-lg text-sm" theme="github-dark" />
+          </div>
+
+          <div class="space-y-4">
+            <h3 class="text-2xl font-semibold text-neutral-900">Sizes</h3>
+            <p class="text-neutral-600">
+              Adjust the button size with the <code class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded">size</code> attribute:
+            </p>
+            <Code code={sizeUsage} lang="html" class="p-4 rounded-lg text-sm" theme="github-dark" />
+          </div>
+
+          <div class="space-y-4">
+            <h3 class="text-2xl font-semibold text-neutral-900">Shapes</h3>
+            <p class="text-neutral-600">
+              Modify the button shape using the <code class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded">shape</code> attribute:
+            </p>
+            <Code code={shapeUsage} lang="html" class="p-4 rounded-lg text-sm" theme="github-dark" />
+          </div>
+        </div>
+      </section>
+
+      <section class="space-y-6">
+        <h2 class="text-3xl font-semibold text-neutral-900">Why Use Astra Button?</h2>
+        <ul class="space-y-2 text-neutral-600 list-disc list-inside">
+          <li><strong>Simplicity:</strong> Easy to use with minimal setup required.</li>
+          <li><strong>Accessibility:</strong> Built-in support for keyboard navigation and ARIA attributes.</li>
+          <li><strong>Customization:</strong> Multiple variants, sizes, and shapes available.</li>
+          <li><strong>Responsive:</strong> Automatically adapts to light and dark color schemes.</li>
+        </ul>
+      </section>
+
+      <section class="space-y-6">
+        <h2 class="text-3xl font-semibold text-neutral-900">Accessibility</h2>
+        <p class="text-neutral-600">The Astra Button component is designed with accessibility in mind:</p>
+        <ul class="space-y-2 text-neutral-600 list-disc list-inside">
+          <li>It's keyboard accessible and can be activated using the Space or Enter keys.</li>
+          <li>The button has a visible focus indicator for keyboard navigation.</li>
+          <li>
+            You can use the <code class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded">disabled</code> attribute to disable the button
+            when needed.
+          </li>
+        </ul>
+      </section>
+    </div>
+  </ComponentLayout>
+</Layout>

@@ -1,0 +1,48 @@
+---
+
+---
+
+<div class="w-64 sticky top-0 h-screen overflow-y-auto pt-20 p6">
+  <h3 class="text-sm font-semibold text-neutral-900 dark:text-neutral-400 mb-4">Fast Travel</h3>
+  <ul id="toc" class="space-y-2 text-sm"></ul>
+</div>
+
+<script>
+  function scrollToH2(string) {
+    const h2Elements = document.querySelectorAll('h2')
+    for (const element of h2Elements) {
+      if (element.textContent.trim() === string) {
+        element.scrollIntoView({ behavior: 'smooth' })
+        break
+      }
+    }
+  }
+
+  function generateTableOfContents() {
+    const tocList = document.getElementById('toc')
+    const h2Elements = document.querySelectorAll('h2')
+
+    h2Elements.forEach((h2) => {
+      const li = document.createElement('li')
+      const a = document.createElement('a')
+      a.textContent = h2.textContent
+      a.href = '#'
+      a.classList.add(
+        'text-neutral-600',
+        'dark:text-neutral-400',
+        'hover:text-neutral-900',
+        'dark:hover:text-neutral-200',
+        'transition-colors',
+        'duration-200'
+      )
+      a.addEventListener('click', (e) => {
+        e.preventDefault()
+        scrollToH2(h2.textContent.trim())
+      })
+      li.appendChild(a)
+      tocList.appendChild(li)
+    })
+  }
+
+  document.addEventListener('DOMContentLoaded', generateTableOfContents)
+</script>

@@ -1,0 +1,31 @@
+---
+import { Code } from 'astro/components'
+import AstraSelect from '../../components/select'
+import ComponentLayout from '../../layouts/Component.astro'
+import Layout from '../../layouts/Layout.astro'
+
+const usage = `\
+<astra-select placeholder="Select an option">
+  <option value="option1">Option 1</option>
+  <option value="option2">Option 2</option>
+  <option value="option3">Option 3</option>
+</astra-select>
+`
+
+const options = [
+  { label: 'Option 1', value: 'Option 1' },
+  { label: 'Option 2', value: 'Option 2' },
+  { label: 'Option 3', value: 'Option 3' },
+]
+---
+
+<Layout title="Astra-UI">
+  <ComponentLayout title="Select" summary="A customizable select component for choosing options">
+    <AstraSelect slot="preview" placeholder="Select an option" options={options} client:load />
+    <Code slot="usage" code={usage} lang="html" class="p-4 dark:bg-black bg-white" theme="ayu-dark" />
+  </ComponentLayout>
+</Layout>
+
+<script>
+  import '../../components/select'
+</script>
