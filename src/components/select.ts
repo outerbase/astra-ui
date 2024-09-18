@@ -1,4 +1,4 @@
-import { css, html, type PropertyValues } from 'lit'
+import { css, html, type PropertyValueMap } from 'lit'
 import { customElement, property, query, state } from 'lit/decorators.js'
 import { repeat } from 'lit/directives/repeat.js'
 
@@ -175,7 +175,7 @@ export default class AstraSelect extends ClassifiedElement {
     this.removeEventListener('keydown', this.onKeyDown)
   }
 
-  override willUpdate(changedProperties: PropertyValues): void {
+  override willUpdate(changedProperties: PropertyValueMap<this>): void {
     super.willUpdate(changedProperties)
 
     if (changedProperties.has('value')) {
