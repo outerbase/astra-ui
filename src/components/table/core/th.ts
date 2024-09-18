@@ -26,11 +26,14 @@ export class TH extends MutableElement {
   protected override classMap() {
     return {
       ...super.classMap(),
-      'table-cell relative whitespace-nowrap h-[38px]': true, // h-[38px] was added to preserve the height when toggling to <input />
+      'table-cell relative whitespace-nowrap h-[34px]': true, // h-[38px] was added to preserve the height when toggling to <input />
       'cursor-pointer': true,
       'border-b border-theme-table-border dark:border-theme-table-border-dark': true,
       'first:border-l border-t': this.outerBorder,
-      'px-cell-padding-x py-cell-padding-y': true,
+      'px-cell-padding-x align-middle': true,
+      // 'py-cell-padding-y': true,
+      // 'h-full absolute top-0 bottom-0 left-0 right-0': true,
+      // 'h-full': true,
       'text-theme-table-column-content dark:text-theme-table-column-content-dark': true,
       'bg-theme-table-column dark:bg-theme-table-column-dark': !this.dirty && !this.isActive,
       'bg-theme-table-row-selected dark:bg-theme-table-row-selected-dark': !this.dirty && this.isActive, // i.e. this is the column being sorted

@@ -445,42 +445,67 @@ export default class AstraTable extends ClassifiedElement {
     document.documentElement.style.setProperty('--ob-cell-font-family', '"Inter", sans-serif')
   }
 
-  protected renderRows(rows: Array<RowAsRecord>) {
+  protected renderTrash(rows: Array<RowAsRecord>) {
+    return html`<div class="flex-none bg-purple-300 sticky z-10 top-0 left-0 bottom-0">
+      ${repeat(
+        rows,
+        ({ id }) => id,
+        ({ id, values, originalValues, isNew }, rowIndex) => {
+          return html`<div class="even:bg-red-100 !h-[36px]">foo</div>`
+        }
+      )}
+    </div>`
+  }
+
+  protected renderRows(rows: Array<RowAsRecord>, { sticky }: { sticky: boolean }) {
+    if (sticky) {
+      return html`${repeat(
+        rows,
+        ({ id }) => id,
+        ({ id, values, originalValues, isNew }, rowIndex) => {
+          return !this.removedRowUUIDs.has(id)
+            ? html`<astra-tr .selected=${this.selectedRowUUIDs.has(id)} ?new=${isNew} @on-selection=${this._onRowSelection}>
+                <!-- checkmark cell -->
+                ${this.selectableRows
+                  ? html`<astra-td
+                      .position=${{
+                        row: id,
+                        column: '__selected', // our own; not expected to exist in DB
+                      }}
+                      .type=${null}
+                      theme=${this.theme}
+                      ?separate-cells=${true}
+                      ?outer-border=${this.outerBorder}
+                      ?border-b=${this.bottomBorder}
+                      ?blank=${true}
+                      ?is-last-row=${rowIndex === this.rows.length - 1}
+                      ?is-last-column=${false}
+                      ?row-selector="${true}"
+                      ?read-only=${true}
+                      ?interactive=${true}
+                      width="42px"
+                    >
+                      <div class="flex items-center justify-center h-[34px]">
+                        <check-box
+                          ?checked="${this.selectedRowUUIDs.has(id)}"
+                          @toggle-check="${() => this.toggleSelectedRow(id)}"
+                          theme=${this.theme}
+                        />
+                      </div>
+                    </astra-td>`
+                  : null}
+              </astra-tr>`
+            : null
+        }
+      )}`
+    }
+
     return html`${repeat(
       rows,
       ({ id }) => id,
       ({ id, values, originalValues, isNew }, rowIndex) => {
         return !this.removedRowUUIDs.has(id)
           ? html`<astra-tr .selected=${this.selectedRowUUIDs.has(id)} ?new=${isNew} @on-selection=${this._onRowSelection}>
-              <!-- checkmark cell -->
-              ${this.selectableRows && this.showCheckboxColumn
-                ? html`<astra-td
-                    .position=${{
-                      row: id,
-                      column: '__selected', // our own; not expected to exist in DB
-                    }}
-                    .type=${null}
-                    theme=${this.theme}
-                    ?separate-cells=${true}
-                    ?outer-border=${this.outerBorder}
-                    ?border-b=${this.bottomBorder}
-                    ?blank=${true}
-                    ?is-last-row=${rowIndex === this.rows.length - 1}
-                    ?is-last-column=${false}
-                    ?row-selector="${true}"
-                    ?read-only=${true}
-                    ?interactive=${true}
-                    width="42px"
-                  >
-                    <div class="absolute top-0 bottom-0 right-0 left-0 flex items-center justify-center h-full">
-                      <check-box
-                        ?checked="${this.selectedRowUUIDs.has(id)}"
-                        @toggle-check="${() => this.toggleSelectedRow(id)}"
-                        theme=${this.theme}
-                      />
-                    </div>
-                  </astra-td>`
-                : null}
               ${repeat(
                 this.visibleColumns,
                 ({ name }) => name,
@@ -559,10 +584,10 @@ export default class AstraTable extends ClassifiedElement {
     const scrollLeft = scrollContainer?.scrollLeft ?? 0
     const newShowCheckboxColumn = scrollLeft < 42 // 42px is the width of the checkbox column
 
-    if (this.showCheckboxColumn !== newShowCheckboxColumn) {
-      this.showCheckboxColumn = newShowCheckboxColumn
-      this.requestUpdate()
-    }
+    // if (this.showCheckboxColumn !== newShowCheckboxColumn) {
+    //   this.showCheckboxColumn = newShowCheckboxColumn
+    //   this.requestUpdate()
+    // }
   }
 
   protected updateVisibleRows(): void {
@@ -732,7 +757,7 @@ export default class AstraTable extends ClassifiedElement {
               ?blank=${true}
               ?read-only=${this.readonly}
             >
-              <div class="absolute top-0 bottom-0 right-0 left-0 flex items-center justify-center h-full">
+              <div class="h-full flex flex-col items-center justify-center">
                 <check-box
                   theme=${this.theme}
                   ?checked=${this.allRowsSelected}
@@ -750,7 +775,7 @@ export default class AstraTable extends ClassifiedElement {
                       this.allRowsSelected = true
                     }
 
-                    //   dispatch event that row selection changed
+                    // dispatch event that row selection changed
                     this._onRowSelection()
                   }}
                 ></check-box>
@@ -761,93 +786,143 @@ export default class AstraTable extends ClassifiedElement {
 
     return html`<astra-scroll-area ${ref(this.scrollableEl)} threshold=${10} theme=${this.theme} .onScroll=${this.updateTableView}>
       <div class="flex">
-        <div class="flex-none" id="leftSpacer" style=${styleMap({ width: `${leftSpacerWidth}px`, height: '1px' })}></div>
+        <!-- sticky -->
+        <div class="flex flex-none  sticky z-10 top-0 left-0 bottom-0">
+          <div class="flex-none" id="leftSpacer" style=${styleMap({ width: `${leftSpacerWidth}px`, height: '1px' })}></div>
 
-        <div
-          id="table"
-          class=${classMap(tableClasses)}
-          @menuopen=${(event: MenuOpenEvent) => {
-            // this special case is when the same menu is opened after being closed
-            // without this the menu is immediately closed on subsequent triggers
-            if (this.closeLastMenu === event.close) return
+          <div
+            id="table"
+            class=${classMap(tableClasses)}
+            @menuopen=${(event: MenuOpenEvent) => {
+              // this special case is when the same menu is opened after being closed
+              // without this the menu is immediately closed on subsequent triggers
+              if (this.closeLastMenu === event.close) return
 
-            // remember this menu and close it when a subsequent one is opened
-            this.closeLastMenu?.()
-            this.closeLastMenu = event.close
-          }}
-        >
-          <astra-thead>
-            <astra-tr header>
-              <!-- first column of (optional) checkboxes -->
-              <!-- first column of (optional) checkboxes -->
-              ${selectAllCheckbox}
-              ${repeat(
-                this.visibleColumns,
-                ({ name }, _idx) => name,
-                ({ name }, idx) => {
-                  if (idx < this.visibleColumnStartIndex || idx >= this.visibleColumnEndIndex) return null
+              // remember this menu and close it when a subsequent one is opened
+              this.closeLastMenu?.()
+              this.closeLastMenu = event.close
+            }}
+          >
+            <astra-thead>
+              <astra-tr header>
+                <!-- first column of (optional) checkboxes -->
+                <!-- first column of (optional) checkboxes -->
+                ${selectAllCheckbox}
+              </astra-tr>
+            </astra-thead>
 
-                  return html`<astra-th
-                    .options=${this.columnOptions || nothing}
-                    .plugins="${this.plugins}"
-                    installed-plugins=${JSON.stringify(this.installedPlugins)}
-                    table-height=${ifDefined(this._height)}
-                    theme=${this.theme}
-                    value="${this.renamedColumnNames[name] ?? name}"
-                    original-value="${name}"
-                    width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
-                    ?separate-cells=${true}
-                    ?outer-border=${this.outerBorder}
-                    ?menu=${!this.isNonInteractive && !this.readonly && this.hasColumnMenus}
-                    ?with-resizer=${!this.isNonInteractive && !this.staticWidths}
-                    ?is-first-column=${idx === 0 && !this.selectableRows}
-                    ?is-last-column=${idx === this.visibleColumns.length - 1}
-                    ?removable=${true}
-                    ?interactive=${!this.isNonInteractive}
-                    ?is-active=${name === this.activeColumn}
-                    @column-hidden=${this._onColumnHidden}
-                    @column-removed=${this._onColumnRemoved}
-                    @column-plugin-deactivated=${this._onColumnPluginDeactivated}
-                    @resize-start=${this._onColumnResizeStart}
-                    @resize=${this._onColumnResized}
-                    ?read-only=${this.readonly}
-                  >
-                  </astra-th>`
-                }
-              )}
-              ${this.blankFill
-                ? html`<astra-th ?outer-border=${this.outerBorder} ?read-only=${true} fill .value=${null} .originalValue=${null}>
-                    ${this.isNonInteractive || !this.addableColumns
-                      ? ''
-                      : html`<span class="flex items-center absolute top-0 left-2 bottom-0 right-0">
-                          <astra-add-column-trigger></astra-add-column-trigger>
-                        </span>`}
-                  </astra-th>`
-                : ''}
-            </astra-tr>
-          </astra-thead>
+            <astra-rowgroup sticky>${this.renderRows(this.newRows, { sticky: true })}</astra-rowgroup>
+            <astra-rowgroup>
+              <div
+                style=${styleMap({
+                  height: `${Math.max(this.visibleRowStartIndex * this.rowHeight, 0)}px`,
+                  'will-change': 'transform, height',
+                })}
+              ></div>
 
-          <astra-rowgroup sticky>${this.renderRows(this.newRows)}</astra-rowgroup>
-          <astra-rowgroup>
-            <div
-              style=${styleMap({
-                height: `${Math.max(this.visibleRowStartIndex * this.rowHeight, 0)}px`,
-                'will-change': 'transform, height',
-              })}
-            ></div>
+              ${this.renderRows(this.existingVisibleRows, { sticky: true })}
 
-            ${this.renderRows(this.existingVisibleRows)}
+              <div
+                style=${styleMap({
+                  height: `${Math.max((this.rows.length - this.visibleRowEndIndex) * this.rowHeight, 0)}px`,
+                  'will-change': 'transform, height',
+                })}
+              ></div>
+            </astra-rowgroup>
+          </div>
 
-            <div
-              style=${styleMap({
-                height: `${Math.max((this.rows.length - this.visibleRowEndIndex) * this.rowHeight, 0)}px`,
-                'will-change': 'transform, height',
-              })}
-            ></div>
-          </astra-rowgroup>
+          <div class="flex-none" id="rightSpacer" style=${styleMap({ width: `${this.rightSpacerWidth}px`, height: '1px' })}></div>
         </div>
 
-        <div class="flex-none" id="rightSpacer" style=${styleMap({ width: `${this.rightSpacerWidth}px`, height: '1px' })}></div>
+        <!-- non-sticky -->
+        <div class="flex">
+          <div class="flex-none" id="leftSpacer" style=${styleMap({ width: `${leftSpacerWidth}px`, height: '1px' })}></div>
+
+          <div
+            id="table"
+            class=${classMap(tableClasses)}
+            @menuopen=${(event: MenuOpenEvent) => {
+              // this special case is when the same menu is opened after being closed
+              // without this the menu is immediately closed on subsequent triggers
+              if (this.closeLastMenu === event.close) return
+
+              // remember this menu and close it when a subsequent one is opened
+              this.closeLastMenu?.()
+              this.closeLastMenu = event.close
+            }}
+          >
+            <astra-thead>
+              <astra-tr header>
+                <!-- first column of (optional) checkboxes -->
+                <!-- first column of (optional) checkboxes -->
+                ${repeat(
+                  this.visibleColumns,
+                  ({ name }, _idx) => name,
+                  ({ name }, idx) => {
+                    if (idx < this.visibleColumnStartIndex || idx >= this.visibleColumnEndIndex) return null
+
+                    return html`<astra-th
+                      .options=${this.columnOptions || nothing}
+                      .plugins="${this.plugins}"
+                      installed-plugins=${JSON.stringify(this.installedPlugins)}
+                      table-height=${ifDefined(this._height)}
+                      theme=${this.theme}
+                      value="${this.renamedColumnNames[name] ?? name}"
+                      original-value="${name}"
+                      width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
+                      ?separate-cells=${true}
+                      ?outer-border=${this.outerBorder}
+                      ?menu=${!this.isNonInteractive && !this.readonly && this.hasColumnMenus}
+                      ?with-resizer=${!this.isNonInteractive && !this.staticWidths}
+                      ?is-first-column=${idx === 0 && !this.selectableRows}
+                      ?is-last-column=${idx === this.visibleColumns.length - 1}
+                      ?removable=${true}
+                      ?interactive=${!this.isNonInteractive}
+                      ?is-active=${name === this.activeColumn}
+                      @column-hidden=${this._onColumnHidden}
+                      @column-removed=${this._onColumnRemoved}
+                      @column-plugin-deactivated=${this._onColumnPluginDeactivated}
+                      @resize-start=${this._onColumnResizeStart}
+                      @resize=${this._onColumnResized}
+                      ?read-only=${this.readonly}
+                    >
+                    </astra-th>`
+                  }
+                )}
+                ${this.blankFill
+                  ? html`<astra-th ?outer-border=${this.outerBorder} ?read-only=${true} fill .value=${null} .originalValue=${null}>
+                      ${this.isNonInteractive || !this.addableColumns
+                        ? ''
+                        : html`<span class="flex items-center absolute top-0 left-2 bottom-0 right-0">
+                            <astra-add-column-trigger></astra-add-column-trigger>
+                          </span>`}
+                    </astra-th>`
+                  : ''}
+              </astra-tr>
+            </astra-thead>
+
+            <astra-rowgroup sticky>${this.renderRows(this.newRows, { sticky: false })}</astra-rowgroup>
+            <astra-rowgroup>
+              <div
+                style=${styleMap({
+                  height: `${Math.max(this.visibleRowStartIndex * this.rowHeight, 0)}px`,
+                  'will-change': 'transform, height',
+                })}
+              ></div>
+
+              ${this.renderRows(this.existingVisibleRows, { sticky: false })}
+
+              <div
+                style=${styleMap({
+                  height: `${Math.max((this.rows.length - this.visibleRowEndIndex) * this.rowHeight, 0)}px`,
+                  'will-change': 'transform, height',
+                })}
+              ></div>
+            </astra-rowgroup>
+          </div>
+
+          <div class="flex-none" id="rightSpacer" style=${styleMap({ width: `${this.rightSpacerWidth}px`, height: '1px' })}></div>
+        </div>
       </div>
     </astra-scroll-area>`
   }
