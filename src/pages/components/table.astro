@@ -1,5 +1,5 @@
 ---
-import FTable from '../../components/table/core'
+import { Table as FTable } from '../../index'
 import Layout from '../../layouts/Layout.astro'
 const data = [
   {
@@ -234,7 +234,7 @@ const columns = {
 ---
 
 <Layout title="Astra-UI - Table Component">
-  <div class="h-96 relative bg-red-100">
+  <div class="relative h-96">
     <!-- @ts-ignore -->
     <FTable client:only="lit" schema={columns} data={data} selectable-rows outer-border blank-fill />
   </div>
