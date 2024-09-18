@@ -3,7 +3,6 @@ import { TextEditor } from '../../components/universe/index'
 import { KeyboardShortcutsPlugin } from '../../components/universe/plugins/shortcuts'
 import { UndoPlugin } from '../../components/universe/plugins/undo'
 import { HandlebarsPlugin } from '../../components/universe/plugins/handlebars'
-import Layout from '../../layouts/Layout.astro'
 import '../../styles/freedom.css'
 import '../../styles/moondust.css'
 import '../../styles/invasion.css'
@@ -193,7 +192,7 @@ import '../../styles/invasion.css'
   </div>
 </div>
 
-<script type="module">
+<script is:inline type="module">
   document.addEventListener('universe:submit', (event) => {
     console.info('onsubmit', event.detail.text)
   })

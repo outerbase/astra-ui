@@ -39,7 +39,7 @@ function handleScroll() {
     summary="Scroll Areas let you add custom, consistent scrollbars to any content. They're great for creating scrollable sections within your page."
   >
     <div class="relative h-52 w-full px-8" slot="preview">
-      <AstraScrollArea client:load><div class="h-[1200px] w-[2400px] bg-green-500"></div></AstraScrollArea>
+      <AstraScrollArea client:only="lit"><div class="h-[1200px] w-[2400px] bg-green-500"></div></AstraScrollArea>
     </div>
 
     <div slot="usage" class="space-y-12">

@@ -27,6 +27,7 @@ const contentExample = `
     summary="A versatile container for grouping related content and actions. Cards are foundational elements for building interfaces, providing a simple way to organize and present information."
     hasVariations={true}
   >
+    <!-- @ts-ignore attributes -->
     <AstraCard slot="preview">
       <h3 class="text-lg font-semibold mb-2">Card Title</h3>
       <p class="mb-4">This is a preview of the Astra Card component. It can contain various types of content.</p>
@@ -38,8 +39,11 @@ const contentExample = `
         <div class="space-y-4">
           <h3 class="text-2xl font-semibold text-neutral-900">Sizes</h3>
           <div class="space-y-4">
+            <!-- @ts-ignore attributes -->
             <AstraCard size="base">Base size card</AstraCard>
+            <!-- @ts-ignore attributes -->
             <AstraCard size="small">Small size card</AstraCard>
+            <!-- @ts-ignore attributes -->
             <AstraCard size="compact">Compact size card</AstraCard>
           </div>
         </div>

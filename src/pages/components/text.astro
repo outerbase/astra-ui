@@ -19,15 +19,21 @@ const variantUsage = `<astra-text variant="h1">Heading 1</astra-text>
     summary="The Text component provides a simple way to display text with different styles and sizes. It's useful for headings, labels, and general text content."
     hasVariations={true}
   >
+    <!-- @ts-ignore attributes -->
     <AstraText variant="h1" slot="preview"><span class="text-white">Hello, world.</span></AstraText>
 
     <Fragment slot="variations">
       <div class="space-y-8 w-full text-variations">
         <div class="space-y-4">
+          <!-- @ts-ignore attributes -->
           <AstraText variant="h1">Heading 1</AstraText>
+          <!-- @ts-ignore attributes -->
           <AstraText variant="h2">Heading 2</AstraText>
+          <!-- @ts-ignore attributes -->
           <AstraText variant="h3">Heading 3</AstraText>
+          <!-- @ts-ignore attributes -->
           <AstraText variant="h4">Heading 4</AstraText>
+          <!-- @ts-ignore attributes -->
           <AstraText variant="label">Label</AstraText>
         </div>
       </div>

@@ -2,15 +2,6 @@ import { LitElement, css, html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { state } from 'lit/decorators/state.js'
 
-enum DateRangeCellMode {
-  OUT_OF_RANGE,
-  ENABLED,
-  SELECTED_START_NODE,
-  SELECTED_END_NODE,
-  SELECTED,
-  SELECTED_OUT_OF_RANGE,
-}
-
 const DAYS_OF_WEEK = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
 
 @customElement('astra-calendar')

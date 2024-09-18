@@ -26,6 +26,7 @@ const shapeUsage = `<astra-button shape="default">Default</astra-button>
     summary="Buttons are interactive elements that allow users to trigger actions with a single click or tap. They're a fundamental part of any user interface, guiding users through tasks and interactions."
     hasVariations={true}
   >
+    <!-- @ts-ignore attributes -->
     <AstraButton slot="preview">Click me!</AstraButton>
 
     <Fragment slot="variations">
@@ -33,25 +34,35 @@ const shapeUsage = `<astra-button shape="default">Default</astra-button>
         <div class="space-y-4">
           <h3 class="text-2xl font-semibold text-neutral-900">Variants</h3>
           <div class="flex flex-nowrap gap-4 overflow-x-auto pb-2">
+            <!-- @ts-ignore attributes -->
             <AstraButton variant="primary">Primary</AstraButton>
+            <!-- @ts-ignore attributes -->
             <AstraButton variant="secondary">Secondary</AstraButton>
+            <!-- @ts-ignore attributes -->
             <AstraButton variant="transparent">Transparent</AstraButton>
+            <!-- @ts-ignore attributes -->
             <AstraButton variant="destructive">Destructive</AstraButton>
           </div>
         </div>
         <div class="space-y-4">
           <h3 class="text-2xl font-semibold text-neutral-900">Sizes</h3>
           <div class="flex flex-wrap items-center gap-4">
+            <!-- @ts-ignore attributes -->
             <AstraButton size="base">Base</AstraButton>
+            <!-- @ts-ignore attributes -->
             <AstraButton size="small">Small</AstraButton>
+            <!-- @ts-ignore attributes -->
             <AstraButton size="compact">Compact</AstraButton>
           </div>
         </div>
         <div class="space-y-4">
           <h3 class="text-2xl font-semibold text-neutral-900">Shapes</h3>
           <div class="flex flex-wrap items-center gap-4">
+            <!-- @ts-ignore attributes -->
             <AstraButton shape="default">Default</AstraButton>
+            <!-- @ts-ignore attributes -->
             <AstraButton shape="square">□</AstraButton>
+            <!-- @ts-ignore attributes -->
             <AstraButton shape="circle">○</AstraButton>
           </div>
         </div>

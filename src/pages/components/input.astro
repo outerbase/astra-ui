@@ -5,17 +5,6 @@ import ComponentLayout from '../../layouts/Component.astro'
 import Layout from '../../layouts/Layout.astro'
 
 const basicUsage = `<astra-input placeholder="Enter your name"></astra-input>`
-
-const labelExample = `<astra-input label="Email" placeholder="you@example.com"></astra-input>`
-
-const slotExample = `
-<astra-input placeholder="Search...">
-  <svg slot="left" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="11" cy="11" r="8"></circle>
-    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-  </svg>
-  <button slot="right">Search</button>
-</astra-input>`
 ---
 
 <Layout title="Astra UI - Input Component">
@@ -24,13 +13,15 @@ const slotExample = `
     summary="A flexible input component for collecting user data. It's designed to be simple, accessible, and customizable to fit various use cases in your web applications."
     hasVariations={true}
   >
-    <AstraInput slot="preview" placeholder="Type something..." label="Demo Input" />
+    <!-- @ts-ignore attributes -->
+    <AstraInput slot="preview" placeholder="Type something..." label="Demo Input" client:only="lit" />
 
     <Fragment slot="variations">
       <div class="space-y-8">
         <div class="space-y-4">
           <h3 class="text-2xl font-semibold text-neutral-900">Basic Input</h3>
-          <AstraInput placeholder="Enter your name" />
+          <!-- @ts-ignore attributes -->
+          <AstraInput placeholder="Enter your name" client:only="lit" />
         </div>
       </div>
     </Fragment>

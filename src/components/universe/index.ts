@@ -336,7 +336,7 @@ export class TextEditor extends ClassifiedElement {
     div.style.position = 'absolute'
     div.style.visibility = 'hidden'
     div.style.whiteSpace = 'pre-wrap'
-    div.style.wordWrap = this.wordWrap ? 'break-word' : 'normal'
+    // div.style.wordWrap = this.wordWrap ? 'break-word' : 'normal'
     div.style.width = this.wordWrap ? `${textarea.clientWidth}px` : 'auto'
     div.style.font = style.font
     div.style.lineHeight = style.lineHeight
@@ -356,7 +356,7 @@ export class TextEditor extends ClassifiedElement {
     div.style.position = 'absolute'
     div.style.visibility = 'hidden'
     div.style.whiteSpace = 'pre-wrap'
-    div.style.wordWrap = this.wordWrap ? 'break-word' : 'normal'
+    // div.style.wordWrap = this.wordWrap ? 'break-word' : 'normal'
     div.style.width = this.wordWrap ? `${textarea.clientWidth}px` : 'auto'
     div.style.font = style.font
     div.style.lineHeight = style.lineHeight
@@ -376,7 +376,7 @@ export class TextEditor extends ClassifiedElement {
     div.style.position = 'absolute'
     div.style.visibility = 'hidden'
     div.style.whiteSpace = 'pre-wrap'
-    div.style.wordWrap = this.wordWrap ? 'break-word' : 'normal'
+    // div.style.wordWrap = this.wordWrap ? 'break-word' : 'normal'
     div.style.width = this.wordWrap ? `${textarea.clientWidth}px` : 'auto'
     div.style.font = style.font
     div.style.lineHeight = style.lineHeight

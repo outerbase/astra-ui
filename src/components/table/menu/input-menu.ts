@@ -15,7 +15,7 @@ export class InputMenu extends Menu {
     return 'left-0 right-0 top-8'
   }
 
-  protected onMenuSelection(event: Event) {
+  protected onMenuSelection(_event: Event) {
     // TODO needs updated to work with newer menu
     // event.stopPropagation()
     // const { value } = event as MenuSelectedEvent

@@ -21,11 +21,8 @@ const options = [
 
 <Layout title="Astra-UI">
   <ComponentLayout title="Select" summary="A customizable select component for choosing options">
-    <AstraSelect slot="preview" placeholder="Select an option" options={options} client:load />
+    <!-- @ts-ignore attributes -->
+    <AstraSelect slot="preview" placeholder="Select an option" options={options} client:only="lit" />
     <Code slot="usage" code={usage} lang="html" class="p-4 dark:bg-black bg-white" theme="ayu-dark" />
   </ComponentLayout>
 </Layout>
-
-<script>
-  import '../../components/select'
-</script>
