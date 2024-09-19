@@ -823,9 +823,9 @@ export default class AstraTable extends ClassifiedElement {
         : nothing
 
     const stickyLeftColumns = this.showCheckboxColumn
-      ? html`<div class="sticky z-10 left-0">
+      ? html`<div class="sticky z-10 left-0 shadow-[0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_8px_rgb(0,0,0)]">
           <div
-            class="flex-1 ${classMap(tableClasses)}"
+            class="${classMap(tableClasses)}"
             @menuopen=${(event: MenuOpenEvent) => {
               // this special case is when the same menu is opened after being closed
               // without this the menu is immediately closed on subsequent triggers
@@ -883,7 +883,7 @@ export default class AstraTable extends ClassifiedElement {
               </astra-tr>
             </astra-thead>
 
-            <!-- <astra-rowgroup sticky shadow>${this.renderRows(this.newRows, { sticky: true })}</astra-rowgroup> -->
+            <astra-rowgroup sticky shadow>${this.renderRows(this.newRows, { sticky: true })}</astra-rowgroup>
             <astra-rowgroup>
               <div
                 style=${styleMap({

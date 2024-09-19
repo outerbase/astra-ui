@@ -15,8 +15,6 @@ export class TBody extends ClassifiedElement {
       sticky: this.isSticky,
       'top-[39px]': this.isSticky,
       'z-10': this.isSticky,
-      'shadow-[10px_0_5px_-5px_#84cc16]': this.hasShadow,
-      'border-r': true,
     }
   }
 }
