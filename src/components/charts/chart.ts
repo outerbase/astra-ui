@@ -580,7 +580,6 @@ export default class AstraChart extends ClassifiedElement {
           }) ?? []
         )}"
         theme=${this.theme}
-        keyboard-shortcuts
         blank-fill
         border-b
         read-only
