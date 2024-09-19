@@ -526,6 +526,7 @@ export default class AstraTable extends ClassifiedElement {
                       ?hide-dirt=${isNew}
                       ?read-only=${this.readonly}
                       ?is-active=${name === this.activeColumn}
+                      ?is-new=${isNew}
                     >
                     </astra-td>
                   `

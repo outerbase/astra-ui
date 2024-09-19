@@ -288,6 +288,9 @@ export class TableData extends MutableElement {
   @property({ attribute: 'menu', type: Boolean })
   public hasMenu = false
 
+  @property({ attribute: 'is-new', type: Boolean })
+  public isNew = false
+
   @state() menuIsOpen = false
   @state() isContentEditable = true // this property is to toggle off the contenteditableness of to resolve quirky focus and text selection that can happen when, say, right-clicking to trigger the context menu
   @state() protected options = RW_OPTIONS
@@ -470,8 +473,9 @@ export class TableData extends MutableElement {
     let cellContents: TemplateResult<1>
     let cellEditorContents: DirectiveResult<typeof UnsafeHTMLDirective> | undefined
 
-    const classes =
-      value === null || value === undefined ? 'nbsp text-neutral-400 dark:text-neutral-600' : 'nbsp overflow-hidden text-ellipsis'
+    const placeholderTextColorClass = 'text-neutral-400 dark:text-white/50'
+
+    const classes = value === null || value === undefined ? `nbsp ${placeholderTextColorClass}` : 'nbsp overflow-hidden text-ellipsis'
 
     const commonCellContents = html`<div class=${classes} style="line-height: 34px;">
       ${displayValue === null
