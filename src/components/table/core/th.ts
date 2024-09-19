@@ -6,6 +6,7 @@ import { ifDefined } from 'lit/directives/if-defined.js'
 // import subcomponents
 import {
   ColumnHiddenEvent,
+  ColumnPinnedEvent,
   ColumnPluginActivatedEvent,
   ColumnPluginDeactivatedEvent,
   ColumnRemovedEvent,
@@ -60,29 +61,7 @@ export class TH extends MutableElement {
   public installedPlugins: Record<string, PluginWorkspaceInstallationId | undefined> = {}
 
   @property({ attribute: 'options', type: Array })
-  public options: HeaderMenuOptions = [
-    {
-      label: 'Sort A-Z',
-      value: 'sort:alphabetical:ascending',
-    },
-    {
-      label: 'Sort Z-A',
-      value: 'sort:alphabetical:descending',
-    },
-    {
-      label: 'Hide Column',
-      value: 'hide',
-    },
-    {
-      label: 'Rename Column',
-      value: 'rename',
-    },
-    {
-      label: 'Delete Column',
-      value: 'delete',
-      classes: 'text-red-500 dark:text-red-400/90 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10',
-    },
-  ]
+  public options: HeaderMenuOptions = []
 
   @property({ attribute: 'value', type: String })
   override get value(): string | undefined {
@@ -157,6 +136,9 @@ export class TH extends MutableElement {
           })
         )
         return (this.value = this.originalValue ?? '')
+      case 'pin':
+        this.dispatchPinnedEvent(true)
+        return
       default:
         // intentionally let other (e.g. sorting) events pass-through to parent
         dispatchColumnUpdateEvent = true
@@ -170,6 +152,25 @@ export class TH extends MutableElement {
         })
       )
     }
+  }
+
+  protected dispatchPinnedEvent(pinned: boolean) {
+    const name = this.originalValue ?? this.value
+
+    if (!name) {
+      throw new Error('Column has no value or original value to identify it')
+    }
+
+    this.dispatchEvent(
+      new ColumnPinnedEvent({
+        name,
+        data: {
+          previousValue: this.originalValue,
+          value: this.value,
+          pinned,
+        },
+      })
+    )
   }
 
   protected onContextMenu(event: MouseEvent) {
@@ -258,6 +259,7 @@ export class TH extends MutableElement {
     if (changedProperties.has('readonly')) {
       if (this.readonly) {
         this.options = [
+          { label: 'Pin Column', value: 'pin' },
           {
             label: 'Sort A-Z',
             value: 'sort:alphabetical:ascending',
@@ -279,6 +281,7 @@ export class TH extends MutableElement {
         ]
       } else {
         this.options = [
+          { label: 'Pin Column', value: 'pin' },
           {
             label: 'Sort A-Z',
             value: 'sort:alphabetical:ascending',
@@ -329,7 +332,7 @@ export class TH extends MutableElement {
 
     if (this._pluginOptions.length > 0) {
       options.splice(
-        2,
+        3,
         0,
         hasPlugin
           ? {
@@ -346,7 +349,7 @@ export class TH extends MutableElement {
     }
 
     const blankElementClasses = {
-      'absolute top-0 bottom-0 right-0 left-0': true,
+      // 'absolute top-0 bottom-0 right-0 left-0': true,
       dark: this.theme == 'dark',
     }
     const resultContainerClasses = {

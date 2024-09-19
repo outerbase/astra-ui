@@ -237,12 +237,33 @@ const columns = {
   <h1>light</h1>
   <div class="relative h-96">
     <!-- @ts-ignore -->
-    <FTable client:only="lit" schema={columns} data={data} selectable-rows outer-border blank-fill cell-menus column-menus />
+    <FTable
+      client:only="lit"
+      schema={columns}
+      data={data}
+      selectable-rows
+      outer-border
+      blank-fill
+      cell-menus
+      column-menus
+      keyboard-shortcuts
+    />
   </div>
 
   <h1>dark</h1>
   <div class="relative h-96">
     <!-- @ts-ignore -->
-    <FTable client:only="lit" theme="dark" schema={columns} data={data} selectable-rows outer-border blank-fill cell-menus column-menus />
+    <FTable
+      client:only="lit"
+      theme="dark"
+      schema={columns}
+      data={data}
+      selectable-rows
+      outer-border
+      blank-fill
+      cell-menus
+      column-menus
+      keyboard-shortcuts
+    />
   </div>
 </Layout>
