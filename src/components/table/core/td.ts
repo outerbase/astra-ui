@@ -239,7 +239,7 @@ export class TableData extends MutableElement {
     return {
       ...super.classMap(),
       'table-cell relative focus:z-[1]': true,
-      'px-5': this.blank,
+      'px-3': this.blank,
       'border-theme-table-border dark:border-theme-table-border-dark': true,
       'bg-theme-table-row-selected dark:bg-theme-table-row-selected-dark': this.isActive && (!this.dirty || this.hideDirt), // i.e. this is the column being sorted
       'bg-theme-table-cell-dirty dark:bg-theme-table-cell-dirty-dark': this.dirty && !this.hideDirt, // dirty cells
