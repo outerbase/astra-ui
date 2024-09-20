@@ -155,7 +155,7 @@ export default class AstraTable extends ClassifiedElement {
   @state() private showCheckboxColumn = true
 
   // sticky pinned columns
-  @state() private pinnedColumnOgNames: Columns = [{ name: 'genres' }]
+  @state() private pinnedColumns: Columns = []
 
   // prevent leaks
   private rowHeightTimeoutId: number | null = null
@@ -163,7 +163,10 @@ export default class AstraTable extends ClassifiedElement {
   protected updateVisibleColumnsAndSpacers() {
     this.visibleColumns = this.columns.filter(
       ({ name, status }) =>
-        status !== ColumnStatus.deleted && this.hiddenColumnNames.indexOf(name) === -1 && this.deletedColumnNames.indexOf(name) === -1
+        status !== ColumnStatus.deleted &&
+        this.hiddenColumnNames.indexOf(name) === -1 &&
+        this.deletedColumnNames.indexOf(name) === -1 &&
+        !this.pinnedColumns.find((c) => c.name === name)
     )
 
     const scrollContainer = this.scrollableEl?.value?.scroller?.value
@@ -199,8 +202,6 @@ export default class AstraTable extends ClassifiedElement {
     // Find newStartIndex and newEndIndex in a single pass
     for (let i = 0; i < this.visibleColumns.length; i++) {
       const columnWidth = this.widthForColumnType(this.visibleColumns[i].name, this.columnWidthOffsets[this.visibleColumns[i].name])
-
-      // 42 here is because the checkbox cells are 42px; without this everything is skewed by the width of them
 
       if (!foundStartIndex && accumulatedWidth + columnWidth > scrollLeft) {
         newStartIndex = i
@@ -476,7 +477,7 @@ export default class AstraTable extends ClassifiedElement {
                       ?read-only=${true}
                       ?interactive=${true}
                     >
-                      <div class="absolute top-0 bottom-0 right-0 left-0 flex items-center justify-center">
+                      <div class="flex items-center justify-center h-[34px]">
                         <check-box
                           ?checked="${this.selectedRowUUIDs.has(id)}"
                           @toggle-check="${() => this.toggleSelectedRow(id)}"
@@ -486,7 +487,7 @@ export default class AstraTable extends ClassifiedElement {
                     </astra-td>`
                   : null}
                 ${repeat(
-                  this.pinnedColumnOgNames,
+                  this.pinnedColumns,
                   ({ name }) => name,
                   ({ name }, idx) => {
                     const absoluteIdx = idx + this.visibleColumnStartIndex
@@ -838,7 +839,7 @@ export default class AstraTable extends ClassifiedElement {
               <astra-tr header>
                 ${selectAllCheckbox}
                 ${repeat(
-                  this.pinnedColumnOgNames,
+                  this.pinnedColumns,
                   ({ name }, _idx) => name,
                   ({ name }, idx) => {
                     return html`<astra-th
@@ -867,8 +868,8 @@ export default class AstraTable extends ClassifiedElement {
                       @column-pinned=${(ev: ColumnPinnedEvent) => {
                         const column = this.columns.find((c) => c.name === ev.name)
                         if (column) {
-                          this.pinnedColumnOgNames.push(column)
-                          this.requestUpdate('pinnedColumnOgNames')
+                          this.pinnedColumns.push(column)
+                          this.requestUpdate('pinnedColumns')
                         }
                       }}
                       ?read-only=${this.readonly}
@@ -931,7 +932,7 @@ export default class AstraTable extends ClassifiedElement {
                     ({ name }, idx) => {
                       if (idx < this.visibleColumnStartIndex || idx >= this.visibleColumnEndIndex) return null
                       // TODO @johnny make this more efficient
-                      if (this.pinnedColumnOgNames.find((c) => c.name === name)) return null // skip pinned columns
+                      if (this.pinnedColumns.find((c) => c.name === name)) return null // skip pinned columns
 
                       return html`<astra-th
                         .options=${this.columnOptions || nothing}
@@ -959,8 +960,8 @@ export default class AstraTable extends ClassifiedElement {
                         @column-pinned=${(ev: ColumnPinnedEvent) => {
                           console.log('pinned', ev.name)
                           const column = this.columns.find((c) => c.name === ev.name)
-                          if (column) this.pinnedColumnOgNames.push(column)
-                          this.requestUpdate('pinnedColumnOgNames')
+                          if (column) this.pinnedColumns.push(column)
+                          this.requestUpdate('pinnedColumns')
                           console.log('column', column)
                         }}
                         ?read-only=${this.readonly}
