@@ -489,8 +489,6 @@ export default class AstraTable extends ClassifiedElement {
                   this.pinnedColumnOgNames,
                   ({ name }) => name,
                   ({ name }, idx) => {
-                    if (idx < this.visibleColumnStartIndex || idx >= this.visibleColumnEndIndex) return null
-
                     const absoluteIdx = idx + this.visibleColumnStartIndex
                     const installedPlugin = this.plugins?.find(
                       ({ pluginWorkspaceId }) => pluginWorkspaceId === this.installedPlugins?.[name]?.plugin_workspace_id
@@ -843,8 +841,6 @@ export default class AstraTable extends ClassifiedElement {
                   this.pinnedColumnOgNames,
                   ({ name }, _idx) => name,
                   ({ name }, idx) => {
-                    if (idx < this.visibleColumnStartIndex || idx >= this.visibleColumnEndIndex) return null
-
                     return html`<astra-th
                       .options=${this.columnOptions || nothing}
                       .plugins="${this.plugins}"
