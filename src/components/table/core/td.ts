@@ -239,6 +239,7 @@ export class TableData extends MutableElement {
     return {
       ...super.classMap(),
       'table-cell relative focus:z-[1]': true,
+      'py-1.5': true,
       // 'px-3': this.blank,
       'border-theme-table-border dark:border-theme-table-border-dark': true,
       'bg-theme-table-row-selected dark:bg-theme-table-row-selected-dark': this.isActive && (!this.dirty || this.hideDirt), // i.e. this is the column being sorted
@@ -470,10 +471,9 @@ export class TableData extends MutableElement {
     let cellContents: TemplateResult<1>
     let cellEditorContents: DirectiveResult<typeof UnsafeHTMLDirective> | undefined
 
-    const classes =
-      value === null || value === undefined ? 'nbsp text-neutral-400 dark:text-neutral-600' : 'nbsp overflow-hidden text-ellipsis'
+    const classes = value === null || value === undefined ? 'text-neutral-400 dark:text-neutral-600' : 'overflow-hidden text-ellipsis'
 
-    const commonCellContents = html`<div class=${classes} style="line-height: 34px;">
+    const commonCellContents = html`<div class="${classes}">
       ${displayValue === null
         ? 'NULL'
         : displayValue === undefined
@@ -520,7 +520,7 @@ export class TableData extends MutableElement {
 
     const themeClass = this.theme === 'dark' ? 'dark' : ''
     const inputEl = this.isEditing // &nbsp; prevents the row from collapsing (in height) when there is only 1 column
-      ? html`<div class="${themeClass}" style="line-height: 34px;">&nbsp;<input .value=${typeof displayValue === 'string' ? displayValue : (displayValue ?? '')} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
+      ? html`<div class="${themeClass}">&nbsp;<input .value=${typeof displayValue === 'string' ? displayValue : (displayValue ?? '')} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
       : html``
     const emptySlot = this.blank ? html`<slot></slot>` : html``
     const menuOptions = this.dirty

@@ -477,8 +477,8 @@ export default class AstraTable extends ClassifiedElement {
                       ?read-only=${true}
                       ?interactive=${true}
                     >
-                      <div class="flex items-center justify-center h-[34px]">
-                        <check-box
+                      <div class="flex items-center justify-center">
+                        &#8203;<check-box
                           ?checked="${this.selectedRowUUIDs.has(id)}"
                           @toggle-check="${() => this.toggleSelectedRow(id)}"
                           theme=${this.theme}
@@ -796,27 +796,30 @@ export default class AstraTable extends ClassifiedElement {
               ?blank=${true}
               ?read-only=${this.readonly}
             >
-              <check-box
-                theme=${this.theme}
-                ?checked=${this.allRowsSelected}
-                @click=${(event: MouseEvent) => {
-                  event.preventDefault()
-                }}
-                @toggle-check=${() => {
-                  const everyRowIsChecked = this.rows.length === this.selectedRowUUIDs.size
+              <div class="flex items-center justify-center">
+                &#8203;
+                <check-box
+                  theme=${this.theme}
+                  ?checked=${this.allRowsSelected}
+                  @click=${(event: MouseEvent) => {
+                    event.preventDefault()
+                  }}
+                  @toggle-check=${() => {
+                    const everyRowIsChecked = this.rows.length === this.selectedRowUUIDs.size
 
-                  if (everyRowIsChecked) {
-                    this.selectedRowUUIDs = new Set()
-                    this.allRowsSelected = false
-                  } else {
-                    this.selectedRowUUIDs = new Set(this.rows.map(({ id }) => id))
-                    this.allRowsSelected = true
-                  }
+                    if (everyRowIsChecked) {
+                      this.selectedRowUUIDs = new Set()
+                      this.allRowsSelected = false
+                    } else {
+                      this.selectedRowUUIDs = new Set(this.rows.map(({ id }) => id))
+                      this.allRowsSelected = true
+                    }
 
-                  // dispatch event that row selection changed
-                  this._onRowSelection()
-                }}
-              ></check-box>
+                    // dispatch event that row selection changed
+                    this._onRowSelection()
+                  }}
+                ></check-box>
+              </div>
             </astra-th>
           `
         : nothing

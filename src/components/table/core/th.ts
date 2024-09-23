@@ -27,7 +27,8 @@ export class TH extends MutableElement {
   protected override classMap() {
     return {
       ...super.classMap(),
-      'table-cell relative whitespace-nowrap h-[34px]': true, // h-[38px] was added to preserve the height when toggling to <input />
+      'table-cell relative whitespace-nowrap': true, // h-[38px] was added to preserve the height when toggling to <input />
+      'h-9': true,
       'cursor-pointer': true,
       'border-b border-theme-table-border dark:border-theme-table-border-dark': true,
       'first:border-l border-t': this.outerBorder,
