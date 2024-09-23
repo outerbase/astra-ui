@@ -410,18 +410,20 @@ export default class AstraTable extends ClassifiedElement {
   // dynamically adjust the table's width when columns are being resized
   // this variable is utilized while updating widths on('mousemove')
   private _previousWidth = 0
-  private _onColumnResizeStart() {
-    const table = this.shadowRoot?.getElementById('table')
-    if (!table) throw new Error('Unexpectedly missing a table')
-
-    this._previousWidth = table.clientWidth
+  private _onColumnResizeStart(tableId: string) {
+    return () => {
+      const table = this.shadowRoot?.getElementById(tableId)
+      if (!table) throw new Error('Unexpectedly missing a table')
+      this._previousWidth = table.clientWidth
+    }
   }
 
-  private _onColumnResized({ delta }: ResizeEvent) {
-    const table = this.shadowRoot?.getElementById('table')
-    if (!table) throw new Error('Unexpectedly missing a table')
-
-    table.style.width = `${this._previousWidth + delta}px`
+  private _onColumnResized(tableId: string) {
+    return ({ delta }: ResizeEvent) => {
+      const table = this.shadowRoot?.getElementById(tableId)
+      if (!table) throw new Error('Unexpectedly missing a table')
+      table.style.width = `${this._previousWidth + delta}px`
+    }
   }
 
   private _onColumnPluginDeactivated({ column }: ColumnPluginDeactivatedEvent) {
@@ -686,10 +688,17 @@ export default class AstraTable extends ClassifiedElement {
     }
 
     // set table width
-    const table = this.shadowRoot?.getElementById('table')
-    if (!table) throw new Error('Unexpectedly missing a table')
-    this._previousWidth = table.clientWidth
-    table.style.width = `${this._previousWidth}px`
+    // HERE WORK HERE JOHNNY
+    //  instead we want this.tableRef
+    const stickyT = this.shadowRoot?.getElementById('sticky-table')
+    if (!stickyT) throw new Error('Unexpectedly missing a table')
+    this._previousWidth = stickyT.clientWidth
+    stickyT.style.width = `${this._previousWidth}px`
+
+    const unstickyT = this.shadowRoot?.getElementById('unsticky-table')
+    if (!unstickyT) throw new Error('Unexpectedly missing a table')
+    this._previousWidth = unstickyT.clientWidth
+    unstickyT.style.width = `${this._previousWidth}px`
 
     // ensure that `this.rowHeight` is correct
     // measure the height of each row
@@ -792,6 +801,7 @@ export default class AstraTable extends ClassifiedElement {
             <astra-th
               theme=${this.theme}
               table-height=${ifDefined(this._height)}
+              width="32px"
               .value=${null}
               .originalValue=${null}
               ?separate-cells=${true}
@@ -831,6 +841,7 @@ export default class AstraTable extends ClassifiedElement {
     const stickyLeftColumns = this.showCheckboxColumn
       ? html`<div class="sticky z-10 left-0 shadow-[0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_8px_rgb(0,0,0)]">
           <div
+            id="sticky-table"
             class="${classMap(tableClasses)}"
             @menuopen=${(event: MenuOpenEvent) => {
               // this special case is when the same menu is opened after being closed
@@ -870,8 +881,8 @@ export default class AstraTable extends ClassifiedElement {
                       @column-hidden=${this._onColumnHidden}
                       @column-removed=${this._onColumnRemoved}
                       @column-plugin-deactivated=${this._onColumnPluginDeactivated}
-                      @resize-start=${this._onColumnResizeStart}
-                      @resize=${this._onColumnResized}
+                      @resize-start=${this._onColumnResizeStart('sticky-table')}
+                      @resize=${this._onColumnResized('sticky-table')}
                       @column-pinned=${(ev: ColumnPinnedEvent) => {
                         const column = this.columns.find((c) => c.name === ev.name)
                         if (column) {
@@ -918,7 +929,7 @@ export default class AstraTable extends ClassifiedElement {
             ${stickyLeftColumns}
 
             <div
-              id="table"
+              id="unsticky-table"
               class="flex-1 ${classMap(tableClasses)}"
               @menuopen=${(event: MenuOpenEvent) => {
                 // this special case is when the same menu is opened after being closed
@@ -962,8 +973,8 @@ export default class AstraTable extends ClassifiedElement {
                         @column-hidden=${this._onColumnHidden}
                         @column-removed=${this._onColumnRemoved}
                         @column-plugin-deactivated=${this._onColumnPluginDeactivated}
-                        @resize-start=${this._onColumnResizeStart}
-                        @resize=${this._onColumnResized}
+                        @resize-start=${this._onColumnResizeStart('unsticky-table')}
+                        @resize=${this._onColumnResized('unsticky-table')}
                         @column-pinned=${(ev: ColumnPinnedEvent) => {
                           console.log('pinned', ev.name)
                           const column = this.columns.find((c) => c.name === ev.name)

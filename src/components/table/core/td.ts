@@ -445,6 +445,10 @@ export class TableData extends MutableElement {
         this.removeAttribute('first-cell')
       }
     }
+
+    if (changedProperties.has('width') && this.width && this.style) {
+      this.style.width = this.width
+    }
   }
 
   public override updated(changedProperties: PropertyValues<this>) {
@@ -556,7 +560,7 @@ export class TableData extends MutableElement {
     const menuEl =
       this.isEditing || this.blank
         ? nothing
-        : html`<span
+        : html`<div
             ${ref(this.contentEditableWrapper)}
             class="outline-none caret-transparent select-none"
             contenteditable="${this.isContentEditable}"
@@ -582,7 +586,7 @@ export class TableData extends MutableElement {
                   ${contents} ${editorViaWormhole}
                 </astra-td-menu>`
               : html`${contents} ${editorViaWormhole}`}
-          </span>`
+          </div>`
 
     return this.isEditing ? inputEl : this.blank ? emptySlot : menuEl
   }
