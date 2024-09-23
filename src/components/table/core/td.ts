@@ -66,6 +66,12 @@ export class TableData extends MutableElement {
         -moz-backdrop-filter: blur(var(--astra-table-backdrop-blur));
         -o-backdrop-filter: blur(var(--astra-table-backdrop-blur));
         -ms-backdrop-filter: blur(var(--astra-table-backdrop-blur));
+
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
     `,
   ]
@@ -239,8 +245,7 @@ export class TableData extends MutableElement {
     return {
       ...super.classMap(),
       'table-cell relative focus:z-[1]': true,
-      'py-1.5': true,
-      // 'px-3': this.blank,
+      'h-4': true,
       'border-theme-table-border dark:border-theme-table-border-dark': true,
       'bg-theme-table-row-selected dark:bg-theme-table-row-selected-dark': this.isActive && (!this.dirty || this.hideDirt), // i.e. this is the column being sorted
       'bg-theme-table-cell-dirty dark:bg-theme-table-cell-dirty-dark': this.dirty && !this.hideDirt, // dirty cells
@@ -477,7 +482,7 @@ export class TableData extends MutableElement {
 
     const classes = value === null || value === undefined ? 'text-neutral-400 dark:text-neutral-600' : 'overflow-hidden text-ellipsis'
 
-    const commonCellContents = html`<div class="${classes}">
+    const commonCellContents = html`<div class="h-full ${classes}">
       ${displayValue === null
         ? 'NULL'
         : displayValue === undefined
@@ -549,7 +554,7 @@ export class TableData extends MutableElement {
       </hans-wormhole>
     `
     const contents = html`
-      <div class="flex items-center px-cell-padding-x ${this.blank ? 'justify-center' : null}">
+      <div class="flex items-center px-cell-padding-x h-full ${this.blank ? 'justify-center' : null}">
         <span class="flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
         ${pluginAccessory}
       </div>
@@ -562,7 +567,7 @@ export class TableData extends MutableElement {
         ? nothing
         : html`<div
             ${ref(this.contentEditableWrapper)}
-            class="outline-none caret-transparent select-none"
+            class="outline-none caret-transparent select-none h-full"
             contenteditable="${this.isContentEditable}"
             spellcheck="false"
             autocorrect="off"

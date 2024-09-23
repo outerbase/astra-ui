@@ -482,7 +482,7 @@ export default class AstraTable extends ClassifiedElement {
                       ?read-only=${true}
                       ?interactive=${true}
                     >
-                      <div class="flex items-center justify-center">
+                      <div class="flex items-center justify-center absolute top-0 bottom-0 right-0 left-0">
                         &#8203;<check-box
                           ?checked="${this.selectedRowUUIDs.has(id)}"
                           @toggle-check="${() => this.toggleSelectedRow(id)}"
@@ -822,7 +822,7 @@ export default class AstraTable extends ClassifiedElement {
               ?blank=${true}
               ?read-only=${this.readonly}
             >
-              <div class="flex items-center justify-center">
+              <div class="flex items-center justify-center absolute top-0 bottom-0 right-0 left-0">
                 &#8203;
                 <check-box
                   theme=${this.theme}

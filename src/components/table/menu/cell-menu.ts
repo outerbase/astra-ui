@@ -9,7 +9,7 @@ export class CellMenu extends Menu {
 
   public override render() {
     return html`
-      <div class="whitespace-nowrap text-ellipsis overflow-hidden w-full focus:z-[1]">
+      <div class="whitespace-nowrap text-ellipsis overflow-hidden w-full focus:z-[1] h-full">
         <slot></slot>
       </div>
       ${super.render()}
