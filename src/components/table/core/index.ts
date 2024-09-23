@@ -113,6 +113,8 @@ export default class AstraTable extends ClassifiedElement {
   @property({ attribute: 'blank-fill', type: Boolean })
   public blankFill = false
 
+  @state() contentScrollsHorizontally = false
+
   @property({ attribute: 'column-width-offsets', type: Object })
   public columnWidthOffsets: Record<string, number | undefined> = {}
 
@@ -246,6 +248,7 @@ export default class AstraTable extends ClassifiedElement {
     super()
     this.updateTableView = this.updateTableView.bind(this)
     this.onKeyDown = this.onKeyDown.bind(this)
+    this.checkScrollable = this.checkScrollable.bind(this)
   }
 
   protected closeLastMenu?: () => void
@@ -598,7 +601,7 @@ export default class AstraTable extends ClassifiedElement {
                   `
                 }
               )}
-              ${this.blankFill
+              ${this.blankFill && !this.contentScrollsHorizontally
                 ? html`<astra-td
                     ?outer-border=${false}
                     ?read-only=${true}
@@ -776,12 +779,21 @@ export default class AstraTable extends ClassifiedElement {
     }
   }
 
+  override connectedCallback(): void {
+    super.connectedCallback()
+    window.addEventListener('resize', this.checkScrollable)
+    // Initial check
+    // determines whether we show the filler
+    this.updateComplete.then(() => setTimeout(this.checkScrollable, 0))
+  }
+
   public override disconnectedCallback() {
     super.disconnectedCallback()
     document.removeEventListener('keydown', this.onKeyDown)
     if (this.rowHeightTimeoutId !== null) {
       clearTimeout(this.rowHeightTimeoutId)
     }
+    window.removeEventListener('resize', this.checkScrollable)
   }
 
   public override render() {
@@ -987,7 +999,7 @@ export default class AstraTable extends ClassifiedElement {
                       </astra-th>`
                     }
                   )}
-                  ${this.blankFill
+                  ${this.blankFill && !this.contentScrollsHorizontally
                     ? html`<astra-th ?outer-border=${this.outerBorder} ?read-only=${true} fill .value=${null} .originalValue=${null}>
                         ${this.isNonInteractive || !this.addableColumns
                           ? ''
@@ -1024,5 +1036,10 @@ export default class AstraTable extends ClassifiedElement {
         </div>
       </astra-scroll-area>
     `
+  }
+
+  private checkScrollable() {
+    this.contentScrollsHorizontally =
+      this.scrollableEl!.value!.scroller!.value!.clientWidth < this.scrollableEl!.value!.scroller!.value!.scrollWidth
   }
 }
