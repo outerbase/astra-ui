@@ -155,7 +155,7 @@ export default class AstraTable extends ClassifiedElement {
   @state() private showCheckboxColumn = true
 
   // sticky pinned columns
-  @state() private pinnedColumns: Columns = []
+  @property({ attribute: 'pinned-columns', type: Array }) pinnedColumns: Columns = []
 
   // prevent leaks
   private rowHeightTimeoutId: number | null = null
@@ -760,6 +760,10 @@ export default class AstraTable extends ClassifiedElement {
     if (changedProperties.has('hiddenColumnNames') || changedProperties.has('schema') || changedProperties.has('rows')) {
       // without the settimeout, toggling between two tabs in Dashboard causes us to see a flat/collapsed/empty table, while a delay of 0s resolves it
       setTimeout(() => this.updateTableView(), 0)
+    }
+
+    if (changedProperties.has('pinnedColumns')) {
+      this.updateTableView()
     }
   }
 
