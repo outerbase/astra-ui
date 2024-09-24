@@ -244,8 +244,8 @@ export class TableData extends MutableElement {
   protected override classMap() {
     return {
       ...super.classMap(),
-      'table-cell relative focus:z-[1]': true,
-      'h-4': true,
+      'relative focus:z-[1]': true,
+      'h-8': true,
       'border-theme-table-border dark:border-theme-table-border-dark': true,
       'bg-theme-table-row-selected dark:bg-theme-table-row-selected-dark': this.isActive && (!this.dirty || this.hideDirt), // i.e. this is the column being sorted
       'bg-theme-table-cell-dirty dark:bg-theme-table-cell-dirty-dark': this.dirty && !this.hideDirt, // dirty cells
@@ -256,7 +256,7 @@ export class TableData extends MutableElement {
         this.resizable || // include or it looks funny that a resize handler is above it
         (this.separateCells && this.isLastColumn && this.outerBorder) || // include last column when outerBorder
         (this.separateCells && !this.isLastColumn), // internal cell walls
-      'first:border-l': this.separateCells && this.outerBorder, // left/right borders when the `separate-cells` attribute is set
+      // 'first:border-l': this.separateCells && this.outerBorder, // left/right borders when the `separate-cells` attribute is set
       'border-b': !this.isLastRow || (this.isLastRow && this.outerBorder) || (this.isLastRow && this.bottomBorder), // bottom border unless last row
     }
   }
@@ -482,7 +482,7 @@ export class TableData extends MutableElement {
 
     const classes = value === null || value === undefined ? 'text-neutral-400 dark:text-neutral-600' : 'overflow-hidden text-ellipsis'
 
-    const commonCellContents = html`<div class="h-full ${classes}">
+    const commonCellContents = html`<div class="${classes}">
       ${displayValue === null
         ? 'NULL'
         : displayValue === undefined
@@ -554,7 +554,7 @@ export class TableData extends MutableElement {
       </hans-wormhole>
     `
     const contents = html`
-      <div class="flex items-center px-cell-padding-x h-full ${this.blank ? 'justify-center' : null}">
+      <div class="flex items-center px-cell-padding-x ${this.blank ? 'justify-center' : null}">
         <span class="flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
         ${pluginAccessory}
       </div>
@@ -567,7 +567,7 @@ export class TableData extends MutableElement {
         ? nothing
         : html`<div
             ${ref(this.contentEditableWrapper)}
-            class="outline-none caret-transparent select-none h-full"
+            class="outline-none caret-transparent select-none truncate flex-auto"
             contenteditable="${this.isContentEditable}"
             spellcheck="false"
             autocorrect="off"

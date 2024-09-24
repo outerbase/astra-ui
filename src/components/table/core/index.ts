@@ -1,6 +1,5 @@
 import { html, nothing, type PropertyValueMap } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
-import { classMap } from 'lit/directives/class-map.js'
 import { ifDefined } from 'lit/directives/if-defined.js'
 import { createRef, ref, type Ref } from 'lit/directives/ref.js'
 import { repeat } from 'lit/directives/repeat.js'
@@ -12,7 +11,6 @@ import {
   ColumnPinnedEvent,
   ColumnPluginDeactivatedEvent,
   ColumnRemovedEvent,
-  MenuOpenEvent,
   ResizeEvent,
   RowAddedEvent,
   RowRemovedEvent,
@@ -372,7 +370,7 @@ export default class AstraTable extends ClassifiedElement {
         DBType.INT,
       ].includes(columnType)
     )
-      return 150 + offset
+      return 50 + offset
     if ([DBType.CHAR, DBType.TEXT, DBType.VARCHAR, DBType.VARYING].includes(columnType)) return 200 + offset
     if ([DBType.TIME, DBType.DATE, DBType.TIMESTAMP].includes(columnType)) return 110 + offset
     if ([DBType.TIME_WITH_TIME_ZONE, DBType.DATETIME, DBType.TIMESTAMP_WITH_TIME_ZONE].includes(columnType)) return 200 + offset
@@ -471,6 +469,7 @@ export default class AstraTable extends ClassifiedElement {
                         column: '__selected', // our own; not expected to exist in DB
                       }}
                       .type=${null}
+                      width="50px"
                       theme=${this.theme}
                       ?separate-cells=${true}
                       ?outer-border=${this.outerBorder}
@@ -693,15 +692,15 @@ export default class AstraTable extends ClassifiedElement {
     // set table width
     // HERE WORK HERE JOHNNY
     //  instead we want this.tableRef
-    const stickyT = this.shadowRoot?.getElementById('sticky-table')
-    if (!stickyT) throw new Error('Unexpectedly missing a table')
-    this._previousWidth = stickyT.clientWidth
-    stickyT.style.width = `${this._previousWidth}px`
+    // const stickyT = this.shadowRoot?.getElementById('sticky-table')
+    // if (!stickyT) throw new Error('Unexpectedly missing a table')
+    // this._previousWidth = stickyT.clientWidth
+    // stickyT.style.width = `${this._previousWidth}px`
 
-    const unstickyT = this.shadowRoot?.getElementById('unsticky-table')
-    if (!unstickyT) throw new Error('Unexpectedly missing a table')
-    this._previousWidth = unstickyT.clientWidth
-    unstickyT.style.width = `${this._previousWidth}px`
+    // const unstickyT = this.shadowRoot?.getElementById('unsticky-table')
+    // if (!unstickyT) throw new Error('Unexpectedly missing a table')
+    // this._previousWidth = unstickyT.clientWidth
+    // unstickyT.style.width = `${this._previousWidth}px`
 
     // ensure that `this.rowHeight` is correct
     // measure the height of each row
@@ -850,29 +849,104 @@ export default class AstraTable extends ClassifiedElement {
           `
         : nothing
 
-    const stickyLeftColumns = this.showCheckboxColumn
-      ? html`<div class="sticky z-10 left-0 shadow-[0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_8px_rgb(0,0,0)]">
-          <div
-            id="sticky-table"
-            class="${classMap(tableClasses)}"
-            @menuopen=${(event: MenuOpenEvent) => {
-              // this special case is when the same menu is opened after being closed
-              // without this the menu is immediately closed on subsequent triggers
-              if (this.closeLastMenu === event.close) return
+    // const stickyLeftColumns = this.showCheckboxColumn
+    //   ? html`<div class="sticky z-10 left-0 shadow-[0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_8px_rgb(0,0,0)]">
+    //       <div
+    //         id="sticky-table"
+    //         class="${classMap(tableClasses)}"
+    //         @menuopen=${(event: MenuOpenEvent) => {
+    //           // this special case is when the same menu is opened after being closed
+    //           // without this the menu is immediately closed on subsequent triggers
+    //           if (this.closeLastMenu === event.close) return
 
-              // remember this menu and close it when a subsequent one is opened
-              this.closeLastMenu?.()
-              this.closeLastMenu = event.close
-            }}
-          >
-            <astra-thead>
-              <astra-tr header>
-                ${selectAllCheckbox}
-                ${repeat(
-                  this.pinnedColumns,
-                  ({ name }, _idx) => name,
-                  ({ name }, idx) => {
-                    return html`<astra-th
+    //           // remember this menu and close it when a subsequent one is opened
+    //           this.closeLastMenu?.()
+    //           this.closeLastMenu = event.close
+    //         }}
+    //       >
+    //         <astra-thead>
+    //           <astra-tr header>
+    //             ${selectAllCheckbox}
+    //             ${repeat(
+    //               this.pinnedColumns,
+    //               ({ name }, _idx) => name,
+    //               ({ name }, idx) => {
+    //                 return html`<astra-th
+    //                   .options=${this.columnOptions || nothing}
+    //                   .plugins="${this.plugins}"
+    //                   installed-plugins=${JSON.stringify(this.installedPlugins)}
+    //                   table-height=${ifDefined(this._height)}
+    //                   theme=${this.theme}
+    //                   value="${this.renamedColumnNames[name] ?? name}"
+    //                   original-value="${name}"
+    //                   width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
+    //                   ?separate-cells=${true}
+    //                   ?outer-border=${this.outerBorder}
+    //                   ?menu=${!this.isNonInteractive && !this.readonly && this.hasColumnMenus}
+    //                   ?with-resizer=${!this.isNonInteractive && !this.staticWidths}
+    //                   ?is-first-column=${idx === 0 && !this.selectableRows}
+    //                   ?is-last-column=${idx === this.visibleColumns.length - 1}
+    //                   ?removable=${true}
+    //                   ?interactive=${!this.isNonInteractive}
+    //                   ?is-active=${name === this.activeColumn}
+    //                   @column-hidden=${this._onColumnHidden}
+    //                   @column-removed=${this._onColumnRemoved}
+    //                   @column-plugin-deactivated=${this._onColumnPluginDeactivated}
+    //                   @resize-start=${this._onColumnResizeStart('sticky-table')}
+    //                   @resize=${this._onColumnResized('sticky-table')}
+    //                   @column-pinned=${(ev: ColumnPinnedEvent) => {
+    //                     const column = this.columns.find((c) => c.name === ev.name)
+    //                     if (column) {
+    //                       this.pinnedColumns.push(column)
+    //                       this.requestUpdate('pinnedColumns')
+    //                     }
+    //                   }}
+    //                   ?read-only=${this.readonly}
+    //                 >
+    //                 </astra-th>`
+    //               }
+    //             )}
+    //           </astra-tr>
+    //         </astra-thead>
+
+    //         <astra-rowgroup sticky shadow>${this.renderRows(this.newRows, { sticky: true })}</astra-rowgroup>
+    //         <astra-rowgroup>
+    //           <div
+    //             style=${styleMap({
+    //               height: `${Math.max(this.visibleRowStartIndex * this.rowHeight, 0)}px`,
+    //               'will-change': 'transform, height',
+    //             })}
+    //           ></div>
+
+    //           ${this.renderRows(this.existingVisibleRows, { sticky: true })}
+
+    //           <div
+    //             style=${styleMap({
+    //               height: `${Math.max((this.rows.length - this.visibleRowEndIndex) * this.rowHeight, 0)}px`,
+    //               'will-change': 'transform, height',
+    //             })}
+    //           ></div>
+    //         </astra-rowgroup>
+    //       </div>
+    //     </div>`
+    //   : nothing
+
+    return html`
+      <astra-scroll-area ${ref(this.scrollableEl)} threshold=${10} theme=${this.theme} .onScroll=${this.updateTableView}>
+        <div class="flex">
+          <div class="flex-none" id="leftSpacer" style=${styleMap({ width: `${leftSpacerWidth}px`, height: '1px' })}></div>
+
+          <!-- header + body -->
+          <div class="flex flex-col">
+            <!-- header -->
+            <div class="flex flex-row">
+              ${repeat(
+                this.visibleColumns,
+                ({ name }, _idx) => name,
+                ({ name }, idx) => {
+                  return html`
+                    <astra-th
+                      width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
                       .options=${this.columnOptions || nothing}
                       .plugins="${this.plugins}"
                       installed-plugins=${JSON.stringify(this.installedPlugins)}
@@ -880,7 +954,6 @@ export default class AstraTable extends ClassifiedElement {
                       theme=${this.theme}
                       value="${this.renamedColumnNames[name] ?? name}"
                       original-value="${name}"
-                      width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
                       ?separate-cells=${true}
                       ?outer-border=${this.outerBorder}
                       ?menu=${!this.isNonInteractive && !this.readonly && this.hasColumnMenus}
@@ -893,142 +966,86 @@ export default class AstraTable extends ClassifiedElement {
                       @column-hidden=${this._onColumnHidden}
                       @column-removed=${this._onColumnRemoved}
                       @column-plugin-deactivated=${this._onColumnPluginDeactivated}
-                      @resize-start=${this._onColumnResizeStart('sticky-table')}
-                      @resize=${this._onColumnResized('sticky-table')}
+                      @resize-start=${this._onColumnResizeStart('unsticky-table')}
+                      @resize=${this._onColumnResized('unsticky-table')}
                       @column-pinned=${(ev: ColumnPinnedEvent) => {
+                        console.log('pinned', ev.name)
                         const column = this.columns.find((c) => c.name === ev.name)
-                        if (column) {
-                          this.pinnedColumns.push(column)
-                          this.requestUpdate('pinnedColumns')
-                        }
+                        if (column) this.pinnedColumns.push(column)
+                        this.requestUpdate('pinnedColumns')
+                        console.log('column', column)
                       }}
                       ?read-only=${this.readonly}
                     >
-                    </astra-th>`
+                    </astra-th>
+                  `
+                }
+              )}
+            </div>
+
+            <!-- body -->
+            <div class="flex flex-col bg-zinc-50">
+              <!-- new rows -->
+              <div></div>
+
+              <!-- existing rows -->
+              <div class="flex ">
+                ${repeat(
+                  this.visibleColumns,
+                  ({ name }, _idx) => name,
+                  ({ name }, idx) => {
+                    const absoluteIdx = idx + this.visibleColumnStartIndex
+
+                    const installedPlugin = this.plugins?.find(
+                      ({ pluginWorkspaceId }) => pluginWorkspaceId === this.installedPlugins?.[name]?.plugin_workspace_id
+                    )
+                    const defaultPlugin = this.plugins?.find(({ id }) => id === this.installedPlugins?.[name]?.plugin_installation_id)
+                    const plugin = installedPlugin ?? defaultPlugin
+
+                    const realInstallation = this.realInstalledPlugins?.find(
+                      ({ plugin_workspace_id }) => plugin?.pluginWorkspaceId === plugin_workspace_id
+                    )
+
+                    if (plugin && realInstallation?.config) {
+                      plugin.config = JSON.stringify(realInstallation?.config)
+                    }
+
+                    return html`<div class="flex flex-col">
+                      ${repeat(
+                        this.rows,
+                        ({ id }) => id,
+                        ({ id, values, originalValues, isNew }, rowIndex) => html`
+                          <astra-td
+                            .position=${{ row: id, column: name }}
+                            .value=${values[name]}
+                            .originalValue=${originalValues[name]}
+                            .column=${name}
+                            width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
+                            theme=${this.theme}
+                            type=${this.columnTypes?.[name]}
+                            .plugin=${plugin}
+                            plugin-attributes=${this.installedPlugins?.[name]?.supportingAttributes ?? ''}
+                            ?separate-cells=${true}
+                            ?outer-border=${this.outerBorder}
+                            ?border-b=${this.bottomBorder}
+                            ?resizable=${!this.staticWidths}
+                            ?is-last-row=${rowIndex === this.rows.length - 1}
+                            ?is-last-column=${absoluteIdx === this.visibleColumns.length - 1}
+                            ?is-first-row=${rowIndex === 0}
+                            ?is-first-column=${absoluteIdx === 0}
+                            ?menu=${!this.isNonInteractive && !this.readonly && this.hasCellMenus}
+                            ?interactive=${!this.isNonInteractive}
+                            ?hide-dirt=${isNew}
+                            ?read-only=${this.readonly}
+                            ?is-active=${name === this.activeColumn}
+                          >
+                          </astra-td>
+                        `
+                      )}
+                    </div>`
                   }
                 )}
-              </astra-tr>
-            </astra-thead>
-
-            <astra-rowgroup sticky shadow>${this.renderRows(this.newRows, { sticky: true })}</astra-rowgroup>
-            <astra-rowgroup>
-              <div
-                style=${styleMap({
-                  height: `${Math.max(this.visibleRowStartIndex * this.rowHeight, 0)}px`,
-                  'will-change': 'transform, height',
-                })}
-              ></div>
-
-              ${this.renderRows(this.existingVisibleRows, { sticky: true })}
-
-              <div
-                style=${styleMap({
-                  height: `${Math.max((this.rows.length - this.visibleRowEndIndex) * this.rowHeight, 0)}px`,
-                  'will-change': 'transform, height',
-                })}
-              ></div>
-            </astra-rowgroup>
-          </div>
-        </div>`
-      : nothing
-
-    return html`
-      <astra-scroll-area ${ref(this.scrollableEl)} threshold=${10} theme=${this.theme} .onScroll=${this.updateTableView}>
-        <div class="flex">
-          <div class="flex-none" id="leftSpacer" style=${styleMap({ width: `${leftSpacerWidth}px`, height: '1px' })}></div>
-
-          <div class="flex">
-            ${stickyLeftColumns}
-
-            <div
-              id="unsticky-table"
-              class="flex-1 ${classMap(tableClasses)}"
-              @menuopen=${(event: MenuOpenEvent) => {
-                // this special case is when the same menu is opened after being closed
-                // without this the menu is immediately closed on subsequent triggers
-                if (this.closeLastMenu === event.close) return
-
-                // remember this menu and close it when a subsequent one is opened
-                this.closeLastMenu?.()
-                this.closeLastMenu = event.close
-              }}
-            >
-              <astra-thead>
-                <astra-tr header>
-                  <!-- first column of (optional) checkboxes -->
-                  ${repeat(
-                    this.visibleColumns,
-                    ({ name }, _idx) => name,
-                    ({ name }, idx) => {
-                      if (idx < this.visibleColumnStartIndex || idx >= this.visibleColumnEndIndex) return null
-                      // TODO @johnny make this more efficient
-                      if (this.pinnedColumns.find((c) => c.name === name)) return null // skip pinned columns
-
-                      return html`<astra-th
-                        .options=${this.columnOptions || nothing}
-                        .plugins="${this.plugins}"
-                        installed-plugins=${JSON.stringify(this.installedPlugins)}
-                        table-height=${ifDefined(this._height)}
-                        theme=${this.theme}
-                        value="${this.renamedColumnNames[name] ?? name}"
-                        original-value="${name}"
-                        width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
-                        ?separate-cells=${true}
-                        ?outer-border=${this.outerBorder}
-                        ?menu=${!this.isNonInteractive && !this.readonly && this.hasColumnMenus}
-                        ?with-resizer=${!this.isNonInteractive && !this.staticWidths}
-                        ?is-first-column=${idx === 0 && !this.selectableRows}
-                        ?is-last-column=${idx === this.visibleColumns.length - 1}
-                        ?removable=${true}
-                        ?interactive=${!this.isNonInteractive}
-                        ?is-active=${name === this.activeColumn}
-                        @column-hidden=${this._onColumnHidden}
-                        @column-removed=${this._onColumnRemoved}
-                        @column-plugin-deactivated=${this._onColumnPluginDeactivated}
-                        @resize-start=${this._onColumnResizeStart('unsticky-table')}
-                        @resize=${this._onColumnResized('unsticky-table')}
-                        @column-pinned=${(ev: ColumnPinnedEvent) => {
-                          console.log('pinned', ev.name)
-                          const column = this.columns.find((c) => c.name === ev.name)
-                          if (column) this.pinnedColumns.push(column)
-                          this.requestUpdate('pinnedColumns')
-                          console.log('column', column)
-                        }}
-                        ?read-only=${this.readonly}
-                      >
-                      </astra-th>`
-                    }
-                  )}
-                  ${this.blankFill && !this.contentScrollsHorizontally
-                    ? html`<astra-th ?outer-border=${this.outerBorder} ?read-only=${true} fill .value=${null} .originalValue=${null}>
-                        ${this.isNonInteractive || !this.addableColumns
-                          ? ''
-                          : html`<span class="flex items-center absolute top-0 left-2 bottom-0 right-0">
-                              <astra-add-column-trigger></astra-add-column-trigger>
-                            </span>`}
-                      </astra-th>`
-                    : ''}
-                </astra-tr>
-              </astra-thead>
-
-              <astra-rowgroup sticky>${this.renderRows(this.newRows, { sticky: false })}</astra-rowgroup>
-              <astra-rowgroup>
-                <div
-                  style=${styleMap({
-                    height: `${Math.max(this.visibleRowStartIndex * this.rowHeight, 0)}px`,
-                    'will-change': 'transform, height',
-                  })}
-                ></div>
-
-                ${this.renderRows(this.existingVisibleRows, { sticky: false })}
-
-                <div
-                  style=${styleMap({
-                    height: `${Math.max((this.rows.length - this.visibleRowEndIndex) * this.rowHeight, 0)}px`,
-                    'will-change': 'transform, height',
-                  })}
-                ></div>
-              </astra-rowgroup>
+              </div>
             </div>
           </div>
 

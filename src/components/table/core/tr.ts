@@ -8,8 +8,8 @@ import { ClassifiedElement } from '../../classified-element.js'
 export class TableRow extends ClassifiedElement {
   protected override classMap() {
     return {
-      'table-row group': true,
-      'h-9': true,
+      'flex group': true,
+      // 'h-9': true,
       // 'hover:bg-theme-table-row-hover dark:hover:bg-theme-table-row-hover-dark': true,
 
       // when a header

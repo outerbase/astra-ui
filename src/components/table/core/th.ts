@@ -27,12 +27,13 @@ export class TH extends MutableElement {
   protected override classMap() {
     return {
       ...super.classMap(),
-      'table-cell relative whitespace-nowrap': true,
-      'h-8': true,
+      'relative whitespace-nowrap': true,
+      'h-9 flex items-center': true,
       'cursor-pointer': true,
       'border-b border-theme-table-border dark:border-theme-table-border-dark': true,
       'first:border-l border-t': this.outerBorder,
       'px-cell-padding-x align-middle': true,
+      'whitespace-nowrap truncate': true,
       // 'py-cell-padding-y': true,
       // 'h-full absolute top-0 bottom-0 left-0 right-0': true,
       // 'h-full': true,
@@ -355,6 +356,7 @@ export class TH extends MutableElement {
     }
     const resultContainerClasses = {
       dark: this.theme == 'dark',
+      'flex-auto': true,
     }
 
     if (this.blank) {
