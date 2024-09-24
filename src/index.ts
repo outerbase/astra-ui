@@ -53,6 +53,7 @@ declare global {
         value?: string
         placeholder?: string
         theme?: string
+        readonly?: boolean
       }
       'astra-editor-sql': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { dialect?: string; schema?: string }
       'astra-editor-javascript': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { typescript?: boolean }
