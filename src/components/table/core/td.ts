@@ -192,23 +192,23 @@ export class TableData extends MutableElement {
 
     // navigating around the table
 
-    if (code === 'ArrowRight') {
+    if (code === 'ArrowDown') {
       event.preventDefault()
       ;(target?.nextElementSibling as HTMLElement)?.focus()
       return
-    } else if (code === 'ArrowLeft') {
+    } else if (code === 'ArrowUp') {
       event.preventDefault()
       const checkbox = target?.previousElementSibling?.querySelector('check-box') as HTMLElement | undefined
       if (checkbox) checkbox.focus()
       else (target?.previousElementSibling as HTMLElement | undefined)?.focus()
       return
-    } else if (code === 'ArrowDown') {
+    } else if (code === 'ArrowRight') {
       event.preventDefault()
       if (event.target instanceof HTMLElement && !self.isEditing) {
         MutableElement.moveFocusToNextRow(event.target)
         return
       }
-    } else if (code === 'ArrowUp') {
+    } else if (code === 'ArrowLeft') {
       event.preventDefault()
       if (event.target instanceof HTMLElement && !self.isEditing) {
         MutableElement.moveFocusToPreviousRow(event.target)
