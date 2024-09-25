@@ -181,12 +181,12 @@ export class ResizeStartEvent extends BubblyEvent {
 
 export class ResizeEndEvent extends BubblyEvent {
   name: string
-  delta: number // a +/- number denoting number of pixels change in column width
+  width: string
 
-  constructor(name: string, delta: number) {
+  constructor(name: string, width: string) {
     super('resize-end')
     this.name = name
-    this.delta = delta
+    this.width = width
   }
 }
 

@@ -13,6 +13,7 @@ import {
   ColumnRenameEvent,
   ColumnUpdatedEvent,
   MenuSelectedEvent,
+  ResizeEndEvent,
   ResizeEvent,
 } from '../../../lib/events.js'
 import type { ColumnPlugin, HeaderMenuOptions, PluginWorkspaceInstallationId } from '../../../types.js'
@@ -90,6 +91,17 @@ export class TH extends MutableElement {
   @state() protected _pluginOptions: HeaderMenuOptions = []
 
   protected override dispatchChangedEvent() {
+    if (typeof this.originalValue !== 'string') return
+
+    this.dispatchEvent(
+      new ColumnRenameEvent({
+        name: this.originalValue,
+        data: { name: this.value },
+      })
+    )
+  }
+
+  protected override dispatchResizedEvent() {
     if (typeof this.originalValue !== 'string') return
 
     this.dispatchEvent(
@@ -235,14 +247,6 @@ export class TH extends MutableElement {
     this.removeEventListener('click', this.onClick)
   }
 
-  public override firstUpdated(changedProperties: PropertyValueMap<this>): void {
-    super.firstUpdated(changedProperties)
-
-    if (this.width && this.style) {
-      this.style.width = this.width
-    }
-  }
-
   public override willUpdate(changedProperties: PropertyValueMap<this>) {
     super.willUpdate(changedProperties)
 
@@ -256,6 +260,10 @@ export class TH extends MutableElement {
 
     if (changedProperties.has('width') && this.width && this.style) {
       this.style.width = this.width
+
+      if (changedProperties.get('width')) {
+        this.dispatchEvent(new ResizeEndEvent((this.originalValue ?? this.value)!, this.width))
+      }
     }
 
     if (changedProperties.has('readonly')) {
