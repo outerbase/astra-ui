@@ -668,19 +668,6 @@ export default class AstraTable extends ClassifiedElement {
       document.addEventListener('keydown', this.onKeyDown)
     }
 
-    // set table width
-    // HERE WORK HERE JOHNNY
-    //  instead we want this.tableRef
-    // const stickyT = this.shadowRoot?.getElementById('sticky-table')
-    // if (!stickyT) throw new Error('Unexpectedly missing a table')
-    // this._previousWidth = stickyT.clientWidth
-    // stickyT.style.width = `${this._previousWidth}px`
-
-    // const unstickyT = this.shadowRoot?.getElementById('unsticky-table')
-    // if (!unstickyT) throw new Error('Unexpectedly missing a table')
-    // this._previousWidth = unstickyT.clientWidth
-    // unstickyT.style.width = `${this._previousWidth}px`
-
     // ensure that `this.rowHeight` is correct
     // measure the height of each row
     const elem = document.createElement('astra-td') as TableData
