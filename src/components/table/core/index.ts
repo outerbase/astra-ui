@@ -469,7 +469,7 @@ export default class AstraTable extends ClassifiedElement {
                         column: '__selected', // our own; not expected to exist in DB
                       }}
                       .type=${null}
-                      width="50px"
+                      width="42px"
                       theme=${this.theme}
                       ?separate-cells=${true}
                       ?outer-border=${this.outerBorder}
@@ -812,7 +812,7 @@ export default class AstraTable extends ClassifiedElement {
             <astra-th
               theme=${this.theme}
               table-height=${ifDefined(this._height)}
-              width="32px"
+              width="42px"
               .value=${null}
               .originalValue=${null}
               ?separate-cells=${true}
