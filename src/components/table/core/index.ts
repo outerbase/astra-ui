@@ -524,6 +524,7 @@ export default class AstraTable extends ClassifiedElement {
                         ?hide-dirt=${isNew}
                         ?read-only=${this.readonly}
                         ?is-active=${name === this.activeColumn}
+                        ?pinned=${true}
                       >
                       </astra-td>
                     `
@@ -862,17 +863,19 @@ export default class AstraTable extends ClassifiedElement {
                   ?removable=${true}
                   ?interactive=${!this.isNonInteractive}
                   ?is-active=${name === this.activeColumn}
+                  ?pinned=${isSticky}
                   @column-hidden=${this._onColumnHidden}
                   @column-removed=${this._onColumnRemoved}
                   @column-plugin-deactivated=${this._onColumnPluginDeactivated}
                   @resize-start=${this._onColumnResizeStart}
                   @resize=${this._onColumnResized}
                   @column-pinned=${(ev: ColumnPinnedEvent) => {
-                    // console.log('pinned', ev.name)
                     const column = this.columns.find((c) => c.name === ev.name)
-                    if (column) this.pinnedColumns.push(column)
+                    const pinnedIndex = column ? this.pinnedColumns.indexOf(column) : -1
+                    if (pinnedIndex > -1) this.pinnedColumns.splice(pinnedIndex, 1)
+                    else if (column) this.pinnedColumns.push(column)
+
                     this.requestUpdate('pinnedColumns')
-                    // console.log('column', column)
                   }}
                   ?read-only=${this.readonly}
                 >
@@ -977,6 +980,7 @@ export default class AstraTable extends ClassifiedElement {
                         ?hide-dirt=${isNew}
                         ?read-only=${this.readonly}
                         ?is-active=${name === this.activeColumn}
+                        ?pinned=${isSticky}
                       >
                       </astra-td>
                     `

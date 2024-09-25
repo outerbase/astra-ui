@@ -258,7 +258,7 @@ export class TH extends MutableElement {
     if (changedProperties.has('readonly')) {
       if (this.readonly) {
         this.options = [
-          { label: 'Pin Column', value: 'pin' },
+          { label: this.pinned ? 'Unpin Column' : 'Pin Column', value: 'pin' },
           {
             label: 'Sort A-Z',
             value: 'sort:alphabetical:ascending',
@@ -280,7 +280,7 @@ export class TH extends MutableElement {
         ]
       } else {
         this.options = [
-          { label: 'Pin Column', value: 'pin' },
+          { label: this.pinned ? 'Unpin Column' : 'Pin Column', value: 'pin' },
           {
             label: 'Sort A-Z',
             value: 'sort:alphabetical:ascending',

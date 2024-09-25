@@ -218,6 +218,9 @@ export class MutableElement extends ClassifiedElement {
   @property({ attribute: 'is-active', type: Boolean })
   public isActive = false
 
+  @property({ attribute: 'pinned', type: Boolean })
+  public pinned = false
+
   public override updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps)
 
