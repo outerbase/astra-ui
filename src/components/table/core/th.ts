@@ -13,7 +13,6 @@ import {
   ColumnRenameEvent,
   ColumnUpdatedEvent,
   MenuSelectedEvent,
-  ResizeEndEvent,
   ResizeEvent,
 } from '../../../lib/events.js'
 import type { ColumnPlugin, HeaderMenuOptions, PluginWorkspaceInstallationId } from '../../../types.js'
@@ -250,8 +249,10 @@ export class TH extends MutableElement {
     if (changedProperties.has('width') && this.width && this.style) {
       this.style.width = this.width
 
+      // when it had a previous value
       if (changedProperties.get('width')) {
-        this.dispatchEvent(new ResizeEndEvent((this.originalValue ?? this.value)!, this.width))
+        // TODO fix this once `width` is a number again
+        // this.dispatchEvent(new ResizeEndEvent((this.originalValue ?? this.value)!, this.width))
       }
     }
 

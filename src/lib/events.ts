@@ -181,9 +181,9 @@ export class ResizeStartEvent extends BubblyEvent {
 
 export class ResizeEndEvent extends BubblyEvent {
   name: string
-  width: string
+  width: number
 
-  constructor(name: string, width: string) {
+  constructor(name: string, width: number) {
     super('resize-end')
     this.name = name
     this.width = width

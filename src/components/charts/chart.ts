@@ -903,7 +903,7 @@ export default class AstraChart extends ClassifiedElement {
     return options
   }
 
-  constructLineChart(options: Record<string, any>, d: Row[], sort: any, tip: any): Record<string, any> {
+  constructLineChart(options: Record<string, any>, d: Row[], _sort: any, tip: any): Record<string, any> {
     // Setup the line chart
     const { data: reshapedData, legend } = this.normalizeData(d, this.keyX ?? '', this.keyY ?? '')
     const stroke = reshapedData?.[0]?.g ? 'g' : this.colorValues[0]
@@ -916,7 +916,7 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     if (multipleLines) {
-      yAxisKeys.forEach((key, index) => {
+      yAxisKeys.forEach((_key, _index) => {
         options.marks.push(
           lineY(reshapedData, {
             x: 'x',
@@ -940,7 +940,7 @@ export default class AstraChart extends ClassifiedElement {
     return options
   }
 
-  constructAreaChart(options: Record<string, any>, d: Row[], sort: any, tip: any): Record<string, any> {
+  constructAreaChart(options: Record<string, any>, d: Row[], _sort: any, tip: any): Record<string, any> {
     // Setup the area chart
     const { data: reshapedData, legend } = this.normalizeData(d, this.keyX ?? '', this.keyY ?? '')
     const stroke = reshapedData?.[0]?.g ? 'g' : this.colorValues[0]
@@ -953,7 +953,7 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     if (multipleLines) {
-      yAxisKeys.forEach((key, index) => {
+      yAxisKeys.forEach((_key, _index) => {
         options.marks.push(
           areaY(reshapedData, {
             x: 'x',
@@ -981,7 +981,7 @@ export default class AstraChart extends ClassifiedElement {
     return options
   }
 
-  constructScatterChart(options: Record<string, any>, d: Row[], sort: any, tip: any): Record<string, any> {
+  constructScatterChart(options: Record<string, any>, d: Row[], _sort: any, tip: any): Record<string, any> {
     // Setup the scatter chart
     const { data: reshapedData, legend } = this.normalizeData(d, this.keyX ?? '', this.keyY ?? '')
     const stroke = reshapedData?.[0]?.g ? 'g' : this.colorValues[0]
@@ -994,7 +994,7 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     if (multipleLines) {
-      yAxisKeys.forEach((key, index) => {
+      yAxisKeys.forEach((_key, _index) => {
         options.marks.push(
           dot(reshapedData, {
             x: 'x',

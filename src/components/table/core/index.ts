@@ -153,7 +153,6 @@ export default class AstraTable extends ClassifiedElement {
   @state() private visibleColumnEndIndex = 0
   @state() private leftSpacerWidth = 0
   @state() private rightSpacerWidth = 0
-  @state() private hasCheckBoxes = true
 
   // sticky pinned columns
   @property({ attribute: 'pinned-columns', type: Array }) pinnedColumns: Columns = [] // [{ name: 'budget' }]
@@ -612,18 +611,6 @@ export default class AstraTable extends ClassifiedElement {
   protected updateTableView(): void {
     this.updateVisibleRows()
     this.updateVisibleColumnsAndSpacers()
-    this.updateCheckboxColumnVisibility()
-  }
-
-  protected updateCheckboxColumnVisibility(): void {
-    const scrollContainer = this.scrollableEl?.value?.scroller?.value
-    const scrollLeft = scrollContainer?.scrollLeft ?? 0
-    const newhasCheckBoxes = scrollLeft < 42 // 42px is the width of the checkbox column
-
-    // if (this.hasCheckBoxes !== newhasCheckBoxes) {
-    //   this.hasCheckBoxes = newhasCheckBoxes
-    //   this.requestUpdate()
-    // }
   }
 
   protected updateVisibleRows(): void {
@@ -898,7 +885,7 @@ export default class AstraTable extends ClassifiedElement {
                   ${repeat(
                     this.rows,
                     ({ id }) => id,
-                    ({ id, values, originalValues, isNew }, rowIndex) =>
+                    ({ id }, rowIndex) =>
                       this.selectableRows
                         ? html`<astra-td
                             .position=${{
