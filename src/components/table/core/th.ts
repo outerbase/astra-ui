@@ -101,17 +101,6 @@ export class TH extends MutableElement {
     )
   }
 
-  protected override dispatchResizedEvent() {
-    if (typeof this.originalValue !== 'string') return
-
-    this.dispatchEvent(
-      new ColumnRenameEvent({
-        name: this.originalValue,
-        data: { name: this.value },
-      })
-    )
-  }
-
   protected onMenuSelection(event: MenuSelectedEvent) {
     event.stopPropagation()
     let dispatchColumnUpdateEvent = false

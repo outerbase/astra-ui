@@ -2,7 +2,7 @@ import type { PropertyValueMap, PropertyValues } from 'lit'
 import { property } from 'lit/decorators.js'
 import { isEqual } from 'lodash-es'
 
-import { CellBlurEvent, CellUpdateEvent } from '../../lib/events.js'
+import { CellBlurEvent, CellUpdateEvent, ResizeEndEvent } from '../../lib/events.js'
 import type { Position, Serializable } from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
 
@@ -259,6 +259,12 @@ export class MutableElement extends ClassifiedElement {
     }
 
     this.dispatchEvent(new CellBlurEvent(event))
+  }
+
+  protected dispatchResizedEvent() {
+    if (typeof this.originalValue !== 'string') return
+
+    this.dispatchEvent(new ResizeEndEvent(this.originalValue ?? this.value, `${this.width}px`))
   }
 
   protected onBlur() {
