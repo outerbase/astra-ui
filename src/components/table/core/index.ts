@@ -612,30 +612,27 @@ export default class AstraTable extends ClassifiedElement {
               ?blank=${true}
               ?read-only=${this.readonly}
             >
-              <div class="flex items-center justify-center absolute top-0 bottom-0 right-0 left-0">
-                &#8203;
-                <check-box
-                  theme=${this.theme}
-                  ?checked=${this.allRowsSelected}
-                  @click=${(event: MouseEvent) => {
-                    event.preventDefault()
-                  }}
-                  @toggle-check=${() => {
-                    const everyRowIsChecked = this.rows.length === this.selectedRowUUIDs.size
+              <check-box
+                theme=${this.theme}
+                ?checked=${this.allRowsSelected}
+                @click=${(event: MouseEvent) => {
+                  event.preventDefault()
+                }}
+                @toggle-check=${() => {
+                  const everyRowIsChecked = this.rows.length === this.selectedRowUUIDs.size
 
-                    if (everyRowIsChecked) {
-                      this.selectedRowUUIDs = new Set()
-                      this.allRowsSelected = false
-                    } else {
-                      this.selectedRowUUIDs = new Set(this.rows.map(({ id }) => id))
-                      this.allRowsSelected = true
-                    }
+                  if (everyRowIsChecked) {
+                    this.selectedRowUUIDs = new Set()
+                    this.allRowsSelected = false
+                  } else {
+                    this.selectedRowUUIDs = new Set(this.rows.map(({ id }) => id))
+                    this.allRowsSelected = true
+                  }
 
-                    // dispatch event that row selection changed
-                    this._onRowSelection()
-                  }}
-                ></check-box>
-              </div>
+                  // dispatch event that row selection changed
+                  this._onRowSelection()
+                }}
+              ></check-box>
             </astra-th>
           `
         : nothing
@@ -695,7 +692,7 @@ export default class AstraTable extends ClassifiedElement {
         </div>
 
         <!-- body -->
-        <div class="flex flex-col bg-zinc-50">
+        <div class="flex flex-col">
           <!-- new rows -->
           <div></div>
 
@@ -727,13 +724,11 @@ export default class AstraTable extends ClassifiedElement {
                             ?read-only=${true}
                             ?interactive=${true}
                           >
-                            <div class="flex items-center justify-center absolute top-0 bottom-0 right-0 left-0">
-                              &#8203;<check-box
-                                ?checked="${this.selectedRowUUIDs.has(id)}"
-                                @toggle-check="${() => this.toggleSelectedRow(id)}"
-                                theme=${this.theme}
-                              />
-                            </div>
+                            <check-box
+                              ?checked="${this.selectedRowUUIDs.has(id)}"
+                              @toggle-check="${() => this.toggleSelectedRow(id)}"
+                              theme=${this.theme}
+                            />
                           </astra-td>`
                         : null
                   )}
@@ -813,13 +808,60 @@ export default class AstraTable extends ClassifiedElement {
 
     return html`
       <astra-scroll-area ${ref(this.scrollableEl)} threshold=${10} theme=${this.theme} .onScroll=${this.updateTableView}>
-        <div class="flex w-fit">
+        <div class="flex w-full min-w-fit">
           ${this._renderTable(this.pinnedColumns, true)}
 
           <!-- virtualized column scrolling -->
           <div class="flex-none" id="leftSpacer" style=${styleMap({ width: `${this.leftSpacerWidth}px`, height: '1px' })}></div>
           ${this._renderTable(this.visibleColumns)}
-          <div class="flex-none" id="rightSpacer" style=${styleMap({ width: `${this.rightSpacerWidth}px`, height: '1px' })}></div>
+          <div id="rightSpacer" style=${styleMap({ width: `${this.rightSpacerWidth}px`, height: '1px' })}></div>
+
+          <!-- this is only visible when there is negative space to the right of the table -->
+          <div class="flex-1 flex flex-col">
+            <div class="sticky top-0 z-30 ">
+              <astra-th
+                theme=${this.theme}
+                table-height=${ifDefined(this._height)}
+                .value=${null}
+                .originalValue=${null}
+                ?separate-cells=${true}
+                ?outer-border=${this.outerBorder}
+                ?is-last-column=${0 === this.visibleColumns.length}
+                ?blank=${true}
+                ?read-only=${this.readonly}
+              >
+              </astra-th>
+            </div>
+            <div class="flex-auto overflow-hidden">
+              <div class="flex flex-col">
+                ${repeat(
+                  this.rows,
+                  ({ id }) => id,
+                  ({ id }, rowIndex) => html`
+                    <astra-td
+                      .position=${{ row: id, column: '' }}
+                      column=""
+                      theme=${this.theme}
+                      ?separate-cells=${true}
+                      ?outer-border=${this.outerBorder}
+                      ?border-b=${this.bottomBorder}
+                      ?resizable=${!this.staticWidths}
+                      ?is-last-row=${rowIndex === this.rows.length - 1}
+                      ?is-last-column=${true}
+                      ?is-first-row=${rowIndex === 0}
+                      ?is-first-column=${false}
+                      ?menu=${!this.isNonInteractive && !this.readonly && this.hasCellMenus}
+                      ?interactive=${!this.isNonInteractive}
+                      ?read-only=${this.readonly}
+                      ?is-active=${name === this.activeColumn}
+                      ?blank=${true}
+                    >
+                    </astra-td>
+                  `
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </astra-scroll-area>
     `

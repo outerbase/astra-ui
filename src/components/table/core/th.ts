@@ -28,11 +28,11 @@ export class TH extends MutableElement {
     return {
       ...super.classMap(),
       'relative whitespace-nowrap': true,
-      'h-9 flex items-center min-w-10': true,
+      'h-9 flex items-center justify-center': true,
       'cursor-pointer': true,
       'border-b border-theme-table-border dark:border-theme-table-border-dark': true,
       'first:border-l border-t': this.outerBorder,
-      'px-cell-padding-x align-middle': true,
+      'px-cell-padding-x align-middle': !this.blank,
       'whitespace-nowrap truncate': true,
       // 'py-cell-padding-y': true,
       // 'h-full absolute top-0 bottom-0 left-0 right-0': true,
