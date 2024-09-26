@@ -52,10 +52,10 @@ export default {
           'table-column-content-dark': 'var(--astra-table-column-header-content-color-dark, #ffffff)',
 
           // rows
-          'table-row-even': 'var(--astra-table-row-even-background-color, rgba(255,255,255))',
-          'table-row-even-dark': 'var(--astra-table-row-even-background-color-dark, rgba(0,0,0))',
-          'table-row-odd': 'var(--astra-table-row-even-background-color, rgba(255,255,255))',
-          'table-row-odd-dark': 'var(--astra-table-row-even-background-color-dark, rgba(0,0,0))',
+          'table-row-even': 'var(--astra-table-row-even-background-color, rgb(255,255,255))',
+          'table-row-even-dark': 'var(--astra-table-row-even-background-color-dark, rgb(0,0,0))',
+          'table-row-odd': 'var(--astra-table-row-even-background-color, rgb(255,255,255))',
+          'table-row-odd-dark': 'var(--astra-table-row-even-background-color-dark, rgb(0,0,0))',
           // 'table-row-new': 'var(--astra-table-row-new-background-color, rgba(22, 163, 74, 0.33))',
           'table-row-new': 'var(--astra-table-row-new-background-color, rgba(22, 163, 74, 1))',
           // 'table-row-new-dark': 'var(--astra-table-row-new-background-color-dark, rgba(21, 128, 61, 0.5))',

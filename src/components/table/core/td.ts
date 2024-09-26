@@ -247,6 +247,7 @@ export class TableData extends MutableElement {
       'relative focus:z-[1]': true,
       'h-8 flex items-center justify-center': true,
       'border-theme-table-border dark:border-theme-table-border-dark': true,
+      // TODO support odd vs even again
       'bg-theme-table-row-even dark:bg-theme-table-row-even-dark': !this.isActive && (!this.dirty || this.hideDirt),
       'bg-theme-table-row-selected dark:bg-theme-table -row-selected-dark': this.isActive && (!this.dirty || this.hideDirt), // i.e. this is the column being sorted
       'bg-theme-table-cell-dirty dark:bg-theme-table-cell-dirty-dark': this.dirty && !this.hideDirt, // dirty cells
