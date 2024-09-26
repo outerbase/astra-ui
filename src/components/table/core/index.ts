@@ -43,7 +43,7 @@ import './thead.js'
 import './tr.js'
 
 const SCROLL_BUFFER_SIZE = 2
-const COLUMN_BUFFER_SIZE = 2
+const COLUMN_BUFFER_SIZE = 4
 
 @customElement('astra-table')
 export default class AstraTable extends ClassifiedElement {
