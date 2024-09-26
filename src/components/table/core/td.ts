@@ -66,12 +66,6 @@ export class TableData extends MutableElement {
         -moz-backdrop-filter: blur(var(--astra-table-backdrop-blur));
         -o-backdrop-filter: blur(var(--astra-table-backdrop-blur));
         -ms-backdrop-filter: blur(var(--astra-table-backdrop-blur));
-
-        height: 100%;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
       }
     `,
   ]
@@ -245,7 +239,8 @@ export class TableData extends MutableElement {
     return {
       ...super.classMap(),
       'relative focus:z-[1]': true,
-      'h-8 flex items-center justify-center': true,
+      'h-8 flex truncate w-full': true,
+      'flex items-center justify-center': this.blank,
       'border-theme-table-border dark:border-theme-table-border-dark': true,
       // TODO support odd vs even again
       'text-theme-table-column-content dark:text-theme-table-column-content-dark': true,
@@ -557,7 +552,11 @@ export class TableData extends MutableElement {
       </hans-wormhole>
     `
     const contents = html`
-      <div class="flex items-center px-cell-padding-x ${this.blank ? 'justify-center' : null}">
+      <div
+        class="truncate flex-1 flex items-center px-cell-padding-x ${this.blank ? 'justify-center' : null}"
+        @pointerenter=${this.onPointerEnter}
+        @pointerleave=${this.onPointerLeave}
+      >
         <span class="flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
         ${pluginAccessory}
       </div>
@@ -565,38 +564,40 @@ export class TableData extends MutableElement {
 
     // the outer div is contenteditable, allowing us to get the `paste` event that an arbitrary element cannot otherwise receive
     // astra-td-menu wraps our content and provides a right-click menu
-    const menuEl =
-      this.isEditing || this.blank
-        ? nothing
-        : html`<div
-            ${ref(this.contentEditableWrapper)}
-            class="outline-none caret-transparent select-none truncate flex-auto"
-            contenteditable="${this.isContentEditable}"
-            spellcheck="false"
-            autocorrect="off"
-            @dragover=${TableData.onDragOver}
-            @drop=${TableData.onDrop}
-            @paste=${this.onPaste}
-            @pointerenter=${this.onPointerEnter}
-            @pointerleave=${this.onPointerLeave}
-            tabindex="-1"
-          >
-            ${this.hasMenu
-              ? html`<astra-td-menu
-                  theme=${this.theme}
-                  .items=${menuOptions}
-                  ?open="${this.menuIsOpen}"
-                  @closed=${() => {
-                    this.menuIsOpen = false
-                  }}
-                  @menu-selection=${this.onMenuSelection}
-                >
-                  ${contents} ${editorViaWormhole}
-                </astra-td-menu>`
-              : html`${contents} ${editorViaWormhole}`}
-          </div>`
+    // const menuEl =
+    //   this.isEditing || this.blank
+    //     ? nothing
+    //     : html`<div
+    //         ${ref(this.contentEditableWrapper)}
+    //         class="outline-none caret-transparent select-none truncate flex-auto"
+    //         contenteditable="${this.isContentEditable}"
+    //         spellcheck="false"
+    //         autocorrect="off"
+    //         @dragover=${TableData.onDragOver}
+    //         @drop=${TableData.onDrop}
+    //         @paste=${this.onPaste}
+    //         @pointerenter=${this.onPointerEnter}
+    //         @pointerleave=${this.onPointerLeave}
+    //         tabindex="-1"
+    //       >
+    //         ${this.hasMenu
+    //           ? html`<astra-td-menu
+    //               theme=${this.theme}
+    //               .items=${menuOptions}
+    //               ?open="${this.menuIsOpen}"
+    //               @closed=${() => {
+    //                 this.menuIsOpen = false
+    //               }}
+    //               @menu-selection=${this.onMenuSelection}
+    //             >
+    //               ${contents} ${editorViaWormhole}
+    //             </astra-td-menu>`
+    //           : html`${contents} ${editorViaWormhole}`}
+    //       </div>`
+    //
+    // return this.isEditing ? inputEl : this.blank ? emptySlot : menuEl
 
-    return this.isEditing ? inputEl : this.blank ? emptySlot : menuEl
+    return this.isEditing ? inputEl : this.blank ? emptySlot : html`${contents} ${editorViaWormhole}`
   }
 
   protected onPointerEnter() {
