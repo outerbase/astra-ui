@@ -642,6 +642,7 @@ export default class AstraTable extends ClassifiedElement {
         class="flex flex-col ${isSticky ? 'sticky left-0 z-20 shadow-[0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_8px_rgb(0,0,0)]' : ''}"
       >
         <!-- header -->
+        <!-- TODO use a for loop somehow and only modify indices?? -->
         <div class="flex flex-row sticky top-0 z-10">
           ${selectAllCheckbox}
           ${repeat(
@@ -702,7 +703,7 @@ export default class AstraTable extends ClassifiedElement {
             ${isSticky
               ? html`<div class="flex flex-col">
                   ${repeat(
-                    this.rows,
+                    this.newRows,
                     ({ id }) => id,
                     ({ id }, rowIndex) =>
                       this.selectableRows
@@ -718,7 +719,38 @@ export default class AstraTable extends ClassifiedElement {
                             ?outer-border=${this.outerBorder}
                             ?border-b=${this.bottomBorder}
                             ?blank=${true}
-                            ?is-last-row=${rowIndex === this.rows.length - 1}
+                            ?is-last-row=${rowIndex === this.oldRows.length - 1}
+                            ?is-last-column=${false}
+                            ?row-selector="${true}"
+                            ?read-only=${true}
+                            ?interactive=${true}
+                          >
+                            <check-box
+                              ?checked="${this.selectedRowUUIDs.has(id)}"
+                              @toggle-check="${() => this.toggleSelectedRow(id)}"
+                              theme=${this.theme}
+                            />
+                          </astra-td>`
+                        : null
+                  )}
+                  ${repeat(
+                    this.oldRows,
+                    ({ id }) => id,
+                    ({ id }, rowIndex) =>
+                      this.selectableRows
+                        ? html`<astra-td
+                            .position=${{
+                              row: id,
+                              column: '__selected', // our own; not expected to exist in DB
+                            }}
+                            .type=${null}
+                            width="42px"
+                            theme=${this.theme}
+                            ?separate-cells=${true}
+                            ?outer-border=${this.outerBorder}
+                            ?border-b=${this.bottomBorder}
+                            ?blank=${true}
+                            ?is-last-row=${rowIndex === this.oldRows.length - 1}
                             ?is-last-column=${false}
                             ?row-selector="${true}"
                             ?read-only=${true}
@@ -758,7 +790,7 @@ export default class AstraTable extends ClassifiedElement {
 
                 return html`<div class="flex flex-col">
                   ${repeat(
-                    this.rows,
+                    this.newRows,
                     ({ id }) => id,
                     ({ id, values, originalValues, isNew }, rowIndex) => html`
                       <astra-td
@@ -766,16 +798,50 @@ export default class AstraTable extends ClassifiedElement {
                         .value=${values[name]}
                         .originalValue=${originalValues[name]}
                         .column=${name}
+                        .plugin=${plugin}
                         width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
                         theme=${this.theme}
                         type=${this.columnTypes?.[name]}
-                        .plugin=${plugin}
                         plugin-attributes=${this.installedPlugins?.[name]?.supportingAttributes ?? ''}
                         ?separate-cells=${true}
                         ?outer-border=${this.outerBorder}
                         ?border-b=${this.bottomBorder}
                         ?resizable=${!this.staticWidths}
-                        ?is-last-row=${rowIndex === this.rows.length - 1}
+                        ?is-last-row=${rowIndex === this.oldRows.length - 1}
+                        ?is-last-column=${absoluteIdx === columns.length - 1}
+                        ?is-first-row=${rowIndex === 0}
+                        ?is-first-column=${absoluteIdx === 0}
+                        ?menu=${!this.isNonInteractive && !this.readonly && this.hasCellMenus}
+                        ?interactive=${!this.isNonInteractive}
+                        ?hide-dirt=${isNew}
+                        ?read-only=${this.readonly}
+                        ?is-active=${name === this.activeColumn}
+                        ?pinned=${isSticky}
+                        ?row-is-selected=${false}
+                        ?row-is-new=${isNew}
+                      >
+                      </astra-td>
+                    `
+                  )}
+                  ${repeat(
+                    this.oldRows,
+                    ({ id }) => id,
+                    ({ id, values, originalValues, isNew }, rowIndex) => html`
+                      <astra-td
+                        .position=${{ row: id, column: name }}
+                        .value=${values[name]}
+                        .originalValue=${originalValues[name]}
+                        .column=${name}
+                        .plugin=${plugin}
+                        width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
+                        theme=${this.theme}
+                        type=${this.columnTypes?.[name]}
+                        plugin-attributes=${this.installedPlugins?.[name]?.supportingAttributes ?? ''}
+                        ?separate-cells=${true}
+                        ?outer-border=${this.outerBorder}
+                        ?border-b=${this.bottomBorder}
+                        ?resizable=${!this.staticWidths}
+                        ?is-last-row=${rowIndex === this.oldRows.length - 1}
                         ?is-last-column=${absoluteIdx === columns.length - 1}
                         ?is-first-row=${rowIndex === 0}
                         ?is-first-column=${absoluteIdx === 0}
@@ -798,71 +864,70 @@ export default class AstraTable extends ClassifiedElement {
   }
 
   public override render() {
-    // const tableClasses = {
-    //   'table table-fixed bg-theme-table dark:bg-theme-table-dark': true,
-    //   'text-theme-table-content dark:text-theme-table-content-dark text-sm': true,
-    //   'min-w-full flex-none': true,
-    //   relative: true,
-    //   dark: this.theme === 'dark',
-    // }
+    const tableEndPlaceholder = html` <div class="flex-1 flex flex-col">
+      <!-- header -->
+      <div class="sticky top-0 z-30 ">
+        <astra-th
+          theme=${this.theme}
+          table-height=${ifDefined(this._height)}
+          .value=${null}
+          .originalValue=${null}
+          ?separate-cells=${true}
+          ?outer-border=${this.outerBorder}
+          ?is-last-column=${true}
+          ?blank=${true}
+          ?read-only=${true}
+        >
+        </astra-th>
+      </div>
+
+      <!-- body -->
+      <div class="flex-auto overflow-hidden">
+        <div class="flex flex-col">
+          ${repeat(
+            this.oldRows,
+            ({ id }) => id,
+            ({ id }, rowIndex) => html`
+              <astra-td
+                theme=${this.theme}
+                .position=${{ row: id, column: '' }}
+                ?separate-cells=${true}
+                ?outer-border=${this.outerBorder}
+                ?border-b=${this.bottomBorder}
+                ?resizable=${false}
+                ?is-last-row=${rowIndex === this.oldRows.length - 1}
+                ?is-last-column=${true}
+                ?is-first-row=${rowIndex === 0}
+                ?is-first-column=${false}
+                ?menu=${false}
+                ?interactive=${false}
+                ?read-only=${true}
+                ?blank=${true}
+              >
+              </astra-td>
+            `
+          )}
+        </div>
+      </div>
+    </div>`
 
     return html`
       <astra-scroll-area ${ref(this.scrollableEl)} threshold=${10} theme=${this.theme} .onScroll=${this.updateTableView}>
         <div class="flex w-full min-w-fit">
+          <!-- pinned columns -->
           ${this._renderTable(this.pinnedColumns, true)}
 
-          <!-- virtualized column scrolling -->
+          <!-- virtualized column scrolling; left -->
           <div class="flex-none" id="leftSpacer" style=${styleMap({ width: `${this.leftSpacerWidth}px`, height: '1px' })}></div>
+
+          <!-- remaining unpinned content -->
           ${this._renderTable(this.visibleColumns)}
+
+          <!-- virtualized column scrolling; right -->
           <div id="rightSpacer" style=${styleMap({ width: `${this.rightSpacerWidth}px`, height: '1px' })}></div>
 
           <!-- this is only visible when there is negative space to the right of the table -->
-          <div class="flex-1 flex flex-col">
-            <!-- header -->
-            <div class="sticky top-0 z-30 ">
-              <astra-th
-                theme=${this.theme}
-                table-height=${ifDefined(this._height)}
-                .value=${null}
-                .originalValue=${null}
-                ?separate-cells=${true}
-                ?outer-border=${this.outerBorder}
-                ?is-last-column=${true}
-                ?blank=${true}
-                ?read-only=${true}
-              >
-              </astra-th>
-            </div>
-
-            <!-- body -->
-            <div class="flex-auto overflow-hidden">
-              <div class="flex flex-col">
-                ${repeat(
-                  this.rows,
-                  ({ id }) => id,
-                  ({ id }, rowIndex) => html`
-                    <astra-td
-                      theme=${this.theme}
-                      .position=${{ row: id, column: '' }}
-                      ?separate-cells=${true}
-                      ?outer-border=${this.outerBorder}
-                      ?border-b=${this.bottomBorder}
-                      ?resizable=${false}
-                      ?is-last-row=${rowIndex === this.rows.length - 1}
-                      ?is-last-column=${true}
-                      ?is-first-row=${rowIndex === 0}
-                      ?is-first-column=${false}
-                      ?menu=${false}
-                      ?interactive=${false}
-                      ?read-only=${true}
-                      ?blank=${true}
-                    >
-                    </astra-td>
-                  `
-                )}
-              </div>
-            </div>
-          </div>
+          ${tableEndPlaceholder}
         </div>
       </astra-scroll-area>
     `

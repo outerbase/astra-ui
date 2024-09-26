@@ -249,9 +249,11 @@ export class TableData extends MutableElement {
       'border-theme-table-border dark:border-theme-table-border-dark': true,
       // TODO support odd vs even again
       'text-theme-table-column-content dark:text-theme-table-column-content-dark': true,
-      'bg-theme-table-row-even dark:bg-theme-table-row-even-dark': !this.isActive && (!this.dirty || this.hideDirt),
-      'bg-theme-table-row-selected dark:bg-theme-table-row-selected-dark': this.isActive && (!this.dirty || this.hideDirt), // i.e. this is the column being sorted
-      'bg-theme-table-cell-dirty dark:bg-theme-table-cell-dirty-dark': this.dirty && !this.hideDirt, // dirty cells
+      'bg-theme-table-row-new dark:bg-theme-table-row-new-dark': this.rowIsNew,
+      'bg-theme-table-row-even dark:bg-theme-table-row-even-dark': !this.rowIsNew && !this.isActive && (!this.dirty || this.hideDirt),
+      'bg-theme-table-row-selected dark:bg-theme-table-row-selected-dark':
+        !this.rowIsNew && this.isActive && (!this.dirty || this.hideDirt), // i.e. this is the column being sorted
+      'bg-theme-table-cell-dirty dark:bg-theme-table-cell-dirty-dark': !this.rowIsNew && this.dirty && !this.hideDirt, // dirty cells
       'group-hover:bg-theme-table-row-hover dark:group-hover:bg-theme-table-row-hover-dark': !this.dirty || this.hideDirt,
       'focus:shadow-ringlet dark:focus:shadow-ringlet-dark focus:rounded-[4px] focus:ring-1 focus:ring-black dark:focus:ring-neutral-300 focus:outline-none':
         !this.isEditing && this.isInteractive,
@@ -296,6 +298,12 @@ export class TableData extends MutableElement {
 
   @property({ attribute: 'menu', type: Boolean })
   public hasMenu = false
+
+  @property({ attribute: 'row-is-new', type: Boolean })
+  public rowIsNew = false
+
+  @property({ attribute: 'row-is-selected', type: Boolean })
+  public rowIsSelected = false
 
   @state() menuIsOpen = false
   @state() isContentEditable = true // this property is to toggle off the contenteditableness of to resolve quirky focus and text selection that can happen when, say, right-clicking to trigger the context menu
