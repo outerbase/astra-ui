@@ -202,17 +202,18 @@ function createPromptStatePlugin(plugin: AstraEditorPromptPlugin) {
       const cursorPosition = tr.state.selection.main.from
 
       // Try to remove the prompt widget if we change the cursor position
+      const line = tr.state.doc.lineAt(cursorPosition).text
+
       v = v.update({
         filter: (from, _, d) => {
           if (d === decorationPreviewLine) return true
-          promptWidgetFound = promptWidgetFound || from === cursorPosition
+          promptWidgetFound = (promptWidgetFound || from === cursorPosition) && line === ''
           return from === cursorPosition
         },
       })
 
       if (promptWidgetFound) return v
 
-      const line = tr.state.doc.lineAt(cursorPosition).text
       if (line !== '') return Decoration.none
 
       // If line is empty, we just show the prompt placeholder
