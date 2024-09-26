@@ -245,7 +245,8 @@ export class TableData extends MutableElement {
     return {
       ...super.classMap(),
       'relative focus:z-[1]': true,
-      'h-8 flex items-center justify-center': true,
+      'h-8 truncate text-ellipsis': true,
+      'flex items-center justify-center': this.blank,
       'border-theme-table-border dark:border-theme-table-border-dark': true,
       // TODO support odd vs even again
       'text-theme-table-column-content dark:text-theme-table-column-content-dark': true,
@@ -473,7 +474,6 @@ export class TableData extends MutableElement {
   public override render() {
     let value = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value) : this.value
     let displayValue = value
-    let pluginAccessory: DirectiveResult<typeof UnsafeHTMLDirective> | typeof nothing = nothing
     if (value && typeof value === 'string') {
       // Replace single, double, and backticks with their HTML entity equivalents
       value = value.replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/`/g, '&#96;')
@@ -495,108 +495,18 @@ export class TableData extends MutableElement {
             : displayValue}
     </div>`
 
-    if (this.plugin) {
-      const { config, tagName } = this.plugin
-
-      // TODO the plugin receives `null` as a string 'null' since params are always stringified
-      //      we can resolve this by omitting `cellvalue` to represent null, but as of today, that renders `undefined` in our plugins
-      //      `<${tagName} ${value !== null ? `cellvalue='${value}` : ''} configuration='${config}' ${this.pluginAttributes}></${tagName}>`
-      const pluginAsString = unsafeHTML(
-        `<${tagName} cellvalue='${value}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
-      )
-
-      const pluginAccessoryTag = tagName.replace('outerbase-plugin-cell', 'outerbase-plugin-cell-accessory')
-
-      pluginAccessory = customElements.get(pluginAccessoryTag)
-        ? unsafeHTML(
-            `<${pluginAccessoryTag} ishoveringcell='${this.isHoveringCell}' cellvalue='${value}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${pluginAccessoryTag}>`
-          )
-        : nothing
-
-      cellContents = customElements.get(tagName) ? html`${pluginAsString}` : commonCellContents
-
-      if (this.isDisplayingPluginEditor) {
-        cellEditorContents = unsafeHTML(
-          `<${tagName
-            .replace('outerbase-plugin-cell', 'outerbase-plugin-editor') // state of affairs May 3 2024
-            .replace(
-              // possible future migration
-              'astra-plugin-cell',
-              'astra-plugin-editor'
-            )} cellvalue='${value}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
-        )
-      }
-    } else {
-      cellContents = commonCellContents
-    }
-
     const themeClass = this.theme === 'dark' ? 'dark' : ''
     const inputEl = this.isEditing // &nbsp; prevents the row from collapsing (in height) when there is only 1 column
       ? html`<div class="${themeClass}">&nbsp;<input .value=${typeof displayValue === 'string' ? displayValue : (displayValue ?? '')} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
       : html``
     const emptySlot = this.blank ? html`<slot></slot>` : html``
-    const menuOptions = this.dirty
-      ? [
-          ...this.options,
-          {
-            label:
-              this.originalValue !== null && typeof this.originalValue === 'object'
-                ? 'Revert'
-                : html`Revert to
-                    <span class="pointer-events-none italic whitespace-nowrap">
-                      ${this.originalValue === null ? 'NULL' : this.originalValue === undefined ? 'DEFAULT' : this.originalValue}
-                    </span>`,
-            value: this.originalValue,
-            id: 'reset',
-          },
-        ]
-      : this.options
-    const editorViaWormhole = html`
-      <hans-wormhole .open=${this.isDisplayingPluginEditor} .anchorId=${this.id} modal>
-        <span id="plugin-editor" class="caret-current cursor-auto z-10">${cellEditorContents}</span>
-      </hans-wormhole>
-    `
     const contents = html`
-      <div class="flex items-center px-cell-padding-x ${this.blank ? 'justify-center' : null}">
-        <span class="flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
-        ${pluginAccessory}
+      <div class="flex items-center px-cell-padding-x truncate ${this.blank ? 'justify-center' : null}">
+        <span class="flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${commonCellContents}</span>
       </div>
     `
 
-    // the outer div is contenteditable, allowing us to get the `paste` event that an arbitrary element cannot otherwise receive
-    // astra-td-menu wraps our content and provides a right-click menu
-    const menuEl =
-      this.isEditing || this.blank
-        ? nothing
-        : html`<div
-            ${ref(this.contentEditableWrapper)}
-            class="outline-none caret-transparent select-none truncate flex-auto"
-            contenteditable="${this.isContentEditable}"
-            spellcheck="false"
-            autocorrect="off"
-            @dragover=${TableData.onDragOver}
-            @drop=${TableData.onDrop}
-            @paste=${this.onPaste}
-            @pointerenter=${this.onPointerEnter}
-            @pointerleave=${this.onPointerLeave}
-            tabindex="-1"
-          >
-            ${this.hasMenu
-              ? html`<astra-td-menu
-                  theme=${this.theme}
-                  .items=${menuOptions}
-                  ?open="${this.menuIsOpen}"
-                  @closed=${() => {
-                    this.menuIsOpen = false
-                  }}
-                  @menu-selection=${this.onMenuSelection}
-                >
-                  ${contents} ${editorViaWormhole}
-                </astra-td-menu>`
-              : html`${contents} ${editorViaWormhole}`}
-          </div>`
-
-    return this.isEditing ? inputEl : this.blank ? emptySlot : menuEl
+    return this.isEditing ? inputEl : this.blank ? emptySlot : contents
   }
 
   protected onPointerEnter() {
