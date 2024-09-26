@@ -706,30 +706,7 @@ export default class AstraTable extends ClassifiedElement {
                     ({ id }) => id,
                     ({ id }, rowIndex) =>
                       this.selectableRows
-                        ? html`<astra-td
-                            .position=${{
-                              row: id,
-                              column: '__selected', // our own; not expected to exist in DB
-                            }}
-                            .type=${null}
-                            width="42px"
-                            theme=${this.theme}
-                            ?separate-cells=${true}
-                            ?outer-border=${this.outerBorder}
-                            ?border-b=${this.bottomBorder}
-                            ?blank=${true}
-                            ?is-last-row=${rowIndex === this.rows.length - 1}
-                            ?is-last-column=${false}
-                            ?row-selector="${true}"
-                            ?read-only=${true}
-                            ?interactive=${true}
-                          >
-                            <check-box
-                              ?checked="${this.selectedRowUUIDs.has(id)}"
-                              @toggle-check="${() => this.toggleSelectedRow(id)}"
-                              theme=${this.theme}
-                            />
-                          </astra-td>`
+                        ? html`<div class="flex items-center justify-center h-8 w-[40px] border-b bg-white dark:bg-black">☑</div>`
                         : null
                   )}
                 </div>`
@@ -761,32 +738,12 @@ export default class AstraTable extends ClassifiedElement {
                     this.rows,
                     ({ id }) => id,
                     ({ id, values, originalValues, isNew }, rowIndex) => html`
-                      <astra-td
-                        .position=${{ row: id, column: name }}
-                        .value=${values[name]}
-                        .originalValue=${originalValues[name]}
-                        .column=${name}
-                        width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
-                        theme=${this.theme}
-                        type=${this.columnTypes?.[name]}
-                        .plugin=${plugin}
-                        plugin-attributes=${this.installedPlugins?.[name]?.supportingAttributes ?? ''}
-                        ?separate-cells=${true}
-                        ?outer-border=${this.outerBorder}
-                        ?border-b=${this.bottomBorder}
-                        ?resizable=${!this.staticWidths}
-                        ?is-last-row=${rowIndex === this.rows.length - 1}
-                        ?is-last-column=${absoluteIdx === columns.length - 1}
-                        ?is-first-row=${rowIndex === 0}
-                        ?is-first-column=${absoluteIdx === 0}
-                        ?menu=${!this.isNonInteractive && !this.readonly && this.hasCellMenus}
-                        ?interactive=${!this.isNonInteractive}
-                        ?hide-dirt=${isNew}
-                        ?read-only=${this.readonly}
-                        ?is-active=${name === this.activeColumn}
-                        ?pinned=${isSticky}
+                      <div
+                        class="h-8 px-2 flex items-center focus:z-[1] border-theme-table-border dark:border-theme-table-border-dark text-theme-table-column-content dark:text-theme-table-column-content-dark border-r border-b"
+                        style="width: ${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
                       >
-                      </astra-td>
+                        <span class="truncate">${values[name]}</span>
+                      </div>
                     `
                   )}
                 </div>`
@@ -815,54 +772,6 @@ export default class AstraTable extends ClassifiedElement {
           <div class="flex-none" id="leftSpacer" style=${styleMap({ width: `${this.leftSpacerWidth}px`, height: '1px' })}></div>
           ${this._renderTable(this.visibleColumns)}
           <div id="rightSpacer" style=${styleMap({ width: `${this.rightSpacerWidth}px`, height: '1px' })}></div>
-
-          <!-- this is only visible when there is negative space to the right of the table -->
-          <div class="flex-1 flex flex-col">
-            <!-- header -->
-            <div class="sticky top-0 z-30 ">
-              <astra-th
-                theme=${this.theme}
-                table-height=${ifDefined(this._height)}
-                .value=${null}
-                .originalValue=${null}
-                ?separate-cells=${true}
-                ?outer-border=${this.outerBorder}
-                ?is-last-column=${true}
-                ?blank=${true}
-                ?read-only=${true}
-              >
-              </astra-th>
-            </div>
-
-            <!-- body -->
-            <div class="flex-auto overflow-hidden">
-              <div class="flex flex-col">
-                ${repeat(
-                  this.rows,
-                  ({ id }) => id,
-                  ({ id }, rowIndex) => html`
-                    <astra-td
-                      theme=${this.theme}
-                      .position=${{ row: id, column: '' }}
-                      ?separate-cells=${true}
-                      ?outer-border=${this.outerBorder}
-                      ?border-b=${this.bottomBorder}
-                      ?resizable=${false}
-                      ?is-last-row=${rowIndex === this.rows.length - 1}
-                      ?is-last-column=${true}
-                      ?is-first-row=${rowIndex === 0}
-                      ?is-first-column=${false}
-                      ?menu=${false}
-                      ?interactive=${false}
-                      ?read-only=${true}
-                      ?blank=${true}
-                    >
-                    </astra-td>
-                  `
-                )}
-              </div>
-            </div>
-          </div>
         </div>
       </astra-scroll-area>
     `
