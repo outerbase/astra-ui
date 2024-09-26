@@ -818,6 +818,7 @@ export default class AstraTable extends ClassifiedElement {
 
           <!-- this is only visible when there is negative space to the right of the table -->
           <div class="flex-1 flex flex-col">
+            <!-- header -->
             <div class="sticky top-0 z-30 ">
               <astra-th
                 theme=${this.theme}
@@ -826,12 +827,14 @@ export default class AstraTable extends ClassifiedElement {
                 .originalValue=${null}
                 ?separate-cells=${true}
                 ?outer-border=${this.outerBorder}
-                ?is-last-column=${0 === this.visibleColumns.length}
+                ?is-last-column=${true}
                 ?blank=${true}
-                ?read-only=${this.readonly}
+                ?read-only=${true}
               >
               </astra-th>
             </div>
+
+            <!-- body -->
             <div class="flex-auto overflow-hidden">
               <div class="flex flex-col">
                 ${repeat(
@@ -839,21 +842,19 @@ export default class AstraTable extends ClassifiedElement {
                   ({ id }) => id,
                   ({ id }, rowIndex) => html`
                     <astra-td
-                      .position=${{ row: id, column: '' }}
-                      column=""
                       theme=${this.theme}
+                      .position=${{ row: id, column: '' }}
                       ?separate-cells=${true}
                       ?outer-border=${this.outerBorder}
                       ?border-b=${this.bottomBorder}
-                      ?resizable=${!this.staticWidths}
+                      ?resizable=${false}
                       ?is-last-row=${rowIndex === this.rows.length - 1}
                       ?is-last-column=${true}
                       ?is-first-row=${rowIndex === 0}
                       ?is-first-column=${false}
-                      ?menu=${!this.isNonInteractive && !this.readonly && this.hasCellMenus}
-                      ?interactive=${!this.isNonInteractive}
-                      ?read-only=${this.readonly}
-                      ?is-active=${name === this.activeColumn}
+                      ?menu=${false}
+                      ?interactive=${false}
+                      ?read-only=${true}
                       ?blank=${true}
                     >
                     </astra-td>
