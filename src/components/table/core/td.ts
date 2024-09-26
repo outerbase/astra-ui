@@ -249,7 +249,7 @@ export class TableData extends MutableElement {
       'border-theme-table-border dark:border-theme-table-border-dark': true,
       // TODO support odd vs even again
       'bg-theme-table-row-even dark:bg-theme-table-row-even-dark': !this.isActive && (!this.dirty || this.hideDirt),
-      'bg-theme-table-row-selected dark:bg-theme-table -row-selected-dark': this.isActive && (!this.dirty || this.hideDirt), // i.e. this is the column being sorted
+      'bg-theme-table-row-selected dark:bg-theme-table-row-selected-dark': this.isActive && (!this.dirty || this.hideDirt), // i.e. this is the column being sorted
       'bg-theme-table-cell-dirty dark:bg-theme-table-cell-dirty-dark': this.dirty && !this.hideDirt, // dirty cells
       'group-hover:bg-theme-table-row-hover dark:group-hover:bg-theme-table-row-hover-dark': !this.dirty || this.hideDirt,
       'focus:shadow-ringlet dark:focus:shadow-ringlet-dark focus:rounded-[4px] focus:ring-1 focus:ring-black dark:focus:ring-neutral-300 focus:outline-none':
