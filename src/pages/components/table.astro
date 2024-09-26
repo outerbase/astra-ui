@@ -9,13 +9,13 @@ const columns = {
 ---
 
 <Layout title="Astra-UI - Table Component">
-  <h1>light</h1>
-  <div class="relative h-96">
+  <h1 class="text-xl font-bold">light</h1>
+  <div class="relative h-96 mb-2">
     <!-- @ts-ignore -->
     <FTable
       client:only="lit"
       schema={columns}
-      data={data}
+      data={rows}
       selectable-rows
       outer-border
       blank-fill
@@ -25,14 +25,14 @@ const columns = {
     />
   </div>
 
-  <h1>dark</h1>
+  <h1 class="text-xl font-bold">dark</h1>
   <div class="relative h-96">
     <!-- @ts-ignore -->
     <FTable
       client:only="lit"
-      theme="dark"
       schema={columns}
-      data={data}
+      data={rows}
+      theme="dark"
       selectable-rows
       outer-border
       blank-fill
