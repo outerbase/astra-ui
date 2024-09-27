@@ -33,9 +33,9 @@ import { ClassifiedElement } from '../../classified-element.js'
 
 // import subcomponents
 import type ScrollArea from '../../scroll-area.js'
+import type { TableData } from './td.js'
 import '../check-box.js'
 import './td.js'
-import type { TableData } from './td.js'
 import './th.js'
 
 const SCROLL_BUFFER_SIZE = 2
