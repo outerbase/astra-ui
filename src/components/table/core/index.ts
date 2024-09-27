@@ -33,14 +33,10 @@ import { ClassifiedElement } from '../../classified-element.js'
 
 // import subcomponents
 import type ScrollArea from '../../scroll-area.js'
-import '../add-column.js'
 import '../check-box.js'
-import './tbody.js'
 import './td.js'
 import type { TableData } from './td.js'
 import './th.js'
-import './thead.js'
-import './tr.js'
 
 const SCROLL_BUFFER_SIZE = 2
 const COLUMN_BUFFER_SIZE = 4
