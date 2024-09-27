@@ -491,7 +491,8 @@ export class TableData extends MutableElement {
     let cellContents: TemplateResult<1>
     let cellEditorContents: DirectiveResult<typeof UnsafeHTMLDirective> | undefined
 
-    const classes = value === null || value === undefined ? 'text-neutral-400 dark:text-neutral-600' : 'overflow-hidden text-ellipsis'
+    const placeholderTextColorClass = 'text-neutral-400 dark:text-white/50'
+    const classes = value === null || value === undefined ? placeholderTextColorClass : 'overflow-hidden text-ellipsis'
 
     const commonCellContents = html`<div class="${classes}">
       ${displayValue === null
