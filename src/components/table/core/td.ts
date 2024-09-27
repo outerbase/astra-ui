@@ -302,9 +302,6 @@ export class TableData extends MutableElement {
   @property({ attribute: 'row-is-new', type: Boolean })
   public rowIsNew = false
 
-  @property({ attribute: 'row-is-selected', type: Boolean })
-  public rowIsSelected = false
-
   @state() menuIsOpen = false
   @state() isContentEditable = true // this property is to toggle off the contenteditableness of to resolve quirky focus and text selection that can happen when, say, right-clicking to trigger the context menu
   @state() protected options = RW_OPTIONS
