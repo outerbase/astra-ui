@@ -105,9 +105,6 @@ export default class AstraTable extends ClassifiedElement {
   @property({ attribute: 'read-only', type: Boolean })
   public readonly = false
 
-  @property({ attribute: 'blank-fill', type: Boolean })
-  public blankFill = false
-
   @state() contentScrollsHorizontally = false
 
   @property({ attribute: 'column-width-offsets', type: Object })
@@ -285,10 +282,11 @@ export default class AstraTable extends ClassifiedElement {
   }
 
   public toggleSelectedRow(uuid: string) {
-    const _set = this.selectedRowUUIDs
-    if (_set.has(uuid)) _set.delete(uuid)
-    else _set.add(uuid)
-    this.requestUpdate('selectedRowUUIDs')
+    const s = (this.selectedRowUUIDs = new Set(this.selectedRowUUIDs))
+    if (s.has(uuid)) s.delete(uuid)
+    else s.add(uuid)
+
+    this._onRowSelection()
   }
 
   public clearSelection() {
@@ -545,6 +543,9 @@ export default class AstraTable extends ClassifiedElement {
       } else if (this.selectedRowUUIDs.size === this.rows.length && !this.allRowsSelected) {
         this.allRowsSelected = true
       }
+
+      // TODO determine if this is necessary
+      this.updateTableView()
     }
 
     if (changedProperties.has('rows')) {
@@ -563,14 +564,18 @@ export default class AstraTable extends ClassifiedElement {
 
         this.fromIdToRowMap[row.id] = row
       })
+
+      // TODO determine if this is necessary
+      this.updateTableView()
     }
 
     if (changedProperties.has('hiddenColumnNames') || changedProperties.has('schema') || changedProperties.has('rows')) {
-      // without the settimeout, toggling between two tabs in Dashboard causes us to see a flat/collapsed/empty table, while a delay of 0s resolves it
+      // without the setTimeout, toggling between two tabs in Dashboard causes us to see a flat/collapsed/empty table, while a delay of 0s resolves it
       setTimeout(() => this.updateTableView(), 0)
     }
 
     if (changedProperties.has('pinnedColumns')) {
+      // this IS necessary when viewing from Astra, or else you see double columns immediately after pinning (disappears on scroll)
       this.updateTableView()
     }
   }
@@ -690,14 +695,11 @@ export default class AstraTable extends ClassifiedElement {
 
         <!-- body -->
         <div class="flex flex-col">
-          <!-- new rows -->
-          <div></div>
-
-          <!-- existing rows -->
           <div class="flex">
             <!-- select check boxes -->
             ${isSticky
               ? html`<div class="flex flex-col">
+                  <!-- new rows -->
                   ${repeat(
                     this.newRows,
                     ({ id }) => id,
@@ -720,6 +722,7 @@ export default class AstraTable extends ClassifiedElement {
                             ?row-selector="${true}"
                             ?read-only=${true}
                             ?interactive=${true}
+                            ?row-is-new=${true}
                           >
                             <check-box
                               ?checked="${this.selectedRowUUIDs.has(id)}"
@@ -729,36 +732,40 @@ export default class AstraTable extends ClassifiedElement {
                           </astra-td>`
                         : null
                   )}
+
+                  <!-- old rows -->
                   ${repeat(
                     this.oldRows,
                     ({ id }) => id,
                     ({ id }, rowIndex) =>
-                      this.selectableRows
-                        ? html`<astra-td
-                            .position=${{
-                              row: id,
-                              column: '__selected', // our own; not expected to exist in DB
-                            }}
-                            .type=${null}
-                            width="42px"
-                            theme=${this.theme}
-                            ?separate-cells=${true}
-                            ?outer-border=${this.outerBorder}
-                            ?border-b=${this.bottomBorder}
-                            ?blank=${true}
-                            ?is-last-row=${rowIndex === this.oldRows.length - 1}
-                            ?is-last-column=${false}
-                            ?row-selector="${true}"
-                            ?read-only=${true}
-                            ?interactive=${true}
-                          >
-                            <check-box
-                              ?checked="${this.selectedRowUUIDs.has(id)}"
-                              @toggle-check="${() => this.toggleSelectedRow(id)}"
+                      this.removedRowUUIDs.has(id)
+                        ? nothing
+                        : this.selectableRows
+                          ? html`<astra-td
+                              .position=${{
+                                row: id,
+                                column: '__selected', // our own; not expected to exist in DB
+                              }}
+                              .type=${null}
+                              width="42px"
                               theme=${this.theme}
-                            />
-                          </astra-td>`
-                        : null
+                              ?separate-cells=${true}
+                              ?outer-border=${this.outerBorder}
+                              ?border-b=${this.bottomBorder}
+                              ?blank=${true}
+                              ?is-last-row=${rowIndex === this.oldRows.length - 1}
+                              ?is-last-column=${false}
+                              ?row-selector="${true}"
+                              ?read-only=${true}
+                              ?interactive=${true}
+                            >
+                              <check-box
+                                ?checked="${this.selectedRowUUIDs.has(id)}"
+                                @toggle-check="${() => this.toggleSelectedRow(id)}"
+                                theme=${this.theme}
+                              />
+                            </astra-td>`
+                          : null
                   )}
                 </div>`
               : nothing}
@@ -784,11 +791,11 @@ export default class AstraTable extends ClassifiedElement {
                   plugin.config = JSON.stringify(realInstallation?.config)
                 }
 
-                return html`<div class="flex flex-col">
+                return html`<div class="flex flex-col sticky top-0">
                   ${repeat(
                     this.newRows,
                     ({ id }) => id,
-                    ({ id, values, originalValues, isNew }, rowIndex) => html`
+                    ({ id, values, originalValues }, rowIndex) => html`
                       <astra-td
                         .position=${{ row: id, column: name }}
                         .value=${values[name]}
@@ -809,12 +816,11 @@ export default class AstraTable extends ClassifiedElement {
                         ?is-first-column=${absoluteIdx === 0}
                         ?menu=${!this.isNonInteractive && !this.readonly && this.hasCellMenus}
                         ?interactive=${!this.isNonInteractive}
-                        ?hide-dirt=${isNew}
                         ?read-only=${this.readonly}
                         ?is-active=${name === this.activeColumn}
                         ?pinned=${isSticky}
-                        ?row-is-selected=${false}
-                        ?row-is-new=${isNew}
+                        ?hide-dirt=${true}
+                        ?row-is-new=${true}
                       >
                       </astra-td>
                     `
@@ -822,34 +828,38 @@ export default class AstraTable extends ClassifiedElement {
                   ${repeat(
                     this.oldRows,
                     ({ id }) => id,
-                    ({ id, values, originalValues, isNew }, rowIndex) => html`
-                      <astra-td
-                        .position=${{ row: id, column: name }}
-                        .value=${values[name]}
-                        .originalValue=${originalValues[name]}
-                        .column=${name}
-                        .plugin=${plugin}
-                        width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
-                        theme=${this.theme}
-                        type=${this.columnTypes?.[name]}
-                        plugin-attributes=${this.installedPlugins?.[name]?.supportingAttributes ?? ''}
-                        ?separate-cells=${true}
-                        ?outer-border=${this.outerBorder}
-                        ?border-b=${this.bottomBorder}
-                        ?resizable=${!this.staticWidths}
-                        ?is-last-row=${rowIndex === this.oldRows.length - 1}
-                        ?is-last-column=${absoluteIdx === columns.length - 1}
-                        ?is-first-row=${rowIndex === 0}
-                        ?is-first-column=${absoluteIdx === 0}
-                        ?menu=${!this.isNonInteractive && !this.readonly && this.hasCellMenus}
-                        ?interactive=${!this.isNonInteractive}
-                        ?hide-dirt=${isNew}
-                        ?read-only=${this.readonly}
-                        ?is-active=${name === this.activeColumn}
-                        ?pinned=${isSticky}
-                      >
-                      </astra-td>
-                    `
+                    ({ id, values, originalValues }, rowIndex) =>
+                      this.removedRowUUIDs.has(id)
+                        ? nothing
+                        : html`
+                            <astra-td
+                              .position=${{ row: id, column: name }}
+                              .value=${values[name]}
+                              .originalValue=${originalValues[name]}
+                              .column=${name}
+                              .plugin=${plugin}
+                              width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
+                              theme="${this.theme}"
+                              type="${this.columnTypes?.[name]}"
+                              plugin-attributes=${this.installedPlugins?.[name]?.supportingAttributes ?? ''}
+                              ?separate-cells=${true}
+                              ?outer-border=${this.outerBorder}
+                              ?border-b=${this.bottomBorder}
+                              ?resizable=${!this.staticWidths}
+                              ?is-last-row=${rowIndex === this.oldRows.length - 1}
+                              ?is-last-column=${absoluteIdx === columns.length - 1}
+                              ?is-first-row=${rowIndex === 0}
+                              ?is-first-column=${absoluteIdx === 0}
+                              ?menu=${!this.isNonInteractive && !this.readonly && this.hasCellMenus}
+                              ?interactive=${!this.isNonInteractive}
+                              ?read-only=${this.readonly}
+                              ?is-active=${name === this.activeColumn || this.selectedRowUUIDs.has(id)}
+                              ?pinned=${isSticky}
+                              ?hide-dirt=${false}
+                              ?row-is-new=${false}
+                            >
+                            </astra-td>
+                          `
                   )}
                 </div>`
               }
@@ -880,6 +890,34 @@ export default class AstraTable extends ClassifiedElement {
       <!-- body -->
       <div class="flex-auto overflow-hidden">
         <div class="flex flex-col">
+          <!-- new -->
+          ${repeat(
+            this.newRows, // order matters!!!
+            ({ id }) => id,
+            ({ id }, rowIndex) => html`
+              <astra-td
+                theme=${this.theme}
+                .position=${{ row: id, column: '' }}
+                ?separate-cells=${true}
+                ?outer-border=${this.outerBorder}
+                ?border-b=${this.bottomBorder}
+                ?resizable=${false}
+                ?is-last-row=${rowIndex === this.oldRows.length - 1}
+                ?is-last-column=${true}
+                ?is-first-row=${rowIndex === 0}
+                ?is-first-column=${false}
+                ?menu=${false}
+                ?interactive=${false}
+                ?read-only=${true}
+                ?blank=${true}
+                ?is-active=${this.selectedRowUUIDs.has(id)}
+                ?row-is-new=${true}
+              >
+              </astra-td>
+            `
+          )}
+
+          <!-- old -->
           ${repeat(
             this.oldRows,
             ({ id }) => id,
@@ -899,6 +937,8 @@ export default class AstraTable extends ClassifiedElement {
                 ?interactive=${false}
                 ?read-only=${true}
                 ?blank=${true}
+                ?is-active=${this.selectedRowUUIDs.has(id)}
+                ?row-is-new=${false}
               >
               </astra-td>
             `
