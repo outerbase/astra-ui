@@ -473,6 +473,7 @@ export class TableData extends MutableElement {
   }
 
   public override render() {
+    // TODO optimize this not to re-stringify on every render (unless value changed)
     let value = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value) : this.value
     let displayValue = value
     let pluginAccessory: DirectiveResult<typeof UnsafeHTMLDirective> | typeof nothing = nothing

@@ -360,23 +360,22 @@ export class TH extends MutableElement {
           : html`<span class="font-normal truncate">${this.value}</span>`
 
       return this.withResizer
-        ? html`<span class=${classMap(resultContainerClasses)}
-            ><slot></slot>
+        ? html`<span class=${classMap(resultContainerClasses)}>
+            <slot></slot>
             ${body}
             <column-resizer
               .column=${this}
-              height="${ifDefined(this.tableHeight)}"
-              theme=${this.theme}
+              .height=${ifDefined(this.tableHeight)}
+              .theme=${this.theme}
               @resize-start=${() => {
-                // remove the suffix `px` from width and convert to a number
-                // JOHNNY probably revert to storing the number??
                 this._previousWidth = this.width ?? 0
               }}
               @resize=${({ delta }: ResizeEvent) => {
                 this.width = this._previousWidth + delta
               }}
-            ></column-resizer
-          ></span>`
+            >
+            </column-resizer>
+          </span>`
         : html`<div class=${classMap(resultContainerClasses)}><slot></slot>${body}</div>`
     }
   }

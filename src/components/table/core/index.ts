@@ -696,7 +696,7 @@ export default class AstraTable extends ClassifiedElement {
         <!-- body -->
         <div class="flex flex-col">
           <div class="flex">
-            <!-- select check boxes -->
+            <!-- check boxes -->
             ${isSticky
               ? html`<div class="flex flex-col">
                   <!-- new rows -->
@@ -711,8 +711,8 @@ export default class AstraTable extends ClassifiedElement {
                               column: '__selected', // our own; not expected to exist in DB
                             }}
                             .type=${null}
-                            theme=${this.theme}
                             .width=${42}
+                            .theme=${this.theme}
                             ?separate-cells=${true}
                             ?outer-border=${this.outerBorder}
                             ?border-b=${this.bottomBorder}
@@ -725,8 +725,8 @@ export default class AstraTable extends ClassifiedElement {
                             ?row-is-new=${true}
                           >
                             <check-box
-                              ?checked="${this.selectedRowUUIDs.has(id)}"
-                              @toggle-check="${() => this.toggleSelectedRow(id)}"
+                              ?checked=${this.selectedRowUUIDs.has(id)}
+                              @toggle-check=${() => this.toggleSelectedRow(id)}
                               theme=${this.theme}
                             />
                           </astra-td>`
@@ -769,6 +769,8 @@ export default class AstraTable extends ClassifiedElement {
                   )}
                 </div>`
               : nothing}
+
+            <!-- coluns+rows of data -->
             ${repeat(
               columns,
               ({ name }, _idx) => name,
