@@ -699,39 +699,41 @@ export default class AstraTable extends ClassifiedElement {
             <!-- check boxes -->
             ${isSticky
               ? html`<div class="flex flex-col">
-                  <!-- new rows -->
-                  ${repeat(
-                    this.newRows,
-                    ({ id }) => id,
-                    ({ id }, rowIndex) =>
-                      this.selectableRows
-                        ? html`<astra-td
-                            .position=${{
-                              row: id,
-                              column: '__selected', // our own; not expected to exist in DB
-                            }}
-                            .type=${null}
-                            .width=${42}
-                            .theme=${this.theme}
-                            ?separate-cells=${true}
-                            ?outer-border=${this.outerBorder}
-                            ?border-b=${this.bottomBorder}
-                            ?blank=${true}
-                            ?is-last-row=${rowIndex === this.oldRows.length - 1}
-                            ?is-last-column=${false}
-                            ?row-selector=${true}
-                            ?read-only=${true}
-                            ?interactive=${true}
-                            ?row-is-new=${true}
-                          >
-                            <check-box
-                              ?checked=${this.selectedRowUUIDs.has(id)}
-                              @toggle-check=${() => this.toggleSelectedRow(id)}
-                              theme=${this.theme}
-                            />
-                          </astra-td>`
-                        : null
-                  )}
+                  <div class="sticky z-[1] top-[36px]">
+                    <!-- new rows -->
+                    ${repeat(
+                      this.newRows,
+                      ({ id }) => id,
+                      ({ id }, rowIndex) =>
+                        this.selectableRows
+                          ? html`<astra-td
+                              .position=${{
+                                row: id,
+                                column: '__selected', // our own; not expected to exist in DB
+                              }}
+                              .type=${null}
+                              .width=${42}
+                              .theme=${this.theme}
+                              ?separate-cells=${true}
+                              ?outer-border=${this.outerBorder}
+                              ?border-b=${this.bottomBorder}
+                              ?blank=${true}
+                              ?is-last-row=${rowIndex === this.oldRows.length - 1}
+                              ?is-last-column=${false}
+                              ?row-selector=${true}
+                              ?read-only=${true}
+                              ?interactive=${true}
+                              ?row-is-new=${true}
+                            >
+                              <check-box
+                                ?checked=${this.selectedRowUUIDs.has(id)}
+                                @toggle-check=${() => this.toggleSelectedRow(id)}
+                                theme=${this.theme}
+                              />
+                            </astra-td>`
+                          : null
+                    )}
+                  </div>
 
                   <!-- old rows -->
                   ${repeat(
@@ -793,40 +795,42 @@ export default class AstraTable extends ClassifiedElement {
                   plugin.config = JSON.stringify(realInstallation?.config)
                 }
 
-                return html`<div class="flex flex-col sticky top-0">
-                  ${repeat(
-                    this.newRows,
-                    ({ id }) => id,
-                    ({ id, values, originalValues }, rowIndex) => html`
-                      <astra-td
-                        .position=${{ row: id, column: name }}
-                        .value=${values[name]}
-                        .originalValue=${originalValues[name]}
-                        .column=${name}
-                        .plugin=${plugin}
-                        .width=${this.widthForColumnType(name, this.columnWidthOffsets[name])}
-                        theme=${this.theme}
-                        type=${this.columnTypes?.[name]}
-                        plugin-attributes=${this.installedPlugins?.[name]?.supportingAttributes ?? ''}
-                        ?separate-cells=${true}
-                        ?outer-border=${this.outerBorder}
-                        ?border-b=${this.bottomBorder}
-                        ?resizable=${!this.staticWidths}
-                        ?is-last-row=${rowIndex === this.oldRows.length - 1}
-                        ?is-last-column=${absoluteIdx === columns.length - 1}
-                        ?is-first-row=${rowIndex === 0}
-                        ?is-first-column=${absoluteIdx === 0}
-                        ?menu=${!this.isNonInteractive && !this.readonly && this.hasCellMenus}
-                        ?interactive=${!this.isNonInteractive}
-                        ?read-only=${this.readonly}
-                        ?is-active=${name === this.activeColumn}
-                        ?pinned=${isSticky}
-                        ?hide-dirt=${true}
-                        ?row-is-new=${true}
-                      >
-                      </astra-td>
-                    `
-                  )}
+                return html`<div class="flex flex-col">
+                  <div class="sticky z-[1] top-[36px]">
+                    ${repeat(
+                      this.newRows,
+                      ({ id }) => id,
+                      ({ id, values, originalValues }, rowIndex) => html`
+                        <astra-td
+                          .position=${{ row: id, column: name }}
+                          .value=${values[name]}
+                          .originalValue=${originalValues[name]}
+                          .column=${name}
+                          .plugin=${plugin}
+                          .width=${this.widthForColumnType(name, this.columnWidthOffsets[name])}
+                          theme=${this.theme}
+                          type=${this.columnTypes?.[name]}
+                          plugin-attributes=${this.installedPlugins?.[name]?.supportingAttributes ?? ''}
+                          ?separate-cells=${true}
+                          ?outer-border=${this.outerBorder}
+                          ?border-b=${this.bottomBorder}
+                          ?resizable=${!this.staticWidths}
+                          ?is-last-row=${rowIndex === this.oldRows.length - 1}
+                          ?is-last-column=${absoluteIdx === columns.length - 1}
+                          ?is-first-row=${rowIndex === 0}
+                          ?is-first-column=${absoluteIdx === 0}
+                          ?menu=${!this.isNonInteractive && !this.readonly && this.hasCellMenus}
+                          ?interactive=${!this.isNonInteractive}
+                          ?read-only=${this.readonly}
+                          ?is-active=${name === this.activeColumn}
+                          ?pinned=${isSticky}
+                          ?hide-dirt=${true}
+                          ?row-is-new=${true}
+                        >
+                        </astra-td>
+                      `
+                    )}
+                  </div>
                   ${repeat(
                     this.oldRows,
                     ({ id }) => id,
@@ -874,7 +878,7 @@ export default class AstraTable extends ClassifiedElement {
   public override render() {
     const tableEndPlaceholder = html` <div class="flex-1 flex flex-col">
       <!-- header -->
-      <div class="sticky top-0 z-30 ">
+      <div class="sticky top-0 z-30">
         <astra-th
           theme=${this.theme}
           table-height=${ifDefined(this._height)}
@@ -890,11 +894,11 @@ export default class AstraTable extends ClassifiedElement {
       </div>
 
       <!-- body -->
-      <div class="flex-auto overflow-hidden">
+      <!-- new rows (sticky) -->
+      <div class="flex-auto sticky z-[1] top-[36px]">
         <div class="flex flex-col">
-          <!-- new -->
           ${repeat(
-            this.newRows, // order matters!!!
+            this.newRows,
             ({ id }) => id,
             ({ id }, rowIndex) => html`
               <astra-td
@@ -918,8 +922,12 @@ export default class AstraTable extends ClassifiedElement {
               </astra-td>
             `
           )}
+        </div>
+      </div>
 
-          <!-- old -->
+      <!-- existing rows -->
+      <div class="flex-auto">
+        <div class="flex flex-col">
           ${repeat(
             this.oldRows,
             ({ id }) => id,
