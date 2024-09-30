@@ -447,7 +447,7 @@ export default class AstraTable extends ClassifiedElement {
 
     const rows = this.oldRows
     const _startIndex = Math.max(Math.floor((scrollTop ?? 0) / this.rowHeight) - SCROLL_BUFFER_SIZE, 0)
-    const possiblyVisibleRowEndIndex = _startIndex + this.numberOfVisibleRows() + 2 * SCROLL_BUFFER_SIZE
+    const possiblyVisibleRowEndIndex = _startIndex + this.numberOfVisibleRows() + SCROLL_BUFFER_SIZE
     const _endIndex = possiblyVisibleRowEndIndex < rows.length ? possiblyVisibleRowEndIndex : rows.length
 
     if (this.visibleRowStartIndex !== _startIndex || this.visibleRowEndIndex !== _endIndex) {
@@ -958,7 +958,7 @@ export default class AstraTable extends ClassifiedElement {
     </div>`
 
     return html`
-      <astra-scroll-area ${ref(this.scrollableEl)} threshold=${10} theme=${this.theme} .onScroll=${this.updateTableView}>
+      <astra-scroll-area ${ref(this.scrollableEl)} threshold=${50} theme=${this.theme} .onScroll=${this.updateTableView}>
         <div class="flex w-full min-w-fit">
           <!-- pinned columns -->
           ${this._renderTable(this.pinnedColumns, true)}
