@@ -246,16 +246,6 @@ export class TH extends MutableElement {
         })) ?? []
     }
 
-    if (changedProperties.has('width') && this.width && this.style) {
-      this.style.width = this.width
-
-      // when it had a previous value
-      if (changedProperties.get('width')) {
-        // TODO fix this once `width` is a number again
-        // this.dispatchEvent(new ResizeEndEvent((this.originalValue ?? this.value)!, this.width))
-      }
-    }
-
     if (changedProperties.has('readonly')) {
       if (this.readonly) {
         this.options = [
@@ -380,10 +370,10 @@ export class TH extends MutableElement {
               @resize-start=${() => {
                 // remove the suffix `px` from width and convert to a number
                 // JOHNNY probably revert to storing the number??
-                this._previousWidth = this.width ? +this.width.slice(0, -2) : 0
+                this._previousWidth = this.width ?? 0
               }}
               @resize=${({ delta }: ResizeEvent) => {
-                this.width = `${this._previousWidth + delta}px`
+                this.width = this._previousWidth + delta
               }}
             ></column-resizer
           ></span>`

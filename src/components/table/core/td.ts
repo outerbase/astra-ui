@@ -459,10 +459,6 @@ export class TableData extends MutableElement {
         this.removeAttribute('first-cell')
       }
     }
-
-    if (changedProperties.has('width') && this.width && this.style) {
-      this.style.width = this.width
-    }
   }
 
   public override updated(changedProperties: PropertyValues<this>) {

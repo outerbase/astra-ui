@@ -172,8 +172,8 @@ export class MutableElement extends ClassifiedElement {
   @property({ attribute: 'read-only', type: Boolean })
   public readonly = false
 
-  @property({ type: String, attribute: 'width' })
-  public width?: string
+  @property({ type: Number, attribute: 'width' })
+  public width?: number
 
   @property({ attribute: 'interactive', type: Boolean })
   public isInteractive = false
@@ -239,6 +239,10 @@ export class MutableElement extends ClassifiedElement {
     if (this.constrainTypes && changedProperties.has('type')) {
       this.value = MutableElement.convertToType(this.type, this.value) ?? this._value
       this.originalValue = MutableElement.convertToType(this.type, this.originalValue) ?? this.originalValue
+    }
+
+    if (changedProperties.has('width') && this.width && this.style) {
+      this.style.width = `${this.width}px`
     }
   }
 

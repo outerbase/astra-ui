@@ -604,7 +604,7 @@ export default class AstraTable extends ClassifiedElement {
             <astra-th
               theme=${this.theme}
               table-height=${ifDefined(this._height)}
-              width="42px"
+              .width=${42}
               .value=${null}
               .originalValue=${null}
               ?separate-cells=${true}
@@ -654,7 +654,7 @@ export default class AstraTable extends ClassifiedElement {
 
               return html`
                 <astra-th
-                  width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
+                  .width=${this.widthForColumnType(name, this.columnWidthOffsets[name])}
                   .options=${this.columnOptions || nothing}
                   .plugins="${this.plugins}"
                   installed-plugins=${JSON.stringify(this.installedPlugins)}
@@ -711,15 +711,15 @@ export default class AstraTable extends ClassifiedElement {
                               column: '__selected', // our own; not expected to exist in DB
                             }}
                             .type=${null}
-                            width="42px"
                             theme=${this.theme}
+                            .width=${42}
                             ?separate-cells=${true}
                             ?outer-border=${this.outerBorder}
                             ?border-b=${this.bottomBorder}
                             ?blank=${true}
                             ?is-last-row=${rowIndex === this.oldRows.length - 1}
                             ?is-last-column=${false}
-                            ?row-selector="${true}"
+                            ?row-selector=${true}
                             ?read-only=${true}
                             ?interactive=${true}
                             ?row-is-new=${true}
@@ -747,7 +747,7 @@ export default class AstraTable extends ClassifiedElement {
                                 column: '__selected', // our own; not expected to exist in DB
                               }}
                               .type=${null}
-                              width="42px"
+                              .width=${42}
                               theme=${this.theme}
                               ?separate-cells=${true}
                               ?outer-border=${this.outerBorder}
@@ -802,7 +802,7 @@ export default class AstraTable extends ClassifiedElement {
                         .originalValue=${originalValues[name]}
                         .column=${name}
                         .plugin=${plugin}
-                        width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
+                        .width=${this.widthForColumnType(name, this.columnWidthOffsets[name])}
                         theme=${this.theme}
                         type=${this.columnTypes?.[name]}
                         plugin-attributes=${this.installedPlugins?.[name]?.supportingAttributes ?? ''}
@@ -838,7 +838,7 @@ export default class AstraTable extends ClassifiedElement {
                               .originalValue=${originalValues[name]}
                               .column=${name}
                               .plugin=${plugin}
-                              width="${this.widthForColumnType(name, this.columnWidthOffsets[name])}px"
+                              .width=${this.widthForColumnType(name, this.columnWidthOffsets[name])}
                               theme="${this.theme}"
                               type="${this.columnTypes?.[name]}"
                               plugin-attributes=${this.installedPlugins?.[name]?.supportingAttributes ?? ''}
