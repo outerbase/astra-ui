@@ -29,6 +29,7 @@ export default class ScrollArea extends ClassifiedElement {
   ]
 
   @property() public onScroll?: () => void
+  private _debouncedOnScrollCallback: typeof this.onScroll
   @property({ type: Number }) public threshold = 0
   @property() public scroller: Ref<HTMLDivElement> = createRef()
   @property() public rightScrollZone: Ref<HTMLDivElement> = createRef()
@@ -105,7 +106,7 @@ export default class ScrollArea extends ClassifiedElement {
       this.previousScrollPositionY = currentVertical
       this.previousScrollPositionX = currentHorizontal
       if (typeof this.onScroll === 'function') {
-        this.onScroll()
+        this._debouncedOnScrollCallback?.()
       }
     }
   }
@@ -242,6 +243,12 @@ export default class ScrollArea extends ClassifiedElement {
     if (changedProperties.has('hasHoveringCursor')) {
       // ensure scrollers appear on initial appearance
       if (this.hasHoveringCursor) this.updateScrollerSizeAndPosition()
+    }
+
+    if (changedProperties.has('onScroll')) {
+      if (typeof this.onScroll === 'function') {
+        this._debouncedOnScrollCallback = debounce(this.onScroll, 10)
+      }
     }
   }
 
