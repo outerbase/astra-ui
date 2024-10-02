@@ -39,7 +39,7 @@ import './td.js'
 import './th.js'
 
 const SCROLL_BUFFER_SIZE = 4
-const COLUMN_BUFFER_SIZE = 0
+const COLUMN_BUFFER_SIZE = 3
 
 @customElement('astra-table')
 export default class AstraTable extends ClassifiedElement {
@@ -964,7 +964,6 @@ export default class AstraTable extends ClassifiedElement {
   }
 
   public override render() {
-    console.log('visible rows', this.numberOfVisibleRows())
     const tableEndPlaceholder = html`<div class="flex-1 flex flex-col">
       <!-- header -->
       <div class="sticky top-0 z-30">
@@ -1049,11 +1048,17 @@ export default class AstraTable extends ClassifiedElement {
       </div>
     </div>`
 
-    // threshold-y: 32 * Math.max(1, SCROLL_BUFFER_SIZE + 1)
-    // threshold-y=${Math.max(32, (32 * Math.max(1, SCROLL_BUFFER_SIZE + 1)) / 2)}
-    //
+    // threshold-x is potentially problematic if columns aren't all divisible by 50
+    // which customized ones, for example, won't be
+    // but the buffer offsets the chance of a column rendering blank regardless?
     return html`
-      <astra-scroll-area ${ref(this.scrollableEl)} threshold-x=${1} threshold-y=${32} theme=${this.theme} .onScroll=${this.updateTableView}>
+      <astra-scroll-area
+        ${ref(this.scrollableEl)}
+        threshold-x=${50}
+        threshold-y=${32}
+        theme=${this.theme}
+        .onScroll=${this.updateTableView}
+      >
         <div class="flex w-full min-w-fit">
           <!-- pinned columns -->
           ${this.pinnedTableSection}
