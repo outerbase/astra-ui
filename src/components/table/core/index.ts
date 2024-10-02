@@ -920,7 +920,9 @@ export default class AstraTable extends ClassifiedElement {
 
     return html`<!-- header + body -->
       <div
-        class="flex flex-col ${isSticky ? 'sticky left-0 z-20 shadow-[0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_8px_rgb(0,0,0)]' : ''}"
+        class="flex flex-col ${isSticky
+          ? 'sticky left-0 z-[19] shadow-[0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_8px_rgb(0,0,0)]'
+          : ''}"
       >
         <!-- header -->
         <div class="flex flex-row sticky top-0 z-10">${selectAllCheckbox} ${columnHeaders}</div>
