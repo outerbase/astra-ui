@@ -683,15 +683,22 @@ export default class AstraTable extends ClassifiedElement {
 
   private _renderTable(columns: Columns, isSticky = false) {
     const {
+      visibleRowStartIndex,
+      visibleRowEndIndex,
+      visibleColumns,
+      pinnedColumns,
       selectableRows,
+      newRows,
+      oldRows,
       _selectAllCheckbox,
       visibleColumnStartIndex,
       visibleColumnEndIndex,
       columnWidthOffsets,
       renamedColumnNames,
-      installedPlugins,
       columnOptions,
       plugins,
+      installedPlugins,
+      realInstalledPlugins,
       theme,
       isNonInteractive,
       readonly,
@@ -699,6 +706,10 @@ export default class AstraTable extends ClassifiedElement {
       staticWidths,
       activeColumn,
       outerBorder,
+      bottomBorder,
+      selectedRowUUIDs,
+      columnTypes,
+      hasCellMenus,
     } = this
     // TODO yielding nothing while looping over start/end index will yield empty rows
     // we need to instead yield end-start # of rows until Z many exist
@@ -739,9 +750,9 @@ export default class AstraTable extends ClassifiedElement {
             @resize=${this._onColumnResized}
             @column-pinned=${(ev: ColumnPinnedEvent) => {
               const column = this.columns.find((c) => c.name === ev.name)
-              const pinnedIndex = column ? this.pinnedColumns.indexOf(column) : -1
-              if (pinnedIndex > -1) this.pinnedColumns.splice(pinnedIndex, 1)
-              else if (column) this.pinnedColumns.push(column)
+              const pinnedIndex = column ? pinnedColumns.indexOf(column) : -1
+              if (pinnedIndex > -1) pinnedColumns.splice(pinnedIndex, 1)
+              else if (column) pinnedColumns.push(column)
 
               this.requestUpdate('pinnedColumns')
             }}
@@ -763,10 +774,10 @@ export default class AstraTable extends ClassifiedElement {
               }}
               .type=${null}
               .width=${42}
-              .theme=${this.theme}
+              .theme=${theme}
               ?separate-cells=${true}
-              ?outer-border=${this.outerBorder}
-              ?border-b=${this.bottomBorder}
+              ?outer-border=${outerBorder}
+              ?border-b=${bottomBorder}
               ?blank=${true}
               ?is-last-row=${false}
               ?is-last-column=${false}
@@ -775,7 +786,7 @@ export default class AstraTable extends ClassifiedElement {
               ?interactive=${true}
               ?row-is-new=${true}
             >
-              <check-box ?checked=${this.selectedRowUUIDs.has(id)} @toggle-check=${() => this.toggleSelectedRow(id)} theme=${this.theme} />
+              <check-box ?checked=${selectedRowUUIDs.has(id)} @toggle-check=${() => this.toggleSelectedRow(id)} theme=${theme} />
             </astra-td>`
         )
       : nothing
@@ -784,7 +795,7 @@ export default class AstraTable extends ClassifiedElement {
         this.oldRows,
         ({ id }) => id,
         ({ id }, rowIndex) =>
-          rowIndex >= this.visibleRowStartIndex - SCROLL_BUFFER_SIZE && rowIndex < this.visibleRowEndIndex + SCROLL_BUFFER_SIZE
+          rowIndex >= visibleRowStartIndex - SCROLL_BUFFER_SIZE && rowIndex < visibleRowEndIndex + SCROLL_BUFFER_SIZE
             ? html`<astra-td
                 .position=${{
                   row: id,
@@ -792,10 +803,10 @@ export default class AstraTable extends ClassifiedElement {
                 }}
                 .type=${null}
                 .width=${42}
-                theme=${this.theme}
+                theme=${theme}
                 ?separate-cells=${true}
-                ?outer-border=${this.outerBorder}
-                ?border-b=${this.bottomBorder}
+                ?outer-border=${outerBorder}
+                ?border-b=${bottomBorder}
                 ?blank=${true}
                 ?is-last-row=${false}
                 ?is-last-column=${false}
@@ -804,8 +815,8 @@ export default class AstraTable extends ClassifiedElement {
                 ?interactive=${true}
               >
                 <check-box
-                  .theme=${this.theme}
-                  ?checked=${this.selectedRowUUIDs.has(id)}
+                  .theme=${theme}
+                  ?checked=${selectedRowUUIDs.has(id)}
                   @toggle-check=${() => this.toggleSelectedRow(id)}
                 ></check-box>
               </astra-td>`
@@ -817,19 +828,19 @@ export default class AstraTable extends ClassifiedElement {
     // if (isSticky) console.log(visibleColumnStartIndex, visibleColumnEndIndex)
     const unpinnedNewRows = isSticky
       ? nothing
-      : this.visibleColumns.map(({ name }, cidx) => {
+      : visibleColumns.map(({ name }, cidx) => {
           const rowOutOfRange = cidx < visibleColumnStartIndex || cidx > visibleColumnEndIndex
           if (rowOutOfRange) return nothing
 
-          const adjustedColumnIndex = cidx + this.visibleColumnStartIndex
+          const adjustedColumnIndex = cidx + visibleColumnStartIndex
 
           // plugin
-          const installedPlugin = this.plugins?.find(
-            ({ pluginWorkspaceId }) => pluginWorkspaceId === this.installedPlugins?.[name]?.plugin_workspace_id
+          const installedPlugin = plugins?.find(
+            ({ pluginWorkspaceId }) => pluginWorkspaceId === installedPlugins?.[name]?.plugin_workspace_id
           )
-          const defaultPlugin = this.plugins?.find(({ id }) => id === this.installedPlugins?.[name]?.plugin_installation_id)
+          const defaultPlugin = plugins?.find(({ id }) => id === installedPlugins?.[name]?.plugin_installation_id)
           const plugin = installedPlugin ?? defaultPlugin
-          const realInstallation = this.realInstalledPlugins?.find(
+          const realInstallation = realInstalledPlugins?.find(
             ({ plugin_workspace_id }) => plugin?.pluginWorkspaceId === plugin_workspace_id
           )
           if (plugin && realInstallation?.config) {
@@ -838,7 +849,7 @@ export default class AstraTable extends ClassifiedElement {
 
           return html`<div class="">
             ${repeat(
-              this.newRows,
+              newRows,
               ({ id }) => id,
               ({ id, values, originalValues }, rowIndex) => html`
                 <astra-td
@@ -847,22 +858,22 @@ export default class AstraTable extends ClassifiedElement {
                   .originalValue=${originalValues[name]}
                   .column=${name}
                   .plugin=${plugin}
-                  .width=${this.widthForColumnType(name, this.columnWidthOffsets[name])}
-                  theme=${this.theme}
-                  type=${this.columnTypes?.[name]}
-                  plugin-attributes=${this.installedPlugins?.[name]?.supportingAttributes ?? ''}
+                  .width=${this.widthForColumnType(name, columnWidthOffsets[name])}
+                  theme=${theme}
+                  type=${columnTypes?.[name]}
+                  plugin-attributes=${installedPlugins?.[name]?.supportingAttributes ?? ''}
                   ?separate-cells=${true}
-                  ?outer-border=${this.outerBorder}
-                  ?border-b=${this.bottomBorder}
-                  ?resizable=${!this.staticWidths}
+                  ?outer-border=${outerBorder}
+                  ?border-b=${bottomBorder}
+                  ?resizable=${!staticWidths}
                   ?is-last-row=${false}
                   ?is-last-column=${adjustedColumnIndex === columns.length - 1}
                   ?is-first-row=${rowIndex === 0}
                   ?is-first-column=${adjustedColumnIndex === 0}
-                  ?menu=${!this.isNonInteractive && !this.readonly && this.hasCellMenus}
-                  ?interactive=${!this.isNonInteractive}
-                  ?read-only=${this.readonly}
-                  ?is-active=${name === this.activeColumn}
+                  ?menu=${!isNonInteractive && !readonly && hasCellMenus}
+                  ?interactive=${!isNonInteractive}
+                  ?read-only=${readonly}
+                  ?is-active=${name === activeColumn}
                   ?pinned=${isSticky}
                   ?hide-dirt=${true}
                   ?row-is-new=${true}
@@ -874,17 +885,17 @@ export default class AstraTable extends ClassifiedElement {
         })
     const unpinnedExistingRows = isSticky
       ? nothing
-      : this.columns.map(({ name }, cidx) => {
-          if (cidx < this.visibleColumnStartIndex || cidx > this.visibleColumnEndIndex) return nothing
-          const adjustedColumnIndex = cidx + this.visibleColumnStartIndex
+      : columns.map(({ name }, cidx) => {
+          if (cidx < visibleColumnStartIndex || cidx > visibleColumnEndIndex) return nothing
+          const adjustedColumnIndex = cidx + visibleColumnStartIndex
 
           // plugin
-          const installedPlugin = this.plugins?.find(
-            ({ pluginWorkspaceId }) => pluginWorkspaceId === this.installedPlugins?.[name]?.plugin_workspace_id
+          const installedPlugin = plugins?.find(
+            ({ pluginWorkspaceId }) => pluginWorkspaceId === installedPlugins?.[name]?.plugin_workspace_id
           )
-          const defaultPlugin = this.plugins?.find(({ id }) => id === this.installedPlugins?.[name]?.plugin_installation_id)
+          const defaultPlugin = plugins?.find(({ id }) => id === installedPlugins?.[name]?.plugin_installation_id)
           const plugin = installedPlugin ?? defaultPlugin
-          const realInstallation = this.realInstalledPlugins?.find(
+          const realInstallation = realInstalledPlugins?.find(
             ({ plugin_workspace_id }) => plugin?.pluginWorkspaceId === plugin_workspace_id
           )
           if (plugin && realInstallation?.config) {
@@ -893,10 +904,10 @@ export default class AstraTable extends ClassifiedElement {
 
           return html`<div>
             ${repeat(
-              this.oldRows,
+              oldRows,
               ({ id }) => id,
               ({ id, values, originalValues }, rowIndex) =>
-                rowIndex >= this.visibleRowStartIndex - SCROLL_BUFFER_SIZE && rowIndex < this.visibleRowEndIndex + SCROLL_BUFFER_SIZE
+                rowIndex >= visibleRowStartIndex - SCROLL_BUFFER_SIZE && rowIndex < visibleRowEndIndex + SCROLL_BUFFER_SIZE
                   ? html`
                       <astra-td
                         .position=${{ row: id, column: name }}
