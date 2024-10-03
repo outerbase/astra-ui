@@ -952,6 +952,117 @@ export default class AstraTable extends ClassifiedElement {
             )}
           </div>`
         })
+    const pinnedExistingRows = !isPinned
+      ? nothing
+      : columns.map(({ name }, cidx) => {
+          const adjustedColumnIndex = cidx + visibleColumnStartIndex
+
+          // plugin
+          const installedPlugin = plugins?.find(
+            ({ pluginWorkspaceId }) => pluginWorkspaceId === installedPlugins?.[name]?.plugin_workspace_id
+          )
+          const defaultPlugin = plugins?.find(({ id }) => id === installedPlugins?.[name]?.plugin_installation_id)
+          const plugin = installedPlugin ?? defaultPlugin
+          const realInstallation = realInstalledPlugins?.find(
+            ({ plugin_workspace_id }) => plugin?.pluginWorkspaceId === plugin_workspace_id
+          )
+          if (plugin && realInstallation?.config) {
+            plugin.config = JSON.stringify(realInstallation?.config)
+          }
+
+          return html`<div>
+            ${repeat(
+              oldRows,
+              ({ id }) => id,
+              ({ id, values, originalValues }, rowIndex) =>
+                rowIndex >= visibleRowStartIndex - SCROLL_BUFFER_SIZE && rowIndex < visibleRowEndIndex + SCROLL_BUFFER_SIZE
+                  ? html`
+                      <astra-td
+                        .position=${{ row: id, column: name }}
+                        .value=${values[name]}
+                        .originalValue=${originalValues[name]}
+                        .column=${name}
+                        .plugin=${plugin}
+                        .width=${this.widthForColumnType(name, this.columnWidthOffsets[name])}
+                        theme="${this.theme}"
+                        type="${this.columnTypes?.[name]}"
+                        plugin-attributes=${this.installedPlugins?.[name]?.supportingAttributes ?? ''}
+                        ?separate-cells=${true}
+                        ?outer-border=${this.outerBorder}
+                        ?border-b=${this.bottomBorder}
+                        ?resizable=${!this.staticWidths}
+                        ?is-last-row=${false}
+                        ?is-last-column=${adjustedColumnIndex === columns.length - 1}
+                        ?is-first-row=${rowIndex === 0}
+                        ?is-first-column=${adjustedColumnIndex === 0}
+                        ?menu=${!this.isNonInteractive && !this.readonly && this.hasCellMenus}
+                        ?interactive=${!this.isNonInteractive}
+                        ?read-only=${this.readonly}
+                        ?is-active=${name === this.activeColumn || this.selectedRowUUIDs.has(id)}
+                        ?pinned=${isPinned}
+                        ?hide-dirt=${false}
+                        ?row-is-new=${false}
+                      >
+                      </astra-td>
+                    `
+                  : nothing
+            )}
+          </div>`
+        })
+    const pinnedNewRows = !isPinned
+      ? nothing
+      : columns.map(({ name }, cidx) => {
+          const adjustedColumnIndex = cidx + visibleColumnStartIndex
+
+          // plugin
+          const installedPlugin = plugins?.find(
+            ({ pluginWorkspaceId }) => pluginWorkspaceId === installedPlugins?.[name]?.plugin_workspace_id
+          )
+          const defaultPlugin = plugins?.find(({ id }) => id === installedPlugins?.[name]?.plugin_installation_id)
+          const plugin = installedPlugin ?? defaultPlugin
+          const realInstallation = realInstalledPlugins?.find(
+            ({ plugin_workspace_id }) => plugin?.pluginWorkspaceId === plugin_workspace_id
+          )
+          if (plugin && realInstallation?.config) {
+            plugin.config = JSON.stringify(realInstallation?.config)
+          }
+
+          return html`<div class="bg-red-100 flex flex-col">
+            ${repeat(
+              newRows,
+              ({ id }) => id,
+              ({ id, values, originalValues }, rowIndex) => html`
+                <astra-td
+                  .position=${{ row: id, column: name }}
+                  .value=${values[name]}
+                  .originalValue=${originalValues[name]}
+                  .column=${name}
+                  .plugin=${plugin}
+                  .width=${this.widthForColumnType(name, columnWidthOffsets[name])}
+                  theme=${theme}
+                  type=${columnTypes?.[name]}
+                  plugin-attributes=${installedPlugins?.[name]?.supportingAttributes ?? ''}
+                  ?separate-cells=${true}
+                  ?outer-border=${outerBorder}
+                  ?border-b=${bottomBorder}
+                  ?resizable=${!staticWidths}
+                  ?is-last-row=${false}
+                  ?is-last-column=${adjustedColumnIndex === columns.length - 1}
+                  ?is-first-row=${rowIndex === 0}
+                  ?is-first-column=${adjustedColumnIndex === 0}
+                  ?menu=${!isNonInteractive && !readonly && hasCellMenus}
+                  ?interactive=${!isNonInteractive}
+                  ?read-only=${readonly}
+                  ?is-active=${name === activeColumn}
+                  ?pinned=${isPinned}
+                  ?hide-dirt=${true}
+                  ?row-is-new=${true}
+                >
+                </astra-td>
+              `
+            )}
+          </div>`
+        })
 
     return html`<!-- header + body -->
       <div
@@ -969,9 +1080,8 @@ export default class AstraTable extends ClassifiedElement {
         ></div>
 
         <!-- body -->
-        <!-- sticky z-[1] top-[36px] -->
         ${isPinned
-          ? html`<div class="flex flex-col">
+          ? html`<div class="flex">
               <div class="flex">
                 <!-- check boxes -->
                 <div class="flex flex-col">
@@ -981,6 +1091,11 @@ export default class AstraTable extends ClassifiedElement {
                   <!-- old rows -->
                   ${oldRowCheckboxes}
                 </div>
+              </div>
+
+              <div class="flex flex-col">
+                <div class="flex sticky z-[1] top-[36px]">${pinnedNewRows}</div>
+                <div class="flex">${pinnedExistingRows}</div>
               </div>
             </div>`
           : nothing}
