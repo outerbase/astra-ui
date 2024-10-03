@@ -221,8 +221,10 @@ export default class AstraTable extends ClassifiedElement {
     let newStartIndex = 0
     let newEndIndex = 0
     let foundStartIndex = false
+    let didChange = false
 
     // Find newStartIndex and newEndIndex in a single pass
+    // find COLUMN start/end indexes
     for (let i = 0; i < this.visibleColumns.length; i++) {
       const columnWidth = this.widthForColumnType(this.visibleColumns[i].name, this.columnWidthOffsets[this.visibleColumns[i].name])
 
@@ -246,30 +248,38 @@ export default class AstraTable extends ClassifiedElement {
       newEndIndex = this.visibleColumns.length
     }
 
-    // Update indices
-    const oldStartIndex = this.visibleColumnStartIndex
-    const oldEndIndex = this.visibleColumnEndIndex
-    this.visibleColumnStartIndex = Math.max(0, newStartIndex - COLUMN_BUFFER_SIZE)
-    this.visibleColumnEndIndex = Math.min(this.visibleColumns.length, newEndIndex + COLUMN_BUFFER_SIZE)
+    const _visibleColumnStartIndex = Math.max(0, newStartIndex - COLUMN_BUFFER_SIZE)
+    if (this.visibleColumnStartIndex !== _visibleColumnStartIndex) {
+      didChange = true
+      this.visibleColumnStartIndex = _visibleColumnStartIndex
+    }
+
+    const _visibleColumnEndIndex = Math.min(this.visibleColumns.length, newEndIndex + COLUMN_BUFFER_SIZE)
+    if (this.visibleColumnEndIndex !== _visibleColumnEndIndex) {
+      didChange = true
+      this.visibleColumnEndIndex = _visibleColumnEndIndex
+    }
 
     // Calculate widths
     let leftSpacerWidth = 0
     for (let i = 0; i < this.visibleColumnStartIndex; i++) {
       leftSpacerWidth += this.widthForColumnType(this.visibleColumns[i].name, this.columnWidthOffsets[this.visibleColumns[i].name])
     }
-    this.leftSpacerWidth = leftSpacerWidth
+    if (leftSpacerWidth !== this.leftSpacerWidth) {
+      didChange = true
+      this.leftSpacerWidth = leftSpacerWidth
+    }
 
     let _rightSpacerWidth = 0
     for (let i = this.visibleColumnEndIndex; i < this.visibleColumns.length; i++) {
       _rightSpacerWidth += this.widthForColumnType(this.visibleColumns[i].name, this.columnWidthOffsets[this.visibleColumns[i].name])
     }
-    this.rightSpacerWidth = _rightSpacerWidth
-
-    // Only request update if the visible range has changed
-    if (oldStartIndex !== this.visibleColumnStartIndex || oldEndIndex !== this.visibleColumnEndIndex) {
-      // TODO ensure setting `this.leftSpacerWidth` hasn't already triggered this
-      this.requestUpdate()
+    if (_rightSpacerWidth !== this.rightSpacerWidth) {
+      didChange = true
+      this.rightSpacerWidth = _rightSpacerWidth
     }
+
+    if (didChange) this.requestUpdate('visibleColumns')
   }
 
   constructor() {
@@ -487,6 +497,8 @@ export default class AstraTable extends ClassifiedElement {
   }
 
   protected updateVisibleRowIndexes(): void {
+    const previousStart = this.visibleRowStartIndex
+    const previousEnd = this.visibleRowEndIndex
     const scrollTop = this.scrollableEl?.value?.scroller?.value?.scrollTop ?? 0
     const relevantRows = this.oldRows
     const _startIndex = Math.max(Math.floor(scrollTop / this.rowHeight) - SCROLL_BUFFER_SIZE, 0)
@@ -495,6 +507,11 @@ export default class AstraTable extends ClassifiedElement {
 
     this.visibleRowStartIndex = _startIndex
     this.visibleRowEndIndex = _endIndex
+
+    // if any changes are detected
+    if (previousStart !== _startIndex || previousEnd || _endIndex) {
+      this.requestUpdate('oldRows')
+    }
   }
 
   public numberOfVisibleRows(): number {
