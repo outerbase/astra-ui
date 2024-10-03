@@ -190,7 +190,7 @@ export default class AstraTable extends ClassifiedElement {
   // prevent leaks
   private rowHeightTimeoutId: number | null = null
 
-  protected updateVirtualizedSpacerValues() {
+  protected updateVisibleColumnIndexesAndSpacers() {
     const scrollContainer = this.scrollableEl?.value?.scroller?.value
     // base case
     if (!scrollContainer || this.visibleColumns.length === 0) {
@@ -311,7 +311,7 @@ export default class AstraTable extends ClassifiedElement {
     this.columns = [...this.columns, column]
     this.rows = this.rows.map((row) => ({ ...row, values: { ...row.values, [name]: '' } }))
     this.dispatchEvent(new ColumnAddedEvent({ name })) // JOHNNY pass the other data along too?
-    this.updateVirtualizedSpacerValues()
+    this.updateVisibleColumnIndexesAndSpacers()
   }
 
   public toggleSelectedRow(uuid: string) {
@@ -364,7 +364,7 @@ export default class AstraTable extends ClassifiedElement {
     // remove the column named `name` from columns collection
     this.deletedColumnNames.push(name)
     this.requestUpdate('columns')
-    this.updateVirtualizedSpacerValues() // TODO i think this can be removed / is handled in a lifecycle hook?
+    this.updateVisibleColumnIndexesAndSpacers() // TODO i think this can be removed / is handled in a lifecycle hook?
   }
 
   protected _onColumnHidden({ name }: ColumnHiddenEvent) {
@@ -478,9 +478,8 @@ export default class AstraTable extends ClassifiedElement {
   }
 
   protected updateTableView(): void {
-    console.log('updateTableView')
     this.updateVisibleRowIndexes()
-    this.updateVirtualizedSpacerValues()
+    this.updateVisibleColumnIndexesAndSpacers()
   }
 
   protected updateVisibleRowIndexes(): void {
@@ -489,8 +488,6 @@ export default class AstraTable extends ClassifiedElement {
     const _startIndex = Math.max(Math.floor(scrollTop / this.rowHeight) - SCROLL_BUFFER_SIZE, 0)
     const possiblyVisibleRowEndIndex = _startIndex + this.numberOfVisibleRows() + SCROLL_BUFFER_SIZE
     const _endIndex = possiblyVisibleRowEndIndex < relevantRows.length ? possiblyVisibleRowEndIndex : relevantRows.length
-
-    // TODO this should probably be length - 1, but other code needs updated then to handle this off-by-1 change where the issue is already kind-of addressed
 
     this.visibleRowStartIndex = _startIndex
     this.visibleRowEndIndex = _endIndex
