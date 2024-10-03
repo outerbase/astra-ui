@@ -37,6 +37,7 @@ import type { TableData } from './td.js'
 import '../check-box.js'
 import './td.js'
 import './th.js'
+import debounce from 'lodash-es/debounce.js'
 
 const SCROLL_BUFFER_SIZE = 4
 const COLUMN_BUFFER_SIZE = 3
@@ -132,6 +133,7 @@ export default class AstraTable extends ClassifiedElement {
   @state() protected allRowsSelected = false
   @state() public columns: Columns = []
   @property({ type: Array }) public visibleColumns: Columns = [] // @property so that we can access it in updated()
+  private visibleColumnsWidth = 0
   @state() public selectedRowUUIDs: Set<string> = new Set()
   @state() protected removedRowUUIDs: Set<string> = new Set()
   @state() protected columnTypes?: Record<string, string | number | boolean | undefined>
@@ -146,7 +148,6 @@ export default class AstraTable extends ClassifiedElement {
   @state() private leftSpacerWidth = 0
   @state() private rightSpacerWidth = 0
 
-  // efficiency
   private _selectAllCheckbox = html`
     <astra-th
       .value=${null}
@@ -189,17 +190,8 @@ export default class AstraTable extends ClassifiedElement {
   private rowHeightTimeoutId: number | null = null
 
   protected updateVisibleColumnsAndSpacers() {
-    // these are UNpinned columns
-    // TODO use sets?
-    this.visibleColumns = this.columns.filter(
-      ({ name, status }) =>
-        status !== ColumnStatus.deleted &&
-        this.hiddenColumnNames.indexOf(name) === -1 &&
-        this.deletedColumnNames.indexOf(name) === -1 &&
-        !this.pinnedColumns.find((c) => c.name === name)
-    )
-
     const scrollContainer = this.scrollableEl?.value?.scroller?.value
+    // base case
     if (!scrollContainer || this.visibleColumns.length === 0) {
       this.visibleColumnStartIndex = 0
       this.visibleColumnEndIndex = 0
@@ -212,11 +204,7 @@ export default class AstraTable extends ClassifiedElement {
     const viewportWidth = scrollContainer.clientWidth
 
     // If all columns fit in the viewport, show them all
-    const totalColumnsWidth = this.visibleColumns.reduce(
-      (sum, column) => sum + this.widthForColumnType(column.name, this.columnWidthOffsets[column.name]),
-      0
-    )
-    if (totalColumnsWidth <= viewportWidth) {
+    if (this.visibleColumnsWidth <= viewportWidth) {
       this.visibleColumnStartIndex = 0
       this.visibleColumnEndIndex = this.visibleColumns.length
       this.leftSpacerWidth = 0
@@ -497,10 +485,12 @@ export default class AstraTable extends ClassifiedElement {
 
   protected updateVisibleRows(): void {
     const scrollTop = this.scrollableEl?.value?.scroller?.value?.scrollTop ?? 0
-    const rows = this.oldRows
+    const relevantRows = this.oldRows
     const _startIndex = Math.max(Math.floor(scrollTop / this.rowHeight) - SCROLL_BUFFER_SIZE, 0)
     const possiblyVisibleRowEndIndex = _startIndex + this.numberOfVisibleRows() + SCROLL_BUFFER_SIZE
-    const _endIndex = possiblyVisibleRowEndIndex < rows.length ? possiblyVisibleRowEndIndex : rows.length
+    const _endIndex = possiblyVisibleRowEndIndex < relevantRows.length ? possiblyVisibleRowEndIndex : relevantRows.length
+
+    // TODO this should probably be length - 1, but other code needs updated then to handle this off-by-1 change where the issue is already kind-of addressed
 
     this.visibleRowStartIndex = _startIndex
     this.visibleRowEndIndex = _endIndex
@@ -597,7 +587,7 @@ export default class AstraTable extends ClassifiedElement {
       this.unpinnedTableSection = this._renderTable(this.visibleColumns)
     }
 
-    if (changedProperties.has('rows')) {
+    if (has('rows')) {
       this.fromIdToRowMap = {}
       this.newRows = []
       this.oldRows = []
@@ -615,6 +605,20 @@ export default class AstraTable extends ClassifiedElement {
       })
 
       this.requestUpdate()
+    }
+
+    if (has('columns') || has('hiddenColumnNames') || has('deletedColumnNames') || has('pinnedColumns')) {
+      this.visibleColumns = this.columns.filter(
+        ({ name, status }) =>
+          status !== ColumnStatus.deleted &&
+          this.hiddenColumnNames.indexOf(name) === -1 &&
+          this.deletedColumnNames.indexOf(name) === -1 &&
+          !this.pinnedColumns.find((c) => c.name === name)
+      )
+      this.visibleColumnsWidth = this.visibleColumns.reduce(
+        (sum, column) => sum + this.widthForColumnType(column.name, this.columnWidthOffsets[column.name]),
+        0
+      )
     }
   }
 
