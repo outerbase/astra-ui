@@ -1134,8 +1134,13 @@ export default class AstraTable extends ClassifiedElement {
       </div>
 
       <!-- body -->
+      <!-- vertical spacer -->
+      <div
+        class="flex-none"
+        style=${styleMap({ height: `${Math.max(0, this.visibleRowStartIndex - SCROLL_BUFFER_SIZE) * this.rowHeight}px`, width: '1px' })}
+      ></div>
       <!-- new rows (sticky) -->
-      <div class="flex-auto sticky z-[1] top-[36px]">
+      <div class="sticky z-[1] top-[36px]">
         <div class="flex flex-col">
           ${repeat(
             this.newRows,
@@ -1198,6 +1203,14 @@ export default class AstraTable extends ClassifiedElement {
           )}
         </div>
       </div>
+      <!-- vertical spacer -->
+      <div
+        class="flex-none"
+        style=${styleMap({
+          height: `${Math.max(0, this.oldRows.length - this.visibleRowEndIndex - SCROLL_BUFFER_SIZE) * this.rowHeight}px`,
+          width: '1px',
+        })}
+      ></div>
     </div>`
 
     // threshold-x is potentially problematic if columns aren't all divisible by 50
@@ -1225,7 +1238,7 @@ export default class AstraTable extends ClassifiedElement {
           <div id="rightSpacer" style=${styleMap({ width: `${this.rightSpacerWidth}px`, height: '1px' })}></div>
 
           <!-- this is only visible when there is negative space to the right of the table -->
-          <!-- ${tableEndPlaceholder} -->
+          ${tableEndPlaceholder}
         </div>
       </astra-scroll-area>
     `
