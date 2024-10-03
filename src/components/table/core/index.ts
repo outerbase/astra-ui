@@ -199,6 +199,8 @@ export default class AstraTable extends ClassifiedElement {
       this.leftSpacerWidth = 0
       this.rightSpacerWidth = 0
       return
+
+      // TODO detect/trigger re-render -- what if something just changed from the other case and we need to re-render?
     }
 
     const scrollLeft = scrollContainer.scrollLeft
@@ -211,6 +213,8 @@ export default class AstraTable extends ClassifiedElement {
       this.leftSpacerWidth = 0
       this.rightSpacerWidth = 0
       return
+
+      // TODO detect/trigger re-render -- what if something just changed from the other case and we need to re-render?
     }
 
     let accumulatedWidth = 0
