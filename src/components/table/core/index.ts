@@ -697,7 +697,7 @@ export default class AstraTable extends ClassifiedElement {
     window.removeEventListener('resize', this._onResize)
   }
 
-  private _renderTable(columns: Columns, isSticky = false) {
+  private _renderTable(columns: Columns, isPinned = false) {
     const {
       visibleRowStartIndex,
       visibleRowEndIndex,
@@ -727,17 +727,14 @@ export default class AstraTable extends ClassifiedElement {
       columnTypes,
       hasCellMenus,
     } = this
-    // TODO yielding nothing while looping over start/end index will yield empty rows
-    // we need to instead yield end-start # of rows until Z many exist
-    // console.log(visibleColumnStartIndex, ' to ', visibleColumnEndIndex)
-    const selectAllCheckbox = selectableRows && isSticky ? _selectAllCheckbox : nothing
+    const selectAllCheckbox = selectableRows && isPinned ? _selectAllCheckbox : nothing
     const columnHeaders = repeat(
       columns,
       ({ name }, _idx) => name,
       ({ name }, idx) => {
         const rowOutOfRange = idx < visibleColumnStartIndex || idx > visibleColumnEndIndex
         const rowInRange = !rowOutOfRange
-        const shouldRender = rowInRange || isSticky
+        const shouldRender = rowInRange || isPinned
         if (!shouldRender) return nothing
 
         return html`
@@ -758,7 +755,7 @@ export default class AstraTable extends ClassifiedElement {
             ?removable=${true}
             ?interactive=${!isNonInteractive}
             ?is-active=${name === activeColumn}
-            ?pinned=${isSticky}
+            ?pinned=${isPinned}
             @column-hidden=${this._onColumnHidden}
             @column-removed=${this._onColumnRemoved}
             @column-plugin-deactivated=${this._onColumnPluginDeactivated}
@@ -840,9 +837,7 @@ export default class AstraTable extends ClassifiedElement {
       )}
     </div>`
 
-    // TODO efficiently track unpinned columns
-    // if (isSticky) console.log(visibleColumnStartIndex, visibleColumnEndIndex)
-    const unpinnedNewRows = isSticky
+    const unpinnedNewRows = isPinned
       ? nothing
       : visibleColumns.map(({ name }, cidx) => {
           const rowOutOfRange = cidx < visibleColumnStartIndex || cidx > visibleColumnEndIndex
@@ -890,7 +885,7 @@ export default class AstraTable extends ClassifiedElement {
                   ?interactive=${!isNonInteractive}
                   ?read-only=${readonly}
                   ?is-active=${name === activeColumn}
-                  ?pinned=${isSticky}
+                  ?pinned=${isPinned}
                   ?hide-dirt=${true}
                   ?row-is-new=${true}
                 >
@@ -899,7 +894,7 @@ export default class AstraTable extends ClassifiedElement {
             )}
           </div>`
         })
-    const unpinnedExistingRows = isSticky
+    const unpinnedExistingRows = isPinned
       ? nothing
       : columns.map(({ name }, cidx) => {
           if (cidx < visibleColumnStartIndex || cidx > visibleColumnEndIndex) return nothing
@@ -947,7 +942,7 @@ export default class AstraTable extends ClassifiedElement {
                         ?interactive=${!this.isNonInteractive}
                         ?read-only=${this.readonly}
                         ?is-active=${name === this.activeColumn || this.selectedRowUUIDs.has(id)}
-                        ?pinned=${isSticky}
+                        ?pinned=${isPinned}
                         ?hide-dirt=${false}
                         ?row-is-new=${false}
                       >
@@ -960,7 +955,7 @@ export default class AstraTable extends ClassifiedElement {
 
     return html`<!-- header + body -->
       <div
-        class="flex flex-col ${isSticky
+        class="flex flex-col ${isPinned
           ? 'sticky left-0 z-[19] shadow-[0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_8px_rgb(0,0,0)]'
           : ''}"
       >
@@ -975,7 +970,7 @@ export default class AstraTable extends ClassifiedElement {
 
         <!-- body -->
         <!-- sticky z-[1] top-[36px] -->
-        ${isSticky
+        ${isPinned
           ? html`<div class="flex flex-col">
               <div class="flex">
                 <!-- check boxes -->
