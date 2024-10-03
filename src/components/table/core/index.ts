@@ -185,6 +185,7 @@ export default class AstraTable extends ClassifiedElement {
 
   // sticky pinned columns
   @property({ attribute: 'pinned-columns', type: Array }) pinnedColumns: Columns = []
+  private pinnedColumnsWidth = 0
 
   // prevent leaks
   private rowHeightTimeoutId: number | null = null
@@ -228,18 +229,13 @@ export default class AstraTable extends ClassifiedElement {
 
       accumulatedWidth += columnWidth
 
-      const pinnedColumnsWidth = this.pinnedColumns.reduce(
-        (sum, column) => sum + this.widthForColumnType(column.name, this.columnWidthOffsets[column.name]),
-        0
-      )
-
       // subtract checkbox, when selectable
       // subtract pinned columns width
-      if (accumulatedWidth > scrollLeft + viewportWidth - (this.selectableRows ? 42 : 0) - pinnedColumnsWidth) {
+      if (accumulatedWidth > scrollLeft + viewportWidth - (this.selectableRows ? 42 : 0) - this.pinnedColumnsWidth) {
         newEndIndex = i
         break
       }
-    }
+    } // end for loop
 
     // If we haven't set newEndIndex, it means all remaining columns fit
     if (newEndIndex === 0) {
@@ -539,8 +535,13 @@ export default class AstraTable extends ClassifiedElement {
     super.updated(changedProperties)
     const has = changedProperties.has.bind(changedProperties)
 
-    // TODO figure out calling these as minimally as possible
-    // and somehow dealing with only the scroll changes
+    // update pinned columns width
+    if (has('pinnedColumns')) {
+      this.pinnedColumnsWidth = this.pinnedColumns.reduce(
+        (sum, column) => sum + this.widthForColumnType(column.name, this.columnWidthOffsets[column.name]),
+        0
+      )
+    }
 
     // when any props used in _renderTable() change
     // update our cached rendering
