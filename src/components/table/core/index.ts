@@ -223,7 +223,6 @@ export default class AstraTable extends ClassifiedElement {
     let foundStartIndex = false
     let didChange = false
 
-    // Find newStartIndex and newEndIndex in a single pass
     // find COLUMN start/end indexes
     for (let i = 0; i < this.visibleColumns.length; i++) {
       const columnWidth = this.widthForColumnType(this.visibleColumns[i].name, this.columnWidthOffsets[this.visibleColumns[i].name])
@@ -670,8 +669,7 @@ export default class AstraTable extends ClassifiedElement {
         this.allRowsSelected = true
       }
 
-      // TODO determine if this is necessary
-      this.updateTableView()
+      this.updateTableView() // necessary in astra, but not dashboard 🤔
     }
 
     if (changedProperties.has('hiddenColumnNames') || changedProperties.has('schema') || changedProperties.has('rows')) {
