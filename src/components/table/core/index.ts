@@ -253,13 +253,17 @@ export default class AstraTable extends ClassifiedElement {
     this.visibleColumnEndIndex = Math.min(this.visibleColumns.length, newEndIndex + COLUMN_BUFFER_SIZE)
 
     // Calculate widths
-    this.leftSpacerWidth = this.visibleColumns
-      .slice(0, this.visibleColumnStartIndex)
-      .reduce((sum, column) => sum + this.widthForColumnType(column.name, this.columnWidthOffsets[column.name]), 0)
+    let leftSpacerWidth = 0
+    for (let i = 0; i < this.visibleColumnStartIndex; i++) {
+      leftSpacerWidth += this.widthForColumnType(this.visibleColumns[i].name, this.columnWidthOffsets[this.visibleColumns[i].name])
+    }
+    this.leftSpacerWidth = leftSpacerWidth
 
-    this.rightSpacerWidth = this.visibleColumns
-      .slice(this.visibleColumnEndIndex)
-      .reduce((sum, column) => sum + this.widthForColumnType(column.name, this.columnWidthOffsets[column.name]), 0)
+    let _rightSpacerWidth = 0
+    for (let i = this.visibleColumnEndIndex; i < this.visibleColumns.length; i++) {
+      _rightSpacerWidth += this.widthForColumnType(this.visibleColumns[i].name, this.columnWidthOffsets[this.visibleColumns[i].name])
+    }
+    this.rightSpacerWidth = _rightSpacerWidth
 
     // Only request update if the visible range has changed
     if (oldStartIndex !== this.visibleColumnStartIndex || oldEndIndex !== this.visibleColumnEndIndex) {
