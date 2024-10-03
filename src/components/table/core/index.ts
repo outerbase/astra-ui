@@ -284,7 +284,7 @@ export default class AstraTable extends ClassifiedElement {
     super()
     this.updateTableView = this.updateTableView.bind(this)
     this.onKeyDown = this.onKeyDown.bind(this)
-    this.checkScrollable = this.checkScrollable.bind(this)
+    this._onResize = this._onResize ? debounce(this._onResize, 50).bind(this) : this._onResize.bind(this)
   }
 
   protected closeLastMenu?: () => void
@@ -461,6 +461,13 @@ export default class AstraTable extends ClassifiedElement {
       delete this.installedPlugins[column]
       this.requestUpdate('installedPlugins')
     }
+  }
+
+  private _onResize(event: UIEvent) {
+    // skip when columns are being resized
+    if (event.target === this) return
+
+    this.updateTableView()
   }
 
   private setCssVariablesForPlugin(theme: Theme) {
@@ -653,10 +660,7 @@ export default class AstraTable extends ClassifiedElement {
 
   override connectedCallback(): void {
     super.connectedCallback()
-    window.addEventListener('resize', this.checkScrollable)
-    // Initial check
-    // determines whether we show the filler
-    this.updateComplete.then(() => setTimeout(this.checkScrollable, 0))
+    window.addEventListener('resize', this._onResize)
   }
 
   public override disconnectedCallback() {
@@ -665,7 +669,7 @@ export default class AstraTable extends ClassifiedElement {
     if (this.rowHeightTimeoutId !== null) {
       clearTimeout(this.rowHeightTimeoutId)
     }
-    window.removeEventListener('resize', this.checkScrollable)
+    window.removeEventListener('resize', this._onResize)
   }
 
   private _renderTable(columns: Columns, isSticky = false) {
@@ -1079,10 +1083,5 @@ export default class AstraTable extends ClassifiedElement {
         </div>
       </astra-scroll-area>
     `
-  }
-
-  private checkScrollable() {
-    this.contentScrollsHorizontally =
-      this.scrollableEl!.value!.scroller!.value!.clientWidth < this.scrollableEl!.value!.scroller!.value!.scrollWidth
   }
 }
