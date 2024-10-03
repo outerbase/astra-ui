@@ -1,4 +1,4 @@
-import { html, nothing, type PropertyValueMap, type PropertyValues, type TemplateResult } from 'lit'
+import { html, nothing, type PropertyValueMap, type TemplateResult } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { ifDefined } from 'lit/directives/if-defined.js'
 import { createRef, ref, type Ref } from 'lit/directives/ref.js'
