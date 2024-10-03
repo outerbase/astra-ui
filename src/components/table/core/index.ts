@@ -189,7 +189,7 @@ export default class AstraTable extends ClassifiedElement {
   // prevent leaks
   private rowHeightTimeoutId: number | null = null
 
-  protected updateVisibleColumnsAndSpacers() {
+  protected updateVirtualizedSpacerValues() {
     const scrollContainer = this.scrollableEl?.value?.scroller?.value
     // base case
     if (!scrollContainer || this.visibleColumns.length === 0) {
@@ -311,7 +311,7 @@ export default class AstraTable extends ClassifiedElement {
     this.columns = [...this.columns, column]
     this.rows = this.rows.map((row) => ({ ...row, values: { ...row.values, [name]: '' } }))
     this.dispatchEvent(new ColumnAddedEvent({ name })) // JOHNNY pass the other data along too?
-    this.updateVisibleColumnsAndSpacers()
+    this.updateVirtualizedSpacerValues()
   }
 
   public toggleSelectedRow(uuid: string) {
@@ -364,7 +364,7 @@ export default class AstraTable extends ClassifiedElement {
     // remove the column named `name` from columns collection
     this.deletedColumnNames.push(name)
     this.requestUpdate('columns')
-    this.updateVisibleColumnsAndSpacers() // TODO i think this can be removed / is handled in a lifecycle hook?
+    this.updateVirtualizedSpacerValues() // TODO i think this can be removed / is handled in a lifecycle hook?
   }
 
   protected _onColumnHidden({ name }: ColumnHiddenEvent) {
@@ -479,11 +479,11 @@ export default class AstraTable extends ClassifiedElement {
 
   protected updateTableView(): void {
     console.log('updateTableView')
-    this.updateVisibleRows()
-    this.updateVisibleColumnsAndSpacers()
+    this.updateVisibleRowIndexes()
+    this.updateVirtualizedSpacerValues()
   }
 
-  protected updateVisibleRows(): void {
+  protected updateVisibleRowIndexes(): void {
     const scrollTop = this.scrollableEl?.value?.scroller?.value?.scrollTop ?? 0
     const relevantRows = this.oldRows
     const _startIndex = Math.max(Math.floor(scrollTop / this.rowHeight) - SCROLL_BUFFER_SIZE, 0)
