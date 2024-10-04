@@ -632,7 +632,7 @@ export default class AstraTable extends ClassifiedElement {
         this.fromIdToRowMap[row.id] = row
       })
 
-      this.requestUpdate()
+      this.updateTableView()
     }
 
     if (has('columns') || has('hiddenColumnNames') || has('deletedColumnNames') || has('pinnedColumns')) {
@@ -680,7 +680,7 @@ export default class AstraTable extends ClassifiedElement {
 
     if (changedProperties.has('hiddenColumnNames') || changedProperties.has('schema') || changedProperties.has('rows')) {
       // without the setTimeout, toggling between two tabs in Dashboard causes us to see a flat/collapsed/empty table, while a delay of 0s resolves it
-      setTimeout(() => this.updateTableView(), 0)
+      setTimeout(this.updateTableView, 0)
     }
 
     if (changedProperties.has('pinnedColumns')) {
