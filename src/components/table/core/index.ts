@@ -126,6 +126,8 @@ export default class AstraTable extends ClassifiedElement {
   @property({ attribute: 'cell-menus', type: Boolean })
   public hasCellMenus = false
 
+  @property({ attribute: 'virtualized-y-scrolling-disabled', type: Boolean }) public virtualizedYScrollingIsDisabled = false
+
   @state() protected scrollableEl: Ref<ScrollArea> = createRef()
   @state() public rows: Array<RowAsRecord> = []
   @state() public newRows: Array<RowAsRecord> = []
@@ -491,7 +493,11 @@ export default class AstraTable extends ClassifiedElement {
   }
 
   protected updateTableView(): void {
-    this.updateVisibleRowIndexes()
+    if (!this.virtualizedYScrollingIsDisabled) this.updateVisibleRowIndexes()
+    else {
+      this.visibleRowStartIndex = 0
+      this.visibleRowEndIndex = this.oldRows.length
+    }
     this.updateVisibleColumnIndexesAndSpacers()
   }
 
@@ -542,7 +548,7 @@ export default class AstraTable extends ClassifiedElement {
     // end: ensure that `this.rowHeight` is correct
 
     // without this setTimeout, toggling between Data/Strucuture in Dashboard will cause the header to disappear
-    setTimeout(() => this.updateTableView(), 0)
+    setTimeout(this.updateTableView, 0)
   }
 
   @state() unpinnedTableSection: TemplateResult<1> | typeof nothing = nothing
