@@ -163,7 +163,7 @@ export class TableData extends MutableElement {
 
     // begin editing if keys are ASCII-ish
     const isInputTriggering = event.key.length === 1 && isAlphanumericOrSpecial(event.key)
-    const noMetaKeys = !(event.metaKey || event.shiftKey)
+    const noMetaKeys = !event.metaKey
     const typeIsNotJSON = !(self.type && JSON_TYPES.includes(self.type))
     if (isInputTriggering && noMetaKeys && typeIsNotJSON) {
       event.preventDefault()
