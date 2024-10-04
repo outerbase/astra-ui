@@ -207,7 +207,7 @@ export class NestedMenu extends ClassifiedElement {
     const list = html`<ul
       @keydown="${this._handleKeyDown}"
       role="menu"
-      class="rounded-sm min-w-[256px] bg-white dark:bg-black text-black dark:text-white border border-neutral-200 dark:border-neutral-800 shadow-[0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_8px_rgb(0,0,0)]"
+      class="font-table rounded-sm min-w-[256px] bg-white dark:bg-black text-black dark:text-white border border-neutral-200 dark:border-neutral-800 shadow-[0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_8px_rgb(0,0,0)]"
     >
       ${this.items.map((item, index) => {
         return item.separator

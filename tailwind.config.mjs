@@ -209,11 +209,17 @@ export default {
         'astra-table': 'var(--astra-table-backdrop-blur, 4px)',
         'astra-menu': 'var(--astra-table-menu-backdrop-blur, 4px)',
       },
+      fontFamily: {
+        sans: ['Inter', 'Helvetica', ...defaultTheme.fontFamily.sans],
+        Helvetica: ['Helvetica', 'sans-serif'],
+        table: ['var(--astra-font-family, Inter)', 'sans-serif'],
+      },
     },
-    fontFamily: {
-      ...defaultTheme.fontFamily,
-      sans: ['Inter', 'Helvetica', ...defaultTheme.fontFamily.sans],
-      Helvetica: ['Helvetica', 'sans-serif'],
-    },
+    // fontFamily: {
+    //   ...defaultTheme.fontFamily,
+    //   sans: ['Inter', 'Helvetica', ...defaultTheme.fontFamily.sans],
+    //   Helvetica: ['Helvetica', 'sans-serif'],
+    //   table: ['var(--astra-font-family, Inter)', 'sans-serif'],
+    // },
   },
 }
