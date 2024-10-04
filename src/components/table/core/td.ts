@@ -306,7 +306,12 @@ export class TableData extends MutableElement {
   @state() menuIsOpen = false
   @state() isContentEditable = true // this property is to toggle off the contenteditableness of to resolve quirky focus and text selection that can happen when, say, right-clicking to trigger the context menu
   @state() protected options = RW_OPTIONS
-  @state() protected isHoveringCell = false
+  @state() isHoveringCell = false
+  @state() displayValue?: Serializable
+  @state() valueEscaped?: Serializable
+  @state() cellContents?: TemplateResult<1>
+  @state() cellEditorContents?: DirectiveResult<typeof UnsafeHTMLDirective>
+  @state() pluginAccessory?: DirectiveResult<typeof UnsafeHTMLDirective> | typeof nothing = nothing
 
   private contentEditableWrapper: Ref<HTMLDivElement> = createRef()
   private _interstitialValue: Serializable
@@ -463,80 +468,94 @@ export class TableData extends MutableElement {
 
   public override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties)
-    if (changedProperties.has('blank')) {
+    const has = changedProperties.has.bind(changedProperties)
+
+    if (has('blank')) {
       if (!this.blank) this.tabIndex = 0
       // setting `-1` or `0` seems to have the same result
       // i.e. if we ever set it, we can't unset it
       // but if it's initially set to `-1` it works properly
       // but if _we_ set it to `-1`, it act like its `0`
     }
+
+    if (has('value')) {
+      let value = this.value
+
+      if (typeof value === 'object') value = JSON.stringify(this.value)
+      if (typeof value === 'string') value = value.replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/`/g, '&#96;')
+
+      this.valueEscaped = value
+      this.displayValue = value
+      if (this.displayValue && typeof this.displayValue === 'string') {
+        // Replace single, double, and backticks with their HTML entity equivalents
+        this.displayValue = this.displayValue.replace(/&quot;/g, '"')?.replace(/&#39;/g, "'")
+      }
+    }
+
+    if (
+      has('plugin') ||
+      has('valueEscaped') ||
+      has('displayValue') ||
+      has('column') ||
+      has('pluginAttributes') ||
+      has('isHoveringCell') ||
+      has('value') ||
+      has('isDisplayingPluginEditor')
+    ) {
+      const placeholderTextColorClass = 'text-neutral-400 dark:text-white/50'
+      const classes =
+        this.valueEscaped === null || this.valueEscaped === undefined ? placeholderTextColorClass : 'overflow-hidden text-ellipsis'
+      const commonCellContents = html`<div class="${classes}">
+        ${this.displayValue === null
+          ? 'NULL'
+          : this.displayValue === undefined
+            ? 'DEFAULT'
+            : typeof this.displayValue === 'string'
+              ? this.displayValue.replace(/\n/g, returnCharacterPlaceholderRead)
+              : this.displayValue}
+      </div>`
+
+      if (this.plugin) {
+        const { config, tagName } = this.plugin
+
+        // TODO the plugin receives `null` as a string 'null' since params are always stringified
+        //      we can resolve this by omitting `cellvalue` to represent null, but as of today, that renders `undefined` in our plugins
+        //      `<${tagName} ${value !== null ? `cellvalue='${value}` : ''} configuration='${config}' ${this.pluginAttributes}></${tagName}>`
+        const pluginAsString = unsafeHTML(
+          `<${tagName} cellvalue='${this.value}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
+        )
+        this.cellContents = html`${pluginAsString}`
+
+        const pluginAccessoryTag = tagName.replace('outerbase-plugin-cell', 'outerbase-plugin-cell-accessory')
+        this.pluginAccessory = customElements.get(pluginAccessoryTag)
+          ? unsafeHTML(
+              `<${pluginAccessoryTag} ishoveringcell='${this.isHoveringCell}' cellvalue='${this.value}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${pluginAccessoryTag}>`
+            )
+          : nothing
+
+        if (this.isDisplayingPluginEditor) {
+          this.cellEditorContents = unsafeHTML(
+            `<${tagName
+              .replace('outerbase-plugin-cell', 'outerbase-plugin-editor') // state of affairs May 3 2024
+              .replace(
+                // possible future migration
+                'astra-plugin-cell',
+                'astra-plugin-editor'
+              )} cellvalue='${this.value}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
+          )
+        }
+        this.requestUpdate('cellContents')
+      } else {
+        this.cellContents = commonCellContents
+        this.requestUpdate('cellContents')
+      }
+    }
   }
 
   public override render() {
-    // TODO optimize this not to re-stringify on every render (unless value changed)
-    let value = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value) : this.value
-    let displayValue = value
-    let pluginAccessory: DirectiveResult<typeof UnsafeHTMLDirective> | typeof nothing = nothing
-    if (value && typeof value === 'string') {
-      // Replace single, double, and backticks with their HTML entity equivalents
-      value = value.replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/`/g, '&#96;')
-      displayValue = value?.replace(/&quot;/g, '"')?.replace(/&#39;/g, "'")
-    }
-
-    let cellContents: TemplateResult<1>
-    let cellEditorContents: DirectiveResult<typeof UnsafeHTMLDirective> | undefined
-
-    const placeholderTextColorClass = 'text-neutral-400 dark:text-white/50'
-    const classes = value === null || value === undefined ? placeholderTextColorClass : 'overflow-hidden text-ellipsis'
-
-    const commonCellContents = html`<div class="${classes}">
-      ${displayValue === null
-        ? 'NULL'
-        : displayValue === undefined
-          ? 'DEFAULT'
-          : typeof displayValue === 'string'
-            ? displayValue.replace(/\n/g, returnCharacterPlaceholderRead)
-            : displayValue}
-    </div>`
-
-    if (this.plugin) {
-      const { config, tagName } = this.plugin
-
-      // TODO the plugin receives `null` as a string 'null' since params are always stringified
-      //      we can resolve this by omitting `cellvalue` to represent null, but as of today, that renders `undefined` in our plugins
-      //      `<${tagName} ${value !== null ? `cellvalue='${value}` : ''} configuration='${config}' ${this.pluginAttributes}></${tagName}>`
-      const pluginAsString = unsafeHTML(
-        `<${tagName} cellvalue='${value}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
-      )
-
-      const pluginAccessoryTag = tagName.replace('outerbase-plugin-cell', 'outerbase-plugin-cell-accessory')
-
-      pluginAccessory = customElements.get(pluginAccessoryTag)
-        ? unsafeHTML(
-            `<${pluginAccessoryTag} ishoveringcell='${this.isHoveringCell}' cellvalue='${value}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${pluginAccessoryTag}>`
-          )
-        : nothing
-
-      cellContents = customElements.get(tagName) ? html`${pluginAsString}` : commonCellContents
-
-      if (this.isDisplayingPluginEditor) {
-        cellEditorContents = unsafeHTML(
-          `<${tagName
-            .replace('outerbase-plugin-cell', 'outerbase-plugin-editor') // state of affairs May 3 2024
-            .replace(
-              // possible future migration
-              'astra-plugin-cell',
-              'astra-plugin-editor'
-            )} cellvalue='${value}' columnName='${this.column}' configuration='${config}' ${this.pluginAttributes}></${tagName}>`
-        )
-      }
-    } else {
-      cellContents = commonCellContents
-    }
-
     const themeClass = this.theme === 'dark' ? 'dark' : ''
     const inputEl = this.isEditing // &nbsp; prevents the row from collapsing (in height) when there is only 1 column
-      ? html`<div class="${themeClass}">&nbsp;<input .value=${typeof displayValue === 'string' ? displayValue : (displayValue ?? '')} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
+      ? html`<div class="${themeClass}">&nbsp;<input .value=${typeof this.displayValue === 'string' ? this.displayValue : (this.displayValue ?? '')} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
       : html``
     const emptySlot = this.blank ? html`<slot></slot>` : html``
     const menuOptions = this.dirty
@@ -557,13 +576,13 @@ export class TableData extends MutableElement {
       : this.options
     const editorViaWormhole = html`
       <hans-wormhole .open=${this.isDisplayingPluginEditor} .anchorId=${this.id} modal>
-        <span id="plugin-editor" class="caret-current cursor-auto z-10">${cellEditorContents}</span>
+        <span id="plugin-editor" class="caret-current cursor-auto z-10">${this.cellEditorContents}</span>
       </hans-wormhole>
     `
     const contents = html`
       <div class="flex items-center px-cell-padding-x ${this.blank ? 'justify-center' : null}">
-        <span class="flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
-        ${pluginAccessory}
+        <span class="flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${this.cellContents}</span>
+        ${this.pluginAccessory}
       </div>
     `
 
