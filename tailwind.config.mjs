@@ -46,8 +46,8 @@ export default {
           'table-border-dark': 'var(--astra-table-border-color-dark, rgb(52,52,56))',
 
           // column headers
-          'table-column': 'var(--astra-table-column-header-background-color, rgba(255,255,255,0.9))',
-          'table-column-dark': 'var(--astra-table-column-header-background-color-dark, rgba(0,0,0,0.9))',
+          'table-column': 'var(--astra-table-column-header-background-color, rgba(255,255,255,1))',
+          'table-column-dark': 'var(--astra-table-column-header-background-color-dark, rgba(0,0,0,1))',
           'table-column-content': 'var(--astra-table-column-header-content-color, #000000)',
           'table-column-content-dark': 'var(--astra-table-column-header-content-color-dark, #ffffff)',
 
