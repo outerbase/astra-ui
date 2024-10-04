@@ -809,39 +809,41 @@ export default class AstraTable extends ClassifiedElement {
             </astra-td>`
         )
       : nothing
-    const oldRowCheckboxes = html`<div>
-      ${repeat(
-        this.oldRows,
-        ({ id }) => id,
-        ({ id }, rowIndex) =>
-          rowIndex >= visibleRowStartIndex - SCROLL_BUFFER_SIZE && rowIndex < visibleRowEndIndex + SCROLL_BUFFER_SIZE
-            ? html`<astra-td
-                .position=${{
-                  row: id,
-                  column: '__selected', // our own; not expected to exist in DB
-                }}
-                .type=${null}
-                .width=${42}
-                theme=${theme}
-                ?separate-cells=${true}
-                ?outer-border=${outerBorder}
-                ?border-b=${bottomBorder}
-                ?blank=${true}
-                ?is-last-row=${false}
-                ?is-last-column=${false}
-                ?row-selector="${true}"
-                ?read-only=${true}
-                ?interactive=${true}
-              >
-                <check-box
-                  .theme=${theme}
-                  ?checked=${selectedRowUUIDs.has(id)}
-                  @toggle-check=${() => this.toggleSelectedRow(id)}
-                ></check-box>
-              </astra-td>`
-            : nothing
-      )}
-    </div>`
+    const oldRowCheckboxes = selectableRows
+      ? html`<div>
+          ${repeat(
+            this.oldRows,
+            ({ id }) => id,
+            ({ id }, rowIndex) =>
+              rowIndex >= visibleRowStartIndex - SCROLL_BUFFER_SIZE && rowIndex < visibleRowEndIndex + SCROLL_BUFFER_SIZE
+                ? html`<astra-td
+                    .position=${{
+                      row: id,
+                      column: '__selected', // our own; not expected to exist in DB
+                    }}
+                    .type=${null}
+                    .width=${42}
+                    theme=${theme}
+                    ?separate-cells=${true}
+                    ?outer-border=${outerBorder}
+                    ?border-b=${bottomBorder}
+                    ?blank=${true}
+                    ?is-last-row=${false}
+                    ?is-last-column=${false}
+                    ?row-selector="${true}"
+                    ?read-only=${true}
+                    ?interactive=${true}
+                  >
+                    <check-box
+                      .theme=${theme}
+                      ?checked=${selectedRowUUIDs.has(id)}
+                      @toggle-check=${() => this.toggleSelectedRow(id)}
+                    ></check-box>
+                  </astra-td>`
+                : nothing
+          )}
+        </div>`
+      : nothing
 
     const unpinnedNewRows = isPinned
       ? nothing
