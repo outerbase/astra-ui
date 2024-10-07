@@ -345,6 +345,7 @@ export class TH extends MutableElement {
     const resultContainerClasses = {
       dark: this.theme == 'dark',
       'flex-auto': true,
+      'text-sm': true,
     }
 
     if (this.blank) {

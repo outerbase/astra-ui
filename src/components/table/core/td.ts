@@ -561,8 +561,8 @@ export class TableData extends MutableElement {
       </hans-wormhole>
     `
     const contents = html`
-      <div class="font-table flex items-center px-cell-padding-x ${this.blank ? 'justify-center' : null}">
-        <span class="text-sm flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
+      <div class="text-sm font-table flex items-center px-cell-padding-x ${this.blank ? 'justify-center' : null}">
+        <span class="flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
         ${pluginAccessory}
       </div>
     `
