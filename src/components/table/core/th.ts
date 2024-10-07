@@ -353,7 +353,7 @@ export class TH extends MutableElement {
       return html`<div class=${classMap(blankElementClasses)}><slot></slot></div> `
     } else {
       const body = this.isEditing
-        ? html`<input .value=${this.value} @input=${this.onChange} @keydown=${MutableElement.onKeyDown} class="z-[1] absolute top-0 bottom-0 right-0 left-0 bg-blue-50 dark:bg-blue-950 outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-cell-padding-x" @blur=${this.onBlur}></input>`
+        ? html`<input .value=${this.value} @input=${this.onChange} @keydown=${MutableElement.onKeyDown} class="text-sm z-[1] absolute top-0 bottom-0 right-0 left-0 bg-blue-50 dark:bg-blue-950 outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-cell-padding-x" @blur=${this.onBlur}></input>`
         : this.hasMenu
           ? html`<astra-th-menu theme=${this.theme} .items=${options} @menu-selection=${this.onMenuSelection}>
               <span class="font-table truncate">${this.value}</span>
