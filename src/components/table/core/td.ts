@@ -245,7 +245,7 @@ export class TableData extends MutableElement {
     return {
       ...super.classMap(),
       'relative focus:z-[1]': true,
-      'h-8 flex items-center justify-center': true,
+      'h-[34px] flex items-center justify-center': true,
       'border-theme-table-border dark:border-theme-table-border-dark': true,
       // TODO support odd vs even again
       'text-theme-table-column-content dark:text-theme-table-column-content-dark': true,

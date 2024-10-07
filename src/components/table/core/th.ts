@@ -28,7 +28,7 @@ export class TH extends MutableElement {
     return {
       ...super.classMap(),
       'relative whitespace-nowrap': true,
-      'h-9 flex items-center justify-center': true,
+      'h-10 flex items-center justify-center': true,
       'cursor-pointer': true,
       'border-b border-theme-table-border dark:border-theme-table-border-dark': true,
       'first:border-l border-t': this.outerBorder,
