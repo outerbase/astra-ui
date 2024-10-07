@@ -25,10 +25,11 @@ export const BOOLEAN_TYPES = ['Boolean', 'Bit'].map((s) => s.toLowerCase())
 export const JSON_TYPES = ['JSON', 'JSONB', 'ARRAY'].map((s) => s.toLowerCase())
 
 export class MutableElement extends ClassifiedElement {
-  static moveFocusToNextRow(target: HTMLElement) {
+  static moveFocusToNextColumn(target: HTMLElement) {
     const parent = target?.parentElement
     const index = Array.from(parent?.children ?? []).indexOf(target) // Find the index of the current element among its siblings
     const parentSibling = parent ? parent.nextElementSibling : null // Get the parent's next sibling
+
     if (parentSibling && parentSibling.children.length > index) {
       var nthChild = parentSibling.children[index] as HTMLElement | undefined // Find the nth child of the parent's sibling
       if (nthChild) {
@@ -37,7 +38,7 @@ export class MutableElement extends ClassifiedElement {
     }
   }
 
-  static moveFocusToPreviousRow(target: HTMLElement) {
+  static moveFocusToPreviousColumn(target: HTMLElement) {
     const parent = target?.parentElement
     const index = Array.from(parent?.children ?? []).indexOf(target) // Find the index of the current element among its siblings
     const parentSibling = parent ? parent.previousElementSibling : null // Get the parent's next sibling
@@ -47,6 +48,10 @@ export class MutableElement extends ClassifiedElement {
         nthChild.focus() // Set focus on the nth child
       }
     }
+  }
+
+  static moveFocusToNextRow(target: HTMLElement) {
+    ;(target?.nextElementSibling as HTMLElement)?.focus()
   }
 
   static onKeyDown(event: KeyboardEvent & { didCloseMenu?: boolean }) {
@@ -72,6 +77,23 @@ export class MutableElement extends ClassifiedElement {
         // wait until the prev commands have processed
         setTimeout(() => {
           MutableElement.moveFocusToNextRow(target)
+        }, 0)
+      })
+    }
+
+    if (event.code === 'Tab' && event.target instanceof HTMLElement) {
+      const target = event.target
+
+      // without this setTimeout, something sets `isEditing` back and re-renders immediately, negating the effect entirely
+      setTimeout(() => {
+        self.blur()
+
+        // wait until the prev commands have processed
+        setTimeout(() => {
+          // TODO when there is no previous/next column
+          //      goto the beginning of the next/previous row
+          if (event.shiftKey) MutableElement.moveFocusToPreviousColumn(target)
+          else MutableElement.moveFocusToNextColumn(target)
         }, 0)
       })
     }
@@ -172,8 +194,8 @@ export class MutableElement extends ClassifiedElement {
   @property({ attribute: 'read-only', type: Boolean })
   public readonly = false
 
-  @property({ type: String, attribute: 'width' })
-  public width?: string
+  @property({ type: Number, attribute: 'width' })
+  public width?: number
 
   @property({ attribute: 'interactive', type: Boolean })
   public isInteractive = false
@@ -218,6 +240,9 @@ export class MutableElement extends ClassifiedElement {
   @property({ attribute: 'is-active', type: Boolean })
   public isActive = false
 
+  @property({ attribute: 'pinned', type: Boolean })
+  public pinned = false
+
   public override updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps)
 
@@ -236,6 +261,10 @@ export class MutableElement extends ClassifiedElement {
     if (this.constrainTypes && changedProperties.has('type')) {
       this.value = MutableElement.convertToType(this.type, this.value) ?? this._value
       this.originalValue = MutableElement.convertToType(this.type, this.originalValue) ?? this.originalValue
+    }
+
+    if (changedProperties.has('width') && this.width && this.style) {
+      this.style.width = `${this.width}px`
     }
   }
 

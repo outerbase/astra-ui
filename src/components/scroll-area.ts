@@ -29,7 +29,9 @@ export default class ScrollArea extends ClassifiedElement {
   ]
 
   @property() public onScroll?: () => void
-  @property({ type: Number }) public threshold = 0
+  private _debouncedOnScrollCallback: typeof this.onScroll
+  @property({ attribute: 'threshold-x', type: Number }) public thresholdX = 0
+  @property({ attribute: 'threshold-y', type: Number }) public thresholdY = 0
   @property() public scroller: Ref<HTMLDivElement> = createRef()
   @property() public rightScrollZone: Ref<HTMLDivElement> = createRef()
   @property() public rightScrollHandle: Ref<HTMLDivElement> = createRef()
@@ -58,6 +60,7 @@ export default class ScrollArea extends ClassifiedElement {
   constructor() {
     super()
     this._onScroll = this._onScroll ? debounce(this._onScroll, 10).bind(this) : this._onScroll.bind(this)
+    // this._onScroll = this._onScroll?.bind(this)
 
     this.updateScrollerSizeAndPosition = this.updateScrollerSizeAndPosition.bind(this)
     this.onWheelVerticalScroller = this.onWheelVerticalScroller.bind(this)
@@ -101,11 +104,11 @@ export default class ScrollArea extends ClassifiedElement {
     const differenceVertical = Math.abs(previousVertical - currentVertical)
     const differenceHorizontal = Math.abs(previousHorizontal - currentHorizontal)
 
-    if (differenceVertical > this.threshold || differenceHorizontal > this.threshold) {
+    if (differenceVertical > this.thresholdY || differenceHorizontal > this.thresholdX) {
       this.previousScrollPositionY = currentVertical
       this.previousScrollPositionX = currentHorizontal
       if (typeof this.onScroll === 'function') {
-        this.onScroll()
+        this._debouncedOnScrollCallback?.()
       }
     }
   }
@@ -242,6 +245,12 @@ export default class ScrollArea extends ClassifiedElement {
     if (changedProperties.has('hasHoveringCursor')) {
       // ensure scrollers appear on initial appearance
       if (this.hasHoveringCursor) this.updateScrollerSizeAndPosition()
+    }
+
+    if (changedProperties.has('onScroll')) {
+      if (typeof this.onScroll === 'function') {
+        this._debouncedOnScrollCallback = debounce(this.onScroll, 10)
+      }
     }
   }
 

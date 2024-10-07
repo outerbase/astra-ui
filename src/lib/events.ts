@@ -111,6 +111,12 @@ export class ColumnUpdatedEvent extends ColumnEvent {
   }
 }
 
+export class ColumnPinnedEvent extends ColumnEvent {
+  constructor(attr: ColumnAttributes) {
+    super('column-pinned', attr)
+  }
+}
+
 // TODO not implemented
 export class ColumnSelectedEvent extends ColumnEvent {
   constructor(attr: ColumnAttributes) {
@@ -175,7 +181,7 @@ export class ResizeStartEvent extends BubblyEvent {
 
 export class ResizeEndEvent extends BubblyEvent {
   name: string
-  delta: number // a +/- number denoting number of pixels change in column width
+  delta: number
 
   constructor(name: string, delta: number) {
     super('resize-end')

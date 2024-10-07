@@ -66,6 +66,12 @@ export class TableData extends MutableElement {
         -moz-backdrop-filter: blur(var(--astra-table-backdrop-blur));
         -o-backdrop-filter: blur(var(--astra-table-backdrop-blur));
         -ms-backdrop-filter: blur(var(--astra-table-backdrop-blur));
+
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
     `,
   ]
@@ -186,26 +192,26 @@ export class TableData extends MutableElement {
 
     // navigating around the table
 
-    if (code === 'ArrowRight') {
+    if (code === 'ArrowDown') {
       event.preventDefault()
       ;(target?.nextElementSibling as HTMLElement)?.focus()
       return
-    } else if (code === 'ArrowLeft') {
+    } else if (code === 'ArrowUp') {
       event.preventDefault()
       const checkbox = target?.previousElementSibling?.querySelector('check-box') as HTMLElement | undefined
       if (checkbox) checkbox.focus()
       else (target?.previousElementSibling as HTMLElement | undefined)?.focus()
       return
-    } else if (code === 'ArrowDown') {
+    } else if (code === 'ArrowRight') {
       event.preventDefault()
       if (event.target instanceof HTMLElement && !self.isEditing) {
-        MutableElement.moveFocusToNextRow(event.target)
+        MutableElement.moveFocusToNextColumn(event.target)
         return
       }
-    } else if (code === 'ArrowUp') {
+    } else if (code === 'ArrowLeft') {
       event.preventDefault()
       if (event.target instanceof HTMLElement && !self.isEditing) {
-        MutableElement.moveFocusToPreviousRow(event.target)
+        MutableElement.moveFocusToPreviousColumn(event.target)
         return
       }
     }
@@ -238,19 +244,25 @@ export class TableData extends MutableElement {
   protected override classMap() {
     return {
       ...super.classMap(),
-      'table-cell relative focus:z-[1]': true,
-      'px-5': this.blank,
+      'relative focus:z-[1]': true,
+      'h-[34px] flex items-center justify-center': true,
       'border-theme-table-border dark:border-theme-table-border-dark': true,
-      'bg-theme-table-row-selected dark:bg-theme-table-row-selected-dark': this.isActive && (!this.dirty || this.hideDirt), // i.e. this is the column being sorted
-      'bg-theme-table-cell-dirty dark:bg-theme-table-cell-dirty-dark': this.dirty && !this.hideDirt, // dirty cells
-      'group-hover:bg-theme-table-row-hover dark:group-hover:bg-theme-table-row-hover-dark': !this.dirty || this.hideDirt,
+      // TODO support odd vs even again
+      'text-theme-table-column-content dark:text-theme-table-column-content-dark': true,
+      'bg-theme-table-row-new dark:bg-theme-table-row-new-dark': this.rowIsNew,
+      // 'hover:bg-theme-table-row-selected-hover dark:hover:bg-theme-row-selected-hover-dark': this.isActive,
+      'bg-theme-table-row-even dark:bg-theme-table-row-even-dark': !this.rowIsNew && !this.isActive && (!this.dirty || this.hideDirt),
+      'bg-theme-table-row-selected dark:bg-theme-table-row-selected-dark':
+        !this.rowIsNew && this.isActive && (!this.dirty || this.hideDirt), // i.e. this is the column being sorted
+      'bg-theme-table-cell-dirty dark:bg-theme-table-cell-dirty-dark': !this.rowIsNew && this.dirty && !this.hideDirt, // dirty cells
+      'hover:bg-theme-table-row-hover dark:hover:bg-theme-table-row-hover-dark': !this.dirty || this.hideDirt,
       'focus:shadow-ringlet dark:focus:shadow-ringlet-dark focus:rounded-[4px] focus:ring-1 focus:ring-black dark:focus:ring-neutral-300 focus:outline-none':
         !this.isEditing && this.isInteractive,
       'border-r':
         this.resizable || // include or it looks funny that a resize handler is above it
         (this.separateCells && this.isLastColumn && this.outerBorder) || // include last column when outerBorder
         (this.separateCells && !this.isLastColumn), // internal cell walls
-      'first:border-l': this.separateCells && this.outerBorder, // left/right borders when the `separate-cells` attribute is set
+      // 'first:border-l': this.separateCells && this.outerBorder, // left/right borders when the `separate-cells` attribute is set
       'border-b': !this.isLastRow || (this.isLastRow && this.outerBorder) || (this.isLastRow && this.bottomBorder), // bottom border unless last row
     }
   }
@@ -287,6 +299,9 @@ export class TableData extends MutableElement {
 
   @property({ attribute: 'menu', type: Boolean })
   public hasMenu = false
+
+  @property({ attribute: 'row-is-new', type: Boolean })
+  public rowIsNew = false
 
   @state() menuIsOpen = false
   @state() isContentEditable = true // this property is to toggle off the contenteditableness of to resolve quirky focus and text selection that can happen when, say, right-clicking to trigger the context menu
@@ -458,6 +473,7 @@ export class TableData extends MutableElement {
   }
 
   public override render() {
+    // TODO optimize this not to re-stringify on every render (unless value changed)
     let value = this.value === null ? null : typeof this.value === 'object' ? JSON.stringify(this.value) : this.value
     let displayValue = value
     let pluginAccessory: DirectiveResult<typeof UnsafeHTMLDirective> | typeof nothing = nothing
@@ -470,10 +486,10 @@ export class TableData extends MutableElement {
     let cellContents: TemplateResult<1>
     let cellEditorContents: DirectiveResult<typeof UnsafeHTMLDirective> | undefined
 
-    const classes =
-      value === null || value === undefined ? 'nbsp text-neutral-400 dark:text-neutral-600' : 'nbsp overflow-hidden text-ellipsis'
+    const placeholderTextColorClass = 'text-neutral-400 dark:text-white/50'
+    const classes = value === null || value === undefined ? placeholderTextColorClass : 'overflow-hidden text-ellipsis'
 
-    const commonCellContents = html`<div class=${classes} style="line-height: 34px;">
+    const commonCellContents = html`<div class="${classes}">
       ${displayValue === null
         ? 'NULL'
         : displayValue === undefined
@@ -520,7 +536,7 @@ export class TableData extends MutableElement {
 
     const themeClass = this.theme === 'dark' ? 'dark' : ''
     const inputEl = this.isEditing // &nbsp; prevents the row from collapsing (in height) when there is only 1 column
-      ? html`<div class="${themeClass}" style="line-height: 34px;">&nbsp;<input .value=${typeof displayValue === 'string' ? displayValue : (displayValue ?? '')} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px]" @blur=${this.onBlur}></input></div>`
+      ? html`<div class="text-sm ${themeClass}">&nbsp;<input .value=${typeof displayValue === 'string' ? displayValue : (displayValue ?? '')} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px] font-table" @blur=${this.onBlur}></input></div>`
       : html``
     const emptySlot = this.blank ? html`<slot></slot>` : html``
     const menuOptions = this.dirty
@@ -545,7 +561,7 @@ export class TableData extends MutableElement {
       </hans-wormhole>
     `
     const contents = html`
-      <div class="flex items-center px-cell-padding-x">
+      <div class="text-sm font-table flex items-center px-cell-padding-x ${this.blank ? 'justify-center' : null}">
         <span class="flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
         ${pluginAccessory}
       </div>
@@ -556,9 +572,9 @@ export class TableData extends MutableElement {
     const menuEl =
       this.isEditing || this.blank
         ? nothing
-        : html`<span
+        : html`<div
             ${ref(this.contentEditableWrapper)}
-            class="outline-none caret-transparent select-none"
+            class="outline-none caret-transparent select-none truncate flex-auto"
             contenteditable="${this.isContentEditable}"
             spellcheck="false"
             autocorrect="off"
@@ -582,7 +598,7 @@ export class TableData extends MutableElement {
                   ${contents} ${editorViaWormhole}
                 </astra-td-menu>`
               : html`${contents} ${editorViaWormhole}`}
-          </span>`
+          </div>`
 
     return this.isEditing ? inputEl : this.blank ? emptySlot : menuEl
   }

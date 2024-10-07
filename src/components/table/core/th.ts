@@ -6,6 +6,7 @@ import { ifDefined } from 'lit/directives/if-defined.js'
 // import subcomponents
 import {
   ColumnHiddenEvent,
+  ColumnPinnedEvent,
   ColumnPluginActivatedEvent,
   ColumnPluginDeactivatedEvent,
   ColumnRemovedEvent,
@@ -26,11 +27,16 @@ export class TH extends MutableElement {
   protected override classMap() {
     return {
       ...super.classMap(),
-      'table-cell relative whitespace-nowrap h-[38px]': true, // h-[38px] was added to preserve the height when toggling to <input />
+      'relative whitespace-nowrap': true,
+      'h-10 flex items-center justify-center': true,
       'cursor-pointer': true,
       'border-b border-theme-table-border dark:border-theme-table-border-dark': true,
-      'first:border-l border-t': this.outerBorder,
-      'px-cell-padding-x py-cell-padding-y': true,
+      // 'first:border-l border-t': this.outerBorder,
+      'px-cell-padding-x align-middle': !this.blank,
+      'whitespace-nowrap truncate': true,
+      // 'py-cell-padding-y': true,
+      // 'h-full absolute top-0 bottom-0 left-0 right-0': true,
+      // 'h-full': true,
       'text-theme-table-column-content dark:text-theme-table-column-content-dark': true,
       'bg-theme-table-column dark:bg-theme-table-column-dark': !this.dirty && !this.isActive,
       'bg-theme-table-row-selected dark:bg-theme-table-row-selected-dark': !this.dirty && this.isActive, // i.e. this is the column being sorted
@@ -57,29 +63,7 @@ export class TH extends MutableElement {
   public installedPlugins: Record<string, PluginWorkspaceInstallationId | undefined> = {}
 
   @property({ attribute: 'options', type: Array })
-  public options: HeaderMenuOptions = [
-    {
-      label: 'Sort A-Z',
-      value: 'sort:alphabetical:ascending',
-    },
-    {
-      label: 'Sort Z-A',
-      value: 'sort:alphabetical:descending',
-    },
-    {
-      label: 'Hide Column',
-      value: 'hide',
-    },
-    {
-      label: 'Rename Column',
-      value: 'rename',
-    },
-    {
-      label: 'Delete Column',
-      value: 'delete',
-      classes: 'text-red-500 dark:text-red-400/90 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10',
-    },
-  ]
+  public options: HeaderMenuOptions = []
 
   @property({ attribute: 'value', type: String })
   override get value(): string | undefined {
@@ -154,6 +138,9 @@ export class TH extends MutableElement {
           })
         )
         return (this.value = this.originalValue ?? '')
+      case 'pin':
+        this.dispatchPinnedEvent(true)
+        return
       default:
         // intentionally let other (e.g. sorting) events pass-through to parent
         dispatchColumnUpdateEvent = true
@@ -167,6 +154,25 @@ export class TH extends MutableElement {
         })
       )
     }
+  }
+
+  protected dispatchPinnedEvent(pinned: boolean) {
+    const name = this.originalValue ?? this.value
+
+    if (!name) {
+      throw new Error('Column has no value or original value to identify it')
+    }
+
+    this.dispatchEvent(
+      new ColumnPinnedEvent({
+        name,
+        data: {
+          previousValue: this.originalValue,
+          value: this.value,
+          pinned,
+        },
+      })
+    )
   }
 
   protected onContextMenu(event: MouseEvent) {
@@ -229,14 +235,6 @@ export class TH extends MutableElement {
     this.removeEventListener('click', this.onClick)
   }
 
-  public override firstUpdated(changedProperties: PropertyValueMap<this>): void {
-    super.firstUpdated(changedProperties)
-
-    if (this.width && this.style) {
-      this.style.width = this.width
-    }
-  }
-
   public override willUpdate(changedProperties: PropertyValueMap<this>) {
     super.willUpdate(changedProperties)
 
@@ -248,13 +246,10 @@ export class TH extends MutableElement {
         })) ?? []
     }
 
-    if (changedProperties.has('width') && this.width && this.style) {
-      this.style.width = this.width
-    }
-
     if (changedProperties.has('readonly')) {
       if (this.readonly) {
         this.options = [
+          { label: this.pinned ? 'Unpin Column' : 'Pin Column', value: 'pin' },
           {
             label: 'Sort A-Z',
             value: 'sort:alphabetical:ascending',
@@ -276,6 +271,7 @@ export class TH extends MutableElement {
         ]
       } else {
         this.options = [
+          { label: this.pinned ? 'Unpin Column' : 'Pin Column', value: 'pin' },
           {
             label: 'Sort A-Z',
             value: 'sort:alphabetical:ascending',
@@ -326,7 +322,7 @@ export class TH extends MutableElement {
 
     if (this._pluginOptions.length > 0) {
       options.splice(
-        2,
+        3,
         0,
         hasPlugin
           ? {
@@ -343,11 +339,13 @@ export class TH extends MutableElement {
     }
 
     const blankElementClasses = {
-      'absolute top-0 bottom-0 right-0 left-0': true,
+      // 'absolute top-0 bottom-0 right-0 left-0': true,
       dark: this.theme == 'dark',
     }
     const resultContainerClasses = {
       dark: this.theme == 'dark',
+      'flex-auto': true,
+      'text-sm': true,
     }
 
     if (this.blank) {
@@ -355,31 +353,30 @@ export class TH extends MutableElement {
       return html`<div class=${classMap(blankElementClasses)}><slot></slot></div> `
     } else {
       const body = this.isEditing
-        ? html`<input .value=${this.value} @input=${this.onChange} @keydown=${MutableElement.onKeyDown} class="z-[1] absolute top-0 bottom-0 right-0 left-0 bg-blue-50 dark:bg-blue-950 outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-cell-padding-x font-normal" @blur=${this.onBlur}></input>`
+        ? html`<input .value=${this.value} @input=${this.onChange} @keydown=${MutableElement.onKeyDown} class="text-sm z-[1] absolute top-0 bottom-0 right-0 left-0 bg-blue-50 dark:bg-blue-950 outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-cell-padding-x" @blur=${this.onBlur}></input>`
         : this.hasMenu
-          ? html`<astra-th-menu theme=${this.theme} .items=${options} @menu-selection=${this.onMenuSelection}
-              ><span class="font-normal truncate">${this.value}</span></astra-th-menu
-            >`
-          : html`<span class="font-normal truncate">${this.value}</span>`
+          ? html`<astra-th-menu theme=${this.theme} .items=${options} @menu-selection=${this.onMenuSelection}>
+              <span class="font-table truncate">${this.value}</span>
+            </astra-th-menu>`
+          : html`<span class="font-table truncate">${this.value}</span>`
 
       return this.withResizer
-        ? html`<span class=${classMap(resultContainerClasses)}
-            ><slot></slot>
+        ? html`<span class=${classMap(resultContainerClasses)}>
+            <slot></slot>
             ${body}
             <column-resizer
               .column=${this}
-              height="${ifDefined(this.tableHeight)}"
-              theme=${this.theme}
+              .height=${ifDefined(this.tableHeight)}
+              .theme=${this.theme}
               @resize-start=${() => {
-                // remove the suffix `px` from width and convert to a number
-                // JOHNNY probably revert to storing the number??
-                this._previousWidth = this.width ? +this.width.slice(0, -2) : 0
+                this._previousWidth = this.width ?? 0
               }}
               @resize=${({ delta }: ResizeEvent) => {
-                this.width = `${this._previousWidth + delta}px`
+                this.width = this._previousWidth + delta
               }}
-            ></column-resizer
-          ></span>`
+            >
+            </column-resizer>
+          </span>`
         : html`<div class=${classMap(resultContainerClasses)}><slot></slot>${body}</div>`
     }
   }
