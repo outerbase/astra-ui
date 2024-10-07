@@ -1228,7 +1228,7 @@ export default class AstraTable extends ClassifiedElement {
       <astra-scroll-area
         ${ref(this.scrollableEl)}
         threshold-x=${50}
-        threshold-y=${32}
+        threshold-y=${34}
         theme=${this.theme}
         .onScroll=${this.updateTableView}
       >
