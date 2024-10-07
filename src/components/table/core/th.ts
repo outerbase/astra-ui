@@ -31,7 +31,7 @@ export class TH extends MutableElement {
       'h-10 flex items-center justify-center': true,
       'cursor-pointer': true,
       'border-b border-theme-table-border dark:border-theme-table-border-dark': true,
-      'first:border-l border-t': this.outerBorder,
+      // 'first:border-l border-t': this.outerBorder,
       'px-cell-padding-x align-middle': !this.blank,
       'whitespace-nowrap truncate': true,
       // 'py-cell-padding-y': true,
