@@ -562,7 +562,7 @@ export class TableData extends MutableElement {
     `
     const contents = html`
       <div class="font-table flex items-center px-cell-padding-x ${this.blank ? 'justify-center' : null}">
-        <span class="flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
+        <span class="text-sm flex-auto truncate ${this.theme === 'dark' ? 'dark' : ''}">${cellContents}</span>
         ${pluginAccessory}
       </div>
     `
