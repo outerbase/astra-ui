@@ -205,13 +205,13 @@ export class TableData extends MutableElement {
     } else if (code === 'ArrowRight') {
       event.preventDefault()
       if (event.target instanceof HTMLElement && !self.isEditing) {
-        MutableElement.moveFocusToNextRow(event.target)
+        MutableElement.moveFocusToNextColumn(event.target)
         return
       }
     } else if (code === 'ArrowLeft') {
       event.preventDefault()
       if (event.target instanceof HTMLElement && !self.isEditing) {
-        MutableElement.moveFocusToPreviousRow(event.target)
+        MutableElement.moveFocusToPreviousColumn(event.target)
         return
       }
     }
