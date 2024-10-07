@@ -1089,7 +1089,7 @@ export default class AstraTable extends ClassifiedElement {
 
         <!-- body -->
         ${isPinned
-          ? html`<div class="flex">
+          ? html`<div class="flex bg-theme-table-row-even dark:bg-theme-table-row-even-dark">
               <div class="flex">
                 <!-- check boxes -->
                 <div class="flex flex-col">
