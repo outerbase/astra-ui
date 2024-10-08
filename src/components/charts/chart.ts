@@ -525,6 +525,7 @@ export default class AstraChart extends ClassifiedElement {
     // Add Y-axis with textOverflow
     options.marks.push(
       axisY({
+        ...options.y,
         tickSize: showYTicks ? 5 : 0,
         label: this.axisLabelY ?? null,
         textOverflow: 'ellipsis',
