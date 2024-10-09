@@ -201,8 +201,6 @@ export default class AstraChart extends ClassifiedElement {
       })
   }
 
-  @state() private hasUpdatedHeight = false
-
   @property({ type: String, attribute: 'api-key' }) apiKey: string | undefined
   @property({ type: String, attribute: 'chart-id' }) chartId: string | undefined
   @property({ type: Object }) data?: DashboardV3Chart
@@ -385,6 +383,8 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   private getLatestPlot() {
+    if (!this.height) return null
+
     const layer = this.data?.layers?.[0] // TODO don't assume 1 layer
     if (!layer) return null
 
@@ -542,17 +542,26 @@ export default class AstraChart extends ClassifiedElement {
     }
   }
 
-  protected updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
+  protected firstUpdated(_changedProperties: PropertyValueMap<this>) {
+    super.firstUpdated(_changedProperties)
+
+    const chart = this.shadowRoot?.querySelector('#chart')
+    const { height } = chart?.getBoundingClientRect() ?? { height: 0 }
+    this.height = height
+  }
+
+  protected updated(_changedProperties: PropertyValueMap<this>): void {
     const elements = this.shadowRoot!.querySelectorAll('rect')
     for (let i = 0; i < elements.length; i++) {
       elements[i].style.animationDelay = `${i / 50}s`
     }
 
-    // If sizeX or sizeY change then set `hasUpdatedHeight = false` to force the height to be recalculated
     const sizeXChanged = _changedProperties.has('sizeX') && _changedProperties.get('sizeX') !== undefined
     const sizeYChanged = _changedProperties.has('sizeY') && _changedProperties.get('sizeY') !== undefined
-    if ((sizeXChanged || sizeYChanged) && this.hasUpdatedHeight) {
-      this.hasUpdatedHeight = false
+    if (sizeXChanged || sizeYChanged) {
+      const chart = this.shadowRoot?.querySelector('#chart')
+      const { height } = chart?.getBoundingClientRect() ?? { height: 0 }
+      this.height = height
     }
   }
 
@@ -680,31 +689,6 @@ export default class AstraChart extends ClassifiedElement {
     >
       ${decoratedPlot}
     </div>`
-
-    /**
-     * TODO:
-     *
-     * This is very much a hack to force the chart to be the size of the appropriate
-     * container when the Chart is hosted inside of a `ComposedChart` component. Without
-     * it the height requires either a fixed pixel value or aspect ratio to be set.
-     * The unfortunate part at the moment is the height is dynamic as it's a flex container
-     * and not known until the `#chart` element is rendered.
-     *
-     * So the following code will look at `#chart` and use it's height to force that
-     * pixel value to be on the Plotly chart. The problem here is that when the AstraChart
-     * component is used standalone and not within the ComposedChart component, the
-     * `#chart` element is not present and the height will be 0.
-     */
-    if (!this.hasUpdatedHeight) {
-      // Get height of `themedPlot` and set it as the height of the component
-      setTimeout(() => {
-        const findThemedPlot = this.shadowRoot?.querySelector('#chart')
-        const { height } = findThemedPlot?.getBoundingClientRect() ?? { height: 0 }
-
-        this.height = height
-        this.hasUpdatedHeight = true
-      }, 500)
-    }
 
     return html`${gradients} ${themedPlot}`
   }
