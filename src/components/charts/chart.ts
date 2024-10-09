@@ -522,6 +522,9 @@ export default class AstraChart extends ClassifiedElement {
         tickFormat: showXTicks ? undefined : () => '',
         tickSize: showXTicks ? 5 : 0,
         nice: this.niceX,
+
+        lineWidth: 8,
+        textOverflow: 'ellipsis',
       })
     )
 
@@ -530,8 +533,11 @@ export default class AstraChart extends ClassifiedElement {
         ...options.y,
         tickSize: showYTicks ? 5 : 0,
         label: this.axisLabelY ?? null,
+        nice: this.niceY,
+        marginLeft: 50,
+        tickFormat: 's',
+        lineWidth: 4,
         textOverflow: 'ellipsis',
-        textAnchor: 'end',
       })
     )
 
