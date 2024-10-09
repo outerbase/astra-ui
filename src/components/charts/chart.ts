@@ -1,4 +1,4 @@
-import { areaY, barX, barY, dot, gridX, gridY, lineY, plot, axisY } from '@observablehq/plot'
+import { areaY, barX, barY, dot, gridX, gridY, lineY, plot, axisY, axisX } from '@observablehq/plot'
 import { max, min, timeDay, utcDay, utcMinute, utcMonth, utcWeek, utcYear } from 'd3'
 import { css, html, type PropertyValueMap } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
@@ -510,19 +510,21 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     // LABELS
-    options.x = {
-      ...options.x,
-      label: this.axisLabelX ?? null,
-      labelAnchor: 'center',
-      labelArrow: 'none',
-      ticks: showYTicks ? this.ticksX : undefined,
-      tickRotate: tickRotation,
-      tickFormat: showXTicks ? undefined : () => '',
-      tickSize: showXTicks ? 5 : 0,
-      nice: this.niceX,
-    }
+    options.marks.push(
+      axisX({
+        ...options.x,
+        label: this.axisLabelX ?? null,
+        labelAnchor: 'center',
+        marginBottom: 50,
+        labelArrow: 'none',
+        ticks: showYTicks ? this.ticksX : undefined,
+        tickRotate: tickRotation,
+        tickFormat: showXTicks ? undefined : () => '',
+        tickSize: showXTicks ? 5 : 0,
+        nice: this.niceX,
+      })
+    )
 
-    // Add Y-axis with textOverflow
     options.marks.push(
       axisY({
         ...options.y,
