@@ -16,6 +16,7 @@ import type {
   Row,
 } from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
+import * as d3 from 'd3'
 
 const gradients = [
   createGradient('mercury', [
@@ -509,6 +510,15 @@ export default class AstraChart extends ClassifiedElement {
       options.marginBottom = 60
     }
 
+    function dynamicTickFormat(value: any) {
+      // Check if the value is a number
+      if (typeof value === 'number') {
+        return d3.format('~s')(value) // Use D3 to format numbers with abbreviated SI units
+      }
+      // Return the value as-is if it's not a number (e.g., a string)
+      return value
+    }
+
     // LABELS
     options.marks.push(
       axisX({
@@ -519,10 +529,9 @@ export default class AstraChart extends ClassifiedElement {
         labelArrow: 'none',
         ticks: showYTicks ? this.ticksX : undefined,
         tickRotate: tickRotation,
-        tickFormat: showXTicks ? undefined : () => '',
+        tickFormat: showXTicks ? dynamicTickFormat : () => '',
         tickSize: showXTicks ? 5 : 0,
         nice: this.niceX,
-
         lineWidth: 8,
         textOverflow: 'ellipsis',
       })
@@ -534,9 +543,9 @@ export default class AstraChart extends ClassifiedElement {
         tickSize: showYTicks ? 5 : 0,
         label: this.axisLabelY ?? null,
         nice: this.niceY,
-        marginLeft: 50,
-        tickFormat: 's',
-        lineWidth: 4,
+        marginLeft: 66,
+        tickFormat: showYTicks ? dynamicTickFormat : () => '',
+        lineWidth: 6,
         textOverflow: 'ellipsis',
       })
     )
