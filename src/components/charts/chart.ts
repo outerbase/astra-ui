@@ -533,6 +533,7 @@ export default class AstraChart extends ClassifiedElement {
         tickSize: showXTicks ? 5 : 0,
         nice: this.niceX,
         lineWidth: 8,
+        rotate: 12,
         textOverflow: 'ellipsis',
       })
     )
