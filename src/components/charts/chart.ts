@@ -524,7 +524,6 @@ export default class AstraChart extends ClassifiedElement {
       axisX({
         ...options.x,
         label: this.axisLabelX ?? null,
-        labelAnchor: 'center',
         marginBottom: 50,
         labelArrow: 'none',
         ticks: showYTicks ? this.ticksX : undefined,
