@@ -45,7 +45,7 @@ Declaring an instance of the editor in your HTML you can do the following:
   <head>
     <meta charset="UTF-8" />
     <title>Classified</title>
-    <script src="https://cdn.outerbase.com/astra/latest/astra.js"></script>
+    <script src="https://cdn.outerbase.com/astra/latest/index.js"></script>
   </head>
   <body>
     <astra-text variant="h1">Are you ready?</astra-text>
