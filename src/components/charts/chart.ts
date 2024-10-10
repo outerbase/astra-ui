@@ -1,4 +1,4 @@
-import { areaY, barX, barY, dot, gridX, gridY, lineY, plot } from '@observablehq/plot'
+import { areaY, barX, barY, dot, gridX, gridY, lineY, plot, axisY, axisX } from '@observablehq/plot'
 import { max, min, timeDay, utcDay, utcMinute, utcMonth, utcWeek, utcYear } from 'd3'
 import { css, html, type PropertyValueMap } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
@@ -16,6 +16,7 @@ import type {
   Row,
 } from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
+import * as d3 from 'd3'
 
 const gradients = [
   createGradient('mercury', [
@@ -201,8 +202,6 @@ export default class AstraChart extends ClassifiedElement {
       })
   }
 
-  @state() private hasUpdatedHeight = false
-
   @property({ type: String, attribute: 'api-key' }) apiKey: string | undefined
   @property({ type: String, attribute: 'chart-id' }) chartId: string | undefined
   @property({ type: Object }) data?: DashboardV3Chart
@@ -385,6 +384,8 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   private getLatestPlot() {
+    if (!this.height) return null
+
     const layer = this.data?.layers?.[0] // TODO don't assume 1 layer
     if (!layer) return null
 
@@ -509,31 +510,45 @@ export default class AstraChart extends ClassifiedElement {
       options.marginBottom = 60
     }
 
+    function dynamicTickFormat(value: any) {
+      // Check if the value is a number
+      if (typeof value === 'number') {
+        return d3.format('~s')(value) // Use D3 to format numbers with abbreviated SI units
+      }
+      // Return the value as-is if it's not a number (e.g., a string)
+      return value
+    }
+
     // LABELS
-    options.x = {
-      ...options.x,
-      label: this.axisLabelX ?? null,
-      labelAnchor: 'center',
-      labelArrow: 'none',
-      ticks: showYTicks ? this.ticksX : undefined,
-      tickRotate: tickRotation,
-      tickFormat: showXTicks ? undefined : () => '',
-      tickSize: showXTicks ? 5 : 0,
-      nice: this.niceX,
-      padding: 0.3,
-      width: 2,
-    }
-    options.y = {
-      ...options.y,
-      label: this.axisLabelY ?? null,
-      labelAnchor: 'top',
-      labelArrow: 'none',
-      ticks: this.ticksY,
-      nice: this.niceY,
-      axis: yAxisDisplay,
-      tickFormat: showYTicks && this.type !== 'bar' ? 's' : () => '',
-      tickSize: showYTicks ? 5 : 0,
-    }
+    options.marks.push(
+      axisX({
+        ...options.x,
+        label: this.axisLabelX ?? null,
+        labelAnchor: 'center',
+        marginBottom: 50,
+        labelArrow: 'none',
+        ticks: showYTicks ? this.ticksX : undefined,
+        tickRotate: tickRotation,
+        tickFormat: showXTicks ? dynamicTickFormat : () => '',
+        tickSize: showXTicks ? 5 : 0,
+        nice: this.niceX,
+        lineWidth: 8,
+        textOverflow: 'ellipsis',
+      })
+    )
+
+    options.marks.push(
+      axisY({
+        ...options.y,
+        tickSize: showYTicks ? 5 : 0,
+        label: this.axisLabelY ?? null,
+        nice: this.niceY,
+        marginLeft: 66,
+        tickFormat: showYTicks ? dynamicTickFormat : () => '',
+        lineWidth: 6,
+        textOverflow: 'ellipsis',
+      })
+    )
 
     try {
       return plot(options)
@@ -542,17 +557,26 @@ export default class AstraChart extends ClassifiedElement {
     }
   }
 
-  protected updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
+  protected firstUpdated(_changedProperties: PropertyValueMap<this>) {
+    super.firstUpdated(_changedProperties)
+
+    const chart = this.shadowRoot?.querySelector('#chart')
+    const { height } = chart?.getBoundingClientRect() ?? { height: 0 }
+    this.height = height
+  }
+
+  protected updated(_changedProperties: PropertyValueMap<this>): void {
     const elements = this.shadowRoot!.querySelectorAll('rect')
     for (let i = 0; i < elements.length; i++) {
       elements[i].style.animationDelay = `${i / 50}s`
     }
 
-    // If sizeX or sizeY change then set `hasUpdatedHeight = false` to force the height to be recalculated
     const sizeXChanged = _changedProperties.has('sizeX') && _changedProperties.get('sizeX') !== undefined
     const sizeYChanged = _changedProperties.has('sizeY') && _changedProperties.get('sizeY') !== undefined
-    if ((sizeXChanged || sizeYChanged) && this.hasUpdatedHeight) {
-      this.hasUpdatedHeight = false
+    if (sizeXChanged || sizeYChanged) {
+      const chart = this.shadowRoot?.querySelector('#chart')
+      const { height } = chart?.getBoundingClientRect() ?? { height: 0 }
+      this.height = height
     }
   }
 
@@ -680,31 +704,6 @@ export default class AstraChart extends ClassifiedElement {
     >
       ${decoratedPlot}
     </div>`
-
-    /**
-     * TODO:
-     *
-     * This is very much a hack to force the chart to be the size of the appropriate
-     * container when the Chart is hosted inside of a `ComposedChart` component. Without
-     * it the height requires either a fixed pixel value or aspect ratio to be set.
-     * The unfortunate part at the moment is the height is dynamic as it's a flex container
-     * and not known until the `#chart` element is rendered.
-     *
-     * So the following code will look at `#chart` and use it's height to force that
-     * pixel value to be on the Plotly chart. The problem here is that when the AstraChart
-     * component is used standalone and not within the ComposedChart component, the
-     * `#chart` element is not present and the height will be 0.
-     */
-    if (!this.hasUpdatedHeight) {
-      // Get height of `themedPlot` and set it as the height of the component
-      setTimeout(() => {
-        const findThemedPlot = this.shadowRoot?.querySelector('#chart')
-        const { height } = findThemedPlot?.getBoundingClientRect() ?? { height: 0 }
-
-        this.height = height
-        this.hasUpdatedHeight = true
-      }, 500)
-    }
 
     return html`${gradients} ${themedPlot}`
   }
