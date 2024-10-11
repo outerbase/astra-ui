@@ -544,7 +544,7 @@ export default class AstraChart extends ClassifiedElement {
         tickSize: showYTicks ? 5 : 0,
         label: this.axisLabelY ?? null,
         nice: this.niceY,
-        marginLeft: this.type === 'bar' ? 90 : 55,
+        marginLeft: this.type === 'bar' ? 90 : 65,
         tickFormat: showYTicks ? dynamicTickFormat : () => '',
         lineWidth: 6,
         textOverflow: 'ellipsis',
