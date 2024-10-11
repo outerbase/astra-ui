@@ -527,7 +527,7 @@ export default class AstraChart extends ClassifiedElement {
         // textAnchor: 'start',
         marginBottom: 50,
         labelArrow: 'none',
-        ticks: showYTicks ? this.ticksX : undefined,
+        ticks: showXTicks ? (this.ticksY ?? 7) : undefined,
         tickRotate: tickRotation,
         tickFormat: showXTicks ? dynamicTickFormat : () => '',
         tickSize: showXTicks ? 5 : 0,
