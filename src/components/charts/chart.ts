@@ -851,6 +851,11 @@ export default class AstraChart extends ClassifiedElement {
       }
     }
 
+    options.x = {
+      ...options.x,
+      // domain: [100060, 100070], // <-- this makes the column chart look useful
+    }
+
     options.color = {
       ...options.color,
       ...legend,
@@ -883,6 +888,11 @@ export default class AstraChart extends ClassifiedElement {
         interval: isStacked ? undefined : interval,
         tickValues: tickValues,
       }
+    }
+
+    options.y = {
+      ...options.y,
+      // domain: [100060, 100070], // <-- this makes the column chart look useful
     }
 
     options.color = {
