@@ -53,6 +53,8 @@ const getChartData = (type: (typeof chartTypes)[number]) => {
                     showHighlights={false}
                     header={`${type.charAt(0).toUpperCase() + type.slice(1)} Chart`}
                     subheader="Stock Data Visualization"
+                    height={400}
+                    width={728}
                     client:only="lit"
                   />
                 </div>
