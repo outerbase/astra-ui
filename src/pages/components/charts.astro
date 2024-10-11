@@ -38,28 +38,6 @@ const getChartData = (type: (typeof chartTypes)[number]) => {
 ---
 
 <Layout title="Astra-UI - Chart Component">
-  <ComponentLayout
-    title="Charts"
-    summary="Charts are powerful tools for visualizing data. They help users understand trends, patterns, and relationships in complex datasets at a glance."
-    hasVariations={true}
-  >
-    <div slot="preview" class="w-full h-[440px]">
-      <!-- @ts-ignore attributes -->
-      <AstraComposedChart
-        type="line"
-        showHighlights={false}
-        data={getChartData('line')}
-        keyX="Date"
-        keyY="Close"
-        width={400}
-        height={400}
-        header="Stock Prices"
-        subheader="Daily closing prices"
-        client:only="lit"
-      />
-    </div>
-
-    <Fragment slot="variations">
       <div class="space-y-8 w-full">
         <div class="space-y-4">
           <h3 class="text-2xl font-semibold text-neutral-900">Chart Types</h3>
@@ -73,8 +51,6 @@ const getChartData = (type: (typeof chartTypes)[number]) => {
                     type={type}
                     data={getChartData(type)}
                     showHighlights={false}
-                    keyX="Date"
-                    keyY="Close"
                     width={800}
                     height={250}
                     header={`${type.charAt(0).toUpperCase() + type.slice(1)} Chart`}
@@ -87,7 +63,6 @@ const getChartData = (type: (typeof chartTypes)[number]) => {
           </div>
         </div>
       </div>
-    </Fragment>
 
     <div slot="usage" class="space-y-12">
       <section class="space-y-6">
@@ -155,5 +130,4 @@ const getChartData = (type: (typeof chartTypes)[number]) => {
         </ul>
       </section>
     </div>
-  </ComponentLayout>
 </Layout>
