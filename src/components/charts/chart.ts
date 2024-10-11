@@ -398,7 +398,7 @@ export default class AstraChart extends ClassifiedElement {
     let options: Record<string, any> = {
       // Layout options: https://observablehq.com/plot/features/plots#layout-options
       width: this.width,
-      // height: this.height,
+      height: this.height,
       margin: this.margin,
       marginTop: this.marginTop,
       marginRight: this.marginRight,
