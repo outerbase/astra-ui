@@ -1,4 +1,4 @@
-import { areaY, barX, barY, dot, gridX, gridY, lineY, plot, axisY, axisX } from '@observablehq/plot'
+import { areaY, barX, barY, dot, gridX, gridY, lineY, plot, axisY, axisX, ruleY } from '@observablehq/plot'
 import { max, min, timeDay, utcDay, utcMinute, utcMonth, utcWeek, utcYear } from 'd3'
 import { css, html, type PropertyValueMap } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
