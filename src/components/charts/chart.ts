@@ -506,42 +506,29 @@ export default class AstraChart extends ClassifiedElement {
     }
   }
 
-  private constructBarSeries() {
-    return this.columns.slice(1).map((col) => ({
-      name: col,
-      type: 'bar',
-      data: this.data?.layers?.[0]?.result?.map((item) => item[this.columns[0]]),
+  private constructBarSeries(): echarts.BarSeriesOption[] {
+    return createSeries<echarts.BarSeriesOption>('bar', this.data?.layers?.[0]?.result ?? [], this.columns, {
       animationDelay: (idx: number) => idx * 100,
-    }))
+    })
   }
 
-  private constructLineSeries() {
-    return this.columns.slice(1).map((col) => ({
-      name: col,
-      type: 'line',
+  private constructLineSeries(): echarts.LineSeriesOption[] {
+    return createSeries<echarts.LineSeriesOption>('line', this.data?.layers?.[0]?.result ?? [], this.columns, {
       showSymbol: false,
-      data: this.data?.layers?.[0]?.result?.map((item) => item[this.columns[0]]),
       animationDuration: 1500,
       animationEasing: 'cubicOut',
-    }))
+    })
   }
 
-  private constructScatterSeries() {
-    return this.columns.slice(1).map((col) => ({
-      name: col,
-      type: 'scatter',
-      data: this.data?.layers?.[0]?.result?.map((item) => item[this.columns[0]]),
-    }))
+  private constructScatterSeries(): echarts.ScatterSeriesOption[] {
+    return createSeries<echarts.ScatterSeriesOption>('scatter', this.data?.layers?.[0]?.result ?? [], this.columns)
   }
 
-  private constructAreaSeries() {
-    return this.columns.slice(1).map((col) => ({
-      name: col,
-      type: 'line',
+  private constructAreaSeries(): echarts.LineSeriesOption[] {
+    return createSeries<echarts.LineSeriesOption>('line', this.data?.layers?.[0]?.result ?? [], this.columns, {
       areaStyle: {},
-      data: this.data?.layers?.[0]?.result?.map((item) => item[this.columns[0]]),
       smooth: true,
-    }))
+    })
   }
 
   private applyTheme() {
@@ -637,7 +624,6 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   protected getLatestPlot() {
-    if (!this.height) return null
 
     const layer = this.data?.layers?.[0] // TODO don't assume 1 layer
     if (!layer) return null
@@ -1100,4 +1086,33 @@ export default class AstraChart extends ClassifiedElement {
 
     return options
   }
+}
+
+// Utility function to safely convert value to a number, if possible
+function safelyConvertToNumber(value: any): number | undefined {
+  if (typeof value === 'bigint' || typeof value === 'number') {
+    return Number(value)
+  }
+  if (!isNaN(value)) {
+    return parseFloat(value)
+  }
+  return undefined
+}
+
+// Generic utility function to create series with specific type
+function createSeries<T extends echarts.SeriesOption>(
+  seriesType: T['type'],
+  data: Row[],
+  columns: string[],
+  additionalOptions: Omit<T, 'type' | 'data'> = {} as Omit<T, 'type' | 'data'>
+): T[] {
+  console.log('createSeries', data, columns)
+  const baseData = data.map((item) => safelyConvertToNumber(item[columns[0]])).filter((value) => value !== undefined) as number[]
+
+  return columns.slice(1).map((col) => ({
+    name: col,
+    type: seriesType,
+    data: baseData,
+    ...additionalOptions,
+  })) as T[]
 }
