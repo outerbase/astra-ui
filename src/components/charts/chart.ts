@@ -1,7 +1,7 @@
 import { areaY, barX, barY, dot, gridX, gridY, lineY, plot } from '@observablehq/plot'
 import { max, min, timeDay, utcDay, utcMinute, utcMonth, utcWeek, utcYear } from 'd3'
 import { css, html, type PropertyValueMap } from 'lit'
-import { customElement, property, state } from 'lit/decorators.js'
+import { customElement, property, query, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { unsafeHTML } from 'lit/directives/unsafe-html.js'
 import createGradient from '../../lib/create-gradient.js'
@@ -271,6 +271,8 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: Number }) sizeX?: number
   @property({ type: Number }) sizeY?: number
 
+  @query('#chart') private chartElement!: HTMLElement
+
   override willUpdate(changedProperties: PropertyValueMap<this>): void {
     super.willUpdate(changedProperties)
 
@@ -333,12 +335,12 @@ export default class AstraChart extends ClassifiedElement {
   protected firstUpdated(_changedProperties: PropertyValueMap<this>) {
     super.firstUpdated(_changedProperties)
 
-    const chart = this.shadowRoot?.querySelector('#chart')
-    const { height } = chart?.getBoundingClientRect() ?? { height: 0 }
+    const { height } = this.chartElement?.getBoundingClientRect() ?? { height: 0 }
     this.height = height
   }
 
   override updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
+    // add animation effects to rects
     const elements = this.shadowRoot!.querySelectorAll('rect')
     for (let i = 0; i < elements.length; i++) {
       elements[i].style.animationDelay = `${i / 50}s`
@@ -348,8 +350,7 @@ export default class AstraChart extends ClassifiedElement {
     const sizeXChanged = _changedProperties.has('sizeX') && _changedProperties.get('sizeX') !== undefined
     const sizeYChanged = _changedProperties.has('sizeY') && _changedProperties.get('sizeY') !== undefined
     if (sizeXChanged || sizeYChanged) {
-      const chart = this.shadowRoot?.querySelector('#chart')
-      const { height } = chart?.getBoundingClientRect() ?? { height: 0 }
+      const { height } = this.chartElement?.getBoundingClientRect() ?? { height: 0 }
       this.height = height
     }
   }
