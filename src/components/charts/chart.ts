@@ -271,42 +271,6 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: Number }) sizeX?: number
   @property({ type: Number }) sizeY?: number
 
-  private convertDataIntoCastedData(data: DashboardV3Chart | undefined): DashboardV3Chart | undefined {
-    let temp: any = JSON.parse(JSON.stringify(data))
-
-    // For each temp.layers castData
-    temp.layers?.forEach((layer: any) => {
-      layer.result = this.castData(layer.result)
-    })
-
-    return temp
-  }
-
-  private castData(data: Row[]): Row[] {
-    if (!data) return []
-
-    if (this.data?.layers?.[0].type === 'table') {
-      return data
-    }
-
-    // For each row in the data, cast each value as the correct type such as Number, Date, or string.
-    return data.map((row: any) => {
-      const newRow: Row = {}
-      for (const key in row) {
-        const value = row[key]
-
-        if (!isNaN(value) && value !== '') {
-          newRow[key] = Number(value)
-        } else if (!isNaN(Date.parse(value))) {
-          newRow[key] = new Date(value)
-        } else {
-          newRow[key] = String(value)
-        }
-      }
-      return newRow
-    })
-  }
-
   public override willUpdate(changedProperties: PropertyValueMap<this>): void {
     super.willUpdate(changedProperties)
 
@@ -364,6 +328,209 @@ export default class AstraChart extends ClassifiedElement {
         this.render()
       }
     }
+  }
+
+  protected updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
+    const elements = this.shadowRoot!.querySelectorAll('rect')
+    for (let i = 0; i < elements.length; i++) {
+      elements[i].style.animationDelay = `${i / 50}s`
+    }
+
+    // If sizeX or sizeY change then set `hasUpdatedHeight = false` to force the height to be recalculated
+    const sizeXChanged = _changedProperties.has('sizeX') && _changedProperties.get('sizeX') !== undefined
+    const sizeYChanged = _changedProperties.has('sizeY') && _changedProperties.get('sizeY') !== undefined
+    if ((sizeXChanged || sizeYChanged) && this.hasUpdatedHeight) {
+      this.hasUpdatedHeight = false
+    }
+  }
+
+  public render() {
+    let plot: any
+
+    if (this.type === 'table') {
+      const firstRecord = this.data?.layers?.[0].result?.[0]
+      let schema
+      if (firstRecord) {
+        schema = { columns: Object.keys(firstRecord).map((k) => ({ name: k })) }
+      }
+
+      plot = html`<astra-table
+        schema=${JSON.stringify(schema)}
+        data="${JSON.stringify(
+          this.data?.layers?.[0].result?.map((r) => {
+            return {
+              id: Math.random(),
+              values: r,
+              originalValues: r,
+              isNew: false,
+              isDeleted: false,
+            }
+          }) ?? []
+        )}"
+        theme=${this.theme}
+        blank-fill
+        border-b
+        read-only
+      ></astra-table>`
+    } else if (this.type === 'single_value') {
+      const firstRecord = this.data?.layers?.[0].result?.[0]
+      let firstRecordValue = firstRecord ? firstRecord[this.keyX ?? ''] : ''
+
+      const formattedValue = this.data?.options?.format
+
+      if (formattedValue === 'percent') {
+        const number = parseFloat(`${firstRecordValue}`)
+        firstRecordValue = `${number.toFixed(2)}%`
+      } else if (formattedValue === 'number') {
+        const number = parseFloat(`${firstRecordValue}`)
+        const rounded = Math.round(number)
+        firstRecordValue = `${rounded.toLocaleString('en-US')}`
+      } else if (formattedValue === 'decimal') {
+        const number = parseFloat(`${firstRecordValue}`)
+        firstRecordValue = `${number.toFixed(2)}`
+      } else if (formattedValue === 'date') {
+        const stringDate = `${firstRecordValue}`
+
+        // Convert to a Date object to validate the input
+        const date = new Date(stringDate)
+
+        if (!isNaN(date.getTime())) {
+          // Check if the date is valid
+          // Extract the date components
+          const year = date.getUTCFullYear()
+          const month = String(date.getUTCMonth() + 1).padStart(2, '0') // Months are 0-based
+          const day = String(date.getUTCDate()).padStart(2, '0')
+
+          // Manually construct the formatted date string
+          const formattedDate = `${month}/${day}/${year}`
+
+          firstRecordValue = formattedDate
+        }
+      } else if (formattedValue === 'time') {
+        const date = new Date(`${firstRecordValue}`)
+        firstRecordValue = date.toLocaleTimeString('en-US')
+      } else if (formattedValue === 'dollar') {
+        const number = parseFloat(`${firstRecordValue}`)
+        firstRecordValue = `$${number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      } else if (formattedValue === 'euro') {
+        const number = parseFloat(`${firstRecordValue}`)
+        firstRecordValue = `€${number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      } else if (formattedValue === 'pound') {
+        const number = parseFloat(`${firstRecordValue}`)
+        firstRecordValue = `£${number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      } else if (formattedValue === 'yen') {
+        const number = parseFloat(`${firstRecordValue}`)
+        firstRecordValue = `¥${number.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+      }
+
+      const style = this.sizeX === 1 && this.sizeY === 1 ? 'font-size: 30px; line-height: 36px;' : 'font-size: 60px; line-height: 68px;'
+      plot = html`<div
+        style=${`font-family: Inter, sans-serif; ${style}`}
+        class=${`${this.theme === 'dark' ? 'text-neutral-50' : 'text-neutral-950'} font-bold truncate`}
+      >
+        ${firstRecordValue}
+      </div>`
+    } else if (this.type === 'text') {
+      let height = this.height ?? 0
+      let lineClamp = Math.floor(height / 21)
+      let variant = 'p'
+
+      let markdown = this.data?.options?.text ?? ''
+
+      // Bold (**text** or __text__)
+      markdown = markdown.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+      markdown = markdown.replace(/__(.*?)__/g, '<b>$1</b>')
+
+      // Italic (*text* or _text_)
+      markdown = markdown.replace(/\*(.*?)\*/g, '<i>$1</i>')
+      markdown = markdown.replace(/_(.*?)_/g, '<i>$1</i>')
+
+      // Underline (__text__)
+      markdown = markdown.replace(/~~(.*?)~~/g, '<u>$1</u>')
+
+      // Line break (double space followed by a newline)
+      markdown = markdown.replace(/  \n/g, '<br>')
+
+      plot = html`<div
+        variant=${variant}
+        style=${`display: -webkit-box; -webkit-line-clamp: ${lineClamp}; -webkit-box-orient: vertical; overflow: hidden; font-family: Inter, sans-serif;`}
+        class=${`text-neutral-900 dark:text-neutral-100`}
+      >
+        ${unsafeHTML(markdown)}
+      </div>`
+    } else plot = this.getLatestPlot()
+
+    const decoratedPlot = html`<div class=${`flex-col h-full flex`}>${plot}</div>`
+
+    const themedPlot = html`<div
+      id="themed-plot"
+      class="${classMap({ dark: this.theme === 'dark', '*:fade barY *:animate-fade w-full h-full relative': true })}"
+    >
+      ${decoratedPlot}
+    </div>`
+
+    /**
+     * TODO:
+     *
+     * This is very much a hack to force the chart to be the size of the appropriate
+     * container when the Chart is hosted inside of a `ComposedChart` component. Without
+     * it the height requires either a fixed pixel value or aspect ratio to be set.
+     * The unfortunate part at the moment is the height is dynamic as it's a flex container
+     * and not known until the `#chart` element is rendered.
+     *
+     * So the following code will look at `#chart` and use it's height to force that
+     * pixel value to be on the Plotly chart. The problem here is that when the AstraChart
+     * component is used standalone and not within the ComposedChart component, the
+     * `#chart` element is not present and the height will be 0.
+     */
+    if (!this.hasUpdatedHeight) {
+      // Get height of `themedPlot` and set it as the height of the component
+      setTimeout(() => {
+        const findThemedPlot = this.shadowRoot?.querySelector('#chart')
+        const { height } = findThemedPlot?.getBoundingClientRect() ?? { height: 0 }
+
+        this.height = height
+        this.hasUpdatedHeight = true
+      }, 500)
+    }
+
+    return html`${gradients} ${themedPlot}`
+  }
+
+  private convertDataIntoCastedData(data: DashboardV3Chart | undefined): DashboardV3Chart | undefined {
+    let temp: any = JSON.parse(JSON.stringify(data))
+
+    // For each temp.layers castData
+    temp.layers?.forEach((layer: any) => {
+      layer.result = this.castData(layer.result)
+    })
+
+    return temp
+  }
+
+  private castData(data: Row[]): Row[] {
+    if (!data) return []
+
+    if (this.data?.layers?.[0].type === 'table') {
+      return data
+    }
+
+    // For each row in the data, cast each value as the correct type such as Number, Date, or string.
+    return data.map((row: any) => {
+      const newRow: Row = {}
+      for (const key in row) {
+        const value = row[key]
+
+        if (!isNaN(value) && value !== '') {
+          newRow[key] = Number(value)
+        } else if (!isNaN(Date.parse(value))) {
+          newRow[key] = new Date(value)
+        } else {
+          newRow[key] = String(value)
+        }
+      }
+      return newRow
+    })
   }
 
   private determineInterval(dates: Date[]) {
@@ -540,173 +707,6 @@ export default class AstraChart extends ClassifiedElement {
     } catch (error) {
       console.error('Error rendering chart:', error)
     }
-  }
-
-  protected updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
-    const elements = this.shadowRoot!.querySelectorAll('rect')
-    for (let i = 0; i < elements.length; i++) {
-      elements[i].style.animationDelay = `${i / 50}s`
-    }
-
-    // If sizeX or sizeY change then set `hasUpdatedHeight = false` to force the height to be recalculated
-    const sizeXChanged = _changedProperties.has('sizeX') && _changedProperties.get('sizeX') !== undefined
-    const sizeYChanged = _changedProperties.has('sizeY') && _changedProperties.get('sizeY') !== undefined
-    if ((sizeXChanged || sizeYChanged) && this.hasUpdatedHeight) {
-      this.hasUpdatedHeight = false
-    }
-  }
-
-  public render() {
-    let plot: any
-
-    if (this.type === 'table') {
-      const firstRecord = this.data?.layers?.[0].result?.[0]
-      let schema
-      if (firstRecord) {
-        schema = { columns: Object.keys(firstRecord).map((k) => ({ name: k })) }
-      }
-
-      plot = html`<astra-table
-        schema=${JSON.stringify(schema)}
-        data="${JSON.stringify(
-          this.data?.layers?.[0].result?.map((r) => {
-            return {
-              id: Math.random(),
-              values: r,
-              originalValues: r,
-              isNew: false,
-              isDeleted: false,
-            }
-          }) ?? []
-        )}"
-        theme=${this.theme}
-        blank-fill
-        border-b
-        read-only
-      ></astra-table>`
-    } else if (this.type === 'single_value') {
-      const firstRecord = this.data?.layers?.[0].result?.[0]
-      let firstRecordValue = firstRecord ? firstRecord[this.keyX ?? ''] : ''
-
-      const formattedValue = this.data?.options?.format
-
-      if (formattedValue === 'percent') {
-        const number = parseFloat(`${firstRecordValue}`)
-        firstRecordValue = `${number.toFixed(2)}%`
-      } else if (formattedValue === 'number') {
-        const number = parseFloat(`${firstRecordValue}`)
-        const rounded = Math.round(number)
-        firstRecordValue = `${rounded.toLocaleString('en-US')}`
-      } else if (formattedValue === 'decimal') {
-        const number = parseFloat(`${firstRecordValue}`)
-        firstRecordValue = `${number.toFixed(2)}`
-      } else if (formattedValue === 'date') {
-        const stringDate = `${firstRecordValue}`
-
-        // Convert to a Date object to validate the input
-        const date = new Date(stringDate)
-
-        if (!isNaN(date.getTime())) {
-          // Check if the date is valid
-          // Extract the date components
-          const year = date.getUTCFullYear()
-          const month = String(date.getUTCMonth() + 1).padStart(2, '0') // Months are 0-based
-          const day = String(date.getUTCDate()).padStart(2, '0')
-
-          // Manually construct the formatted date string
-          const formattedDate = `${month}/${day}/${year}`
-
-          firstRecordValue = formattedDate
-        }
-      } else if (formattedValue === 'time') {
-        const date = new Date(`${firstRecordValue}`)
-        firstRecordValue = date.toLocaleTimeString('en-US')
-      } else if (formattedValue === 'dollar') {
-        const number = parseFloat(`${firstRecordValue}`)
-        firstRecordValue = `$${number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-      } else if (formattedValue === 'euro') {
-        const number = parseFloat(`${firstRecordValue}`)
-        firstRecordValue = `€${number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-      } else if (formattedValue === 'pound') {
-        const number = parseFloat(`${firstRecordValue}`)
-        firstRecordValue = `£${number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-      } else if (formattedValue === 'yen') {
-        const number = parseFloat(`${firstRecordValue}`)
-        firstRecordValue = `¥${number.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
-      }
-
-      const style = this.sizeX === 1 && this.sizeY === 1 ? 'font-size: 30px; line-height: 36px;' : 'font-size: 60px; line-height: 68px;'
-      plot = html`<div
-        style=${`font-family: Inter, sans-serif; ${style}`}
-        class=${`${this.theme === 'dark' ? 'text-neutral-50' : 'text-neutral-950'} font-bold truncate`}
-      >
-        ${firstRecordValue}
-      </div>`
-    } else if (this.type === 'text') {
-      let height = this.height ?? 0
-      let lineClamp = Math.floor(height / 21)
-      let variant = 'p'
-
-      let markdown = this.data?.options?.text ?? ''
-
-      // Bold (**text** or __text__)
-      markdown = markdown.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-      markdown = markdown.replace(/__(.*?)__/g, '<b>$1</b>')
-
-      // Italic (*text* or _text_)
-      markdown = markdown.replace(/\*(.*?)\*/g, '<i>$1</i>')
-      markdown = markdown.replace(/_(.*?)_/g, '<i>$1</i>')
-
-      // Underline (__text__)
-      markdown = markdown.replace(/~~(.*?)~~/g, '<u>$1</u>')
-
-      // Line break (double space followed by a newline)
-      markdown = markdown.replace(/  \n/g, '<br>')
-
-      plot = html`<div
-        variant=${variant}
-        style=${`display: -webkit-box; -webkit-line-clamp: ${lineClamp}; -webkit-box-orient: vertical; overflow: hidden; font-family: Inter, sans-serif;`}
-        class=${`text-neutral-900 dark:text-neutral-100`}
-      >
-        ${unsafeHTML(markdown)}
-      </div>`
-    } else plot = this.getLatestPlot()
-
-    const decoratedPlot = html`<div class=${`flex-col h-full flex`}>${plot}</div>`
-
-    const themedPlot = html`<div
-      id="themed-plot"
-      class="${classMap({ dark: this.theme === 'dark', '*:fade barY *:animate-fade w-full h-full relative': true })}"
-    >
-      ${decoratedPlot}
-    </div>`
-
-    /**
-     * TODO:
-     *
-     * This is very much a hack to force the chart to be the size of the appropriate
-     * container when the Chart is hosted inside of a `ComposedChart` component. Without
-     * it the height requires either a fixed pixel value or aspect ratio to be set.
-     * The unfortunate part at the moment is the height is dynamic as it's a flex container
-     * and not known until the `#chart` element is rendered.
-     *
-     * So the following code will look at `#chart` and use it's height to force that
-     * pixel value to be on the Plotly chart. The problem here is that when the AstraChart
-     * component is used standalone and not within the ComposedChart component, the
-     * `#chart` element is not present and the height will be 0.
-     */
-    if (!this.hasUpdatedHeight) {
-      // Get height of `themedPlot` and set it as the height of the component
-      setTimeout(() => {
-        const findThemedPlot = this.shadowRoot?.querySelector('#chart')
-        const { height } = findThemedPlot?.getBoundingClientRect() ?? { height: 0 }
-
-        this.height = height
-        this.hasUpdatedHeight = true
-      }, 500)
-    }
-
-    return html`${gradients} ${themedPlot}`
   }
 
   createSortOrder(byAxis: 'x' | 'y', axisValue: string, order: 'asc' | 'desc' | string | undefined) {
