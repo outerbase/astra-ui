@@ -1,10 +1,8 @@
+import * as echarts from 'echarts'
 import { areaY, barX, barY, dot, gridX, gridY, lineY, plot } from '@observablehq/plot'
 import { max, min, timeDay, utcDay, utcMinute, utcMonth, utcWeek, utcYear } from 'd3'
 import { css, html, type PropertyValueMap } from 'lit'
 import { customElement, property, query } from 'lit/decorators.js'
-import { classMap } from 'lit/directives/class-map.js'
-import { unsafeHTML } from 'lit/directives/unsafe-html.js'
-import createGradient from '../../lib/create-gradient.js'
 import type {
   ChartTypeV3,
   DashboardV3Chart,
@@ -17,36 +15,6 @@ import type {
 } from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
 
-const gradients = [
-  createGradient('mercury', [
-    { offset: '0%', color: '#ffffff' },
-    { offset: '100%', color: '#747474' },
-  ]),
-
-  createGradient('iridium', [
-    { offset: '0%', color: '#87E9C0' },
-    { offset: '75%', color: '#B9D975' },
-    { offset: '100%', color: '#C9D69B' },
-  ]),
-
-  createGradient('cobalt', [
-    { offset: '0%', color: '#5956E2' },
-    { offset: '50%', color: '#A99AFF' },
-    { offset: '100%', color: '#82DBFF' },
-  ]),
-
-  createGradient('afterburn', [
-    { offset: '0%', color: '#E75F98' },
-    { offset: '25%', color: '#FFA285' },
-    { offset: '100%', color: '#CCB8F2' },
-  ]),
-
-  createGradient('celestial', [
-    { offset: '0%', color: '#D1FFFF' },
-    { offset: '75%', color: '#93FDFF' },
-    { offset: '100%', color: '#1A9EF5' },
-  ]),
-]
 const iridiumValues = ['#87E9C0', '#B9D975', '#C9D69B']
 const celestialValues = ['#D1FFFF', '#93FDFF', '#1A9EF5']
 const cobaltValues = ['#5956E2', '#A99AFF', '#82DBFF']
@@ -265,11 +233,20 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: Boolean }) percent?: boolean // if true, transform proportions in [0, 1] to percents in [0, 100]
   // TODO does percent apply to `x` or `y`?
 
+  // new props for echarts
   @property({ type: Array }) colorValues = this.theme === 'dark' ? mercuryValuesDark : mercuryValuesLight
   @property({ type: Number }) sizeX?: number
   @property({ type: Number }) sizeY?: number
+  @property({ type: Array }) columns: string[] = []
+  @property({ type: String }) title: string = ''
+  @property({ type: String }) xAxisLabel: string = ''
+  @property({ type: String }) yAxisLabel: string = ''
+  @property({ type: String }) colorTheme: string = 'mercury' // 'mercury', 'iridium', etc.
 
-  @query('#chart') private chartElement!: HTMLElement
+  @query('#chart') private chartDiv!: HTMLDivElement
+
+  private chartInstance?: echarts.ECharts
+  private resizeObserver?: ResizeObserver
 
   override willUpdate(changedProperties: PropertyValueMap<this>): void {
     super.willUpdate(changedProperties)
@@ -289,7 +266,6 @@ export default class AstraChart extends ClassifiedElement {
       this.type = this.data?.layers?.[0]?.type // TODO don't assume 1 layer
       this.highlights = this.data?.highlights
       // this.apiKey = this.data?.apiKey // <-- this will switch from using passed-in data to making API requests
-
       this.data = this.convertDataIntoCastedData(this.data)
 
       const options = this.data?.options
@@ -326,22 +302,53 @@ export default class AstraChart extends ClassifiedElement {
 
   override firstUpdated(_changedProperties: PropertyValueMap<this>) {
     super.firstUpdated(_changedProperties)
-    this._updateHeightProperty()
+    this.initializeChart()
+
+    // Observe size changes
+    this.resizeObserver = new ResizeObserver(() => {
+      if (this.chartInstance) {
+        this.chartInstance.resize()
+        // Update chart options to adjust labels and ticks
+        const options = this.getChartOptions()
+        this.chartInstance.setOption(options)
+      }
+    })
+    if (this.chartDiv) {
+      this.resizeObserver.observe(this.chartDiv)
+    }
   }
 
   override updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
-    // add animation effects to rects
-    const elements = this.shadowRoot!.querySelectorAll('rect')
-    for (let i = 0; i < elements.length; i++) {
-      elements[i].style.animationDelay = `${i / 50}s`
+    super.updated(_changedProperties)
+
+    if (
+      _changedProperties.has('data') ||
+      _changedProperties.has('type') ||
+      _changedProperties.has('columns') ||
+      _changedProperties.has('xAxisLabel') ||
+      _changedProperties.has('yAxisLabel')
+    ) {
+      if (this.chartInstance) {
+        const options = this.getChartOptions()
+        this.chartInstance.setOption(options, true)
+      }
     }
 
-    // update height
-    const sizeXChanged = _changedProperties.has('sizeX') && _changedProperties.get('sizeX') !== undefined
-    const sizeYChanged = _changedProperties.has('sizeY') && _changedProperties.get('sizeY') !== undefined
-    if (sizeXChanged || sizeYChanged) {
-      this._updateHeightProperty()
+    if (_changedProperties.has('theme') || _changedProperties.has('colorTheme')) {
+      this.applyTheme()
     }
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback()
+
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect()
+    }
+    if (this.chartInstance) {
+      this.chartInstance.dispose()
+    }
+    super.disconnectedCallback()
   }
 
   override render() {
@@ -354,7 +361,7 @@ export default class AstraChart extends ClassifiedElement {
         schema = { columns: Object.keys(firstRecord).map((k) => ({ name: k })) }
       }
 
-      plot = html`<astra-table
+      return html`<astra-table
         schema=${JSON.stringify(schema)}
         data="${JSON.stringify(
           this.data?.layers?.[0].result?.map((r) => {
@@ -372,105 +379,208 @@ export default class AstraChart extends ClassifiedElement {
         border-b
         read-only
       ></astra-table>`
-    } else if (this.type === 'single_value') {
-      const firstRecord = this.data?.layers?.[0].result?.[0]
-      let firstRecordValue = firstRecord ? firstRecord[this.keyX ?? ''] : ''
+    }
 
-      const formattedValue = this.data?.options?.format
-
-      if (formattedValue === 'percent') {
-        const number = parseFloat(`${firstRecordValue}`)
-        firstRecordValue = `${number.toFixed(2)}%`
-      } else if (formattedValue === 'number') {
-        const number = parseFloat(`${firstRecordValue}`)
-        const rounded = Math.round(number)
-        firstRecordValue = `${rounded.toLocaleString('en-US')}`
-      } else if (formattedValue === 'decimal') {
-        const number = parseFloat(`${firstRecordValue}`)
-        firstRecordValue = `${number.toFixed(2)}`
-      } else if (formattedValue === 'date') {
-        const stringDate = `${firstRecordValue}`
-
-        // Convert to a Date object to validate the input
-        const date = new Date(stringDate)
-
-        if (!isNaN(date.getTime())) {
-          // Check if the date is valid
-          // Extract the date components
-          const year = date.getUTCFullYear()
-          const month = String(date.getUTCMonth() + 1).padStart(2, '0') // Months are 0-based
-          const day = String(date.getUTCDate()).padStart(2, '0')
-
-          // Manually construct the formatted date string
-          const formattedDate = `${month}/${day}/${year}`
-
-          firstRecordValue = formattedDate
-        }
-      } else if (formattedValue === 'time') {
-        const date = new Date(`${firstRecordValue}`)
-        firstRecordValue = date.toLocaleTimeString('en-US')
-      } else if (formattedValue === 'dollar') {
-        const number = parseFloat(`${firstRecordValue}`)
-        firstRecordValue = `$${number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-      } else if (formattedValue === 'euro') {
-        const number = parseFloat(`${firstRecordValue}`)
-        firstRecordValue = `€${number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-      } else if (formattedValue === 'pound') {
-        const number = parseFloat(`${firstRecordValue}`)
-        firstRecordValue = `£${number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-      } else if (formattedValue === 'yen') {
-        const number = parseFloat(`${firstRecordValue}`)
-        firstRecordValue = `¥${number.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
-      }
-
-      const style = this.sizeX === 1 && this.sizeY === 1 ? 'font-size: 30px; line-height: 36px;' : 'font-size: 60px; line-height: 68px;'
-      plot = html`<div
-        style=${`font-family: Inter, sans-serif; ${style}`}
-        class=${`${this.theme === 'dark' ? 'text-neutral-50' : 'text-neutral-950'} font-bold truncate`}
-      >
-        ${firstRecordValue}
-      </div>`
-    } else if (this.type === 'text') {
-      let height = this.height ?? 0
-      let lineClamp = Math.floor(height / 21)
-      let variant = 'p'
-
-      let markdown = this.data?.options?.text ?? ''
-
-      // Bold (**text** or __text__)
-      markdown = markdown.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-      markdown = markdown.replace(/__(.*?)__/g, '<b>$1</b>')
-
-      // Italic (*text* or _text_)
-      markdown = markdown.replace(/\*(.*?)\*/g, '<i>$1</i>')
-      markdown = markdown.replace(/_(.*?)_/g, '<i>$1</i>')
-
-      // Underline (__text__)
-      markdown = markdown.replace(/~~(.*?)~~/g, '<u>$1</u>')
-
-      // Line break (double space followed by a newline)
-      markdown = markdown.replace(/  \n/g, '<br>')
-
-      plot = html`<div
-        variant=${variant}
-        style=${`display: -webkit-box; -webkit-line-clamp: ${lineClamp}; -webkit-box-orient: vertical; overflow: hidden; font-family: Inter, sans-serif;`}
-        class=${`text-neutral-900 dark:text-neutral-100`}
-      >
-        ${unsafeHTML(markdown)}
-      </div>`
-    } else plot = this.getLatestPlot()
-
-    const decoratedPlot = html`<div class=${`flex-col h-full flex`}>${plot}</div>`
-
-    const themedPlot = html`<div
-      id="themed-plot"
-      class="${classMap({ dark: this.theme === 'dark', '*:fade barY *:animate-fade w-full h-full relative': true })}"
-    >
-      ${decoratedPlot}
-    </div>`
-
-    return html`${gradients} ${themedPlot}`
+    return html`<div id="chart"></div>`
   }
+
+  private initializeChart() {
+    if (!this.chartDiv) return
+
+    if (this.chartInstance) {
+      this.chartInstance.dispose()
+    }
+
+    this.chartInstance = echarts.init(this.chartDiv, undefined, { renderer: 'svg' })
+
+    const options = this.getChartOptions()
+
+    this.chartInstance.setOption(options)
+  }
+
+  private getChartOptions() {
+    const colorValues = this.getColorValues()
+    const options: echarts.EChartsOption = {
+      backgroundColor: this.theme === 'dark' ? '#121212' : '#FFFFFF',
+      title: {
+        text: this.title,
+        textStyle: {
+          color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
+        },
+        left: 'center',
+      },
+      tooltip: {
+        trigger: this.type === 'scatter' ? 'item' : 'axis',
+      },
+      legend: {
+        data: this.columns.slice(1),
+        textStyle: {
+          color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
+        },
+        top: '10%',
+      },
+      grid: {
+        left: '10%',
+        right: '10%',
+        bottom: '15%',
+        top: '20%',
+        containLabel: true,
+      },
+      xAxis: {
+        type: 'category',
+        // data: this.data?.layers?.[0]?.result?.map((item) => item[this.columns[0]]),
+        name: this.xAxisLabel,
+        nameLocation: 'middle',
+        nameGap: 30,
+        nameTextStyle: {
+          color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
+        },
+        axisLine: {
+          lineStyle: {
+            color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
+          },
+        },
+        axisLabel: {
+          color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
+          interval: this.calculateLabelInterval(),
+          formatter: (value: string) => {
+            return this.formatAxisLabel(value)
+          },
+          hideOverlap: true,
+        },
+        axisTick: {
+          alignWithLabel: true,
+        },
+      },
+      yAxis: {
+        type: 'value',
+        name: this.yAxisLabel,
+        nameTextStyle: {
+          color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
+        },
+        axisLine: {
+          lineStyle: {
+            color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
+          },
+        },
+        axisLabel: {
+          color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
+        },
+      },
+      series: [],
+      color: colorValues,
+    }
+
+    switch (this.type) {
+      case 'bar':
+        options.series = this.constructBarSeries()
+        break
+      case 'line':
+        options.series = this.constructLineSeries()
+        break
+      case 'scatter':
+        options.series = this.constructScatterSeries()
+        break
+      case 'area':
+        options.series = this.constructAreaSeries()
+        break
+      default:
+        break
+    }
+
+    return options
+  }
+
+  private getColorValues() {
+    switch (this.colorTheme) {
+      case 'iridium':
+        return iridiumValues
+      case 'celestial':
+        return celestialValues
+      case 'cobalt':
+        return cobaltValues
+      case 'afterburn':
+        return afterburnValues
+      default:
+        return this.theme === 'dark' ? mercuryValuesDark : mercuryValuesLight
+    }
+  }
+
+  private constructBarSeries() {
+    return this.columns.slice(1).map((col) => ({
+      name: col,
+      type: 'bar',
+      data: this.data?.layers?.[0]?.result?.map((item) => item[this.columns[0]]),
+      animationDelay: (idx: number) => idx * 100,
+    }))
+  }
+
+  private constructLineSeries() {
+    return this.columns.slice(1).map((col) => ({
+      name: col,
+      type: 'line',
+      showSymbol: false,
+      data: this.data?.layers?.[0]?.result?.map((item) => item[this.columns[0]]),
+      animationDuration: 1500,
+      animationEasing: 'cubicOut',
+    }))
+  }
+
+  private constructScatterSeries() {
+    return this.columns.slice(1).map((col) => ({
+      name: col,
+      type: 'scatter',
+      data: this.data?.layers?.[0]?.result?.map((item) => item[this.columns[0]]),
+    }))
+  }
+
+  private constructAreaSeries() {
+    return this.columns.slice(1).map((col) => ({
+      name: col,
+      type: 'line',
+      areaStyle: {},
+      data: this.data?.layers?.[0]?.result?.map((item) => item[this.columns[0]]),
+      smooth: true,
+    }))
+  }
+
+  private applyTheme() {
+    if (this.chartInstance) {
+      this.chartInstance.dispose()
+      this.initializeChart()
+    }
+  }
+
+  private formatAxisLabel(value: string): string {
+    const width = this.chartDiv.clientWidth
+    if (width < 400) {
+      // Truncate labels for small widths
+      return value.length > 5 ? value.substring(0, 5) + '…' : value
+    }
+    return value
+  }
+
+  private calculateLabelInterval(): number | 'auto' {
+    const width = this.chartDiv.clientWidth
+    const dataCount = 0 // this.data?.length
+
+    if (width < 400) {
+      // For very small widths, show fewer labels
+      return Math.ceil(dataCount / 2) // Show every Nth label
+    } else if (width < 600) {
+      // For medium widths
+      return Math.ceil(dataCount / 4)
+    } else {
+      // For larger widths, adjust based on data count
+      if (dataCount > 30) {
+        return Math.ceil(dataCount / 10)
+      } else {
+        return 0 // Show all labels
+      }
+    }
+  }
+
+  // ///////
 
   protected convertDataIntoCastedData(data: DashboardV3Chart | undefined): DashboardV3Chart | undefined {
     let temp: any = JSON.parse(JSON.stringify(data))
@@ -989,10 +1099,5 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     return options
-  }
-
-  private _updateHeightProperty() {
-    const { height } = this.chartElement?.getBoundingClientRect() ?? { height: 0 }
-    this.height = height
   }
 }
