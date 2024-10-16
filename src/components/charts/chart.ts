@@ -264,7 +264,6 @@ export default class AstraChart extends ClassifiedElement {
       this.type = this.data?.layers?.[0]?.type // TODO don't assume 1 layer
       this.highlights = this.data?.highlights
       // this.apiKey = this.data?.apiKey // <-- this will switch from using passed-in data to making API requests
-      this.data = this.convertDataIntoCastedData(this.data)
 
       const options = this.data?.options
       if (options) {
@@ -565,54 +564,6 @@ export default class AstraChart extends ClassifiedElement {
     }
   }
 
-  // ///////
-
-  protected convertDataIntoCastedData(data: DashboardV3Chart | undefined): DashboardV3Chart | undefined {
-    let temp: any = JSON.parse(JSON.stringify(data))
-
-    // For each temp.layers castData
-    temp.layers?.forEach((layer: any) => {
-      layer.result = this.castData(layer.result)
-    })
-
-    return temp
-  }
-
-  protected castData(data: Row[]): Row[] {
-    if (!data) return []
-
-    if (this.data?.layers?.[0].type === 'table') {
-      return data
-    }
-
-    // For each row in the data, cast each value as the correct type such as Number, Date, or string.
-    return data.map((row: any) => {
-      const newRow: Row = {}
-      for (const key in row) {
-        const value = row[key]
-
-        if (!isNaN(value) && value !== '') {
-          newRow[key] = Number(value)
-        } else if (!isNaN(Date.parse(value))) {
-          newRow[key] = new Date(value)
-        } else {
-          newRow[key] = String(value)
-        }
-      }
-      return newRow
-    })
-  }
-}
-
-// Utility function to safely convert value to a number, if possible
-function safelyConvertToNumber(value: any): number | undefined {
-  if (typeof value === 'bigint' || typeof value === 'number') {
-    return Number(value)
-  }
-  if (!isNaN(value)) {
-    return parseFloat(value)
-  }
-  return undefined
 }
 
 // Generic utility function to create series with specific type
