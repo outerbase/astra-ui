@@ -388,7 +388,7 @@ export default class AstraChart extends ClassifiedElement {
       this.chartInstance.dispose()
     }
 
-    this.chartInstance = echarts.init(this.chartDiv, undefined, { renderer: 'svg' })
+    this.chartInstance = echarts.init(this.chartDiv, undefined, { renderer: 'canvas' })
 
     const options = this.getChartOptions()
 
