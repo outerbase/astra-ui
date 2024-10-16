@@ -72,7 +72,6 @@ const getChartData = (type: (typeof chartTypes)[number]) => {
                   <AstraComposedChart
                     type={type}
                     data={getChartData(type)}
-                    showHighlights={false}
                     keyX="Date"
                     keyY="High"
                     xAxisLabel="Date"
