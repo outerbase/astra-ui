@@ -271,7 +271,7 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: Number }) sizeX?: number
   @property({ type: Number }) sizeY?: number
 
-  public override willUpdate(changedProperties: PropertyValueMap<this>): void {
+  override willUpdate(changedProperties: PropertyValueMap<this>): void {
     super.willUpdate(changedProperties)
 
     // when apiKey or chartId change
@@ -330,7 +330,7 @@ export default class AstraChart extends ClassifiedElement {
     }
   }
 
-  protected updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
+  override updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
     const elements = this.shadowRoot!.querySelectorAll('rect')
     for (let i = 0; i < elements.length; i++) {
       elements[i].style.animationDelay = `${i / 50}s`
@@ -344,7 +344,7 @@ export default class AstraChart extends ClassifiedElement {
     }
   }
 
-  public render() {
+  override render() {
     let plot: any
 
     if (this.type === 'table') {
@@ -497,7 +497,7 @@ export default class AstraChart extends ClassifiedElement {
     return html`${gradients} ${themedPlot}`
   }
 
-  private convertDataIntoCastedData(data: DashboardV3Chart | undefined): DashboardV3Chart | undefined {
+  protected convertDataIntoCastedData(data: DashboardV3Chart | undefined): DashboardV3Chart | undefined {
     let temp: any = JSON.parse(JSON.stringify(data))
 
     // For each temp.layers castData
@@ -508,7 +508,7 @@ export default class AstraChart extends ClassifiedElement {
     return temp
   }
 
-  private castData(data: Row[]): Row[] {
+  protected castData(data: Row[]): Row[] {
     if (!data) return []
 
     if (this.data?.layers?.[0].type === 'table') {
@@ -533,7 +533,7 @@ export default class AstraChart extends ClassifiedElement {
     })
   }
 
-  private determineInterval(dates: Date[]) {
+  protected determineInterval(dates: Date[]) {
     const minDate = dates.length > 0 ? dates[0] : new Date() //min(dates) ?? new Date()
     const maxDate = dates.length > 1 ? dates[1] : new Date() //max(dates) ?? new Date()
     const diffDays = timeDay.count(minDate, maxDate)
@@ -551,7 +551,7 @@ export default class AstraChart extends ClassifiedElement {
     }
   }
 
-  private getLatestPlot() {
+  protected getLatestPlot() {
     const layer = this.data?.layers?.[0] // TODO don't assume 1 layer
     if (!layer) return null
 
@@ -709,7 +709,7 @@ export default class AstraChart extends ClassifiedElement {
     }
   }
 
-  createSortOrder(byAxis: 'x' | 'y', axisValue: string, order: 'asc' | 'desc' | string | undefined) {
+  protected createSortOrder(byAxis: 'x' | 'y', axisValue: string, order: 'asc' | 'desc' | string | undefined) {
     if (!order || (order !== 'asc' && order !== 'desc')) {
       return undefined
     }
@@ -720,7 +720,7 @@ export default class AstraChart extends ClassifiedElement {
     }
   }
 
-  normalizeData(_data: Row[], xAxis: string, yAxis: string): { data: Row[]; legend: { domain: any[]; range: any[] } } {
+  protected normalizeData(_data: Row[], xAxis: string, yAxis: string): { data: Row[]; legend: { domain: any[]; range: any[] } } {
     const yAxisKeys = this.data?.options?.yAxisKeys ?? [this.keyY]
     const group = this.data?.options?.groupBy ?? this.groupBy
     const normalizedGroup = group === this.keyX ? 'x' : group === this.keyY ? 'y' : group
@@ -756,7 +756,7 @@ export default class AstraChart extends ClassifiedElement {
    * @param legendValues
    * @returns Row[]
    */
-  normalizeSeriesData(
+  protected normalizeSeriesData(
     data: Row[],
     xAxis: string,
     legendProperties?: { domain: any[]; range: any[] }
@@ -780,7 +780,7 @@ export default class AstraChart extends ClassifiedElement {
     }
   }
 
-  constructLegendProperties() {
+  protected constructLegendProperties() {
     const yAxisKeys = this.data?.options?.yAxisKeys ?? [this.keyY]
     let legendColors: any[] = []
     let legendValues: any[] = []
@@ -808,7 +808,7 @@ export default class AstraChart extends ClassifiedElement {
     }
   }
 
-  isAxisKeyDate(data: Row[], key: string): { isDate: boolean; interval: any; tickValues: any } {
+  protected isAxisKeyDate(data: Row[], key: string): { isDate: boolean; interval: any; tickValues: any } {
     const newArray: any[] | undefined = data.map((r: Record<string, any>) => {
       const value = r[key]
 
@@ -835,7 +835,7 @@ export default class AstraChart extends ClassifiedElement {
     }
   }
 
-  constructBarChart(options: Record<string, any>, d: Row[], sort: any, tip: any): Record<string, any> {
+  protected constructBarChart(options: Record<string, any>, d: Row[], sort: any, tip: any): Record<string, any> {
     // Setup the bar chart
     const { data: reshapedData, legend } = this.normalizeData(d, this.keyX ?? '', this.keyY ?? '')
     const fill = reshapedData?.[0]?.g ? 'g' : this.colorValues[0]
@@ -869,7 +869,7 @@ export default class AstraChart extends ClassifiedElement {
     return options
   }
 
-  constructColumnChart(options: Record<string, any>, d: Row[], sort: any, tip: any): Record<string, any> {
+  protected constructColumnChart(options: Record<string, any>, d: Row[], sort: any, tip: any): Record<string, any> {
     // Setup the column chart
     const { data: reshapedData, legend } = this.normalizeData(d, this.keyX ?? '', this.keyY ?? '')
     const fill = reshapedData?.[0]?.g ? 'g' : this.colorValues[0]
@@ -903,7 +903,7 @@ export default class AstraChart extends ClassifiedElement {
     return options
   }
 
-  constructLineChart(options: Record<string, any>, d: Row[], _sort: any, tip: any): Record<string, any> {
+  protected constructLineChart(options: Record<string, any>, d: Row[], _sort: any, tip: any): Record<string, any> {
     // Setup the line chart
     const { data: reshapedData, legend } = this.normalizeData(d, this.keyX ?? '', this.keyY ?? '')
     const stroke = reshapedData?.[0]?.g ? 'g' : this.colorValues[0]
@@ -940,7 +940,7 @@ export default class AstraChart extends ClassifiedElement {
     return options
   }
 
-  constructAreaChart(options: Record<string, any>, d: Row[], _sort: any, tip: any): Record<string, any> {
+  protected constructAreaChart(options: Record<string, any>, d: Row[], _sort: any, tip: any): Record<string, any> {
     // Setup the area chart
     const { data: reshapedData, legend } = this.normalizeData(d, this.keyX ?? '', this.keyY ?? '')
     const stroke = reshapedData?.[0]?.g ? 'g' : this.colorValues[0]
@@ -981,7 +981,7 @@ export default class AstraChart extends ClassifiedElement {
     return options
   }
 
-  constructScatterChart(options: Record<string, any>, d: Row[], _sort: any, tip: any): Record<string, any> {
+  protected constructScatterChart(options: Record<string, any>, d: Row[], _sort: any, tip: any): Record<string, any> {
     // Setup the scatter chart
     const { data: reshapedData, legend } = this.normalizeData(d, this.keyX ?? '', this.keyY ?? '')
     const stroke = reshapedData?.[0]?.g ? 'g' : this.colorValues[0]
