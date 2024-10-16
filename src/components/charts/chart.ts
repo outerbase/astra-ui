@@ -204,6 +204,11 @@ export default class AstraChart extends ClassifiedElement {
   override willUpdate(changedProperties: PropertyValueMap<this>): void {
     super.willUpdate(changedProperties)
 
+    // put X/Y axis into Echarts format (i.e. `[X-Axis, Y-Axis1, Y-Axis2, ...]`)
+    if (changedProperties.has('keyX') || changedProperties.has('keyY')) {
+      this.columns = [this.keyX ?? '', this.keyY ?? '']
+    }
+
     // when apiKey or chartId change
     if (changedProperties.has('apiKey') || changedProperties.has('chartId')) {
       // when both values are present
@@ -272,14 +277,9 @@ export default class AstraChart extends ClassifiedElement {
 
   override updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
     super.updated(_changedProperties)
+    const has = _changedProperties.has.bind(_changedProperties)
 
-    if (
-      _changedProperties.has('data') ||
-      _changedProperties.has('type') ||
-      _changedProperties.has('columns') ||
-      _changedProperties.has('xAxisLabel') ||
-      _changedProperties.has('yAxisLabel')
-    ) {
+    if (has('data') || has('type') || has('xAxisLabel') || has('yAxisLabel') || has('columns')) {
       if (this.chartInstance) {
         const options = this.getChartOptions()
         this.chartInstance.setOption(options, true)
@@ -297,9 +297,11 @@ export default class AstraChart extends ClassifiedElement {
     if (this.resizeObserver) {
       this.resizeObserver.disconnect()
     }
+
     if (this.chartInstance) {
       this.chartInstance.dispose()
     }
+
     super.disconnectedCallback()
   }
 
