@@ -72,14 +72,18 @@ const getChartData = (type: (typeof chartTypes)[number]) => {
                   <AstraComposedChart
                     type={type}
                     data={getChartData(type)}
-                    columns={['Date', 'Close']}
                     showHighlights={false}
                     keyX="Date"
-                    keyY="Close"
                     width={800}
                     height={250}
                     header={`${type.charAt(0).toUpperCase() + type.slice(1)} Chart`}
                     subheader="Stock Data Visualization"
+                    keyY="High"
+                    xAxisLabel="Date"
+                    yAxisLabel="High Price"
+                    title="Stock Prices"
+                    theme="light"
+                    colorTheme="mercury"
                     client:only="lit"
                   />
                 </div>
