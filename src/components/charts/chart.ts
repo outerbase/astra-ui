@@ -284,10 +284,6 @@ export default class AstraChart extends ClassifiedElement {
       })()
     }
 
-    if (changedProperties.has('theme')) {
-      this.render()
-    }
-
     if (changedProperties.has('data')) {
       // update chart type
       this.type = this.data?.layers?.[0]?.type // TODO don't assume 1 layer
@@ -324,8 +320,6 @@ export default class AstraChart extends ClassifiedElement {
         } else {
           this.colorValues = this.theme === 'dark' ? mercuryValuesDark : mercuryValuesLight
         }
-
-        this.render()
       }
     }
   }
