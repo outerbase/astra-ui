@@ -578,7 +578,10 @@ function createSeries<T extends echarts.SeriesOption>(
   return columns.slice(1).map((col) => ({
     name: col,
     type: seriesType,
-    data: baseData,
+    data: data.map((item) => ({
+      value: item[col],
+      name: item[columns[0]], // Assuming columns[0] is the category/label name
+    })),
     ...additionalOptions,
   })) as T[]
 }
