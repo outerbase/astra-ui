@@ -332,9 +332,7 @@ export default class AstraChart extends ClassifiedElement {
 
   override firstUpdated(_changedProperties: PropertyValueMap<this>) {
     super.firstUpdated(_changedProperties)
-
-    const { height } = this.chartElement?.getBoundingClientRect() ?? { height: 0 }
-    this.height = height
+    this._updateHeightProperty()
   }
 
   override updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
@@ -348,8 +346,7 @@ export default class AstraChart extends ClassifiedElement {
     const sizeXChanged = _changedProperties.has('sizeX') && _changedProperties.get('sizeX') !== undefined
     const sizeYChanged = _changedProperties.has('sizeY') && _changedProperties.get('sizeY') !== undefined
     if (sizeXChanged || sizeYChanged) {
-      const { height } = this.chartElement?.getBoundingClientRect() ?? { height: 0 }
-      this.height = height
+      this._updateHeightProperty()
     }
   }
 
@@ -998,5 +995,10 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     return options
+  }
+
+  private _updateHeightProperty() {
+    const { height } = this.chartElement?.getBoundingClientRect() ?? { height: 0 }
+    this.height = height
   }
 }
