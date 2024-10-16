@@ -6,7 +6,6 @@ import type {
   DashboardV3Chart,
   DashboardV3ChartLabelDisplayX,
   DashboardV3ChartLabelDisplayY,
-  DashboardV3ChartLegend,
   DashboardV3ChartSortOrder,
   DashboardV3HighlightType,
   Row,
@@ -19,8 +18,6 @@ const cobaltValues = ['#5956E2', '#A99AFF', '#82DBFF']
 const afterburnValues = ['#E75F98', '#FFA285', '#CCB8F2']
 const mercuryValuesDark = ['#fafafa', '#525252', '#a3a3a3', '#e5e5e5', '#262626']
 const mercuryValuesLight = ['#0a0a0a', '#a3a3a3', '#525252', '#262626', '#e5e5e5']
-
-type SeriesData = { data: Row[]; legend: { domain: any[]; range: any[] } }
 
 @customElement('astra-chart')
 export default class AstraChart extends ClassifiedElement {
@@ -186,55 +183,13 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: String, attribute: 'key-y' }) keyY?: string
   @property({ type: String, attribute: 'axis-label-y' }) axisLabelY?: string
   @property({ type: String, attribute: 'axis-label-display-y' }) axisLabelDisplay?: DashboardV3ChartLabelDisplayY = 'left'
-  @property({ type: String, attribute: 'ticks-y' }) ticksY?: string
-  @property({ type: Boolean, attribute: 'nice-y' }) niceY?: boolean // if true (or a tick count), extend the domain to nice round values
-  @property({ type: Boolean, attribute: 'grid-y' }) gridY?: boolean
 
   // Sorting & grouping
   @property({ type: String, attribute: 'sort-order' }) sortOrder?: DashboardV3ChartSortOrder
   @property({ type: String, attribute: 'group-by' }) groupBy?: string
 
-  // Layout options: https://observablehq.com/plot/features/plots#layout-options
-  // > The layout options determine the overall size of the plot; all are specified as numbers in pixels
-  @property({ type: Number }) width?: number
-  @property({ type: Number }) height?: number
-  @property({ type: Number }) margin?: number
-  @property({ type: Number, attribute: 'margin-top' }) marginTop?: number
-  @property({ type: Number, attribute: 'margin-right' }) marginRight?: number
-  @property({ type: Number, attribute: 'margin-bottom' }) marginBottom?: number
-  @property({ type: Number, attribute: 'margin-left' }) marginLeft?: number
-
-  // Color scales: https://observablehq.com/plot/features/scales#color-scales
-  // > The default quantitative color scale type is linear, and the default scheme is turbo.
-  @property({ type: String, attribute: 'color-type' }) colorType?: string
-  @property({ type: String, attribute: 'color-scheme' }) colorScheme?: string
-
-  // Position scale options: https://observablehq.com/plot/features/scales#position-scale-options
-  // > The inset scale options can provide “breathing room” to separate marks from axes or the plot’s edge.
-  @property({ type: Boolean }) round?: boolean // round the output value to the nearest integer (whole pixel)
-  @property({ type: Number }) inset?: number // inset the default range by the specified amount in pixels
-  @property({ type: Number, attribute: 'inset-top' }) insetTop?: number //  insets the top of the default range by the specified number of pixels
-  @property({ type: Number, attribute: 'inset-right' }) insetRight?: number // insets the end of the default range by the specified number of pixels
-  @property({ type: Number, attribute: 'inset-bottom' }) insetBottom?: number //  insets the bottom of the default range by the specified number of pixels
-  @property({ type: Number, attribute: 'inset-left' }) insetLeft?: number // insets the start of the default range by the specified number of pixels
-
-  // Other options: https://observablehq.com/plot/features/plots#other-options
-  // > If the plot includes a title, subtitle, legend, or caption, plot wraps the SVG element with an HTML figure element.
-  @property({ type: String, attribute: 'title' }) mainTitle?: string // `mainTitle` because `title` is a core HTML/JS attribute
-  @property({ type: String }) subtitle?: string
-  @property({ type: String }) caption?: string
-  @property({ type: String }) legend?: DashboardV3ChartLegend
-
-  // Quantitative scales
-  @property({ type: Boolean }) clamp?: boolean // if true, clamp input values to the scale’s domain
-  @property({ type: Boolean }) zero?: boolean // if true, extend the domain to include zero if needed
-  @property({ type: Boolean }) percent?: boolean // if true, transform proportions in [0, 1] to percents in [0, 100]
-  // TODO does percent apply to `x` or `y`?
-
   // new props for echarts
   @property({ type: Array }) colorValues = this.theme === 'dark' ? mercuryValuesDark : mercuryValuesLight
-  @property({ type: Number }) sizeX?: number
-  @property({ type: Number }) sizeY?: number
   @property({ type: Array }) columns: string[] = []
   @property({ type: String }) title: string = ''
   @property({ type: String }) xAxisLabel: string = ''
@@ -349,8 +304,6 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   override render() {
-    let plot: any
-
     if (this.type === 'table') {
       const firstRecord = this.data?.layers?.[0].result?.[0]
       let schema
