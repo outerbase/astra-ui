@@ -330,7 +330,7 @@ export default class AstraChart extends ClassifiedElement {
     }
   }
 
-  protected firstUpdated(_changedProperties: PropertyValueMap<this>) {
+  override firstUpdated(_changedProperties: PropertyValueMap<this>) {
     super.firstUpdated(_changedProperties)
 
     const { height } = this.chartElement?.getBoundingClientRect() ?? { height: 0 }
