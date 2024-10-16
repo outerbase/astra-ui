@@ -47,14 +47,14 @@ const gradients = [
     { offset: '100%', color: '#1A9EF5' },
   ]),
 ]
-
 const iridiumValues = ['#87E9C0', '#B9D975', '#C9D69B']
 const celestialValues = ['#D1FFFF', '#93FDFF', '#1A9EF5']
 const cobaltValues = ['#5956E2', '#A99AFF', '#82DBFF']
 const afterburnValues = ['#E75F98', '#FFA285', '#CCB8F2']
-
 const mercuryValuesDark = ['#fafafa', '#525252', '#a3a3a3', '#e5e5e5', '#262626']
 const mercuryValuesLight = ['#0a0a0a', '#a3a3a3', '#525252', '#262626', '#e5e5e5']
+
+type SeriesData = { data: Row[]; legend: { domain: any[]; range: any[] } }
 
 @customElement('astra-chart')
 export default class AstraChart extends ClassifiedElement {
@@ -732,7 +732,7 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     _data.forEach((row) => {
-      let item: any = {
+      let item = {
         x: row[xAxis],
         y: row[yAxis],
         g: normalizedGroup ? row[normalizedGroup] : undefined,
@@ -756,11 +756,7 @@ export default class AstraChart extends ClassifiedElement {
    * @param legendValues
    * @returns Row[]
    */
-  protected normalizeSeriesData(
-    data: Row[],
-    xAxis: string,
-    legendProperties?: { domain: any[]; range: any[] }
-  ): { data: Row[]; legend: { domain: any[]; range: any[] } } {
+  protected normalizeSeriesData(data: Row[], xAxis: string, legendProperties?: { domain: any[]; range: any[] }): SeriesData {
     const reshapedData: Row[] = []
     legendProperties = legendProperties ?? this.constructLegendProperties()
 
