@@ -1,7 +1,7 @@
 import { areaY, barX, barY, dot, gridX, gridY, lineY, plot } from '@observablehq/plot'
 import { max, min, timeDay, utcDay, utcMinute, utcMonth, utcWeek, utcYear } from 'd3'
 import { css, html, type PropertyValueMap } from 'lit'
-import { customElement, property, query, state } from 'lit/decorators.js'
+import { customElement, property, query } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { unsafeHTML } from 'lit/directives/unsafe-html.js'
 import createGradient from '../../lib/create-gradient.js'
@@ -200,8 +200,6 @@ export default class AstraChart extends ClassifiedElement {
         console.error('Outerbase Chart Error: Could not retrieve chart information. ', err)
       })
   }
-
-  @state() private hasUpdatedHeight = false
 
   @property({ type: String, attribute: 'api-key' }) apiKey: string | undefined
   @property({ type: String, attribute: 'chart-id' }) chartId: string | undefined
