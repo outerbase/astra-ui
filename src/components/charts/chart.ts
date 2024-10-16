@@ -395,6 +395,18 @@ export default class AstraChart extends ClassifiedElement {
     this.chartInstance.setOption(options)
   }
 
+  private labelFormatter(value: any) {
+    if (typeof value === 'string' && !isNaN(Date.parse(value))) {
+      // The value is an ISO 8601 date string
+      const date = new Date(value)
+      // Format the date as desired, for example, using toLocaleDateString
+      return date.toLocaleDateString() // Customize this to your preferred format
+    } else if (typeof value === 'string' && value.length > 42) {
+      return value.substring(0, 42) + '...' // Truncate long string labels
+    }
+    return value // Return the value as-is if it's not a long string or date string
+  }
+
   private getChartOptions() {
     const colorValues = this.getColorValues()
     const options: echarts.EChartsOption = {
@@ -425,7 +437,23 @@ export default class AstraChart extends ClassifiedElement {
       },
       xAxis: {
         type: 'category',
-        // data: this.data?.layers?.[0]?.result?.map((item) => item[this.columns[0]]),
+        data: this.data?.layers?.[0]?.result
+          ?.map((item) => {
+            const value = item[this.columns[0]]
+            // Convert the value to a string, as string categories are well-supported
+            if (value !== null && value !== undefined) {
+              if (typeof value === 'object' && value instanceof Date) {
+                return value.toISOString() // Convert Dates to ISO strings
+              }
+              if (typeof value === 'object') {
+                return JSON.stringify(value) // Convert complex objects to strings if needed
+              }
+              return String(value)
+            }
+
+            return undefined // Returning undefined allows it to be filtered out
+          })
+          .filter((item) => item !== undefined), // Filter out undefined values
         name: this.xAxisLabel,
         nameLocation: 'middle',
         nameGap: 30,
@@ -438,6 +466,7 @@ export default class AstraChart extends ClassifiedElement {
           },
         },
         axisLabel: {
+          formatter: this.labelFormatter,
           color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
           hideOverlap: true,
         },
@@ -457,6 +486,7 @@ export default class AstraChart extends ClassifiedElement {
           },
         },
         axisLabel: {
+          formatter: this.labelFormatter,
           color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
         },
       },
