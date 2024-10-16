@@ -439,10 +439,6 @@ export default class AstraChart extends ClassifiedElement {
         },
         axisLabel: {
           color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
-          interval: this.calculateLabelInterval(),
-          formatter: (value: string) => {
-            return this.formatAxisLabel(value)
-          },
           hideOverlap: true,
         },
         axisTick: {
@@ -534,36 +530,6 @@ export default class AstraChart extends ClassifiedElement {
       this.initializeChart()
     }
   }
-
-  private formatAxisLabel(value: string): string {
-    const width = this.chartDiv.clientWidth
-    if (width < 400) {
-      // Truncate labels for small widths
-      return value.length > 5 ? value.substring(0, 5) + '…' : value
-    }
-    return value
-  }
-
-  private calculateLabelInterval(): number | 'auto' {
-    const width = this.chartDiv.clientWidth
-    const dataCount = 0 // this.data?.length
-
-    if (width < 400) {
-      // For very small widths, show fewer labels
-      return Math.ceil(dataCount / 2) // Show every Nth label
-    } else if (width < 600) {
-      // For medium widths
-      return Math.ceil(dataCount / 4)
-    } else {
-      // For larger widths, adjust based on data count
-      if (dataCount > 30) {
-        return Math.ceil(dataCount / 10)
-      } else {
-        return 0 // Show all labels
-      }
-    }
-  }
-
 }
 
 // Generic utility function to create series with specific type
