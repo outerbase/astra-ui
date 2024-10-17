@@ -222,36 +222,35 @@ export default class AstraChart extends ClassifiedElement {
       // update chart type
       this.type = this.data?.layers?.[0]?.type // TODO don't assume 1 layer
       // this.apiKey = this.data?.apiKey // <-- this will switch from using passed-in data to making API requests
+      // const options = this.data?.options
+      // if (options) {
+      //   this.axisLabelX = options.xAxisLabel
+      //   this.axisLabelY = options.yAxisLabel
+      //   this.keyX = options.xAxisKey
+      //   this.keyY = options.yAxisKeys?.[0] // TODO don't assume 1
+      //   this.sortOrder = options.sortOrder
+      //   this.groupBy = options.groupBy
 
-      const options = this.data?.options
-      if (options) {
-        this.axisLabelX = options.xAxisLabel
-        this.axisLabelY = options.yAxisLabel
-        this.keyX = options.xAxisKey
-        this.keyY = options.yAxisKeys?.[0] // TODO don't assume 1
-        this.sortOrder = options.sortOrder
-        this.groupBy = options.groupBy
+      //   if (options.xAxisLabelDisplay) {
+      //     this.axisLabelDisplayX = options.xAxisLabelDisplay
+      //   }
 
-        if (options.xAxisLabelDisplay) {
-          this.axisLabelDisplayX = options.xAxisLabelDisplay
-        }
+      //   if (options.yAxisLabelDisplay) {
+      //     this.axisLabelDisplay = options.yAxisLabelDisplay
+      //   }
 
-        if (options.yAxisLabelDisplay) {
-          this.axisLabelDisplay = options.yAxisLabelDisplay
-        }
-
-        if (options?.theme === 'iridium') {
-          this.colorValues = this.theme === 'dark' ? iridiumValues : iridiumValues
-        } else if (options?.theme === 'celestial') {
-          this.colorValues = this.theme === 'dark' ? celestialValues : celestialValues
-        } else if (options?.theme === 'cobalt') {
-          this.colorValues = this.theme === 'dark' ? cobaltValues : cobaltValues
-        } else if (options?.theme === 'afterburn') {
-          this.colorValues = this.theme === 'dark' ? afterburnValues : afterburnValues
-        } else {
-          this.colorValues = this.theme === 'dark' ? mercuryValuesDark : mercuryValuesLight
-        }
-      }
+      //   if (options?.theme === 'iridium') {
+      //     this.colorValues = this.theme === 'dark' ? iridiumValues : iridiumValues
+      //   } else if (options?.theme === 'celestial') {
+      //     this.colorValues = this.theme === 'dark' ? celestialValues : celestialValues
+      //   } else if (options?.theme === 'cobalt') {
+      //     this.colorValues = this.theme === 'dark' ? cobaltValues : cobaltValues
+      //   } else if (options?.theme === 'afterburn') {
+      //     this.colorValues = this.theme === 'dark' ? afterburnValues : afterburnValues
+      //   } else {
+      //     this.colorValues = this.theme === 'dark' ? mercuryValuesDark : mercuryValuesLight
+      //   }
+      // }
     }
   }
 
