@@ -363,6 +363,16 @@ export default class AstraChart extends ClassifiedElement {
 
   private getChartOptions() {
     const colorValues = this.getColorValues()
+
+    const datasetSource =
+      this.data?.layers?.[0]?.result?.map((item) => {
+        const row: { [key: string]: any } = {} // Use an index signature to allow string indexing
+        this.columns.forEach((col) => {
+          row[col] = item[col]
+        })
+        return row
+      }) ?? []
+
     const options: echarts.EChartsOption = {
       backgroundColor: this.theme === 'dark' ? '#121212' : '#FFFFFF',
       title: {
@@ -371,6 +381,11 @@ export default class AstraChart extends ClassifiedElement {
           color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
         },
         left: 'center',
+      },
+      // Define the dataset
+      dataset: {
+        dimensions: this.columns,
+        source: datasetSource,
       },
       tooltip: {
         trigger: this.type === 'scatter' ? 'item' : 'axis',
@@ -391,23 +406,6 @@ export default class AstraChart extends ClassifiedElement {
       },
       xAxis: {
         type: 'category',
-        data: this.data?.layers?.[0]?.result
-          ?.map((item) => {
-            const value = item[this.columns[0]]
-            // Convert the value to a string, as string categories are well-supported
-            if (value !== null && value !== undefined) {
-              if (typeof value === 'object' && value instanceof Date) {
-                return value.toISOString() // Convert Dates to ISO strings
-              }
-              if (typeof value === 'object') {
-                return JSON.stringify(value) // Convert complex objects to strings if needed
-              }
-              return String(value)
-            }
-
-            return undefined // Returning undefined allows it to be filtered out
-          })
-          .filter((item) => item !== undefined), // Filter out undefined values
         name: this.xAxisLabel,
         nameLocation: 'middle',
         nameGap: 30,
@@ -484,13 +482,13 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   private constructBarSeries(): echarts.BarSeriesOption[] {
-    return createSeries<echarts.BarSeriesOption>('bar', this.data?.layers?.[0]?.result ?? [], this.columns, {
+    return createSeries<echarts.BarSeriesOption>('bar', this.columns, {
       animationDelay: (idx: number) => idx * 100,
     })
   }
 
   private constructLineSeries(): echarts.LineSeriesOption[] {
-    return createSeries<echarts.LineSeriesOption>('line', this.data?.layers?.[0]?.result ?? [], this.columns, {
+    return createSeries<echarts.LineSeriesOption>('line', this.columns, {
       showSymbol: false,
       animationDuration: 1500,
       animationEasing: 'cubicOut',
@@ -498,11 +496,11 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   private constructScatterSeries(): echarts.ScatterSeriesOption[] {
-    return createSeries<echarts.ScatterSeriesOption>('scatter', this.data?.layers?.[0]?.result ?? [], this.columns)
+    return createSeries<echarts.ScatterSeriesOption>('scatter', this.columns)
   }
 
   private constructAreaSeries(): echarts.LineSeriesOption[] {
-    return createSeries<echarts.LineSeriesOption>('line', this.data?.layers?.[0]?.result ?? [], this.columns, {
+    return createSeries<echarts.LineSeriesOption>('line', this.columns, {
       areaStyle: {},
       smooth: true,
     })
@@ -519,19 +517,18 @@ export default class AstraChart extends ClassifiedElement {
 // Generic utility function to create series with specific type
 function createSeries<T extends echarts.SeriesOption>(
   seriesType: T['type'],
-  data: Row[],
   columns: string[],
   additionalOptions: Omit<T, 'type' | 'data'> = {} as Omit<T, 'type' | 'data'>
 ): T[] {
-  const baseData = data.map((item) => safelyConvertToNumber(item[columns[0]])).filter((value) => value !== undefined) as number[]
-
-  return columns.slice(1).map((col) => ({
+  const series = columns.slice(1).map((col) => ({
     name: col,
     type: seriesType,
-    data: data.map((item) => ({
-      value: item[col],
-      name: item[columns[0]], // Assuming columns[0] is the category/label name
-    })),
+    encode: {
+      x: columns[0],
+      y: col,
+    },
     ...additionalOptions,
-  })) as T[]
+  })) as unknown as T[]
+
+  return series
 }
