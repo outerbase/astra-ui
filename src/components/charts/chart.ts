@@ -263,7 +263,7 @@ export default class AstraChart extends ClassifiedElement {
       return this.renderTable()
     }
 
-    return html`<div id="chart" class="h-full"></div>`
+    return html`<div id="chart" class="h-full w-full"></div>`
   }
 
   private renderTable() {
