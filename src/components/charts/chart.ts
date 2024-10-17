@@ -306,6 +306,16 @@ export default class AstraChart extends ClassifiedElement {
     const colorValues = this.getColorValues()
     const datasetSource = this.data?.layers?.[0]?.result ?? []
 
+    const formattedSource: Record<string, unknown>[] = datasetSource.map((item) =>
+      this.columns.reduce(
+        (acc, column) => {
+          acc[column] = item[column]
+          return acc
+        },
+        {} as Record<string, unknown>
+      )
+    )
+
     const options: echarts.EChartsOption = {
       backgroundColor: this.getBackgroundColor(),
       title: {
@@ -317,7 +327,7 @@ export default class AstraChart extends ClassifiedElement {
       },
       dataset: {
         dimensions: this.columns,
-        source: datasetSource,
+        source: formattedSource,
       },
       tooltip: {
         trigger: this.type === 'scatter' ? 'item' : 'axis',
@@ -378,7 +388,7 @@ export default class AstraChart extends ClassifiedElement {
       color: colorValues,
     }
 
-    this.addSeries(options)
+    this.addSeries(options, formattedSource) // Pass the source dataset when adding series
 
     return options
   }
@@ -448,7 +458,7 @@ export default class AstraChart extends ClassifiedElement {
     return this.theme === 'dark' ? '#FFFFFF' : '#000000'
   }
 
-  private addSeries(options: echarts.EChartsOption) {
+  private addSeries(options: echarts.EChartsOption, datasetSource: Record<string, unknown>[]) {
     switch (this.type) {
       case 'bar':
         options.series = this.constructSeries<echarts.BarSeriesOption>('bar', { animationDelay: (idx) => idx * 100 })
@@ -469,6 +479,46 @@ export default class AstraChart extends ClassifiedElement {
           smooth: true,
         })
         break
+      case 'column':
+        options.series = this.constructSeries<echarts.BarSeriesOption>('bar', {
+          animationDelay: (idx) => idx * 100,
+          barWidth: '40%',
+          coordinateSystem: 'cartesian2d',
+        })
+        options.xAxis = {
+          type: 'value',
+          name: this.yAxisLabel,
+          nameTextStyle: {
+            color: this.getTextColor(),
+          },
+          axisLine: {
+            lineStyle: {
+              color: this.getTextColor(),
+            },
+          },
+          axisLabel: {
+            formatter: (value) => this.labelFormatter(value),
+            color: this.getTextColor(),
+          },
+        }
+        options.yAxis = {
+          type: 'category',
+          name: this.xAxisLabel,
+          nameTextStyle: {
+            color: this.getTextColor(),
+          },
+          axisLine: {
+            lineStyle: {
+              color: this.getTextColor(),
+            },
+          },
+          axisLabel: {
+            formatter: (value) => this.labelFormatter(value),
+            color: this.getTextColor(),
+          },
+          data: datasetSource.map((item: Record<string, unknown>) => item[this.columns[0]] as string),
+        }
+        break
       default:
         break
     }
@@ -482,12 +532,15 @@ export default class AstraChart extends ClassifiedElement {
       const baseSeries = {
         name: col,
         type: seriesType,
-        encode: { x: this.columns[0], y: col },
+        encode:
+          this.type === 'column'
+            ? { x: col, y: this.columns[0] } // For column charts
+            : { x: this.columns[0], y: col }, // For other chart types
         ...additionalOptions,
       }
 
       if (this.isValidSeriesOption<T>(baseSeries)) {
-        return baseSeries as unknown as T // Cast to unknown first
+        return baseSeries as unknown as T
       } else {
         throw new Error(`The series option is invalid for series type "${seriesType}".`)
       }
