@@ -340,9 +340,9 @@ export default class AstraChart extends ClassifiedElement {
         top: '10%',
       },
       grid: {
-        left: '10%',
-        right: '10%',
-        bottom: '15%',
+        left: '3%',
+        right: '3%',
+        bottom: '10%',
         top: '20%',
         containLabel: true,
       },
@@ -461,12 +461,12 @@ export default class AstraChart extends ClassifiedElement {
   private addSeries(options: echarts.EChartsOption, datasetSource: Record<string, unknown>[]) {
     switch (this.type) {
       case 'bar':
-        options.series = this.constructSeries<echarts.BarSeriesOption>('bar', { animationDelay: (idx) => idx * 100 })
+        options.series = this.constructSeries<echarts.BarSeriesOption>('bar', { animationDelay: (idx) => idx * 10 })
         break
       case 'line':
         options.series = this.constructSeries<echarts.LineSeriesOption>('line', {
           showSymbol: false,
-          animationDuration: 1500,
+          animationDuration: 1000,
           animationEasing: 'cubicOut',
         })
         break
@@ -481,7 +481,7 @@ export default class AstraChart extends ClassifiedElement {
         break
       case 'column':
         options.series = this.constructSeries<echarts.BarSeriesOption>('bar', {
-          animationDelay: (idx) => idx * 100,
+          animationDelay: (idx) => idx * 10,
           barWidth: '40%',
           coordinateSystem: 'cartesian2d',
         })
@@ -500,6 +500,8 @@ export default class AstraChart extends ClassifiedElement {
             formatter: (value) => this.labelFormatter(value),
             color: this.getTextColor(),
           },
+          nameLocation: 'middle', // Add this line to ensure the label is below the axis
+          nameGap: 30, // Add nameGap to control the distance between the axis and the label
         }
         options.yAxis = {
           type: 'category',
@@ -516,7 +518,6 @@ export default class AstraChart extends ClassifiedElement {
             formatter: (value) => this.labelFormatter(value),
             color: this.getTextColor(),
           },
-          data: datasetSource.map((item: Record<string, unknown>) => item[this.columns[0]] as string),
         }
         break
       default:
