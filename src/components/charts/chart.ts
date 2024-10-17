@@ -7,7 +7,6 @@ import type {
   DashboardV3ChartLabelDisplayX,
   DashboardV3ChartLabelDisplayY,
   DashboardV3ChartSortOrder,
-  DashboardV3HighlightType,
   Row,
 } from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
@@ -18,6 +17,8 @@ const cobaltValues = ['#5956E2', '#A99AFF', '#82DBFF']
 const afterburnValues = ['#E75F98', '#FFA285', '#CCB8F2']
 const mercuryValuesDark = ['#fafafa', '#525252', '#a3a3a3', '#e5e5e5', '#262626']
 const mercuryValuesLight = ['#0a0a0a', '#a3a3a3', '#525252', '#262626', '#e5e5e5']
+
+type ThemeColors = 'mercury' | 'iridium' | 'celestial' | 'cobalt' | 'afterburn'
 
 @customElement('astra-chart')
 export default class AstraChart extends ClassifiedElement {
@@ -151,21 +152,23 @@ export default class AstraChart extends ClassifiedElement {
     if (!apiKey) throw new Error('Missing API key')
     if (!chartId) throw new Error('Missing chart ID')
 
-    return fetch(`https://app.outerbase.com/api/v1/chart/${chartId}`, {
-      method: 'POST',
-      headers: {
-        'x-chart-api-key': apiKey,
-        'content-type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .catch((err) => {
-        console.error('Outerbase Chart Error: Could not retrieve chart information. ', err)
+    try {
+      const response = await fetch(`https://app.outerbase.com/api/v1/chart/${chartId}`, {
+        method: 'POST',
+        headers: {
+          'x-chart-api-key': apiKey,
+          'content-type': 'application/json',
+        },
       })
+      return response.json()
+    } catch (err) {
+      console.error('Outerbase Chart Error: Could not retrieve chart information. ', err)
+      throw err // Rethrow if you want the calling function to handle it
+    }
   }
 
-  @property({ type: String, attribute: 'api-key' }) apiKey: string | undefined
-  @property({ type: String, attribute: 'chart-id' }) chartId: string | undefined
+  @property({ type: String, attribute: 'api-key' }) apiKey?: string
+  @property({ type: String, attribute: 'chart-id' }) chartId?: string
   @property({ type: Object }) data?: DashboardV3Chart
   @property({ type: String }) type?: ChartTypeV3
 
@@ -174,7 +177,7 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: String, attribute: 'axis-label-x' }) axisLabelX?: string
   @property({ type: String, attribute: 'axis-label-display-x' }) axisLabelDisplayX: DashboardV3ChartLabelDisplayX = 'auto'
   @property({ type: String, attribute: 'ticks-x' }) ticksX?: string
-  @property({ type: Boolean, attribute: 'nice-x' }) niceX = false // if true (or a tick count), extend the domain to nice round values
+  @property({ type: Boolean, attribute: 'nice-x' }) niceX = false
   @property({ type: Boolean, attribute: 'grid-x' }) gridX?: boolean
   @property({ type: String, attribute: 'label-x' }) labelX: string | null = null
 
@@ -188,12 +191,12 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: String, attribute: 'group-by' }) groupBy?: string
 
   // new props for echarts
-  @property({ type: Array }) colorValues = this.theme === 'dark' ? mercuryValuesDark : mercuryValuesLight
+  @property({ type: Array }) colorValues: string[] = this.theme === 'dark' ? mercuryValuesDark : mercuryValuesLight
   @property({ type: Array }) columns: string[] = []
-  @property({ type: String }) title: string = ''
-  @property({ type: String }) xAxisLabel: string = ''
-  @property({ type: String }) yAxisLabel: string = ''
-  @property({ type: String }) colorTheme: string = 'mercury' // 'mercury', 'iridium', etc.
+  @property({ type: String }) title = ''
+  @property({ type: String }) xAxisLabel = ''
+  @property({ type: String }) yAxisLabel = ''
+  @property({ type: String }) colorTheme: ThemeColors = 'mercury'
 
   @query('#chart') private chartDiv!: HTMLDivElement
 
@@ -203,54 +206,16 @@ export default class AstraChart extends ClassifiedElement {
   override willUpdate(changedProperties: PropertyValueMap<this>): void {
     super.willUpdate(changedProperties)
 
-    // put X/Y axis into Echarts format (i.e. `[X-Axis, Y-Axis1, Y-Axis2, ...]`)
     if (changedProperties.has('keyX') || changedProperties.has('keyY')) {
       this.columns = [this.keyX ?? '', this.keyY ?? '']
     }
 
-    // when apiKey or chartId change
     if (changedProperties.has('apiKey') || changedProperties.has('chartId')) {
-      // when both values are present
-      ;(async () => {
-        if (this.apiKey && this.chartId) {
-          this.data = await AstraChart.getChartData(this.apiKey, this.chartId)
-        }
-      })()
+      this.updateChartData()
     }
 
     if (changedProperties.has('data')) {
-      // update chart type
-      this.type = this.data?.layers?.[0]?.type // TODO don't assume 1 layer
-      // this.apiKey = this.data?.apiKey // <-- this will switch from using passed-in data to making API requests
-      // const options = this.data?.options
-      // if (options) {
-      //   this.axisLabelX = options.xAxisLabel
-      //   this.axisLabelY = options.yAxisLabel
-      //   this.keyX = options.xAxisKey
-      //   this.keyY = options.yAxisKeys?.[0] // TODO don't assume 1
-      //   this.sortOrder = options.sortOrder
-      //   this.groupBy = options.groupBy
-
-      //   if (options.xAxisLabelDisplay) {
-      //     this.axisLabelDisplayX = options.xAxisLabelDisplay
-      //   }
-
-      //   if (options.yAxisLabelDisplay) {
-      //     this.axisLabelDisplay = options.yAxisLabelDisplay
-      //   }
-
-      //   if (options?.theme === 'iridium') {
-      //     this.colorValues = this.theme === 'dark' ? iridiumValues : iridiumValues
-      //   } else if (options?.theme === 'celestial') {
-      //     this.colorValues = this.theme === 'dark' ? celestialValues : celestialValues
-      //   } else if (options?.theme === 'cobalt') {
-      //     this.colorValues = this.theme === 'dark' ? cobaltValues : cobaltValues
-      //   } else if (options?.theme === 'afterburn') {
-      //     this.colorValues = this.theme === 'dark' ? afterburnValues : afterburnValues
-      //   } else {
-      //     this.colorValues = this.theme === 'dark' ? mercuryValuesDark : mercuryValuesLight
-      //   }
-      // }
+      this.updateDataOptions()
     }
   }
 
@@ -258,30 +223,21 @@ export default class AstraChart extends ClassifiedElement {
     super.firstUpdated(_changedProperties)
 
     this.initializeChart()
-
-    // Observe size changes
-    this.resizeObserver = new ResizeObserver(() => {
-      if (this.chartInstance) {
-        this.chartInstance.resize()
-        // Update chart options to adjust labels and ticks
-        const options = this.getChartOptions()
-        this.chartInstance.setOption(options)
-      }
-    })
-
-    if (this.chartDiv) {
-      this.resizeObserver.observe(this.chartDiv)
-    }
+    this.setupResizeObserver()
   }
 
   override updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
     super.updated(_changedProperties)
-    const has = _changedProperties.has.bind(_changedProperties)
 
-    if (has('data') || has('type') || has('xAxisLabel') || has('yAxisLabel') || has('columns')) {
+    if (
+      _changedProperties.has('data') ||
+      _changedProperties.has('type') ||
+      _changedProperties.has('xAxisLabel') ||
+      _changedProperties.has('yAxisLabel') ||
+      _changedProperties.has('columns')
+    ) {
       if (this.chartInstance) {
-        const options = this.getChartOptions()
-        this.chartInstance.setOption(options, true)
+        this.chartInstance.setOption(this.getChartOptions(), true)
       }
     }
 
@@ -300,39 +256,28 @@ export default class AstraChart extends ClassifiedElement {
     if (this.chartInstance) {
       this.chartInstance.dispose()
     }
-
-    super.disconnectedCallback()
   }
 
   override render() {
     if (this.type === 'table') {
-      const firstRecord = this.data?.layers?.[0].result?.[0]
-      let schema
-      if (firstRecord) {
-        schema = { columns: Object.keys(firstRecord).map((k) => ({ name: k })) }
-      }
-
-      return html`<astra-table
-        schema=${JSON.stringify(schema)}
-        data="${JSON.stringify(
-          this.data?.layers?.[0].result?.map((r) => {
-            return {
-              id: Math.random(),
-              values: r,
-              originalValues: r,
-              isNew: false,
-              isDeleted: false,
-            }
-          }) ?? []
-        )}"
-        theme=${this.theme}
-        blank-fill
-        border-b
-        read-only
-      ></astra-table>`
+      return this.renderTable()
     }
 
     return html`<div id="chart"></div>`
+  }
+
+  private renderTable() {
+    const firstRecord = this.data?.layers?.[0]?.result?.[0]
+    const schema = firstRecord ? { columns: Object.keys(firstRecord).map((name) => ({ name })) } : undefined
+
+    return html`<astra-table
+      .schema=${JSON.stringify(schema)}
+      .data=${JSON.stringify(this.data?.layers?.[0].result?.map(this.transformResult) ?? [])}
+      .theme=${this.theme}
+      blank-fill
+      border-b
+      read-only
+    ></astra-table>`
   }
 
   private initializeChart() {
@@ -343,46 +288,33 @@ export default class AstraChart extends ClassifiedElement {
     }
 
     this.chartInstance = echarts.init(this.chartDiv, undefined, { renderer: 'canvas' })
-
-    const options = this.getChartOptions()
-
-    this.chartInstance.setOption(options)
+    this.chartInstance.setOption(this.getChartOptions())
   }
 
-  private labelFormatter(value: any) {
-    if (typeof value === 'string' && !isNaN(Date.parse(value))) {
-      // The value is an ISO 8601 date string
-      const date = new Date(value)
-      // Format the date as desired, for example, using toLocaleDateString
-      return date.toLocaleDateString() // Customize this to your preferred format
-    } else if (typeof value === 'string' && value.length > 42) {
-      return value.substring(0, 42) + '...' // Truncate long string labels
+  private labelFormatter(value: unknown): string {
+    if (typeof value === 'string') {
+      if (!isNaN(Date.parse(value))) {
+        return new Date(value).toLocaleDateString()
+      } else if (value.length > 42) {
+        return value.substring(0, 42) + '...'
+      }
     }
-    return value // Return the value as-is if it's not a long string or date string
+    return String(value)
   }
 
-  private getChartOptions() {
+  private getChartOptions(): echarts.EChartsOption {
     const colorValues = this.getColorValues()
-
-    const datasetSource =
-      this.data?.layers?.[0]?.result?.map((item) => {
-        const row: { [key: string]: any } = {} // Use an index signature to allow string indexing
-        this.columns.forEach((col) => {
-          row[col] = item[col]
-        })
-        return row
-      }) ?? []
+    const datasetSource = this.data?.layers?.[0]?.result ?? []
 
     const options: echarts.EChartsOption = {
-      backgroundColor: this.theme === 'dark' ? '#121212' : '#FFFFFF',
+      backgroundColor: this.getBackgroundColor(),
       title: {
         text: this.title,
         textStyle: {
-          color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
+          color: this.getTextColor(),
         },
         left: 'center',
       },
-      // Define the dataset
       dataset: {
         dimensions: this.columns,
         source: datasetSource,
@@ -393,7 +325,7 @@ export default class AstraChart extends ClassifiedElement {
       legend: {
         data: this.columns.slice(1),
         textStyle: {
-          color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
+          color: this.getTextColor(),
         },
         top: '10%',
       },
@@ -410,16 +342,16 @@ export default class AstraChart extends ClassifiedElement {
         nameLocation: 'middle',
         nameGap: 30,
         nameTextStyle: {
-          color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
+          color: this.getTextColor(),
         },
         axisLine: {
           lineStyle: {
-            color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
+            color: this.getTextColor(),
           },
         },
         axisLabel: {
-          formatter: this.labelFormatter,
-          color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
+          formatter: (value) => this.labelFormatter(value),
+          color: this.getTextColor(),
           hideOverlap: true,
         },
         axisTick: {
@@ -430,43 +362,28 @@ export default class AstraChart extends ClassifiedElement {
         type: 'value',
         name: this.yAxisLabel,
         nameTextStyle: {
-          color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
+          color: this.getTextColor(),
         },
         axisLine: {
           lineStyle: {
-            color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
+            color: this.getTextColor(),
           },
         },
         axisLabel: {
-          formatter: this.labelFormatter,
-          color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
+          formatter: (value) => this.labelFormatter(value),
+          color: this.getTextColor(),
         },
       },
       series: [],
       color: colorValues,
     }
 
-    switch (this.type) {
-      case 'bar':
-        options.series = this.constructBarSeries()
-        break
-      case 'line':
-        options.series = this.constructLineSeries()
-        break
-      case 'scatter':
-        options.series = this.constructScatterSeries()
-        break
-      case 'area':
-        options.series = this.constructAreaSeries()
-        break
-      default:
-        break
-    }
+    this.addSeries(options)
 
     return options
   }
 
-  private getColorValues() {
+  private getColorValues(): string[] {
     switch (this.colorTheme) {
       case 'iridium':
         return iridiumValues
@@ -481,54 +398,103 @@ export default class AstraChart extends ClassifiedElement {
     }
   }
 
-  private constructBarSeries(): echarts.BarSeriesOption[] {
-    return createSeries<echarts.BarSeriesOption>('bar', this.columns, {
-      animationDelay: (idx: number) => idx * 100,
-    })
-  }
-
-  private constructLineSeries(): echarts.LineSeriesOption[] {
-    return createSeries<echarts.LineSeriesOption>('line', this.columns, {
-      showSymbol: false,
-      animationDuration: 1500,
-      animationEasing: 'cubicOut',
-    })
-  }
-
-  private constructScatterSeries(): echarts.ScatterSeriesOption[] {
-    return createSeries<echarts.ScatterSeriesOption>('scatter', this.columns)
-  }
-
-  private constructAreaSeries(): echarts.LineSeriesOption[] {
-    return createSeries<echarts.LineSeriesOption>('line', this.columns, {
-      areaStyle: {},
-      smooth: true,
-    })
-  }
-
   private applyTheme() {
     if (this.chartInstance) {
       this.chartInstance.dispose()
       this.initializeChart()
     }
   }
-}
 
-// Generic utility function to create series with specific type
-function createSeries<T extends echarts.SeriesOption>(
-  seriesType: T['type'],
-  columns: string[],
-  additionalOptions: Omit<T, 'type' | 'data'> = {} as Omit<T, 'type' | 'data'>
-): T[] {
-  const series = columns.slice(1).map((col) => ({
-    name: col,
-    type: seriesType,
-    encode: {
-      x: columns[0],
-      y: col,
-    },
-    ...additionalOptions,
-  })) as unknown as T[]
+  private updateChartData() {
+    if (this.apiKey && this.chartId) {
+      AstraChart.getChartData(this.apiKey, this.chartId).then((data) => {
+        this.data = data
+      })
+    }
+  }
 
-  return series
+  private updateDataOptions() {
+    this.type = this.data?.layers?.[0]?.type
+  }
+
+  private setupResizeObserver() {
+    this.resizeObserver = new ResizeObserver(() => {
+      if (this.chartInstance) {
+        this.chartInstance.resize()
+        this.chartInstance.setOption(this.getChartOptions())
+      }
+    })
+
+    if (this.chartDiv) {
+      this.resizeObserver.observe(this.chartDiv)
+    }
+  }
+
+  private transformResult(r: Row) {
+    return {
+      id: Math.random(),
+      values: r,
+      originalValues: r,
+      isNew: false,
+      isDeleted: false,
+    }
+  }
+
+  private getBackgroundColor(): string {
+    return this.theme === 'dark' ? '#121212' : '#FFFFFF'
+  }
+
+  private getTextColor(): string {
+    return this.theme === 'dark' ? '#FFFFFF' : '#000000'
+  }
+
+  private addSeries(options: echarts.EChartsOption) {
+    switch (this.type) {
+      case 'bar':
+        options.series = this.constructSeries<echarts.BarSeriesOption>('bar', { animationDelay: (idx) => idx * 100 })
+        break
+      case 'line':
+        options.series = this.constructSeries<echarts.LineSeriesOption>('line', {
+          showSymbol: false,
+          animationDuration: 1500,
+          animationEasing: 'cubicOut',
+        })
+        break
+      case 'scatter':
+        options.series = this.constructSeries<echarts.ScatterSeriesOption>('scatter')
+        break
+      case 'area':
+        options.series = this.constructSeries<echarts.LineSeriesOption>('line', {
+          areaStyle: {},
+          smooth: true,
+        })
+        break
+      default:
+        break
+    }
+  }
+
+  private constructSeries<T extends echarts.SeriesOption>(
+    seriesType: T['type'],
+    additionalOptions: Partial<Omit<T, 'type' | 'data'>> = {}
+  ): T[] {
+    return this.columns.slice(1).map((col) => {
+      const baseSeries = {
+        name: col,
+        type: seriesType,
+        encode: { x: this.columns[0], y: col },
+        ...additionalOptions,
+      }
+
+      if (this.isValidSeriesOption<T>(baseSeries)) {
+        return baseSeries as unknown as T // Cast to unknown first
+      } else {
+        throw new Error(`The series option is invalid for series type "${seriesType}".`)
+      }
+    })
+  }
+
+  private isValidSeriesOption<T extends echarts.SeriesOption>(series: any): series is T {
+    return series && typeof series === 'object' && typeof series.name === 'string' && typeof series.type === 'string'
+  }
 }
