@@ -47,15 +47,17 @@ const getChartData = (type: (typeof chartTypes)[number]) => {
     <div slot="preview" class="w-full h-[440px]">
       <!-- @ts-ignore attributes -->
       <AstraComposedChart
+        header="Dark Mode"
+        title="Stock Prices"
+        subheader="Daily high prices"
         type="line"
-        showHighlights={false}
         data={getChartData('line')}
         keyX="Date"
-        keyY="Close"
-        width={400}
-        height={400}
-        header="Stock Prices"
-        subheader="Daily closing prices"
+        keyY="High"
+        xAxisLabel="Date"
+        yAxisLabel="High Price"
+        theme="dark"
+        colorTheme="mercury"
         client:only="lit"
       />
     </div>
@@ -67,17 +69,19 @@ const getChartData = (type: (typeof chartTypes)[number]) => {
           <div class="grid grid-cols-1 gap-4">
             {
               chartTypes.map((type) => (
-                <div class="py-8 w-full">
+                <div class="py-8 w-full h-[400px]">
                   <h4 class="text-lg font-semibold mb-2 capitalize">{type} Chart</h4>
                   <!-- @ts-ignore attributes -->
                   <AstraComposedChart
+                    header="[header]"
+                    title="[title]"
+                    subheader="[subheader]"
                     type={type}
                     data={getChartData(type)}
                     keyX="Date"
                     keyY="High"
-                    xAxisLabel="Date"
-                    yAxisLabel="High Price"
-                    title="Stock Prices"
+                    xAxisLabel="[x-axis label]"
+                    yAxisLabel="[y-axis label]"
                     theme="light"
                     colorTheme="mercury"
                     client:only="lit"
