@@ -168,7 +168,6 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: String, attribute: 'chart-id' }) chartId: string | undefined
   @property({ type: Object }) data?: DashboardV3Chart
   @property({ type: String }) type?: ChartTypeV3
-  @property({ type: Array }) highlights?: Array<DashboardV3HighlightType>
 
   // X-Axis
   @property({ type: String, attribute: 'key-x' }) keyX?: string
@@ -222,7 +221,6 @@ export default class AstraChart extends ClassifiedElement {
     if (changedProperties.has('data')) {
       // update chart type
       this.type = this.data?.layers?.[0]?.type // TODO don't assume 1 layer
-      this.highlights = this.data?.highlights
       // this.apiKey = this.data?.apiKey // <-- this will switch from using passed-in data to making API requests
 
       const options = this.data?.options
@@ -259,6 +257,7 @@ export default class AstraChart extends ClassifiedElement {
 
   override firstUpdated(_changedProperties: PropertyValueMap<this>) {
     super.firstUpdated(_changedProperties)
+
     this.initializeChart()
 
     // Observe size changes
@@ -270,6 +269,7 @@ export default class AstraChart extends ClassifiedElement {
         this.chartInstance.setOption(options)
       }
     })
+
     if (this.chartDiv) {
       this.resizeObserver.observe(this.chartDiv)
     }
