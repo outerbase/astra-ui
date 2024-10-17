@@ -371,13 +371,13 @@ export type DashboardV3Chart = {
   // Description of the chart, optional
   description?: string
   // An API key value that is used to fetch details of the chart
-  apiKey: string
+  apiKey?: string
   // Array of queries that are used to render various charts on the widget
   layers: Array<DashboardV3ChartQuery>
   // Highlights to display on the chart, accessories to the main chart
   highlights?: Array<DashboardV3HighlightType>
   // Chart options
-  options: DashboardV3ChartOptions
+  options?: DashboardV3ChartOptions
   // The type of chart to render
   type?: ChartTypeV3
   // TBD
