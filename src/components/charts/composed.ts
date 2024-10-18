@@ -141,8 +141,7 @@ export default class AstraComposedChart extends AstraChart {
     const showNoDataLabel = layer?.result?.length === 0 && layer?.type !== 'text'
     const chart = super.render()
     const chartSection = html`<div
-      id="chart"
-      class=${`flex-1 flex items-center justify-center overflow-hidden ${layer?.type === 'table' ? 'border-t border-[#d4d4d4] dark:border-[#404040]' : ''}`}
+      class=${`h-full w-full flex-1 flex items-center justify-center overflow-hidden ${layer?.type === 'table' ? 'border-t border-[#d4d4d4] dark:border-[#404040]' : ''}`}
     >
       ${showNoDataLabel
         ? html`<div class="flex flex-col gap-8">
@@ -165,7 +164,7 @@ export default class AstraComposedChart extends AstraChart {
 
     // render result
     return html`
-      <div class="${classMap({ dark: this.theme === 'dark' })} h-full">
+      <div class="${classMap({ dark: this.theme === 'dark' })} h-full w-full">
         <div
           id="composed-chart"
           class=${`dark:text-neutral-100 text-neutral-950 h-full flex flex-col ${layer?.type === 'table' ? '' : 'p-5'} gap-4 rounded-lg bg-neutral-100 dark:bg-neutral-925 group/actions`}
