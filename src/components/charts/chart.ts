@@ -495,7 +495,7 @@ export default class AstraChart extends ClassifiedElement {
 
   private addSeries(options: EChartsOption) {
     switch (this.type) {
-      case 'bar':
+      case 'column':
         options.series = this.constructSeries<BarSeriesOption>('bar', { animationDelay: (idx) => idx * 10 })
         break
       case 'line':
@@ -514,7 +514,7 @@ export default class AstraChart extends ClassifiedElement {
           smooth: true,
         })
         break
-      case 'column':
+      case 'bar':
         options.series = this.constructSeries<BarSeriesOption>('bar', {
           animationDelay: (idx) => idx * 10,
           barWidth: '40%',
@@ -566,8 +566,8 @@ export default class AstraChart extends ClassifiedElement {
         name: col,
         type: seriesType,
         encode:
-          this.type === 'column'
-            ? { x: col, y: this.columns[0] } // For column charts
+          this.type === 'bar'
+            ? { x: col, y: this.columns[0] } // For bar charts
             : { x: this.columns[0], y: col }, // For other chart types
         ...additionalOptions,
       }
