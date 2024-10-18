@@ -522,7 +522,7 @@ export default class AstraChart extends ClassifiedElement {
         })
         options.xAxis = {
           type: 'value',
-          name: this.yAxisLabel,
+          name: this.xAxisLabel,
           nameTextStyle: {
             color: this.getTextColor(),
           },
@@ -540,7 +540,7 @@ export default class AstraChart extends ClassifiedElement {
         }
         options.yAxis = {
           type: 'category',
-          name: this.xAxisLabel,
+          name: this.yAxisLabel,
           nameTextStyle: {
             color: this.getTextColor(),
           },
