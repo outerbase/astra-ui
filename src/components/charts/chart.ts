@@ -1,4 +1,3 @@
-import * as echarts from 'echarts'
 import { css, html, type PropertyValueMap } from 'lit'
 import { customElement, property, query } from 'lit/decorators.js'
 import type {
@@ -10,6 +9,42 @@ import type {
   Row,
 } from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
+
+// import * as echarts from 'echarts'
+import * as echarts from 'echarts/core'
+import { BarChart, ScatterChart, LineChart, HeatmapChart } from 'echarts/charts'
+import {
+  DatasetComponent,
+  TitleComponent,
+  TooltipComponent,
+  TransformComponent,
+  LegendComponent,
+  // AxisPointerComponent,
+  // GridComponent,
+  // DataZoomComponent
+} from 'echarts/components'
+import { CanvasRenderer } from 'echarts/renderers'
+import type { EChartsOption, BarSeriesOption, LineSeriesOption, ScatterSeriesOption, SeriesOption } from 'echarts/types/dist/shared'
+
+// Register the required components
+echarts.use([
+  // renderer
+  CanvasRenderer,
+  // charts
+  BarChart,
+  HeatmapChart,
+  LineChart,
+  ScatterChart,
+  // components
+  DatasetComponent,
+  LegendComponent,
+  TitleComponent,
+  TooltipComponent,
+  TransformComponent,
+  // AxisPointerComponent,
+  // GridComponent,
+  // DataZoomComponent,
+])
 
 const iridiumValues = ['#87E9C0', '#B9D975', '#C9D69B']
 const celestialValues = ['#D1FFFF', '#93FDFF', '#1A9EF5']
@@ -302,7 +337,7 @@ export default class AstraChart extends ClassifiedElement {
     return String(value)
   }
 
-  private getChartOptions(): echarts.EChartsOption {
+  private getChartOptions(): EChartsOption {
     const colorValues = this.getColorValues()
     const datasetSource = this.data?.layers?.[0]?.result ?? []
 
@@ -316,7 +351,7 @@ export default class AstraChart extends ClassifiedElement {
       )
     )
 
-    const options: echarts.EChartsOption = {
+    const options: EChartsOption = {
       backgroundColor: this.getBackgroundColor(),
       title: {
         text: this.title,
@@ -388,7 +423,7 @@ export default class AstraChart extends ClassifiedElement {
       color: colorValues,
     }
 
-    this.addSeries(options, formattedSource) // Pass the source dataset when adding series
+    this.addSeries(options) // Pass the source dataset when adding series
 
     return options
   }
@@ -458,29 +493,29 @@ export default class AstraChart extends ClassifiedElement {
     return this.theme === 'dark' ? '#FFFFFF' : '#000000'
   }
 
-  private addSeries(options: echarts.EChartsOption, datasetSource: Record<string, unknown>[]) {
+  private addSeries(options: EChartsOption) {
     switch (this.type) {
       case 'bar':
-        options.series = this.constructSeries<echarts.BarSeriesOption>('bar', { animationDelay: (idx) => idx * 10 })
+        options.series = this.constructSeries<BarSeriesOption>('bar', { animationDelay: (idx) => idx * 10 })
         break
       case 'line':
-        options.series = this.constructSeries<echarts.LineSeriesOption>('line', {
+        options.series = this.constructSeries<LineSeriesOption>('line', {
           showSymbol: false,
           animationDuration: 1000,
           animationEasing: 'cubicOut',
         })
         break
       case 'scatter':
-        options.series = this.constructSeries<echarts.ScatterSeriesOption>('scatter')
+        options.series = this.constructSeries<ScatterSeriesOption>('scatter')
         break
       case 'area':
-        options.series = this.constructSeries<echarts.LineSeriesOption>('line', {
+        options.series = this.constructSeries<LineSeriesOption>('line', {
           areaStyle: {},
           smooth: true,
         })
         break
       case 'column':
-        options.series = this.constructSeries<echarts.BarSeriesOption>('bar', {
+        options.series = this.constructSeries<BarSeriesOption>('bar', {
           animationDelay: (idx) => idx * 10,
           barWidth: '40%',
           coordinateSystem: 'cartesian2d',
@@ -525,10 +560,7 @@ export default class AstraChart extends ClassifiedElement {
     }
   }
 
-  private constructSeries<T extends echarts.SeriesOption>(
-    seriesType: T['type'],
-    additionalOptions: Partial<Omit<T, 'type' | 'data'>> = {}
-  ): T[] {
+  private constructSeries<T extends SeriesOption>(seriesType: T['type'], additionalOptions: Partial<Omit<T, 'type' | 'data'>> = {}): T[] {
     return this.columns.slice(1).map((col) => {
       const baseSeries = {
         name: col,
@@ -548,7 +580,7 @@ export default class AstraChart extends ClassifiedElement {
     })
   }
 
-  private isValidSeriesOption<T extends echarts.SeriesOption>(series: any): series is T {
+  private isValidSeriesOption<T extends SeriesOption>(series: any): series is T {
     return series && typeof series === 'object' && typeof series.name === 'string' && typeof series.type === 'string'
   }
 }
