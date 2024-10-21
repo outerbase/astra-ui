@@ -359,6 +359,8 @@ export type DashboardV3ChartOptions = {
   theme?: PaletteThemeType
 }
 
+type ThemeColors = 'mercury' | 'iridium' | 'celestial' | 'cobalt' | 'afterburn'
+
 export type DashboardV3Highlight = {
   type: DashboardV3HighlightType
 }
