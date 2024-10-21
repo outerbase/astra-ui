@@ -231,7 +231,7 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: String }) title = ''
   @property({ type: String }) xAxisLabel = ''
   @property({ type: String }) yAxisLabel = ''
-  @property({ type: String }) colorTheme: ThemeColors = 'mercury'
+  @property({ type: String, attribute: 'color' }) colorTheme: ThemeColors = 'mercury'
 
   @query('#chart') private chartDiv!: HTMLDivElement
 
