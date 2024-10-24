@@ -352,9 +352,13 @@ export type DashboardV3ChartOptions = {
   text?: string
   // Format the text chart with a specific format
   format?: 'percent' | 'number' | 'decimal' | 'date' | 'time' | 'dollar' | 'euro' | 'pound' | 'yen'
-  // Theme of the chart
-  theme?: string
+  // Theme of the chart (light or dark)
+  theme?: Theme
+  // Color Theme of chart (mercury, celesrial, etc)
+  colorTheme?: ThemeColors
 }
+
+type ThemeColors = 'mercury' | 'iridium' | 'celestial' | 'cobalt' | 'afterburn'
 
 export type DashboardV3Highlight = {
   type: DashboardV3HighlightType
@@ -368,13 +372,13 @@ export type DashboardV3Chart = {
   // Description of the chart, optional
   description?: string
   // An API key value that is used to fetch details of the chart
-  apiKey: string
+  apiKey?: string
   // Array of queries that are used to render various charts on the widget
   layers: Array<DashboardV3ChartQuery>
   // Highlights to display on the chart, accessories to the main chart
   highlights?: Array<DashboardV3HighlightType>
   // Chart options
-  options: DashboardV3ChartOptions
+  options?: DashboardV3ChartOptions
   // The type of chart to render
   type?: ChartTypeV3
   // TBD
