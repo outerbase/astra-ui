@@ -10,6 +10,7 @@ interface ThemeSetting {
   gutterBackground?: string
   gutterForeground?: string
   gutterActiveForeground?: string
+  gutterActiveBackground?: string
   gutterBorder?: string
   lineHighlight?: string
   selection?: string
@@ -65,6 +66,8 @@ function createCodeMirrorTheme(styles: TagStyle[], settings: ThemeSetting): Exte
 
   if (settings.gutterActiveForeground) {
     themeStyles['.cm-activeLineGutter'].color = settings.gutterActiveForeground
+    themeStyles['.cm-activeLineGutter'].backgroundColor =
+      settings.gutterActiveBackground ?? themeStyles['.cm-activeLineGutter'].backgroundColor // preserve
   }
 
   const themeExtension = EditorView.theme(themeStyles, {
@@ -120,6 +123,60 @@ function createMoondustTheme(theme: 'dark' | 'light'): Extension {
         gutterForeground: '#737373',
         gutterBackground: '#0A0A0A',
         gutterActiveForeground: '#fff',
+        gutterBorder: 'transparent',
+      }
+    )
+  }
+}
+
+function createLogandustTheme(theme: 'dark' | 'light'): Extension {
+  if (theme === 'light') {
+    return createCodeMirrorTheme(
+      [
+        { tag: [t.keyword, t.typeName, t.standard(t.name)], color: '#737373' },
+        { tag: [t.string], color: '#737373' },
+        {
+          tag: [t.number],
+          color: 'indigo',
+        },
+        { tag: [t.operator, t.operatorKeyword], color: 'indigo' },
+        { tag: [t.lineComment, t.blockComment, t.comment], color: '#737373' },
+        { tag: [t.null, t.bool], color: '#111111' },
+      ],
+      {
+        theme,
+        foreground: '#111111',
+        selection: '#ccc',
+        lineHighlight: '#eee',
+        gutterForeground: '#737373',
+        gutterBackground: 'transparent',
+        gutterActiveForeground: '#000',
+        gutterActiveBackground: 'transparent',
+        gutterBorder: 'transparent',
+      }
+    )
+  } else {
+    return createCodeMirrorTheme(
+      [
+        { tag: [t.keyword, t.typeName, t.standard(t.name)], color: 'white' },
+        { tag: [t.string], color: '#9ca3af' },
+        {
+          tag: [t.number],
+          color: '#8be9fd',
+        },
+        { tag: [t.operator, t.operatorKeyword], color: 'white' },
+        { tag: [t.lineComment, t.blockComment, t.comment], color: '#737373' },
+        { tag: [t.null, t.bool], color: 'white' },
+      ],
+      {
+        theme,
+        foreground: '#9ca3af',
+        selection: '#333',
+        lineHighlight: '#151515',
+        gutterForeground: '#737373',
+        gutterBackground: 'transparent',
+        gutterActiveForeground: '#fff',
+        gutterActiveBackground: 'transparent',
         gutterBorder: 'transparent',
       }
     )
@@ -233,5 +290,6 @@ function createFreedomTheme(theme: 'dark' | 'light'): Extension {
 export function getPredefineTheme(color: 'dark' | 'light', themeName: string) {
   if (themeName === 'invasion') return createInvasionTheme(color)
   if (themeName === 'freedom') return createFreedomTheme(color)
+  if (themeName === 'logandust') return createLogandustTheme(color)
   return createMoondustTheme(color)
 }
