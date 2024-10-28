@@ -499,7 +499,7 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   private getBackgroundColor(): string {
-    return this.theme === 'dark' ? '#121212' : '#FFFFFF'
+    return 'transparent'
   }
 
   private getTextColor(): string {
