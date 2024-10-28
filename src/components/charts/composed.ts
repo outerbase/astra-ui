@@ -167,7 +167,7 @@ export default class AstraComposedChart extends AstraChart {
       <div class="${classMap({ dark: this.theme === 'dark' })} h-full w-full">
         <div
           id="composed-chart"
-          class=${`dark:text-neutral-100 text-neutral-950 h-full flex flex-col ${layer?.type === 'table' ? '' : 'p-5'} gap-4 rounded-lg group/actions`}
+          class=${`dark:text-neutral-100 text-neutral-950 h-full flex flex-col ${layer?.type === 'table' ? '' : 'p-5'} gap-4 rounded-lg bg-neutral-100 dark:bg-neutral-925 group/actions`}
         >
           ${layer?.type === 'single_value'
             ? // Single value charts show the highlights at the bottom of the card
