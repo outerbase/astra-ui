@@ -364,6 +364,7 @@ export default class AstraChart extends ClassifiedElement {
       )
     )
 
+    const gridLineColors = this.theme === 'dark' ? '#FFFFFF10' : '#00000010'
     const options: EChartsOption = {
       backgroundColor: this.getBackgroundColor(),
       title: {
@@ -429,8 +430,16 @@ export default class AstraChart extends ClassifiedElement {
           formatter: (value) => this.labelFormatter(value),
           color: this.getTextColor(),
         },
+
+        // Color of the grid lines
+        splitLine: {
+          show: true,
+          lineStyle: {
+            color: gridLineColors,
+            // color: ['red', 'green'], // xmas mode
+          },
+        },
       },
-      series: [],
       color: colorValues,
     }
 
@@ -505,6 +514,8 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   private addSeries(options: EChartsOption) {
+    const gridLineColors = this.theme === 'dark' ? '#FFFFFF10' : '#00000010'
+
     switch (this.type) {
       case 'column':
         options.series = this.constructSeries<BarSeriesOption>('bar', { animationDelay: (idx) => idx * 10 })
@@ -548,7 +559,15 @@ export default class AstraChart extends ClassifiedElement {
           },
           nameLocation: 'middle', // Add this line to ensure the label is below the axis
           nameGap: 30, // Add nameGap to control the distance between the axis and the label
+          // Add split line style here for x-axis
+          splitLine: {
+            show: true,
+            lineStyle: {
+              color: gridLineColors,
+            },
+          },
         }
+
         options.yAxis = {
           type: 'category',
           name: this.yAxisLabel,
