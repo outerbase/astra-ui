@@ -316,7 +316,7 @@ export default class AstraChart extends ClassifiedElement {
     const firstRecord = this.data?.layers?.[0]?.result?.[0]
     const schema = firstRecord ? { columns: Object.keys(firstRecord).map((name) => ({ name })) } : undefined
 
-    return html`<div class="flex-1 self-start relative bg-purple-50 h-full w-full z-0">
+    return html`<div class="flex-1 self-start relative h-full w-full z-0">
       <astra-table
         .schema=${schema}
         .data=${this.data?.layers?.[0].result?.map(this.transformResult) ?? []}
