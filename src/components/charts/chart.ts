@@ -25,6 +25,7 @@ import {
 } from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
 import type { EChartsOption, BarSeriesOption, LineSeriesOption, ScatterSeriesOption, SeriesOption } from 'echarts/types/dist/shared'
+import { unsafeHTML } from 'lit/directives/unsafe-html.js'
 
 // Register the required components
 echarts.use([
@@ -233,6 +234,10 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: String }) yAxisLabel = ''
   @property({ type: String, attribute: 'color' }) colorTheme: ThemeColors = 'mercury'
 
+  // grid sizing
+  @property({ type: Number }) sizeX?: number
+  @property({ type: Number }) sizeY?: number
+
   @query('#chart') private chartDiv!: HTMLDivElement
 
   private chartInstance?: echarts.ECharts
@@ -298,6 +303,12 @@ export default class AstraChart extends ClassifiedElement {
       return this.renderTable()
     }
 
+    if (this.type === 'single_value') {
+      return this.renderAsSingleValue()
+    }
+
+    if (this.type === 'text') return this.renderAsText()
+
     return html`<div id="chart" class="h-full w-full"></div>`
   }
 
@@ -305,14 +316,16 @@ export default class AstraChart extends ClassifiedElement {
     const firstRecord = this.data?.layers?.[0]?.result?.[0]
     const schema = firstRecord ? { columns: Object.keys(firstRecord).map((name) => ({ name })) } : undefined
 
-    return html`<astra-table
-      .schema=${JSON.stringify(schema)}
-      .data=${JSON.stringify(this.data?.layers?.[0].result?.map(this.transformResult) ?? [])}
-      .theme=${this.theme}
-      blank-fill
-      border-b
-      read-only
-    ></astra-table>`
+    return html`<div class="flex-1 self-start relative bg-purple-50 h-full w-full z-0">
+      <astra-table
+        .schema=${schema}
+        .data=${this.data?.layers?.[0].result?.map(this.transformResult) ?? []}
+        .theme=${this.theme}
+        blank-fill
+        border-b
+        read-only
+      ></astra-table>
+    </div>`
   }
 
   private initializeChart() {
@@ -582,5 +595,94 @@ export default class AstraChart extends ClassifiedElement {
 
   private isValidSeriesOption<T extends SeriesOption>(series: any): series is T {
     return series && typeof series === 'object' && typeof series.name === 'string' && typeof series.type === 'string'
+  }
+
+  private renderAsText() {
+    let variant = 'p'
+
+    let markdown = this.data?.options?.text ?? ''
+
+    // Bold (**text** or __text__)
+    markdown = markdown.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+    markdown = markdown.replace(/__(.*?)__/g, '<b>$1</b>')
+
+    // Italic (*text* or _text_)
+    markdown = markdown.replace(/\*(.*?)\*/g, '<i>$1</i>')
+    markdown = markdown.replace(/_(.*?)_/g, '<i>$1</i>')
+
+    // Underline (__text__)
+    markdown = markdown.replace(/~~(.*?)~~/g, '<u>$1</u>')
+
+    // Line break (double space followed by a newline)
+    markdown = markdown.replace(/  \n/g, '<br>')
+
+    return html`<div
+      variant=${variant}
+      style=${`display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; font-family: Inter, sans-serif;`}
+      class="flex-1 self-start text-neutral-900 dark:text-neutral-100"
+    >
+      ${unsafeHTML(markdown)}
+    </div>`
+  }
+
+  private renderAsSingleValue() {
+    const firstRecord = this.data?.layers?.[0].result?.[0]
+    let firstRecordValue = firstRecord ? firstRecord[this.keyX ?? ''] : ''
+    const formattedValue = this.data?.options?.format
+
+    if (formattedValue === 'percent') {
+      const number = parseFloat(`${firstRecordValue}`)
+      firstRecordValue = `${number.toFixed(2)}%`
+    } else if (formattedValue === 'number') {
+      const number = parseFloat(`${firstRecordValue}`)
+      const rounded = Math.round(number)
+      firstRecordValue = `${rounded.toLocaleString('en-US')}`
+    } else if (formattedValue === 'decimal') {
+      const number = parseFloat(`${firstRecordValue}`)
+      firstRecordValue = `${number.toFixed(2)}`
+    } else if (formattedValue === 'date') {
+      const stringDate = `${firstRecordValue}`
+
+      // Convert to a Date object to validate the input
+      const date = new Date(stringDate)
+
+      if (!isNaN(date.getTime())) {
+        // Check if the date is valid
+        // Extract the date components
+        const year = date.getUTCFullYear()
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0') // Months are 0-based
+        const day = String(date.getUTCDate()).padStart(2, '0')
+
+        // Manually construct the formatted date string
+        const formattedDate = `${month}/${day}/${year}`
+
+        firstRecordValue = formattedDate
+      }
+    } else if (formattedValue === 'time') {
+      const date = new Date(`${firstRecordValue}`)
+      firstRecordValue = date.toLocaleTimeString('en-US')
+    } else if (formattedValue === 'dollar') {
+      const number = parseFloat(`${firstRecordValue}`)
+      firstRecordValue = `$${number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    } else if (formattedValue === 'euro') {
+      const number = parseFloat(`${firstRecordValue}`)
+      firstRecordValue = `€${number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    } else if (formattedValue === 'pound') {
+      const number = parseFloat(`${firstRecordValue}`)
+      firstRecordValue = `£${number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    } else if (formattedValue === 'yen') {
+      const number = parseFloat(`${firstRecordValue}`)
+      firstRecordValue = `¥${number.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+    }
+
+    const style = this.sizeX === 1 && this.sizeY === 1 ? 'font-size: 30px; line-height: 36px;' : 'font-size: 60px; line-height: 68px;'
+    return html`<div class="flex-1 self-start">
+      <div
+        style=${`font-family: Inter, sans-serif; ${style}`}
+        class=${`${this.theme === 'dark' ? 'text-neutral-50' : 'text-neutral-950'} font-bold truncate`}
+      >
+        ${firstRecordValue}
+      </div>
+    </div>`
   }
 }
