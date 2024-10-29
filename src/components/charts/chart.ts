@@ -237,6 +237,8 @@ export default class AstraChart extends ClassifiedElement {
   // grid sizing
   @property({ type: Number }) sizeX?: number
   @property({ type: Number }) sizeY?: number
+  @property({ type: Number }) chartWidth?: number
+  @property({ type: Number }) chartHeight?: number
 
   @query('#chart') private chartDiv!: HTMLDivElement
 
@@ -364,10 +366,12 @@ export default class AstraChart extends ClassifiedElement {
       )
     )
 
+    const isTall = (this.chartHeight ?? 0) > 150
     const gridLineColors = this.theme === 'dark' ? '#FFFFFF10' : '#00000010'
     const options: EChartsOption = {
       backgroundColor: this.getBackgroundColor(),
       title: {
+        show: isTall,
         text: this.title,
         textStyle: {
           color: this.getTextColor(),
@@ -382,6 +386,7 @@ export default class AstraChart extends ClassifiedElement {
         trigger: this.type === 'scatter' ? 'item' : 'axis',
       },
       legend: {
+        show: isTall,
         data: this.columns.slice(1),
         textStyle: {
           color: this.getTextColor(),
@@ -391,13 +396,13 @@ export default class AstraChart extends ClassifiedElement {
       grid: {
         left: '3%',
         right: '3%',
-        bottom: '15%',
-        top: '20%',
+        bottom: isTall ? '15%' : '0%',
+        top: isTall ? '20%' : '5%',
         containLabel: true,
       },
       xAxis: {
         type: 'category',
-        name: this.xAxisLabel,
+        name: isTall ? this.xAxisLabel : '',
         nameLocation: 'middle',
         nameGap: 30,
         nameTextStyle: {
@@ -417,7 +422,7 @@ export default class AstraChart extends ClassifiedElement {
       },
       yAxis: {
         type: 'value',
-        name: this.yAxisLabel,
+        name: isTall ? this.yAxisLabel : '',
         nameTextStyle: {
           color: this.getTextColor(),
         },
@@ -483,10 +488,18 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   private setupResizeObserver() {
-    this.resizeObserver = new ResizeObserver(() => {
-      if (this.chartInstance) {
-        this.chartInstance.resize()
-        this.chartInstance.setOption(this.getChartOptions())
+    this.resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.target === this.chartDiv) {
+          const { width, height } = entry.contentRect
+          this.chartWidth = width
+          this.chartHeight = height
+
+          if (this.chartInstance) {
+            this.chartInstance.resize()
+            this.chartInstance.setOption(this.getChartOptions())
+          }
+        }
       }
     })
 
