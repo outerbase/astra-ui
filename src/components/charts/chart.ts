@@ -384,6 +384,7 @@ export default class AstraChart extends ClassifiedElement {
       },
       tooltip: {
         trigger: this.type === 'scatter' ? 'item' : 'axis',
+        borderColor: gridLineColors, // fix issue where 'item' tooltips were a different color than the rest (maybe it matched the series color)
       },
       legend: {
         show: isTall,
