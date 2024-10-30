@@ -428,7 +428,7 @@ export default class AstraChart extends ClassifiedElement {
           color: this.getTextColor(),
         },
         axisLine: {
-          show: true,
+          show: false,
           lineStyle: {
             color: axisLineColors,
           },
