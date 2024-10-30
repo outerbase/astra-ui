@@ -41,7 +41,7 @@ const getChartData = (type: (typeof chartTypes)[number]) => {
     <div slot="preview" class="w-full h-[440px]">
       <!-- @ts-ignore attributes -->
       <AstraComposedChart
-        min-y="0" 
+        min-y="0"
         max-y="100"
         header="Dark Mode"
         title="Stock Prices"
@@ -49,11 +49,12 @@ const getChartData = (type: (typeof chartTypes)[number]) => {
         type="line"
         data={getChartData('line')}
         keyX="Date"
-        keyY="High"
+        keyY={["High", "Low"]}
         xAxisLabel="Date"
         yAxisLabel="High Price"
         theme="dark"
         colorTheme="mercury"
+        yAxisColors={{"High": "#0000ff", "Low": "#00ff00"}}
         client:only="lit"
       />
     </div>
