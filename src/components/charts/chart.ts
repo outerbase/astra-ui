@@ -11,20 +11,11 @@ import type {
 import { ClassifiedElement } from '../classified-element.js'
 
 // import * as echarts from 'echarts'
+import { BarChart, HeatmapChart, LineChart, ScatterChart } from 'echarts/charts'
+import { DatasetComponent, LegendComponent, TitleComponent, TooltipComponent, TransformComponent } from 'echarts/components'
 import * as echarts from 'echarts/core'
-import { BarChart, ScatterChart, LineChart, HeatmapChart } from 'echarts/charts'
-import {
-  DatasetComponent,
-  TitleComponent,
-  TooltipComponent,
-  TransformComponent,
-  LegendComponent,
-  // AxisPointerComponent,
-  // GridComponent,
-  // DataZoomComponent
-} from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
-import type { EChartsOption, BarSeriesOption, LineSeriesOption, ScatterSeriesOption, SeriesOption } from 'echarts/types/dist/shared'
+import type { BarSeriesOption, EChartsOption, LineSeriesOption, ScatterSeriesOption, SeriesOption } from 'echarts/types/dist/shared'
 import { unsafeHTML } from 'lit/directives/unsafe-html.js'
 
 // Register the required components
@@ -240,6 +231,11 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: Number }) chartWidth?: number
   @property({ type: Number }) chartHeight?: number
 
+  @property({ type: Number, attribute: 'min-y' }) minY?: number
+  @property({ type: Number, attribute: 'max-y' }) maxY?: number
+  @property({ type: Number, attribute: 'min-x' }) minX?: number
+  @property({ type: Number, attribute: 'max-x' }) maxX?: number
+
   @query('#chart') private chartDiv!: HTMLDivElement
 
   private chartInstance?: echarts.ECharts
@@ -343,8 +339,28 @@ export default class AstraChart extends ClassifiedElement {
 
   private labelFormatter(value: unknown): string {
     if (typeof value === 'string') {
-      if (!isNaN(Date.parse(value))) {
-        return new Date(value).toLocaleDateString()
+      // Try to parse as date
+      const date = new Date(value)
+      if (!isNaN(date.getTime())) {
+        // Check if we're showing years only (when data spans multiple years)
+        const datasetSource = this.data?.layers?.[0]?.result ?? []
+        if (datasetSource.length > 0) {
+          const firstDate = new Date(datasetSource[0][this.keyX ?? ''] as string)
+          const lastDate = new Date(datasetSource[datasetSource.length - 1][this.keyX ?? ''] as string)
+
+          // If data spans more than a year, show only years
+          if (lastDate.getFullYear() - firstDate.getFullYear() > 0) {
+            return date.getFullYear().toString()
+          }
+
+          // Otherwise show month and year
+          return date.toLocaleDateString(undefined, {
+            month: 'short',
+            year: 'numeric',
+          })
+        }
+
+        return date.toLocaleDateString()
       } else if (value.length > 42) {
         return value.substring(0, 42) + '...'
       }
@@ -367,17 +383,19 @@ export default class AstraChart extends ClassifiedElement {
     )
 
     const isTall = (this.chartHeight ?? 0) > 150
-    const gridLineColors = this.theme === 'dark' ? '#FFFFFF10' : '#00000010'
+    const gridLineColors = this.theme === 'dark' ? '#FFFFFF08' : '#00000010'
+    const axisLineColors = this.theme === 'dark' ? '#FFFFFF15' : '#00000020'
+
     const options: EChartsOption = {
       backgroundColor: this.getBackgroundColor(),
-      title: {
-        show: isTall,
-        text: this.title,
-        textStyle: {
-          color: this.getTextColor(),
-        },
-        left: 'center',
-      },
+      // title: {
+      //   show: isTall,
+      //   text: this.title,
+      //   textStyle: {
+      //     color: this.getTextColor(),
+      //   },
+      //   left: 'center',
+      // },
       dataset: {
         dimensions: this.columns,
         source: formattedSource,
@@ -410,7 +428,10 @@ export default class AstraChart extends ClassifiedElement {
           color: this.getTextColor(),
         },
         axisLine: {
-          show: false,
+          show: true,
+          lineStyle: {
+            color: axisLineColors,
+          },
         },
         axisLabel: {
           formatter: (value) => this.labelFormatter(value),
@@ -420,6 +441,14 @@ export default class AstraChart extends ClassifiedElement {
         axisTick: {
           alignWithLabel: true,
         },
+        splitLine: {
+          show: false,
+          lineStyle: {
+            color: gridLineColors,
+          },
+        },
+        min: this.minX,
+        max: this.maxX,
       },
       yAxis: {
         type: 'value',
@@ -428,23 +457,26 @@ export default class AstraChart extends ClassifiedElement {
           color: this.getTextColor(),
         },
         axisLine: {
+          show: false,
           lineStyle: {
-            color: this.getTextColor(),
+            color: axisLineColors,
           },
         },
         axisLabel: {
           formatter: (value) => this.labelFormatter(value),
           color: this.getTextColor(),
+          align: 'right',
+          margin: 8,
+          inside: false,
         },
-
-        // Color of the grid lines
         splitLine: {
           show: true,
           lineStyle: {
             color: gridLineColors,
-            // color: ['red', 'green'], // xmas mode
           },
         },
+        min: this.minY,
+        max: this.maxY,
       },
       color: colorValues,
     }
@@ -542,7 +574,14 @@ export default class AstraChart extends ClassifiedElement {
         })
         break
       case 'scatter':
-        options.series = this.constructSeries<ScatterSeriesOption>('scatter')
+        options.series = this.constructSeries<ScatterSeriesOption>('scatter', {
+          symbolSize: 8,
+          itemStyle: {
+            borderWidth: 2,
+            borderColor: this.getTextColor(),
+            color: 'transparent', // Make the fill transparent
+          },
+        })
         break
       case 'area':
         options.series = this.constructSeries<LineSeriesOption>('line', {
