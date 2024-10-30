@@ -410,13 +410,15 @@ export default class AstraChart extends ClassifiedElement {
         textStyle: {
           color: this.getTextColor(),
         },
-        top: '10%',
+        top: 8,
+        orient: 'horizontal',
+        type: 'scroll', // Enable scrolling if too many items
       },
       grid: {
-        left: '3%',
-        right: '3%',
-        bottom: isTall ? '15%' : '0%',
-        top: isTall ? '20%' : '5%',
+        left: '2%',
+        right: '1%',
+        bottom: isTall ? '15%' : '15%',
+        top: isTall ? '20%' : '20%', // Increased from 15% to 20%
         containLabel: true,
       },
       xAxis: {
@@ -455,6 +457,8 @@ export default class AstraChart extends ClassifiedElement {
         name: isTall ? this.yAxisLabel : '',
         nameTextStyle: {
           color: this.getTextColor(),
+          align: 'left',
+          padding: [0, 0, 0, 0],
         },
         axisLine: {
           show: false,
@@ -466,7 +470,9 @@ export default class AstraChart extends ClassifiedElement {
           formatter: (value) => this.labelFormatter(value),
           color: this.getTextColor(),
           align: 'right',
-          margin: 8,
+          inside: false,
+        },
+        axisTick: {
           inside: false,
         },
         splitLine: {
