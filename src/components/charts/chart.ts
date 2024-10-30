@@ -209,7 +209,7 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: String, attribute: 'label-x' }) labelX: string | null = null
 
   // Y-Axis
-  @property({ type: String, attribute: 'key-y' }) keyY?: string
+  @property({ type: String, attribute: 'key-y' }) keyY?: string | string[]
   @property({ type: String, attribute: 'axis-label-y' }) axisLabelY?: string
   @property({ type: String, attribute: 'axis-label-display-y' }) axisLabelDisplay?: DashboardV3ChartLabelDisplayY = 'left'
 
@@ -224,6 +224,7 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: String }) xAxisLabel = ''
   @property({ type: String }) yAxisLabel = ''
   @property({ type: String, attribute: 'color' }) colorTheme: ThemeColors = 'mercury'
+  @property({ type: Object, attribute: 'y-axis-colors' }) yAxisColors?: Record<string, string | undefined> = {}
 
   // grid sizing
   @property({ type: Number }) sizeX?: number
@@ -245,7 +246,8 @@ export default class AstraChart extends ClassifiedElement {
     super.willUpdate(changedProperties)
 
     if (changedProperties.has('keyX') || changedProperties.has('keyY')) {
-      this.columns = [this.keyX ?? '', this.keyY ?? '']
+      const _y = typeof this.keyY === 'string' ? [this.keyY] : (this.keyY ?? [''])
+      this.columns = [this.keyX ?? '', ..._y]
     }
 
     if (changedProperties.has('apiKey') || changedProperties.has('chartId')) {
@@ -658,6 +660,9 @@ export default class AstraChart extends ClassifiedElement {
           this.type === 'bar'
             ? { x: col, y: this.columns[0] } // For bar charts
             : { x: this.columns[0], y: col }, // For other chart types
+        itemStyle: {
+          color: this.yAxisColors?.[col] ?? undefined, // Use color from yAxisColors if present
+        },
         ...additionalOptions,
       }
 
