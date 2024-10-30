@@ -41,6 +41,8 @@ const getChartData = (type: (typeof chartTypes)[number]) => {
     <div slot="preview" class="w-full h-[440px]">
       <!-- @ts-ignore attributes -->
       <AstraComposedChart
+        min-y="0" 
+        max-y="1000"
         header="Dark Mode"
         title="Stock Prices"
         subheader="Daily high prices"
