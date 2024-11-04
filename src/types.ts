@@ -357,6 +357,8 @@ export type DashboardV3ChartOptions = {
   format?: 'percent' | 'number' | 'decimal' | 'date' | 'time' | 'dollar' | 'euro' | 'pound' | 'yen'
   // Theme of the chart
   theme?: PaletteThemeType
+
+  hideXAxisLabel?: boolean
 }
 
 type ThemeColors = 'mercury' | 'iridium' | 'celestial' | 'cobalt' | 'afterburn'
