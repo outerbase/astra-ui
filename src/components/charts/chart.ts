@@ -198,20 +198,8 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: String, attribute: 'chart-id' }) chartId?: string
   @property({ type: Object }) data?: DashboardV3Chart
   @property({ type: String }) type?: ChartTypeV3
-
-  // X-Axis
   @property({ type: String, attribute: 'key-x' }) keyX?: string
-  @property({ type: String, attribute: 'axis-label-x' }) axisLabelX?: string
-  @property({ type: String, attribute: 'axis-label-display-x' }) axisLabelDisplayX: DashboardV3ChartLabelDisplayX = 'auto'
-  @property({ type: String, attribute: 'ticks-x' }) ticksX?: string
-  @property({ type: Boolean, attribute: 'nice-x' }) niceX = false
-  @property({ type: Boolean, attribute: 'grid-x' }) gridX?: boolean
-  @property({ type: String, attribute: 'label-x' }) labelX: string | null = null
-
-  // Y-Axis
   @property({ type: String, attribute: 'key-y' }) keyY?: string | string[]
-  @property({ type: String, attribute: 'axis-label-y' }) axisLabelY?: string
-  @property({ type: String, attribute: 'axis-label-display-y' }) axisLabelDisplay?: DashboardV3ChartLabelDisplayY = 'left'
 
   // Sorting & grouping
   @property({ type: String, attribute: 'sort-order' }) sortOrder?: DashboardV3ChartSortOrder
