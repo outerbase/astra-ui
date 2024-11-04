@@ -356,6 +356,8 @@ export type DashboardV3ChartOptions = {
   theme?: Theme
   // Color Theme of chart (mercury, celesrial, etc)
   colorTheme?: ThemeColors
+
+  hideXAxisLabel?: boolean
 }
 
 type ThemeColors = 'mercury' | 'iridium' | 'celestial' | 'cobalt' | 'afterburn'
