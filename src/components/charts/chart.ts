@@ -211,6 +211,7 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: String }) title = ''
   @property({ type: String }) xAxisLabel = ''
   @property({ type: String }) yAxisLabel = ''
+  @property({ type: Number }) xAxisLabelDisplay = 0
   @property({ type: Boolean, attribute: 'hide-x-axis-label' }) hideXAxisLabel = false
   @property({ type: String, attribute: 'color' }) colorTheme: ThemeColors = 'mercury'
   @property({ type: Object, attribute: 'y-axis-colors' }) yAxisColors?: Record<string, string | undefined> = {}
@@ -431,6 +432,7 @@ export default class AstraChart extends ClassifiedElement {
           formatter: (value) => this.labelFormatter(value),
           color: this.getTextColor(),
           hideOverlap: true,
+          rotate: this.xAxisLabelDisplay,
         },
         axisTick: {
           alignWithLabel: true,
