@@ -216,6 +216,7 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: Boolean, attribute: 'hide-x-axis-label' }) hideXAxisLabel = false
   @property({ type: String, attribute: 'color' }) colorTheme: ThemeColors = 'mercury'
   @property({ type: Object, attribute: 'y-axis-colors' }) yAxisColors?: Record<string, string | undefined> = {}
+  @property({ type: Boolean, attribute: 'omit-legend' }) omitLegend = false
 
   // grid sizing
   @property({ type: Number }) sizeX?: number
@@ -398,7 +399,7 @@ export default class AstraChart extends ClassifiedElement {
         borderColor: gridLineColors, // fix issue where 'item' tooltips were a different color than the rest (maybe it matched the series color)
       },
       legend: {
-        show: isTall,
+        show: !this.omitLegend && isTall,
         data: this.columns.slice(1),
         textStyle: {
           color: this.getTextColor(),
