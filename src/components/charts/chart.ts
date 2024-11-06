@@ -659,6 +659,7 @@ export default class AstraChart extends ClassifiedElement {
         itemStyle: {
           color: this.yAxisColors?.[col] ?? undefined, // Use color from yAxisColors if present
         },
+        symbol: 'circle',
         ...additionalOptions,
       }
 
