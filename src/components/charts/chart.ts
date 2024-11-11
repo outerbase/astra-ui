@@ -410,7 +410,7 @@ export default class AstraChart extends ClassifiedElement {
       },
       grid: {
         left: '2%',
-        right: '1%',
+        right: '2%',
         bottom: isTall ? '15%' : '15%',
         top: isTall ? '20%' : '20%', // Increased from 15% to 20%
         containLabel: true,
