@@ -435,6 +435,7 @@ export default class AstraChart extends ClassifiedElement {
           color: this.getTextColor(),
           hideOverlap: true,
           rotate: this.xAxisLabelDisplay,
+          interval: 0,
         },
         axisTick: {
           alignWithLabel: true,
