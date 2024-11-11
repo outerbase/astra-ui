@@ -233,6 +233,24 @@ export default class AstraChart extends ClassifiedElement {
 
   private chartInstance?: echarts.ECharts
   private resizeObserver?: ResizeObserver
+  private uniqueYears = new Set<number>()
+  private uniqueMonths = new Set<number>()
+
+  private cacheUniqueDateParts(): void {
+    // Reset the sets
+    this.uniqueYears.clear()
+    this.uniqueMonths.clear()
+
+    // Cache unique years and months for faster access in labelFormatter
+    this.data?.layers?.[0].result?.forEach((item) => {
+      const dateValue = Date.parse(item[this.columns[0]] as string)
+      if (!isNaN(dateValue)) {
+        const date = new Date(dateValue)
+        this.uniqueYears.add(date.getUTCFullYear())
+        this.uniqueMonths.add(date.getUTCMonth())
+      }
+    })
+  }
 
   override willUpdate(changedProperties: PropertyValueMap<this>): void {
     super.willUpdate(changedProperties)
@@ -248,6 +266,7 @@ export default class AstraChart extends ClassifiedElement {
 
     if (changedProperties.has('data')) {
       this.updateDataOptions()
+      this.cacheUniqueDateParts() // Call the new method to update cached values
     }
   }
 
@@ -332,34 +351,26 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   private labelFormatter(value: unknown): string {
-    if (typeof value === 'string') {
-      // Try to parse as date
-      const date = new Date(value)
-      if (!isNaN(date.getTime())) {
-        // Check if we're showing years only (when data spans multiple years)
-        const datasetSource = this.data?.layers?.[0]?.result ?? []
-        if (datasetSource.length > 0) {
-          const firstDate = new Date(datasetSource[0][this.keyX ?? ''] as string)
-          const lastDate = new Date(datasetSource[datasetSource.length - 1][this.keyX ?? ''] as string)
+    if (typeof value === 'string' || value instanceof String) {
+      const parsedDate = Date.parse(value as string)
+      if (!isNaN(parsedDate)) {
+        const date = new Date(parsedDate)
+        const year = date.getUTCFullYear()
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+        const day = String(date.getUTCDate()).padStart(2, '0')
 
-          // If data spans more than a year, show only years
-          if (lastDate.getFullYear() - firstDate.getFullYear() > 0) {
-            return date.getFullYear().toString()
-          }
-
-          // Otherwise show month and year
-          return date.toLocaleDateString(undefined, {
-            month: 'short',
-            year: 'numeric',
-          })
+        if (this.uniqueYears.size > 1) {
+          return `${year}-${month}`
         }
 
-        return date.toLocaleDateString()
-      } else if (value.length > 42) {
-        return value.substring(0, 42) + '...'
+        if (this.uniqueMonths.size > 1) {
+          return `${year}-${month}-${day}`
+        }
+
+        return `${year}`
       }
     }
-    return String(value)
+    return typeof value === 'string' ? value : String(value)
   }
 
   private getChartOptions(): EChartsOption {
