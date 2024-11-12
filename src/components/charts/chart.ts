@@ -242,7 +242,7 @@ export default class AstraChart extends ClassifiedElement {
     this.uniqueMonths.clear()
 
     // Cache unique years and months for faster access in labelFormatter
-    this.data?.layers?.[0].result?.forEach((item) => {
+    this.data?.layers?.[0]?.result?.forEach((item) => {
       const dateValue = Date.parse(item[this.columns[0]] as string)
       if (!isNaN(dateValue)) {
         const date = new Date(dateValue)
@@ -330,7 +330,7 @@ export default class AstraChart extends ClassifiedElement {
     return html`<div class="flex-1 self-start relative h-full w-full z-0">
       <astra-table
         .schema=${schema}
-        .data=${this.data?.layers?.[0].result?.map(this.transformResult) ?? []}
+        .data=${this.data?.layers?.[0]?.result?.map(this.transformResult) ?? []}
         .theme=${this.theme}
         blank-fill
         border-b
@@ -717,7 +717,7 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   private renderAsSingleValue() {
-    const firstRecord = this.data?.layers?.[0].result?.[0]
+    const firstRecord = this.data?.layers?.[0]?.result?.[0]
     let firstRecordValue = firstRecord ? firstRecord[this.keyX ?? ''] : ''
     const formattedValue = this.data?.options?.format
 
