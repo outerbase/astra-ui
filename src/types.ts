@@ -379,6 +379,8 @@ export type DashboardV3Chart = {
   type?: ChartTypeV3
   // TBD
   params?: Record<string, string>
+  // source id is necessary when rendering a chart without the context of a base
+  source_id?: string
 }
 
 export enum DashboardFilterType {
