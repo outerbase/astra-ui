@@ -402,6 +402,7 @@ export type DashboardV3 = {
   name: string
   // Specify a version of the chart to allow for backwards compatibility
   version?: number
+  updated_at?: string
   charts: Array<DashboardV3Chart>
   chart_ids: Array<string>
   layout: Array<{
