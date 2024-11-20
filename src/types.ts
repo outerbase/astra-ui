@@ -324,6 +324,7 @@ export type DashboardV3ChartQuery = {
   // Indicates if this queries results should be hidden from the user
   hidden?: boolean
 }
+export type PaletteThemeType = 'mercury' | 'iridium' | 'celestial' | 'cobalt' | 'afterburn'
 
 export type DashboardV3ChartOptions = {
   // The location of the legend on the chart
@@ -342,6 +343,8 @@ export type DashboardV3ChartOptions = {
   xAxisLabelDisplay?: DashboardV3ChartLabelDisplayX
   // The position of the Y axis, or hidden
   yAxisLabelDisplay?: DashboardV3ChartLabelDisplayY
+  xAxisLabelHidden?: boolean
+  yAxisLabelHidden?: boolean
   // Order the data in a specific order
   sortOrder?: DashboardV3ChartSortOrder
   // The column to group the data by
@@ -353,7 +356,7 @@ export type DashboardV3ChartOptions = {
   // Format the text chart with a specific format
   format?: 'percent' | 'number' | 'decimal' | 'date' | 'time' | 'dollar' | 'euro' | 'pound' | 'yen'
   // Theme of the chart
-  theme?: string
+  theme?: PaletteThemeType
 }
 
 export type DashboardV3Highlight = {
