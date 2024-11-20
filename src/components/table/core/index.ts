@@ -1232,7 +1232,7 @@ export default class AstraTable extends ClassifiedElement {
         theme=${this.theme}
         .onScroll=${this.updateTableView}
       >
-        // important: 'id=table' is used by dashboard
+        <!-- important: 'id=table' is used by dashboard -->
         <div class="flex w-full min-w-fit" id="table">
           <!-- pinned columns -->
           ${this.pinnedTableSection}
