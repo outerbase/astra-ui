@@ -42,6 +42,32 @@ export default class AstraComposedChart extends AstraChart {
   @property({ type: Number }) sizeX?: number
   // When presented in a grid layout, indicates how many spaces on the Y axis the chart consumes. Between 1 and 2.
   @property({ type: Number }) sizeY?: number
+  // Background color for the chart.
+  @property({ type: String }) backgroundColor?: string
+  // Text color for the chart.
+  @property({ type: String }) textColor?: string
+
+  protected updated(changedProperties: Map<string | number | symbol, unknown>): void {
+    super.updated(changedProperties)
+
+    if (changedProperties.has('backgroundColor') || changedProperties.has('textColor')) {
+      const composedChartElement = this.renderRoot.querySelector('#composed-chart') as HTMLElement
+
+      if (composedChartElement) {
+        if (this.backgroundColor) {
+          composedChartElement.style.setProperty('background-color', this.backgroundColor, 'important')
+        } else {
+          composedChartElement.style.removeProperty('background-color')
+        }
+
+        if (this.textColor) {
+          composedChartElement.style.setProperty('color', this.textColor, 'important')
+        } else {
+          composedChartElement.style.removeProperty('color')
+        }
+      }
+    }
+  }
 
   public render() {
     // include header when large
