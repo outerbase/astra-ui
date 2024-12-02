@@ -1,13 +1,6 @@
 import { css, html, type PropertyValueMap } from 'lit'
 import { customElement, property, query } from 'lit/decorators.js'
-import type {
-  ChartTypeV3,
-  DashboardV3Chart,
-  DashboardV3ChartLabelDisplayX,
-  DashboardV3ChartLabelDisplayY,
-  DashboardV3ChartSortOrder,
-  Row,
-} from '../../types.js'
+import type { ChartTypeV3, DashboardV3Chart, DashboardV3ChartSortOrder, Row } from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
 
 // import * as echarts from 'echarts'
