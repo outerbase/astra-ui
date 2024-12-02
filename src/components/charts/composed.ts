@@ -145,22 +145,49 @@ export default class AstraComposedChart extends AstraChart {
       class=${`flex-1 flex items-center justify-center overflow-hidden ${layer?.type === 'table' ? 'border-t border-[#d4d4d4] dark:border-[#404040]' : ''}`}
     >
       ${showNoDataLabel
-        ? html`<div class="flex flex-col gap-8">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="80"
-              height="80"
-              fill=${this.theme === 'dark' ? '#e5e5e5' : '#262626'}
-              viewBox="0 0 256 256"
-              class="mx-auto"
-            >
-              <path
-                d="M192.76,62.72l18.2-20A4,4,0,0,0,205,37.31l-18.2,20a92,92,0,0,0-123.6,136l-18.2,20A4,4,0,1,0,51,218.69l18.2-20A92,92,0,0,0,192.76,62.72ZM44,128A84,84,0,0,1,181.46,63.25L68.63,187.36A83.72,83.72,0,0,1,44,128Zm84,84a83.64,83.64,0,0,1-53.46-19.25L187.37,68.64A84,84,0,0,1,128,212Z"
-              ></path>
-            </svg>
-            <div class="text-neutral-800 dark:text-neutral-200 font-semibold text-xl">No results found.</div>
-          </div>`
-        : html`${chart}`}
+        ? html`<svg
+                  width="32"
+                  height="32"
+                  stroke=${this.theme === 'dark' ? '#e5e5e5' : '#262626'}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                    <g transform-origin="center">
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r="9.5"
+                            fill="none"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                        >
+                            <animateTransform
+                                attributeName="transform"
+                                type="rotate"
+                                from="0 12 12"
+                                to="360 12 12"
+                                dur="2s"
+                                repeatCount="indefinite"
+                            />
+
+                            <animate
+                                attributeName="stroke-dasharray"
+                                values="0 150;42 150;42 150"
+                                keyTimes="0;0.5;1"
+                                dur="1.5s"
+                                repeatCount="indefinite"
+                            />
+
+                            <animate
+                                attributeName="stroke-dashoffset"
+                                values="0;-16;-59"
+                                keyTimes="0;0.5;1"
+                                dur="1.5s"
+                                repeatCount="indefinite"
+                            />
+                        </circle>
+                    </g>
+                </svg>`: html`${chart }`}
     </div>`
 
     // render result
