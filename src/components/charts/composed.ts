@@ -190,7 +190,6 @@ export default class AstraComposedChart extends AstraChart {
             <g transform-origin="center">
               <circle cx="12" cy="12" r="9.5" fill="none" stroke-width="1.5" stroke-linecap="round">
                 <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="2s" repeatCount="indefinite" />
-
                 <animate
                   attributeName="stroke-dasharray"
                   values="0 150;42 150;42 150"
@@ -198,7 +197,6 @@ export default class AstraComposedChart extends AstraChart {
                   dur="1.5s"
                   repeatCount="indefinite"
                 />
-
                 <animate attributeName="stroke-dashoffset" values="0;-16;-59" keyTimes="0;0.5;1" dur="1.5s" repeatCount="indefinite" />
               </circle>
             </g>
