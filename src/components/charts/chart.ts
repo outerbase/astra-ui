@@ -10,6 +10,7 @@ import * as echarts from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import type { BarSeriesOption, EChartsOption, LineSeriesOption, ScatterSeriesOption, SeriesOption } from 'echarts/types/dist/shared'
 import { unsafeHTML } from 'lit/directives/unsafe-html.js'
+import { formatDate } from '../../lib/format-date.js'
 
 // Register the required components
 echarts.use([
@@ -344,26 +345,27 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   private labelFormatter(value: unknown): string {
-    if (typeof value === 'string' || value instanceof String) {
-      const parsedDate = Date.parse(value as string)
-      if (!isNaN(parsedDate)) {
-        const date = new Date(parsedDate)
-        const year = date.getUTCFullYear()
-        const month = String(date.getUTCMonth() + 1).padStart(2, '0')
-        const day = String(date.getUTCDate()).padStart(2, '0')
+    return typeof value === 'string' ? formatDate(value) : String(value)
+    // if (typeof value === 'string' || value instanceof String) {
+    //   const parsedDate = Date.parse(value as string)
+    //   if (!isNaN(parsedDate)) {
+    //     const date = new Date(parsedDate)
+    //     const year = date.getUTCFullYear()
+    //     const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+    //     const day = String(date.getUTCDate()).padStart(2, '0')
 
-        if (this.uniqueYears.size > 1) {
-          return `${year}-${month}`
-        }
+    //     if (this.uniqueYears.size > 1) {
+    //       return `${year}-${month}`
+    //     }
 
-        if (this.uniqueMonths.size > 1) {
-          return `${year}-${month}-${day}`
-        }
+    //     if (this.uniqueMonths.size > 1) {
+    //       return `${year}-${month}-${day}`
+    //     }
 
-        return `${year}`
-      }
-    }
-    return typeof value === 'string' ? value : String(value)
+    //     return `${year}`
+    //   }
+    // }
+    // return typeof value === 'string' ? value : String(value)
   }
 
   private getChartOptions(): EChartsOption {
