@@ -722,6 +722,7 @@ export default class AstraChart extends ClassifiedElement {
           }
         })
         options.series = this.constructSeries<RadarSeriesOption>('radar', {
+          data,
           // data: [
           //   {
           //     value: [
@@ -742,10 +743,10 @@ export default class AstraChart extends ClassifiedElement {
           //     areaStyle: { opacity: 0.3 },
           //   },
           // ],
-          data: this.data?.layers?.[0]?.result?.map((item) => ({
-            value: this.columns.slice(1).map((col) => Number(item[col])), // Convert each to a number and collect in an array
-            name: item[this.columns[0]] as string, // This is your label
-          })),
+          // data: this.data?.layers?.[0]?.result?.map((item) => ({
+          //   value: this.columns.slice(1).map((col) => Number(item[col])), // Convert each to a number and collect in an array
+          //   name: item[this.columns[0]] as string, // This is your label
+          // })),
         })
         break
       case 'pie':
