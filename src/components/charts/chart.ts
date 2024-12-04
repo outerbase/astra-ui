@@ -8,7 +8,15 @@ import { BarChart, FunnelChart, HeatmapChart, LineChart, PieChart, RadarChart, S
 import { DatasetComponent, LegendComponent, TitleComponent, TooltipComponent, TransformComponent } from 'echarts/components'
 import * as echarts from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
-import type { BarSeriesOption, EChartsOption, LineSeriesOption, ScatterSeriesOption, SeriesOption } from 'echarts/types/dist/shared'
+import type {
+  BarSeriesOption,
+  CandlestickSeriesOption,
+  EChartsOption,
+  LineSeriesOption,
+  ScatterSeriesOption,
+  SeriesOption,
+  PieSeriesOption,
+} from 'echarts/types/dist/shared'
 import { unsafeHTML } from 'lit/directives/unsafe-html.js'
 import { formatDate } from '../../lib/format-date.js'
 
@@ -652,6 +660,34 @@ export default class AstraChart extends ClassifiedElement {
             color: this.getTextColor(),
           },
         }
+        break
+      case 'pie':
+        options.series = this.constructSeries<PieSeriesOption>('pie', {
+          data:
+            this.data?.layers?.[0]?.result?.map((item) => ({
+              name: item[this.columns[0]] as string,
+              value: item[this.columns[1]] as number,
+            })) ?? [],
+          avoidLabelOverlap: true,
+          itemStyle: {
+            borderRadius: 10,
+            borderColor: 'rgba(0, 0, 0, 0.2)',
+            borderWidth: 2,
+          },
+          label: {
+            show: true,
+            // color: 'rgba(255, 255, 255, 0.9)',
+            formatter: '{b}: {c} ({d}%)',
+          },
+          emphasis: {
+            label: {
+              show: true,
+              fontSize: '16',
+              fontWeight: 'bold',
+            },
+          },
+        })
+
         break
       default:
         break
