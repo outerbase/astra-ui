@@ -13,7 +13,6 @@ import type {
   EChartsOption,
   FunnelSeriesOption,
   LineSeriesOption,
-  RadarSeriesOption,
   ScatterSeriesOption,
   SeriesOption,
   PieSeriesOption,
