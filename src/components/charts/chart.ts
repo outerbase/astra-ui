@@ -13,6 +13,7 @@ import type {
   EChartsOption,
   FunnelSeriesOption,
   LineSeriesOption,
+  RadarSeriesOption,
   ScatterSeriesOption,
   SeriesOption,
   PieSeriesOption,
@@ -687,6 +688,66 @@ export default class AstraChart extends ClassifiedElement {
           })),
         })
         break
+      case 'radar':
+        options.radar = {
+          indicator: this.columns.slice(1).map((col) => ({
+            name: col,
+            max: this.maxY || 100, // Set a max value for each axis, adjust this as needed
+          })),
+          shape: 'polygon', // or 'circle' depending on your preference
+          splitLine: {
+            lineStyle: {
+              color: 'rgba(255, 255, 255, 0.2)',
+            },
+          },
+          axisLine: {
+            lineStyle: {
+              color: 'rgba(255, 255, 255, 0.2)',
+            },
+          },
+          splitArea: {
+            show: true,
+            areaStyle: {
+              color: ['rgba(255, 255, 255, 0.02)', 'rgba(255, 255, 255, 0.05)'],
+            },
+          },
+        }
+        const data = this.columns.slice(1).map((name) => {
+          const value = this.data?.layers?.[0]?.result?.map((asdf) => asdf[name])
+          return {
+            name,
+            value,
+            itemStyle: { color: 'rgb(255,0,0)' },
+            areaStyle: { opacity: 0.3 },
+          }
+        })
+        options.series = this.constructSeries<RadarSeriesOption>('radar', {
+          // data: [
+          //   {
+          //     value: [
+          //       34.999999999999986, 24.019237886466843, 20, 24.019237886466847, 35, 50.00000000000001, 65, 75.98076211353316, 80,
+          //       75.98076211353316, 65, 50,
+          //     ],
+          //     name: 'Metrics A',
+          //     itemStyle: { color: '#ff71ce' },
+          //     areaStyle: { opacity: 0.3 },
+          //   },
+          //   {
+          //     value: [
+          //       75.98076211353316, 65, 49.99999999999999, 34.999999999999986, 24.019237886466843, 20, 24.01923788646684, 35.00000000000001,
+          //       50, 65, 75.98076211353316, 80,
+          //     ],
+          //     name: 'Metrics B',
+          //     itemStyle: { color: '#b967ff' },
+          //     areaStyle: { opacity: 0.3 },
+          //   },
+          // ],
+          data: this.data?.layers?.[0]?.result?.map((item) => ({
+            value: this.columns.slice(1).map((col) => Number(item[col])), // Convert each to a number and collect in an array
+            name: item[this.columns[0]] as string, // This is your label
+          })),
+        })
+        break
       case 'pie':
         options.series = this.constructSeries<PieSeriesOption>('pie', {
           data:
@@ -722,7 +783,7 @@ export default class AstraChart extends ClassifiedElement {
     }
   }
 
-  private constructSeries<T extends SeriesOption>(seriesType: T['type'], additionalOptions: Partial<Omit<T, 'type' | 'data'>> = {}): T[] {
+  private constructSeries<T extends SeriesOption>(seriesType: T['type'], additionalOptions: Partial<Omit<T, 'type'>> = {}): T[] {
     return this.columns.slice(1).map((col) => {
       const baseSeries = {
         name: col,
