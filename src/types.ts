@@ -305,7 +305,26 @@ export type Field = {
 export type Fields = Array<Field>
 
 // CHARTS
-export type ChartTypeV3 = 'column' | 'bar' | 'line' | 'area' | 'single_value' | 'table' | 'scatter' | 'heatmap' | 'text' | 'section'
+export type ChartTypeV3 =
+  | 'column'
+  | 'bar'
+  | 'line'
+  | 'area'
+  | 'single_value'
+  | 'table'
+  | 'scatter'
+  | 'heatmap'
+  | 'text'
+  | 'section'
+  | 'radar'
+  | 'funnel'
+  | 'pie'
+// | 'smoothLine'
+// | 'stackedBar'
+// | 'candlestick'
+// | 'stepLine'
+// | 'stackedHorizontalBar'
+
 export type DashboardV3ChartLegend = 'none' | 'top' | 'bottom' | 'left' | 'right'
 export type DashboardV3ChartLabelDisplayX = 'auto' | '0' | '45' | '90' | 'hidden'
 export type DashboardV3ChartLabelDisplayY = 'left' | 'right' | 'hidden'

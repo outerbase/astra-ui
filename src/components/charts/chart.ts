@@ -4,7 +4,7 @@ import type { ChartTypeV3, DashboardV3Chart, DashboardV3ChartSortOrder, Row } fr
 import { ClassifiedElement } from '../classified-element.js'
 
 // import * as echarts from 'echarts'
-import { BarChart, HeatmapChart, LineChart, ScatterChart } from 'echarts/charts'
+import { BarChart, FunnelChart, HeatmapChart, LineChart, PieChart, RadarChart, ScatterChart } from 'echarts/charts'
 import { DatasetComponent, LegendComponent, TitleComponent, TooltipComponent, TransformComponent } from 'echarts/components'
 import * as echarts from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -27,6 +27,9 @@ echarts.use([
   TitleComponent,
   TooltipComponent,
   TransformComponent,
+  PieChart,
+  RadarChart,
+  FunnelChart,
   // AxisPointerComponent,
   // GridComponent,
   // DataZoomComponent,
