@@ -694,6 +694,8 @@ export default class AstraChart extends ClassifiedElement {
               name: item[this.columns[0]] as string,
               value: item[this.columns[1]] as number,
             })) ?? [],
+          radius: ['40%', '70%'],
+          center: ['50%', '50%'],
           avoidLabelOverlap: true,
           itemStyle: {
             borderRadius: 10,
@@ -730,7 +732,7 @@ export default class AstraChart extends ClassifiedElement {
             ? { x: col, y: this.columns[0] } // For bar charts
             : { x: this.columns[0], y: col }, // For other chart types
         itemStyle: {
-          color: this.yAxisColors?.[col] ?? undefined, // Use color from yAxisColors if present
+          color: this.type !== 'pie' ? this.yAxisColors?.[col] : undefined, // Use color from yAxisColors if present -- except on pie
         },
         symbol: 'circle',
         ...additionalOptions,
