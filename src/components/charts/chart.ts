@@ -11,6 +11,7 @@ import { CanvasRenderer } from 'echarts/renderers'
 import type {
   BarSeriesOption,
   EChartsOption,
+  FunnelSeriesOption,
   LineSeriesOption,
   ScatterSeriesOption,
   SeriesOption,
@@ -659,6 +660,32 @@ export default class AstraChart extends ClassifiedElement {
             color: this.getTextColor(),
           },
         }
+        break
+      case 'funnel':
+        options.series = this.constructSeries<FunnelSeriesOption>('funnel', {
+          left: '10%',
+          top: 60,
+          bottom: 60,
+          width: '80%',
+          minSize: '0%',
+          maxSize: '100%',
+          sort: 'descending',
+          label: {
+            show: true,
+            position: 'inside',
+            formatter: '{b}: {c}',
+            color: '#fff', // label color
+          },
+          gap: 2,
+          itemStyle: {
+            borderColor: 'rgba(0, 0, 0, 0.2)',
+            borderWidth: 1,
+          },
+          data: this.data?.layers?.[0]?.result?.map((item) => ({
+            name: item[this.columns[0]] as string,
+            value: item[this.columns[1]] as number,
+          })),
+        })
         break
       case 'pie':
         options.series = this.constructSeries<PieSeriesOption>('pie', {
