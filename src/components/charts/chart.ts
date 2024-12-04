@@ -19,7 +19,7 @@ import type {
   PieSeriesOption,
 } from 'echarts/types/dist/shared'
 import { unsafeHTML } from 'lit/directives/unsafe-html.js'
-import { formatDate } from '../../lib/format-date.js'
+import { formatDate, isDate } from '../../lib/format-date.js'
 
 // Register the required components
 echarts.use([
@@ -398,6 +398,10 @@ export default class AstraChart extends ClassifiedElement {
     const isTall = (this.chartHeight ?? 0) > 150
     const gridLineColors = this.theme === 'dark' ? '#FFFFFF08' : '#00000010'
     const axisLineColors = this.theme === 'dark' ? '#FFFFFF15' : '#00000020'
+
+    // Determine if the X axis data is a date
+    const isXAxisDate = !!(this.columns[0] && formattedSource.some((item) => isDate(item[this.columns[0]] as string)))
+
     const options: EChartsOption =
       this.type === 'radar'
         ? {
@@ -428,14 +432,6 @@ export default class AstraChart extends ClassifiedElement {
           }
         : {
             backgroundColor: this.getBackgroundColor(),
-            // title: {
-            //   show: isTall,
-            //   text: this.title,
-            //   textStyle: {
-            //     color: this.getTextColor(),
-            //   },
-            //   left: 'center',
-            // },
             dataset: {
               dimensions: this.columns,
               source: formattedSource,
@@ -463,7 +459,7 @@ export default class AstraChart extends ClassifiedElement {
             },
             xAxis: {
               show: !this.hideXAxisLabel,
-              type: 'category',
+              type: isXAxisDate ? 'time' : 'category',
               name: isTall ? this.xAxisLabel : '',
               nameLocation: 'middle',
               nameGap: 30,
@@ -477,15 +473,15 @@ export default class AstraChart extends ClassifiedElement {
                 },
               },
               axisLabel: {
-                formatter: (value) => this.labelFormatter(value),
+                // formatter: (value) => this.labelFormatter(value),
                 color: this.getTextColor(),
                 hideOverlap: true,
                 rotate: this.xAxisLabelDisplay,
-                interval: 1,
+                // interval: 1,
                 align: 'center',
               },
               axisTick: {
-                alignWithLabel: true,
+                // alignWithLabel: true,
               },
               splitLine: {
                 show: false,
@@ -537,7 +533,7 @@ export default class AstraChart extends ClassifiedElement {
       return options
     }
 
-    return this.addSeries(options) // Pass the source dataset when adding series
+    return this.addSeries(options, isXAxisDate) // Pass the source dataset when adding series
   }
 
   private getColorValues(): string[] {
@@ -613,7 +609,7 @@ export default class AstraChart extends ClassifiedElement {
     return this.theme === 'dark' ? '#FFFFFF' : '#000000'
   }
 
-  private addSeries(_options: EChartsOption) {
+  private addSeries(_options: EChartsOption, isXAxisDate: boolean) {
     const options = { ..._options }
     const gridLineColors = this.theme === 'dark' ? '#FFFFFF10' : '#00000010'
 
@@ -677,7 +673,7 @@ export default class AstraChart extends ClassifiedElement {
         }
 
         options.yAxis = {
-          type: 'category',
+          type: isXAxisDate ? 'time' : 'category',
           name: this.yAxisLabel,
           nameTextStyle: {
             color: this.getTextColor(),
@@ -688,7 +684,7 @@ export default class AstraChart extends ClassifiedElement {
             },
           },
           axisLabel: {
-            formatter: (value) => this.labelFormatter(value),
+            // formatter: (value) => this.labelFormatter(value),
             color: this.getTextColor(),
           },
         }

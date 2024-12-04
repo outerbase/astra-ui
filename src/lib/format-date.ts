@@ -35,44 +35,44 @@ interface DatePattern {
   format: DateFormat
 }
 
+const datePatterns: DatePattern[] = [
+  { pattern: /^(\d{4})-(\d{2})-(\d{2})$/, format: 'yyyy-MM-dd' },
+  { pattern: /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/, format: 'MM/dd/yyyy' },
+  { pattern: /^(\d{1,2})-(\d{2})-(\d{4})$/, format: 'dd-MM-yyyy' },
+  { pattern: /^(\d{1,2})\s+(\w{3})\s+(\d{4})$/, format: 'd MMM yyyy' },
+  { pattern: /^(\w+)\s+(\d{1,2}),\s+(\d{4})$/, format: 'MMMM d, yyyy' },
+  { pattern: /^(\d{2})-(\d{2})-(\d{2})$/, format: 'yy-MM-dd' },
+  { pattern: /^(\d{1,2})-(\w{3})-(\d{2})$/, format: 'd-MMM-yy' },
+  { pattern: /^(\w{3}),\s+(\d{1,2})\s+(\w{3})\s+(\d{4})$/, format: 'EEE, dd MMM yyyy' },
+  { pattern: /^(\d{4})\.(\d{2})\.(\d{2})$/, format: 'yyyy.MM.dd' },
+  {
+    pattern: /^(\w{3})\s+(\w{3})\s+(\d{2})\s+(\d{4})\s+(\d{2}):(\d{2}):(\d{2})\s+GMT([-+]\d{4})\s*\(.+\)$/,
+    format: 'EEE MMM dd yyyy HH:mm:ss GMT',
+  },
+  { pattern: /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})([-+]\d{2}:\d{2})$/, format: 'yyyy-MM-ddTHH:mm:ssZ' },
+  { pattern: /^(\d{1,2})\/(\d{1,2})\/(\d{2})$/, format: 'M/d/yy' },
+  { pattern: /^(\w+),\s+(\d{1,2})\s+(\w+)\s+(\d{4})\s+(\d{2}):(\d{2}):(\d{2})\s+([APap][Mm])$/, format: 'EEEE, dd MMMM yyyy hh:mm:ss a' },
+  { pattern: /^(\d{2})\.(\d{2})\.(\d{2})$/, format: 'yy.MM.dd' },
+  { pattern: /^(\d{4})-(\w{3})-(\d{2})\s+AD$/, format: 'yyyy-MMM-dd G' },
+  { pattern: /^(\w{3}),\s+(\d{1,2})\s+(\w{3})\s+(\d{4})\s+(\d{2}):(\d{2}):(\d{2})\s+([-+]\d{4})$/, format: 'EEE, d MMM yyyy HH:mm:ss Z' },
+  { pattern: /^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2})\s+([APap][Mm]?)$/, format: 'dd/MM/yyyy hh:mm a' },
+  { pattern: /^(\d{4})\.(\d{3})T(\d{2}):(\d{2}):(\d{2})$/, format: 'yyyy.DDDTHH:mm:ss' },
+  { pattern: /^(\d{1,2})\s+(\w{3})\s+(\d{2})$/, format: 'd MMM yy' },
+  { pattern: /^(\w+)\s+(\d{1,2})(?:st|nd|rd|th)?,\s+(\d{4})$/, format: 'MMMM do, yyyy' },
+  { pattern: /^(\d{4})\/(\d{2})\/(\d{2})\s+(\d{2}):(\d{2})$/, format: 'yyyy/MM/dd HH:mm' },
+  { pattern: /^(\d{1,2})-(\w{3})-(\d{4})$/, format: 'd-MMM-yyyy' },
+  { pattern: /^(\w+)\s+(\d{1,2}),\s+(\d{4})$/, format: 'MMMM d, yyyy' },
+  {
+    pattern: /^(\w+),\s+(\d{1,2})\s+(\w+)\s+(\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})\s+([APap][Mm])$/,
+    format: 'EEEE, dd MMMM yyyy hh:mm:ss a',
+  },
+  { pattern: /^(\w+)\s+(\d{1,2})(?:st|nd|rd|th),\s+(\d{4})$/, format: 'MMMM do, yyyy' },
+]
+
 export function formatDate(value: string): string {
   if (value.trim() === '') {
     return value
   }
-
-  const datePatterns: DatePattern[] = [
-    { pattern: /^(\d{4})-(\d{2})-(\d{2})$/, format: 'yyyy-MM-dd' },
-    { pattern: /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/, format: 'MM/dd/yyyy' },
-    { pattern: /^(\d{1,2})-(\d{2})-(\d{4})$/, format: 'dd-MM-yyyy' },
-    { pattern: /^(\d{1,2})\s+(\w{3})\s+(\d{4})$/, format: 'd MMM yyyy' },
-    { pattern: /^(\w+)\s+(\d{1,2}),\s+(\d{4})$/, format: 'MMMM d, yyyy' },
-    { pattern: /^(\d{2})-(\d{2})-(\d{2})$/, format: 'yy-MM-dd' },
-    { pattern: /^(\d{1,2})-(\w{3})-(\d{2})$/, format: 'd-MMM-yy' },
-    { pattern: /^(\w{3}),\s+(\d{1,2})\s+(\w{3})\s+(\d{4})$/, format: 'EEE, dd MMM yyyy' },
-    { pattern: /^(\d{4})\.(\d{2})\.(\d{2})$/, format: 'yyyy.MM.dd' },
-    {
-      pattern: /^(\w{3})\s+(\w{3})\s+(\d{2})\s+(\d{4})\s+(\d{2}):(\d{2}):(\d{2})\s+GMT([-+]\d{4})\s*\(.+\)$/,
-      format: 'EEE MMM dd yyyy HH:mm:ss GMT',
-    },
-    { pattern: /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})([-+]\d{2}:\d{2})$/, format: 'yyyy-MM-ddTHH:mm:ssZ' },
-    { pattern: /^(\d{1,2})\/(\d{1,2})\/(\d{2})$/, format: 'M/d/yy' },
-    { pattern: /^(\w+),\s+(\d{1,2})\s+(\w+)\s+(\d{4})\s+(\d{2}):(\d{2}):(\d{2})\s+([APap][Mm])$/, format: 'EEEE, dd MMMM yyyy hh:mm:ss a' },
-    { pattern: /^(\d{2})\.(\d{2})\.(\d{2})$/, format: 'yy.MM.dd' },
-    { pattern: /^(\d{4})-(\w{3})-(\d{2})\s+AD$/, format: 'yyyy-MMM-dd G' },
-    { pattern: /^(\w{3}),\s+(\d{1,2})\s+(\w{3})\s+(\d{4})\s+(\d{2}):(\d{2}):(\d{2})\s+([-+]\d{4})$/, format: 'EEE, d MMM yyyy HH:mm:ss Z' },
-    { pattern: /^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2})\s+([APap][Mm]?)$/, format: 'dd/MM/yyyy hh:mm a' },
-    { pattern: /^(\d{4})\.(\d{3})T(\d{2}):(\d{2}):(\d{2})$/, format: 'yyyy.DDDTHH:mm:ss' },
-    { pattern: /^(\d{1,2})\s+(\w{3})\s+(\d{2})$/, format: 'd MMM yy' },
-    { pattern: /^(\w+)\s+(\d{1,2})(?:st|nd|rd|th)?,\s+(\d{4})$/, format: 'MMMM do, yyyy' },
-    { pattern: /^(\d{4})\/(\d{2})\/(\d{2})\s+(\d{2}):(\d{2})$/, format: 'yyyy/MM/dd HH:mm' },
-    { pattern: /^(\d{1,2})-(\w{3})-(\d{4})$/, format: 'd-MMM-yyyy' },
-    { pattern: /^(\w+)\s+(\d{1,2}),\s+(\d{4})$/, format: 'MMMM d, yyyy' },
-    {
-      pattern: /^(\w+),\s+(\d{1,2})\s+(\w+)\s+(\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})\s+([APap][Mm])$/,
-      format: 'EEEE, dd MMMM yyyy hh:mm:ss a',
-    },
-    { pattern: /^(\w+)\s+(\d{1,2})(?:st|nd|rd|th),\s+(\d{4})$/, format: 'MMMM do, yyyy' },
-  ]
 
   function parseDateComponents(dateString: string, pattern: RegExp): { year?: number; month?: number; day?: number } | null {
     const match = dateString.match(pattern)
@@ -241,4 +241,19 @@ export function formatDate(value: string): string {
   }
 
   return value
+}
+
+export function isDate(value: string | null | undefined): boolean {
+  if (typeof value !== 'string') return false
+  if (value.trim() === '') {
+    return false
+  }
+
+  for (const { pattern } of datePatterns) {
+    if (pattern.test(value)) {
+      return true
+    }
+  }
+
+  return false
 }
