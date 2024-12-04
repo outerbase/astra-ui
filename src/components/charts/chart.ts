@@ -690,10 +690,10 @@ export default class AstraChart extends ClassifiedElement {
         break
       case 'radar':
         options.radar = {
-          indicator: this.columns.slice(1).map((col) => ({
-            name: col,
-            max: this.maxY || 100, // Set a max value for each axis, adjust this as needed
-          })),
+          // indicator: this.columns.slice(1).map((col) => ({
+          //   name: col,
+          //   max: this.maxY || 100, // Set a max value for each axis, adjust this as needed
+          // })),
           shape: 'polygon', // or 'circle' depending on your preference
           splitLine: {
             lineStyle: {
@@ -712,15 +712,26 @@ export default class AstraChart extends ClassifiedElement {
             },
           },
         }
-        const data = this.columns.slice(1).map((name) => {
-          const value = this.data?.layers?.[0]?.result?.map((asdf) => asdf[name])
-          return {
-            name,
-            value,
+        // const data = this.columns.slice(1).map((name) => {
+        //   const value = this.data?.layers?.[0]?.result?.map((asdf) => asdf[name])
+        //   return {
+        //     name,
+        //     value: Number(value),
+        //     itemStyle: { color: 'rgb(255,0,0)' },
+        //     areaStyle: { opacity: 0.3 },
+        //   }
+        // })
+        const data = [
+          {
+            name: 'Series1',
+            value: this.columns.slice(1).map((name) => {
+              const values = this.data?.layers?.[0]?.result?.map((item) => Number(item[name]))
+              return values || []
+            }),
             itemStyle: { color: 'rgb(255,0,0)' },
             areaStyle: { opacity: 0.3 },
-          }
-        })
+          },
+        ]
         options.series = this.constructSeries<RadarSeriesOption>('radar', {
           data,
           // data: [
