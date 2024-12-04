@@ -384,6 +384,8 @@ export default class AstraChart extends ClassifiedElement {
     const colorValues = this.getColorValues()
     const datasetSource = this.data?.layers?.[0]?.result ?? []
 
+    // Transform the datasetSource into a format suitable for eCharts by mapping over each item
+    // and reducing columns to a record with column names as keys and corresponding item values.
     const formattedSource: Record<string, unknown>[] = datasetSource.map((item) =>
       this.columns.reduce(
         (acc, column) => {
@@ -393,121 +395,149 @@ export default class AstraChart extends ClassifiedElement {
         {} as Record<string, unknown>
       )
     )
-
     const isTall = (this.chartHeight ?? 0) > 150
     const gridLineColors = this.theme === 'dark' ? '#FFFFFF08' : '#00000010'
     const axisLineColors = this.theme === 'dark' ? '#FFFFFF15' : '#00000020'
+    const options: EChartsOption =
+      this.type === 'radar'
+        ? {
+            radar: {
+              shape: 'polygon',
+              indicator: this.columns.map((name) => ({ name })),
+            },
+            series: [
+              {
+                // name: '',
+                type: 'radar',
+                data:
+                  // e.g. data
+                  // {
+                  //   value: [5000, 14000, 28000, 26000, 42000, 21000],
+                  //   name: 'Actual Spending',
+                  // },
+                  //
+                  //
+                  // Extract real data for radar chart
+                  // Each object corresponds to a column and contains an array of flattened values
+                  this.columns.map((col) => ({
+                    value: formattedSource.map((item) => Number(item[col])),
+                    name: col,
+                  })),
+              },
+            ],
+          }
+        : {
+            backgroundColor: this.getBackgroundColor(),
+            // title: {
+            //   show: isTall,
+            //   text: this.title,
+            //   textStyle: {
+            //     color: this.getTextColor(),
+            //   },
+            //   left: 'center',
+            // },
+            dataset: {
+              dimensions: this.columns,
+              source: formattedSource,
+            },
+            tooltip: {
+              trigger: this.type === 'scatter' ? 'item' : 'axis',
+              borderColor: gridLineColors, // fix issue where 'item' tooltips were a different color than the rest (maybe it matched the series color)
+            },
+            legend: {
+              show: !this.omitLegend && isTall,
+              data: this.columns.slice(1),
+              textStyle: {
+                color: this.getTextColor(),
+              },
+              top: 8,
+              orient: 'horizontal',
+              type: 'scroll', // Enable scrolling if too many items
+            },
+            grid: {
+              left: '2%',
+              right: '2%',
+              bottom: isTall ? '15%' : '15%',
+              top: isTall ? '20%' : '20%', // Increased from 15% to 20%
+              containLabel: true,
+            },
+            xAxis: {
+              show: !this.hideXAxisLabel,
+              type: 'category',
+              name: isTall ? this.xAxisLabel : '',
+              nameLocation: 'middle',
+              nameGap: 30,
+              nameTextStyle: {
+                color: this.getTextColor(),
+              },
+              axisLine: {
+                show: false,
+                lineStyle: {
+                  color: axisLineColors,
+                },
+              },
+              axisLabel: {
+                formatter: (value) => this.labelFormatter(value),
+                color: this.getTextColor(),
+                hideOverlap: true,
+                rotate: this.xAxisLabelDisplay,
+                interval: 1,
+                align: 'center',
+              },
+              axisTick: {
+                alignWithLabel: true,
+              },
+              splitLine: {
+                show: false,
+                lineStyle: {
+                  color: gridLineColors,
+                },
+              },
+              min: this.minX,
+              max: this.maxX,
+            },
+            yAxis: {
+              type: 'value',
+              name: isTall ? this.yAxisLabel : '',
+              show: this.yAxisLabelDisplay !== 'hidden',
+              position: (this.yAxisLabelDisplay !== 'hidden' && this.yAxisLabelDisplay) || undefined, // exclude `hidden`, pass left/right
+              nameTextStyle: {
+                color: this.getTextColor(),
+                align: 'left',
+                padding: [0, 0, 0, 0],
+              },
+              axisLine: {
+                show: false,
+                lineStyle: {
+                  color: axisLineColors,
+                },
+              },
+              axisLabel: {
+                formatter: (value) => this.labelFormatter(value),
+                color: this.getTextColor(),
+                align: 'right',
+                inside: false,
+              },
+              axisTick: {
+                inside: false,
+              },
+              splitLine: {
+                show: true,
+                lineStyle: {
+                  color: gridLineColors,
+                },
+              },
+              min: this.minY,
+              max: this.maxY,
+            },
+            color: colorValues,
+          }
 
-    const options: EChartsOption = {
-      backgroundColor: this.getBackgroundColor(),
-      // title: {
-      //   show: isTall,
-      //   text: this.title,
-      //   textStyle: {
-      //     color: this.getTextColor(),
-      //   },
-      //   left: 'center',
-      // },
-      dataset: {
-        dimensions: this.columns,
-        source: formattedSource,
-      },
-      tooltip: {
-        trigger: this.type === 'scatter' ? 'item' : 'axis',
-        borderColor: gridLineColors, // fix issue where 'item' tooltips were a different color than the rest (maybe it matched the series color)
-      },
-      legend: {
-        show: !this.omitLegend && isTall,
-        data: this.columns.slice(1),
-        textStyle: {
-          color: this.getTextColor(),
-        },
-        top: 8,
-        orient: 'horizontal',
-        type: 'scroll', // Enable scrolling if too many items
-      },
-      grid: {
-        left: '2%',
-        right: '2%',
-        bottom: isTall ? '15%' : '15%',
-        top: isTall ? '20%' : '20%', // Increased from 15% to 20%
-        containLabel: true,
-      },
-      xAxis: {
-        show: !this.hideXAxisLabel,
-        type: 'category',
-        name: isTall ? this.xAxisLabel : '',
-        nameLocation: 'middle',
-        nameGap: 30,
-        nameTextStyle: {
-          color: this.getTextColor(),
-        },
-        axisLine: {
-          show: false,
-          lineStyle: {
-            color: axisLineColors,
-          },
-        },
-        axisLabel: {
-          formatter: (value) => this.labelFormatter(value),
-          color: this.getTextColor(),
-          hideOverlap: true,
-          rotate: this.xAxisLabelDisplay,
-          interval: 1,
-          align: 'center',
-        },
-        axisTick: {
-          alignWithLabel: true,
-        },
-        splitLine: {
-          show: false,
-          lineStyle: {
-            color: gridLineColors,
-          },
-        },
-        min: this.minX,
-        max: this.maxX,
-      },
-      yAxis: {
-        type: 'value',
-        name: isTall ? this.yAxisLabel : '',
-        show: this.yAxisLabelDisplay !== 'hidden',
-        position: (this.yAxisLabelDisplay !== 'hidden' && this.yAxisLabelDisplay) || undefined, // exclude `hidden`, pass left/right
-        nameTextStyle: {
-          color: this.getTextColor(),
-          align: 'left',
-          padding: [0, 0, 0, 0],
-        },
-        axisLine: {
-          show: false,
-          lineStyle: {
-            color: axisLineColors,
-          },
-        },
-        axisLabel: {
-          formatter: (value) => this.labelFormatter(value),
-          color: this.getTextColor(),
-          align: 'right',
-          inside: false,
-        },
-        axisTick: {
-          inside: false,
-        },
-        splitLine: {
-          show: true,
-          lineStyle: {
-            color: gridLineColors,
-          },
-        },
-        min: this.minY,
-        max: this.maxY,
-      },
-      color: colorValues,
+    if (this.type === 'radar') {
+      return options
     }
 
-    this.addSeries(options) // Pass the source dataset when adding series
-
-    return options
+    return this.addSeries(options) // Pass the source dataset when adding series
   }
 
   private getColorValues(): string[] {
@@ -583,7 +613,8 @@ export default class AstraChart extends ClassifiedElement {
     return this.theme === 'dark' ? '#FFFFFF' : '#000000'
   }
 
-  private addSeries(options: EChartsOption) {
+  private addSeries(_options: EChartsOption) {
+    const options = { ..._options }
     const gridLineColors = this.theme === 'dark' ? '#FFFFFF10' : '#00000010'
 
     switch (this.type) {
@@ -688,78 +719,6 @@ export default class AstraChart extends ClassifiedElement {
           })),
         })
         break
-      case 'radar':
-        options.radar = {
-          // indicator: this.columns.slice(1).map((col) => ({
-          //   name: col,
-          //   max: this.maxY || 100, // Set a max value for each axis, adjust this as needed
-          // })),
-          shape: 'polygon', // or 'circle' depending on your preference
-          splitLine: {
-            lineStyle: {
-              color: 'rgba(255, 255, 255, 0.2)',
-            },
-          },
-          axisLine: {
-            lineStyle: {
-              color: 'rgba(255, 255, 255, 0.2)',
-            },
-          },
-          splitArea: {
-            show: true,
-            areaStyle: {
-              color: ['rgba(255, 255, 255, 0.02)', 'rgba(255, 255, 255, 0.05)'],
-            },
-          },
-        }
-        // const data = this.columns.slice(1).map((name) => {
-        //   const value = this.data?.layers?.[0]?.result?.map((asdf) => asdf[name])
-        //   return {
-        //     name,
-        //     value: Number(value),
-        //     itemStyle: { color: 'rgb(255,0,0)' },
-        //     areaStyle: { opacity: 0.3 },
-        //   }
-        // })
-        const data = [
-          {
-            name: 'Series1',
-            value: this.columns.slice(1).map((name) => {
-              const values = this.data?.layers?.[0]?.result?.map((item) => Number(item[name]))
-              return values || []
-            }),
-            itemStyle: { color: 'rgb(255,0,0)' },
-            areaStyle: { opacity: 0.3 },
-          },
-        ]
-        options.series = this.constructSeries<RadarSeriesOption>('radar', {
-          data,
-          // data: [
-          //   {
-          //     value: [
-          //       34.999999999999986, 24.019237886466843, 20, 24.019237886466847, 35, 50.00000000000001, 65, 75.98076211353316, 80,
-          //       75.98076211353316, 65, 50,
-          //     ],
-          //     name: 'Metrics A',
-          //     itemStyle: { color: '#ff71ce' },
-          //     areaStyle: { opacity: 0.3 },
-          //   },
-          //   {
-          //     value: [
-          //       75.98076211353316, 65, 49.99999999999999, 34.999999999999986, 24.019237886466843, 20, 24.01923788646684, 35.00000000000001,
-          //       50, 65, 75.98076211353316, 80,
-          //     ],
-          //     name: 'Metrics B',
-          //     itemStyle: { color: '#b967ff' },
-          //     areaStyle: { opacity: 0.3 },
-          //   },
-          // ],
-          // data: this.data?.layers?.[0]?.result?.map((item) => ({
-          //   value: this.columns.slice(1).map((col) => Number(item[col])), // Convert each to a number and collect in an array
-          //   name: item[this.columns[0]] as string, // This is your label
-          // })),
-        })
-        break
       case 'pie':
         options.series = this.constructSeries<PieSeriesOption>('pie', {
           data:
@@ -793,6 +752,8 @@ export default class AstraChart extends ClassifiedElement {
       default:
         break
     }
+
+    return options
   }
 
   private constructSeries<T extends SeriesOption>(seriesType: T['type'], additionalOptions: Partial<Omit<T, 'type'>> = {}): T[] {
