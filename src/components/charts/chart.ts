@@ -550,7 +550,7 @@ export default class AstraChart extends ClassifiedElement {
       return options
     }
 
-    return this.addSeries(options, isXAxisDate) // Pass the source dataset when adding series
+    return this.addSeries(options) // Pass the source dataset when adding series
   }
 
   private getColorValues(): string[] {
@@ -626,7 +626,7 @@ export default class AstraChart extends ClassifiedElement {
     return this.theme === 'dark' ? '#FFFFFF' : '#000000'
   }
 
-  private addSeries(_options: EChartsOption, isXAxisDate: boolean) {
+  private addSeries(_options: EChartsOption) {
     const options = { ..._options }
     const gridLineColors = this.theme === 'dark' ? '#FFFFFF10' : '#00000010'
 
