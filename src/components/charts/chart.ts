@@ -43,14 +43,49 @@ echarts.use([
   // DataZoomComponent,
 ])
 
+// ai instructions: replace these colors
 const iridiumValues = ['#87E9C0', '#B9D975', '#C9D69B']
 const celestialValues = ['#D1FFFF', '#93FDFF', '#1A9EF5']
 const cobaltValues = ['#5956E2', '#A99AFF', '#82DBFF']
 const afterburnValues = ['#E75F98', '#FFA285', '#CCB8F2']
 const mercuryValuesDark = ['#fafafa', '#525252', '#a3a3a3', '#e5e5e5', '#262626']
 const mercuryValuesLight = ['#0a0a0a', '#a3a3a3', '#525252', '#262626', '#e5e5e5']
-
 type ThemeColors = 'mercury' | 'iridium' | 'celestial' | 'cobalt' | 'afterburn'
+
+// ai instructions: with the following colors
+// type ThemeColors =
+//   | "neonPunk"
+//   | "cyberGlow"
+//   | "neoTokyo"
+//   | "synthwave"
+//   | "vaporwave";
+
+// const THEMES: Record<ThemeColors, { background: string; colors: string[] }> = {
+//   neonPunk: {
+//     background: "linear-gradient(145deg, #1e0338 0%, #4a0d67 100%)",
+//     colors: ["#ff2e6e", "#8c54ff"],
+//   },
+//   cyberGlow: {
+//     background: "linear-gradient(145deg, #16213e 0%, #1a1a2e 100%)",
+//     colors: ["#ffa726", "#ff5722"],
+//   },
+//   neoTokyo: {
+//     background: "linear-gradient(145deg, #2d0a31 0%, #440a44 100%)",
+//     colors: ["#ff71ce", "#01cdfe"],
+//   },
+//   synthwave: {
+//     background: "linear-gradient(145deg, #2b1055 0%, #7597de 100%)",
+//     colors: ["#ff2a6d", "#05d9e8"],
+//   },
+//   vaporwave: {
+//     background: "linear-gradient(145deg, #391f5e 0%, #6b3fa0 100%)",
+//     colors: ["#ff71ce", "#b967ff"],
+//   },
+// };
+//
+
+// ai instructions: update the code to reflet this new THEME object
+// ai instructions: `getBackgroundColor` should return the selected themes bg color in the appropriate format
 
 @customElement('astra-chart')
 export default class AstraChart extends ClassifiedElement {
