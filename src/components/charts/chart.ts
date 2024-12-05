@@ -416,7 +416,7 @@ export default class AstraChart extends ClassifiedElement {
 
     // Determine if the X axis data is a date
     const isXAxisDate = !!(this.columns[0] && formattedSource.some((item) => isDate(item[this.columns[0]] as string)))
-
+    const isYAxisDate = !!(this.columns[1] && formattedSource.some((item) => isDate(item[this.columns[1]] as string)))
     const options: EChartsOption =
       this.type === 'radar'
         ? {
@@ -474,7 +474,8 @@ export default class AstraChart extends ClassifiedElement {
             },
             xAxis: {
               show: !this.hideXAxisLabel,
-              type: isXAxisDate ? 'time' : 'category',
+              type: this.type === 'bar' ? 'value' : isXAxisDate ? 'time' : 'category',
+              // type: 'category',
               name: isTall ? this.xAxisLabel : '',
               nameLocation: 'middle',
               nameGap: 30,
@@ -508,7 +509,7 @@ export default class AstraChart extends ClassifiedElement {
               max: this.maxX,
             },
             yAxis: {
-              type: 'value',
+              type: this.type === 'bar' ? (isXAxisDate ? 'time' : 'category') : isYAxisDate ? 'time' : 'value',
               name: isTall ? this.yAxisLabel : '',
               show: this.yAxisLabelDisplay !== 'hidden',
               position: (this.yAxisLabelDisplay !== 'hidden' && this.yAxisLabelDisplay) || undefined, // exclude `hidden`, pass left/right
