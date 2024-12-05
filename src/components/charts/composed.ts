@@ -47,7 +47,7 @@ export default class AstraComposedChart extends AstraChart {
   // Text color for the chart.
   @property({ type: String }) textColor?: string
 
-  protected updated(changedProperties: Map<string | number | symbol, unknown>): void {
+  override updated(changedProperties: Map<string | number | symbol, unknown>): void {
     super.updated(changedProperties)
 
     if (changedProperties.has('backgroundColor') || changedProperties.has('textColor')) {
