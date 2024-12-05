@@ -16,6 +16,7 @@ import type {
   ScatterSeriesOption,
   SeriesOption,
   PieSeriesOption,
+  XAXisOption,
 } from 'echarts/types/dist/shared'
 import { unsafeHTML } from 'lit/directives/unsafe-html.js'
 import { isDate } from '../../lib/format-date.js'
@@ -663,45 +664,12 @@ export default class AstraChart extends ClassifiedElement {
           coordinateSystem: 'cartesian2d',
         })
         options.xAxis = {
-          type: 'value',
-          name: this.xAxisLabel,
-          nameTextStyle: {
-            color: this.getTextColor(),
-          },
-          axisLine: {
-            lineStyle: {
-              color: this.getTextColor(),
-            },
-          },
-          axisLabel: {
-            formatter: (value) => this.labelFormatter(value),
-            color: this.getTextColor(),
-          },
-          nameLocation: 'middle', // Add this line to ensure the label is below the axis
-          nameGap: 30, // Add nameGap to control the distance between the axis and the label
+          ...options.xAxis,
+
           // Add split line style here for x-axis
           splitLine: {
+            ...(options.xAxis as XAXisOption).splitLine,
             show: true,
-            lineStyle: {
-              color: gridLineColors,
-            },
-          },
-        }
-
-        options.yAxis = {
-          type: isXAxisDate ? 'time' : 'category',
-          name: this.yAxisLabel,
-          nameTextStyle: {
-            color: this.getTextColor(),
-          },
-          axisLine: {
-            lineStyle: {
-              color: this.getTextColor(),
-            },
-          },
-          axisLabel: {
-            // formatter: (value) => this.labelFormatter(value),
-            color: this.getTextColor(),
           },
         }
         break
@@ -748,7 +716,6 @@ export default class AstraChart extends ClassifiedElement {
           },
           label: {
             show: true,
-            // color: 'rgba(255, 255, 255, 0.9)',
             formatter: '{b}: {c} ({d}%)',
           },
           emphasis: {
