@@ -18,7 +18,7 @@ import type {
   PieSeriesOption,
 } from 'echarts/types/dist/shared'
 import { unsafeHTML } from 'lit/directives/unsafe-html.js'
-import { formatDate, isDate } from '../../lib/format-date.js'
+import { isDate } from '../../lib/format-date.js'
 
 // Register the required components
 echarts.use([
