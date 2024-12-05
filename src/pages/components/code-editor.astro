@@ -3,7 +3,6 @@ import { AstraEditor } from '../../components/astra-editor'
 import { AstraEditorHandlerbarPlugin } from '../../components/astra-editor/plugins/handlebar'
 import { AstraEditorSqlPlugin } from '../../components/astra-editor/plugins/sql'
 import { AstraEditorPromptPlugin } from '../../components/astra-editor/plugins/prompt'
-import Layout from '../../layouts/Layout.astro'
 //
 
 const SAMPLE_TEXT = `CREATE TABLE customer(
@@ -31,7 +30,7 @@ const SCHEMA = {
 }
 ---
 
-<Layout title="Astra-UI">
+<div>
   <div id="container" class="h-[400px] w-full mt-2">
     <!-- @ts-ignore attributes -->
     <AstraEditor id="editor" client:only="lit" value={SAMPLE_TEXT} theme="freedom">
@@ -84,6 +83,36 @@ const SCHEMA = {
     const themeElement = document.getElementById('theme') as HTMLSelectElement
     const tokenElement = document.getElementById('token') as HTMLInputElement
 
+    setTimeout(() => {
+      const promptPlugin = document.getElementById('prompt-plugin') as any
+      promptPlugin.handleSuggestion(async (promptText: string, selectedText?: string) => {
+        // do some fake delay
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+
+        const lines = selectedText?.split('\n') || []
+
+        for (let i = 0; i < lines.length; i++) {
+          if (Math.random() > 0.5) {
+            lines.splice(i, 0, 'some random text ' + Math.random())
+            i++
+          }
+        }
+
+        for (let i = 0; i < 5; i++) {
+          // add random lines at the end
+          if (Math.random() > 0.5) {
+            lines.push('some random text ' + Math.random())
+          }
+        }
+
+        // randomly remove lines
+        const finalLines = lines.filter((_, index) => Math.random() > 0.35)
+        console.log(finalLines)
+
+        return finalLines.join('\n')
+      })
+    }, 3000)
+
     tokenElement.onchange = () => {
       const plugin = document.getElementById('prompt-plugin') as any
       plugin.token = tokenElement.value
@@ -125,4 +154,4 @@ const SCHEMA = {
       console.log((document.getElementById('sql') as any).getAllStatements())
     }
   </script>
-</Layout>
+</div>

@@ -1,4 +1,5 @@
-import { Prec, StateEffect, StateField } from '@codemirror/state'
+import { unifiedMergeView } from '@codemirror/merge'
+import { EditorState, Prec, StateEffect, StateField } from '@codemirror/state'
 import { Decoration, keymap, WidgetType } from '@codemirror/view'
 import { EditorView } from 'codemirror'
 import { customElement, property } from 'lit/decorators.js'
@@ -7,13 +8,15 @@ import AstraEditorPromptDialog from './prompt-dialog.js'
 
 const effectHidePrompt = StateEffect.define()
 const effectShowPrompt = StateEffect.define<number>()
-const effectAddHighlight = StateEffect.define<number>()
-const effectClearHighlight = StateEffect.define()
 
-type PromptCallback = (promptQuery: string) => Promise<string>
+// This effect is used to add selected code
+// that will be for prompt suggestion
+const effectSelectedPromptLine = StateEffect.define<number[]>()
 
-const decorationPreviewLine = Decoration.line({
-  class: 'prompt-line-preview',
+type PromptCallback = (promptQuery: string, selectedText?: string) => Promise<string>
+
+const decorationSelectedLine = Decoration.line({
+  class: 'prompt-line-selected',
 })
 
 class PlaceholderWidget extends WidgetType {
@@ -33,130 +36,190 @@ class PlaceholderWidget extends WidgetType {
 class PromptWidget extends WidgetType {
   plugin: AstraEditorPromptPlugin
   themeHandler?: () => void
+  dialog: AstraEditorPromptDialog
+
+  getWidgetCursor(state: EditorState) {
+    return state.field(this.plugin.promptStatePlugin).iter().from
+  }
 
   constructor(plugin: AstraEditorPromptPlugin) {
     super()
+    plugin.isActive = true
     this.plugin = plugin
-  }
+    const view = this.plugin.editor.getEditorView()!
 
-  toDOM(view: EditorView): HTMLElement {
-    this.plugin.isActive = true
-    const cursorPosition = view.state.selection.main.head
+    // First we need to lock the editor to read-only.
+    // This will simplify the logic of the plugin of not having to
+    // worry about keeping up with the editor state while the prompt
+    plugin.editor.readonly = true
 
-    // We keep previous suggestion so that we can remove it later
-    // when we want to generate another suggestion or reject suggestion
-    let previousSuggestion = ''
+    // Get the selected lines and highlight it
+    const getSelectionLines = () => {
+      console.log(view.state.selection.main)
+      const startLineNumber = view.state.doc.lineAt(view.state.selection.main.from).number
+      const endLineNumber = view.state.doc.lineAt(view.state.selection.main.to).number
+      return Array.from({ length: endLineNumber - startLineNumber + 1 }, (_, i) => startLineNumber + i)
+    }
 
-    const container = document.createElement('astra-editor-prompt-dialog') as AstraEditorPromptDialog
+    const selectedLines = getSelectionLines()
+    view.dispatch({ effects: [effectSelectedPromptLine.of(selectedLines)] })
 
-    container.theme = this.plugin.editor.color ?? 'light'
+    // Calculate cursor and selection positions
+    const startPosition = view.state.selection.main.head
+    const startLineNumber = view.state.doc.lineAt(startPosition).number
+    const endPosition = selectedLines
+      ? view.state.doc.line(selectedLines[selectedLines.length - 1]).to
+      : view.state.doc.lineAt(startPosition).to
+
+    // Create the prompt components and handle the theme change event
+    const dialog = document.createElement('astra-editor-prompt-dialog') as AstraEditorPromptDialog
+    dialog.theme = this.plugin.editor.color ?? 'light'
+    this.dialog = dialog
 
     this.themeHandler = () => {
-      container.theme = this.plugin.editor.color ?? 'light'
+      dialog.theme = this.plugin.editor.color ?? 'light'
     }
 
     this.plugin.editor.addEventListener('color-changed', this.themeHandler)
 
-    container.addEventListener('close', () => {
-      view.dispatch({ effects: [effectHidePrompt.of(null)] })
+    // Reverse the suggestion that we have made
+    const selectedOriginalText = view.state.sliceDoc(startPosition, endPosition)
+    let originalText = view.state.doc.toString()
+    let suggestedText = selectedOriginalText
+
+    const reverseSuggestion = () => {
+      if (suggestedText !== selectedOriginalText) {
+        this.plugin.hideSuggestionDiff()
+
+        view.dispatch({
+          changes: {
+            from: startPosition,
+            to: startPosition + suggestedText.length,
+            insert: selectedOriginalText,
+          },
+        })
+      }
+    }
+
+    dialog.addEventListener('close', () => {
+      view.dispatch({
+        effects: [
+          effectHidePrompt.of(null), // Hide the prompt widget
+          effectSelectedPromptLine.of([]), // Remove the selected line highlight
+        ],
+      })
+
+      reverseSuggestion()
+      this.plugin.editor.readonly = false
       setTimeout(() => view.focus(), 50)
     })
 
-    container.addEventListener('accept', () => {
-      view.dispatch({ effects: [effectHidePrompt.of(null)] })
-      setTimeout(() => {
-        view.focus()
-        view.dispatch({
-          selection: {
-            anchor: cursorPosition + 1,
-            head: cursorPosition + previousSuggestion.length,
-          },
-        })
-      }, 50)
+    dialog.addEventListener('reject', () => {
+      reverseSuggestion() // Restore the original text
+
+      view.dispatch({
+        effects: [
+          effectSelectedPromptLine.of(selectedLines), // Reverse the selected line highlight
+        ],
+      })
+
+      dialog.previousPrompt = ''
+      dialog.showReject = false
     })
 
-    container.addEventListener('generate', ((e: CustomEvent<string>) => {
-      container.loading = true
-      container.previousPrompt = ''
-      container.error = ''
+    dialog.addEventListener('cancel', () => {
+      dialog.loading = false
+      queryCounter++
+    })
+
+    // Query counter is used for implementing canceling query
+    // When we cancel, we just increment the counter and
+    // result of the query arrived, we will ignore if the counter is not matched
+    let queryCounter = 1
+
+    dialog.addEventListener('generate', ((e: CustomEvent<string>) => {
+      dialog.loading = true
+      const expectedQueryCounter = queryCounter
 
       this.plugin
-        .getSuggestion(e.detail)
-        .then((r) => {
+        .getSuggestion(e.detail, selectedOriginalText)
+        .then((queryText) => {
           // This prevent when we close the widget before
           // the suggestion return result which cause
           // us to suggestion code to the editor
           if (!this.plugin.isActive) return
 
-          // This plugin works on empty line. We need to add one dummy line
-          // or else this widget will self-destruct
-          const suggestion = '\n' + r
+          // If the query counter is not matched, it must be canceled
+          if (expectedQueryCounter !== queryCounter) return
 
+          // We need to reverse the change before apply new suggestion
+          reverseSuggestion()
+
+          suggestedText = queryText
+          this.plugin.showDiff(originalText)
+          dialog.previousPrompt = e.detail
+
+          // Replace selection with suggested result from prompt
           view.dispatch({
             changes: {
-              from: cursorPosition,
-              to: cursorPosition + previousSuggestion.length,
-              insert: suggestion,
+              from: startPosition,
+              to: endPosition,
+              insert: suggestedText,
             },
           })
 
+          // Highlight the suggested code along with the previous selected code
           view.dispatch({
-            effects: [effectClearHighlight.of(null)],
+            effects: [
+              effectSelectedPromptLine.of(
+                Array.from(
+                  {
+                    length: view.state.doc.lineAt(startPosition + suggestedText.length).number - startLineNumber,
+                  },
+                  (_, i) => startLineNumber + i
+                )
+              ),
+            ],
           })
 
-          const startLine = view.state.doc.lineAt(cursorPosition + 1).number
-          const endLine = view.state.doc.lineAt(cursorPosition + suggestion.length).number
-          const lineEffect = []
-
-          for (let i = startLine; i <= endLine; i++) {
-            lineEffect.push(effectAddHighlight.of(view.state.doc.line(i).from))
-          }
-
-          view.dispatch({ effects: lineEffect })
-
-          previousSuggestion = suggestion
-          container.showReject = true
-          container.previousPrompt = e.detail
+          dialog.previousPrompt = e.detail
+          dialog.showReject = true
         })
         .catch((e) => {
-          container.error = e.toString()
+          dialog.error = e.toString()
         })
         .finally(() => {
-          container.loading = false
-          container.focus()
-          container.select()
+          dialog.loading = false
+          dialog.focus()
+          queryCounter++
         })
     }) as EventListener)
 
-    container.addEventListener('reject', () => {
-      view.dispatch({
-        changes: {
-          from: cursorPosition,
-          to: cursorPosition + previousSuggestion.length,
-          insert: '',
-        },
-      })
+    dialog.addEventListener('accept', () => {
+      view.dispatch({ effects: [effectHidePrompt.of(null), effectSelectedPromptLine.of([])] })
 
-      previousSuggestion = ''
+      this.plugin.editor.readonly = false
+      this.plugin.hideSuggestionDiff()
 
-      view.dispatch({
-        effects: [effectClearHighlight.of(null)],
-      })
-
-      container.showReject = true
+      setTimeout(() => {
+        view.focus()
+      }, 50)
     })
 
     setTimeout(() => {
-      container.focus()
+      dialog.focus()
     }, 50)
+  }
 
-    return container
+  toDOM(): HTMLElement {
+    return this.dialog
   }
 
   destroy(): void {
     if (this.themeHandler) {
       this.plugin.editor.removeEventListener('color-changed', this.themeHandler)
     }
+
     this.plugin.isActive = false
   }
 
@@ -174,56 +237,26 @@ function createPromptStatePlugin(plugin: AstraEditorPromptPlugin) {
     update(v, tr) {
       for (const e of tr.effects) {
         if (e.is(effectShowPrompt)) {
+          const from = tr.state.doc.line(e.value).from
+
           // Add prompt widget
           return Decoration.set([
             Decoration.widget({
               widget: new PromptWidget(plugin),
-              side: 1,
+              side: -10,
               block: true,
-            }).range(e.value),
+            }).range(from),
           ])
         } else if (e.is(effectHidePrompt)) {
-          // Remove all line highlight and the prompt widget
           return Decoration.none
-        } else if (e.is(effectClearHighlight)) {
-          // Remove all the highlight on preview line
-          v = v.update({
-            filter: (_, __, d) => d !== decorationPreviewLine,
-          })
-        } else if (e.is(effectAddHighlight)) {
-          // Add line highlight
-          v = v.update({
-            add: [decorationPreviewLine.range(e.value)],
-          })
         }
       }
 
-      let promptWidgetFound = false
-      const cursorPosition = tr.state.selection.main.from
+      if (tr.docChanged) {
+        return v.map(tr.changes)
+      }
 
-      // Try to remove the prompt widget if we change the cursor position
-      const line = tr.state.doc.lineAt(cursorPosition).text
-
-      v = v.update({
-        filter: (from, _, d) => {
-          if (d === decorationPreviewLine) return true
-          promptWidgetFound = (promptWidgetFound || from === cursorPosition) && line === ''
-          return from === cursorPosition
-        },
-      })
-
-      if (promptWidgetFound) return v
-
-      if (line !== '') return Decoration.none
-
-      // If line is empty, we just show the prompt placeholder
-      return Decoration.set([
-        Decoration.widget({
-          widget: new PlaceholderWidget(),
-          side: 1,
-          block: false,
-        }).range(tr.state.selection.main.from),
-      ])
+      return v
     },
 
     provide: (f) => EditorView.decorations.from(f),
@@ -237,25 +270,65 @@ const promptKeyBinding = Prec.highest(
       mac: 'Cmd-b',
       preventDefault: true,
       run: (v) => {
-        if (v.state.doc.lineAt(v.state.selection.main.from).text === '') {
-          v.dispatch({
-            effects: [effectShowPrompt.of(v.state.selection.main.from)],
-          })
-        }
+        const startLineNumber = v.state.doc.lineAt(v.state.selection.main.from).number
+        const endLineNumber = v.state.doc.lineAt(v.state.selection.main.to).number
+        const selectedLine = Array.from({ length: endLineNumber - startLineNumber + 1 }, (_, i) => startLineNumber + i)
+
+        v.dispatch({
+          effects: [effectShowPrompt.of(startLineNumber), effectSelectedPromptLine.of(selectedLine)],
+        })
+
         return true
       },
     },
   ])
 )
 
+const promptSelectedLines = StateField.define({
+  create() {
+    return Decoration.none
+  },
+
+  update(v, tr) {
+    for (const e of tr.effects) {
+      if (e.is(effectSelectedPromptLine)) {
+        console.log('I am here', e.value)
+        return Decoration.set(e.value.map((line) => decorationSelectedLine.range(tr.state.doc.line(line).from)))
+      } else if (e.is(effectHidePrompt)) {
+        console.log('I am also here')
+        return Decoration.none
+      }
+    }
+
+    return v
+  },
+  provide: (f) => EditorView.decorations.from(f),
+})
+
 @customElement('astra-editor-prompt')
 export class AstraEditorPromptPlugin extends AstraEditorPlugin {
   // Tracking if there is any active prompt widget
   isActive: boolean = false
+  originalText: string = ''
 
   @property() token: string = ''
 
+  promptStatePlugin = createPromptStatePlugin(this)
   promptCallback?: PromptCallback
+
+  showDiff(originalText: string) {
+    this.editor.updateExtension('prompt-diff', [
+      unifiedMergeView({
+        original: originalText,
+        mergeControls: false,
+        syntaxHighlightDeletions: false,
+      }),
+    ])
+  }
+
+  hideSuggestionDiff() {
+    this.editor.removeExtension('prompt-diff')
+  }
 
   connectedCallback() {
     super.connectedCallback()
@@ -267,13 +340,49 @@ export class AstraEditorPromptPlugin extends AstraEditorPlugin {
         background: #abf7b1;
       }
 
-      .dark .prompt-line-preview {
-        background: #4C5A2C;
+      .prompt-line-selected {
+        background: #f5f5f5;
+      }
+
+      .dark .prompt-line-selected {
+        background: #222;
+      }
+
+      .cm-deletedChunk {
+        background-color: #fab1a0 !important;
+      }
+
+      .dark .cm-deletedChunk {
+        background-color: #B54B4B !important;
+      }
+
+      .cm-changedLine {
+        background-color: #55efc4 !important;
+      }
+
+      .cm-changedLine {
+        background-color: #55efc4 !important;
+      }
+
+      .dark .cm-changedLine {
+        background-color: #2F6542 !important;
+      }
+
+      .cm-insertedLine .cm-changedText {
+        background: none !important;
+      }
+
+      .cm-deletedChunk .cm-deletedText {
+        background: none !important;
+      }
+
+      .cm-deletedChunk del {
+        text-decoration: none !important;
       }
     `
     )
 
-    this.editor.updateExtension('prompt', [promptKeyBinding, createPromptStatePlugin(this)])
+    this.editor.updateExtension('prompt', [promptKeyBinding, promptSelectedLines, this.promptStatePlugin])
   }
 
   disconnectedCallback() {
@@ -282,7 +391,7 @@ export class AstraEditorPromptPlugin extends AstraEditorPlugin {
     this.editor.removeExtension('prompt')
   }
 
-  async getSuggestion(promptQuery: string) {
+  async getSuggestion(promptQuery: string, selectedText?: string) {
     // If token is supplied, we will fallback to ezql public API
     if (this.token) {
       const ezqlRawResponse = await fetch('https://app.outerbase.com/api/v1/ezql', {
@@ -298,7 +407,7 @@ export class AstraEditorPromptPlugin extends AstraEditorPlugin {
       if (ezqlResponse.error) throw ezqlResponse.error.description
       return ezqlResponse?.response?.query
     } else if (this.promptCallback) {
-      return this.promptCallback(promptQuery)
+      return this.promptCallback(promptQuery, selectedText)
     }
 
     throw new Error('No token provided')
