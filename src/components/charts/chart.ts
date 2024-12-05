@@ -273,24 +273,6 @@ export default class AstraChart extends ClassifiedElement {
 
   private chartInstance?: echarts.ECharts
   private resizeObserver?: ResizeObserver
-  private uniqueYears = new Set<number>()
-  private uniqueMonths = new Set<number>()
-
-  private cacheUniqueDateParts(): void {
-    // Reset the sets
-    this.uniqueYears.clear()
-    this.uniqueMonths.clear()
-
-    // Cache unique years and months for faster access in labelFormatter
-    this.data?.layers?.[0]?.result?.forEach((item) => {
-      const dateValue = Date.parse(item[this.columns[0]] as string)
-      if (!isNaN(dateValue)) {
-        const date = new Date(dateValue)
-        this.uniqueYears.add(date.getUTCFullYear())
-        this.uniqueMonths.add(date.getUTCMonth())
-      }
-    })
-  }
 
   override willUpdate(changedProperties: PropertyValueMap<this>): void {
     super.willUpdate(changedProperties)
@@ -306,7 +288,6 @@ export default class AstraChart extends ClassifiedElement {
 
     if (changedProperties.has('data')) {
       this.updateDataOptions()
-      this.cacheUniqueDateParts() // Call the new method to update cached values
     }
   }
 
