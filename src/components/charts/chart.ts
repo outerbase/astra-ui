@@ -336,10 +336,10 @@ export default class AstraChart extends ClassifiedElement {
     this.chartInstance.setOption(this.getChartOptions())
   }
 
-  // private labelFormatter(value: unknown): string {
-  //   if (typeof value !== 'string') return String(value)
-  //   return value.length > 32 ? value.substring(0, 32) + '...' : value
-  // }
+  private labelFormatter(value: unknown): string {
+    if (typeof value !== 'string') return String(value)
+    return value.length > 16 ? value.substring(0, 13).trim() + '...' : value
+  }
 
   private getChartOptions(): EChartsOption {
     const colorValues = this.getColorValues()
