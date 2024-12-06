@@ -628,7 +628,6 @@ export default class AstraChart extends ClassifiedElement {
 
   private addSeries(_options: EChartsOption) {
     const options = { ..._options }
-    const gridLineColors = this.theme === 'dark' ? '#FFFFFF10' : '#00000010'
 
     switch (this.type) {
       case 'column':
