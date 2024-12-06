@@ -242,6 +242,19 @@ export default class AstraEditorPromptDialog extends LitElement {
     }
   }
 
+  listeners: { type: any; listener: any }[] = []
+
+  addEventListener(type: any, listener: any): void {
+    this.listeners.push({ type, listener })
+    super.addEventListener(type as any, listener)
+  }
+
+  cleanAllListeners() {
+    this.listeners.forEach(({ type, listener }) => {
+      super.removeEventListener(type, listener)
+    })
+  }
+
   render() {
     return html`<div
       class=${`container ${this.theme}`}

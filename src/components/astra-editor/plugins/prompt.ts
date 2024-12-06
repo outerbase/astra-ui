@@ -234,6 +234,7 @@ class PromptWidget extends WidgetType {
       this.plugin.editor.removeEventListener('color-changed', this.themeHandler)
     }
 
+    this.dialog.cleanAllListeners()
     this.plugin.activeWidget = undefined
     this.plugin.isActive = false
   }
