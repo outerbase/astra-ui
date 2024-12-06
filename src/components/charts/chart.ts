@@ -716,13 +716,8 @@ export default class AstraChart extends ClassifiedElement {
           label: {
             show: true,
             formatter: '{b}: {c} ({d}%)',
-          },
-          emphasis: {
-            label: {
-              show: true,
-              fontSize: '16',
-              fontWeight: 'bold',
-            },
+            color: this.theme === 'dark' ? '#fff' : '#000', // Set label text color to white
+            textBorderColor: 'transparent', // Remove text border
           },
         })
 
