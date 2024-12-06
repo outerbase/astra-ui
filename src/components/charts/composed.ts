@@ -198,7 +198,11 @@ export default class AstraComposedChart extends AstraChart {
 
     // render result
     return html`
-      <div class="${classMap({ dark: this.theme === 'dark' })} h-full w-full">
+      <div
+        class="${classMap({
+          dark: this.theme === 'dark',
+        })} h-full w-full bg-white bg-opacity-10 backdrop-blur-lg rounded-lg border border-white border-opacity-20"
+      >
         <div
           id="composed-chart"
           class=${`dark:text-neutral-100 text-neutral-950 h-full flex flex-col ${layer?.type === 'table' ? '' : 'p-5'} gap-4 rounded-lg bg-white dark:bg-black group/actions`}
