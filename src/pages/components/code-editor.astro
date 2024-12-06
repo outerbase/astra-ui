@@ -85,7 +85,9 @@ const SCHEMA = {
 
     setTimeout(() => {
       const promptPlugin = document.getElementById('prompt-plugin') as any
-      promptPlugin.handleSuggestion(async (promptText: string, selectedText?: string) => {
+      promptPlugin.handleSuggestion(async (promptText: string, selected?: { text: string }) => {
+        const selectedText = selected?.text
+
         // do some fake delay
         await new Promise((resolve) => setTimeout(resolve, 1000))
 

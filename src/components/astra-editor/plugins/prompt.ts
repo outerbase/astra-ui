@@ -1,19 +1,26 @@
 import { unifiedMergeView } from '@codemirror/merge'
-import { EditorState, Prec, StateEffect, StateField } from '@codemirror/state'
+import { EditorState, Prec, StateEffect, StateField, Transaction } from '@codemirror/state'
 import { Decoration, keymap, WidgetType } from '@codemirror/view'
 import { EditorView } from 'codemirror'
 import { customElement, property } from 'lit/decorators.js'
 import { AstraEditorPlugin } from './base.js'
 import AstraEditorPromptDialog from './prompt-dialog.js'
+import { resolveToNearestStatement } from './sql-statement-highlight.js'
 
 const effectHidePrompt = StateEffect.define()
-const effectShowPrompt = StateEffect.define<number>()
+const effectShowPrompt = StateEffect.define<{ lineNumber: number; from: number; to: number }>()
 
 // This effect is used to add selected code
 // that will be for prompt suggestion
 const effectSelectedPromptLine = StateEffect.define<number[]>()
 
-type PromptCallback = (promptQuery: string, selectedText?: string) => Promise<string>
+interface PromptSelectedFragment {
+  text: string
+  fullText: string
+  startLineNumber: number
+  endLineNumber: number
+}
+type PromptCallback = (promptQuery: string, selected?: PromptSelectedFragment) => Promise<string>
 
 const decorationSelectedLine = Decoration.line({
   class: 'prompt-line-selected',
@@ -42,30 +49,29 @@ class PromptWidget extends WidgetType {
     return state.field(this.plugin.promptStatePlugin).iter().from
   }
 
-  constructor(plugin: AstraEditorPromptPlugin) {
+  constructor(plugin: AstraEditorPromptPlugin, from: number, to: number) {
     super()
     plugin.isActive = true
+    plugin.activeWidget = this
     this.plugin = plugin
     const view = this.plugin.editor.getEditorView()!
+
+    console.log('widget created')
 
     // First we need to lock the editor to read-only.
     // This will simplify the logic of the plugin of not having to
     // worry about keeping up with the editor state while the prompt
     plugin.editor.readonly = true
-
-    // Get the selected lines and highlight it
     const getSelectionLines = () => {
-      console.log(view.state.selection.main)
-      const startLineNumber = view.state.doc.lineAt(view.state.selection.main.from).number
-      const endLineNumber = view.state.doc.lineAt(view.state.selection.main.to).number
+      const startLineNumber = view.state.doc.lineAt(from).number
+      const endLineNumber = view.state.doc.lineAt(to).number
       return Array.from({ length: endLineNumber - startLineNumber + 1 }, (_, i) => startLineNumber + i)
     }
 
     const selectedLines = getSelectionLines()
-    view.dispatch({ effects: [effectSelectedPromptLine.of(selectedLines)] })
 
     // Calculate cursor and selection positions
-    const startPosition = view.state.selection.main.head
+    const startPosition = from
     const startLineNumber = view.state.doc.lineAt(startPosition).number
     const endPosition = selectedLines
       ? view.state.doc.line(selectedLines[selectedLines.length - 1]).to
@@ -97,6 +103,7 @@ class PromptWidget extends WidgetType {
             to: startPosition + suggestedText.length,
             insert: selectedOriginalText,
           },
+          annotations: [Transaction.addToHistory.of(false)],
         })
       }
     }
@@ -124,6 +131,7 @@ class PromptWidget extends WidgetType {
       })
 
       dialog.previousPrompt = ''
+      suggestedText = selectedOriginalText
       dialog.showReject = false
     })
 
@@ -142,7 +150,12 @@ class PromptWidget extends WidgetType {
       const expectedQueryCounter = queryCounter
 
       this.plugin
-        .getSuggestion(e.detail, selectedOriginalText)
+        .getSuggestion(e.detail, {
+          text: suggestedText ?? selectedOriginalText,
+          fullText: view.state.doc.toString(),
+          startLineNumber,
+          endLineNumber: view.state.doc.lineAt(startPosition + suggestedText.length).number,
+        })
         .then((queryText) => {
           // This prevent when we close the widget before
           // the suggestion return result which cause
@@ -155,7 +168,6 @@ class PromptWidget extends WidgetType {
           // We need to reverse the change before apply new suggestion
           reverseSuggestion()
 
-          suggestedText = queryText
           this.plugin.showDiff(originalText)
           dialog.previousPrompt = e.detail
 
@@ -164,9 +176,12 @@ class PromptWidget extends WidgetType {
             changes: {
               from: startPosition,
               to: endPosition,
-              insert: suggestedText,
+              insert: queryText,
             },
+            annotations: [Transaction.addToHistory.of(false)],
           })
+
+          suggestedText = queryText
 
           // Highlight the suggested code along with the previous selected code
           view.dispatch({
@@ -182,7 +197,6 @@ class PromptWidget extends WidgetType {
             ],
           })
 
-          dialog.previousPrompt = e.detail
           dialog.showReject = true
         })
         .catch((e) => {
@@ -220,6 +234,7 @@ class PromptWidget extends WidgetType {
       this.plugin.editor.removeEventListener('color-changed', this.themeHandler)
     }
 
+    this.plugin.activeWidget = undefined
     this.plugin.isActive = false
   }
 
@@ -231,21 +246,20 @@ class PromptWidget extends WidgetType {
 function createPromptStatePlugin(plugin: AstraEditorPromptPlugin) {
   return StateField.define({
     create() {
+      10
       return Decoration.none
     },
 
     update(v, tr) {
       for (const e of tr.effects) {
         if (e.is(effectShowPrompt)) {
-          const from = tr.state.doc.line(e.value).from
-
           // Add prompt widget
           return Decoration.set([
             Decoration.widget({
-              widget: new PromptWidget(plugin),
+              widget: new PromptWidget(plugin, e.value.from, e.value.to),
               side: -10,
               block: true,
-            }).range(from),
+            }).range(e.value.from),
           ])
         } else if (e.is(effectHidePrompt)) {
           return Decoration.none
@@ -263,26 +277,57 @@ function createPromptStatePlugin(plugin: AstraEditorPromptPlugin) {
   })
 }
 
-const promptKeyBinding = Prec.highest(
-  keymap.of([
-    {
-      key: 'Ctrl-b',
-      mac: 'Cmd-b',
-      preventDefault: true,
-      run: (v) => {
-        const startLineNumber = v.state.doc.lineAt(v.state.selection.main.from).number
-        const endLineNumber = v.state.doc.lineAt(v.state.selection.main.to).number
-        const selectedLine = Array.from({ length: endLineNumber - startLineNumber + 1 }, (_, i) => startLineNumber + i)
+function createPromptKeyBinding(plugin: AstraEditorPromptPlugin) {
+  return Prec.highest(
+    keymap.of([
+      {
+        key: 'Ctrl-b',
+        mac: 'Cmd-b',
+        preventDefault: true,
+        run: (v) => {
+          const currentCursor = v.state.selection.main.from
+          const currentCursorLine = v.state.doc.lineAt(currentCursor)
+          const nearestA = resolveToNearestStatement(v.state, v.state.selection.main.from)
+          const nearestB = resolveToNearestStatement(v.state, v.state.selection.main.to)
 
-        v.dispatch({
-          effects: [effectShowPrompt.of(startLineNumber), effectSelectedPromptLine.of(selectedLine)],
-        })
+          const startLine = v.state.doc.lineAt(nearestA?.from ?? 0)
+          const endLine = v.state.doc.lineAt(nearestB?.to ?? v.state.doc.length)
 
-        return true
+          if (plugin.activeWidget) {
+            plugin.activeWidget.dialog.triggerClose()
+          }
+
+          setTimeout(() => {
+            if (v.state.selection.main.from === v.state.selection.main.to) {
+              // We need to find a way to know if user want to generate new query
+              // or user want to improve the existing query.
+
+              // We determine if user want to generate new query if it is in empty line
+              // and it is not in the middle of statement
+              if (currentCursor < startLine.from || currentCursor > endLine.to) {
+                v.dispatch({
+                  effects: [
+                    effectShowPrompt.of({ lineNumber: currentCursorLine.number, from: currentCursorLine.from, to: currentCursorLine.to }),
+                  ],
+                })
+                return true
+              }
+            }
+
+            v.dispatch({
+              effects: [
+                effectShowPrompt.of({ lineNumber: startLine.number, from: startLine.from, to: endLine.to }),
+                effectSelectedPromptLine.of(Array.from({ length: endLine.number - startLine.number + 1 }, (_, i) => startLine.number + i)),
+              ],
+            })
+          }, 50)
+
+          return true
+        },
       },
-    },
-  ])
-)
+    ])
+  )
+}
 
 const promptSelectedLines = StateField.define({
   create() {
@@ -292,10 +337,8 @@ const promptSelectedLines = StateField.define({
   update(v, tr) {
     for (const e of tr.effects) {
       if (e.is(effectSelectedPromptLine)) {
-        console.log('I am here', e.value)
         return Decoration.set(e.value.map((line) => decorationSelectedLine.range(tr.state.doc.line(line).from)))
       } else if (e.is(effectHidePrompt)) {
-        console.log('I am also here')
         return Decoration.none
       }
     }
@@ -309,6 +352,7 @@ const promptSelectedLines = StateField.define({
 export class AstraEditorPromptPlugin extends AstraEditorPlugin {
   // Tracking if there is any active prompt widget
   isActive: boolean = false
+  activeWidget?: PromptWidget
   originalText: string = ''
 
   @property() token: string = ''
@@ -382,7 +426,33 @@ export class AstraEditorPromptPlugin extends AstraEditorPlugin {
     `
     )
 
-    this.editor.updateExtension('prompt', [promptKeyBinding, promptSelectedLines, this.promptStatePlugin])
+    this.editor.updateExtension('prompt', [
+      createPromptKeyBinding(this),
+      promptSelectedLines,
+      this.promptStatePlugin,
+      StateField.define({
+        create() {
+          return Decoration.none
+        },
+        update: (v, tr) => {
+          const cursorPosition = tr.state.selection.main.from
+          const line = tr.state.doc.lineAt(cursorPosition)
+          const lineText = line.text
+
+          if (lineText === '' && !this.isActive) {
+            return Decoration.set([
+              Decoration.widget({
+                widget: new PlaceholderWidget(),
+                side: 10,
+              }).range(line.from),
+            ])
+          }
+
+          return Decoration.none
+        },
+        provide: (f) => EditorView.decorations.from(f),
+      }),
+    ])
   }
 
   disconnectedCallback() {
@@ -391,7 +461,7 @@ export class AstraEditorPromptPlugin extends AstraEditorPlugin {
     this.editor.removeExtension('prompt')
   }
 
-  async getSuggestion(promptQuery: string, selectedText?: string) {
+  async getSuggestion(promptQuery: string, selected?: PromptSelectedFragment) {
     // If token is supplied, we will fallback to ezql public API
     if (this.token) {
       const ezqlRawResponse = await fetch('https://app.outerbase.com/api/v1/ezql', {
@@ -407,7 +477,7 @@ export class AstraEditorPromptPlugin extends AstraEditorPlugin {
       if (ezqlResponse.error) throw ezqlResponse.error.description
       return ezqlResponse?.response?.query
     } else if (this.promptCallback) {
-      return this.promptCallback(promptQuery, selectedText)
+      return this.promptCallback(promptQuery, selected)
     }
 
     throw new Error('No token provided')
