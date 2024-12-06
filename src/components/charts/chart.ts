@@ -355,26 +355,18 @@ export default class AstraChart extends ClassifiedElement {
           shape: 'polygon',
           indicator: this.columns.map((name) => ({ name })),
         },
-        series: [
-          {
-            // name: '',
-            type: 'radar',
-            data:
-              // e.g. data
-              // {
-              //   value: [5000, 14000, 28000, 26000, 42000, 21000],
-              //   name: 'Actual Spending',
-              // },
-              //
-              //
-              // Extract real data for radar chart
-              // Each object corresponds to a column and contains an array of flattened values
-              this.columns.map((col) => ({
-                value: formattedSource.map((item) => Number(item[col])),
-                name: col,
-              })),
-          },
-        ],
+        series: this.columns.map((col, index) => ({
+          type: 'radar',
+          data: [
+            {
+              value: formattedSource.map((item) => Number(item[col])), // throws away precision of bigint?!
+              name: col,
+              itemStyle: {
+                color: this.yAxisColors?.[col] || colorValues[index % colorValues.length],
+              },
+            },
+          ],
+        })),
       }
     }
 
@@ -471,7 +463,6 @@ export default class AstraChart extends ClassifiedElement {
         min: this.minY,
         max: this.maxY,
       },
-      color: colorValues,
     }
 
     return this.addSeries(options) // Pass the source dataset when adding series
