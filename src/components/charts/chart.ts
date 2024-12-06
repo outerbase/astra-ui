@@ -1,6 +1,14 @@
 import { css, html, type PropertyValueMap } from 'lit'
 import { customElement, property, query } from 'lit/decorators.js'
-import { THEMES, type ChartTypeV3, type DashboardV3Chart, type DashboardV3ChartSortOrder, type Row, type ThemeColors } from '../../types.js'
+import {
+  THEMES,
+  type ChartTypeV3,
+  type DashboardV3Chart,
+  type DashboardV3ChartSortOrder,
+  type PaletteThemeType,
+  type Row,
+  type ThemeColors,
+} from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
 
 // import * as echarts from 'echarts'
@@ -204,7 +212,7 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: Number }) xAxisLabelDisplay = 0
   @property({ type: String, attribute: 'y-axis-label-display' }) yAxisLabelDisplay: 'hidden' | 'left' | 'right' = 'left'
   @property({ type: Boolean, attribute: 'hide-x-axis-label' }) hideXAxisLabel = false
-  @property({ type: String, attribute: 'color' }) colorTheme: ThemeColors = 'mercury'
+  @property({ type: String, attribute: 'color-theme' }) colorTheme?: PaletteThemeType
   @property({ type: Object, attribute: 'y-axis-colors' }) yAxisColors?: Record<string, string | undefined> = {}
   @property({ type: Boolean, attribute: 'omit-legend' }) omitLegend = false
 
@@ -469,7 +477,8 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   private getColorValues(): string[] {
-    return this.theme === 'dark' ? THEMES[this.colorTheme].colors.dark : THEMES[this.colorTheme].colors.light
+    const DEFAULT_THEME = 'mercury'
+    return THEMES[this.colorTheme ?? DEFAULT_THEME].colors[this.theme]
   }
 
   private applyTheme() {
@@ -623,6 +632,7 @@ export default class AstraChart extends ClassifiedElement {
             color: this.theme === 'dark' ? '#fff' : '#000', // Set label text color to white
             textBorderColor: 'transparent', // Remove text border
           },
+          color: this.getColorValues(),
         })
 
         break
@@ -643,7 +653,7 @@ export default class AstraChart extends ClassifiedElement {
             ? { x: col, y: this.columns[0] } // For bar charts
             : { x: this.columns[0], y: col }, // For other chart types
         itemStyle: {
-          color: this.type !== 'pie' ? this.yAxisColors?.[col] : undefined, // Use color from yAxisColors if present -- except on pie
+          color: this.yAxisColors?.[col], // does NOT impact pie charts
         },
         symbol: 'circle',
         ...additionalOptions,
