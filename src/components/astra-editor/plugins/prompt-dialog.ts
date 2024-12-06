@@ -103,7 +103,7 @@ export default class AstraEditorPromptDialog extends LitElement {
       resize: none;
       overflow: hidden;
       border: none;
-      padding: 10px;
+      padding: 5px;
       padding-right: 30px;
       outline: none;
       box-sizing: border-box;
@@ -115,14 +115,19 @@ export default class AstraEditorPromptDialog extends LitElement {
 
     .actions {
       display: flex;
-      padding: 5px 10px;
-      gap: 5px;
+      padding: 5px 5px;
+      height: 25px;
+      align-items: center;
+      padding-bottom: 0;
     }
 
     button {
       cursor: pointer;
       display: flex;
+      box-sizing: border-box;
+      height: 25px;
       border-radius: 4px;
+      font-size: 11px;
       border: none;
       padding: 4px 10px;
       background: inherit;
@@ -155,6 +160,10 @@ export default class AstraEditorPromptDialog extends LitElement {
       color: #a3a3a3;
     }
 
+    .muted:not(:first-child) {
+      margin-left: 10px;
+    }
+
     .dark .muted {
       color: #737373;
     }
@@ -182,8 +191,18 @@ export default class AstraEditorPromptDialog extends LitElement {
     this.dispatchEvent(new CustomEvent('reject'))
   }
 
+  triggerCancel() {
+    this.dispatchEvent(new CustomEvent('cancel'))
+  }
+
   triggerClose() {
     this.dispatchEvent(new CustomEvent('close'))
+  }
+
+  protected shouldShowEscInstruction() {
+    if (this.showReject) return false
+    if (this.loading) return false
+    return true
   }
 
   protected shouldShowAcceptButton() {
@@ -192,12 +211,19 @@ export default class AstraEditorPromptDialog extends LitElement {
   }
 
   protected shouldShowSubmitEditButton() {
+    if (this.loading) return false
     if (!this.previousPrompt) return false
     return this.previousPrompt !== this.text
   }
 
   protected shouldShowGenerateButton() {
-    return !this.previousPrompt
+    if (this.loading) return false
+    return !this.previousPrompt && !!this.text
+  }
+
+  protected shouldShowRejectButton() {
+    if (this.loading) return false
+    return this.showReject
   }
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
@@ -214,6 +240,19 @@ export default class AstraEditorPromptDialog extends LitElement {
         e.stopPropagation()
       })
     }
+  }
+
+  listeners: { type: any; listener: any }[] = []
+
+  addEventListener(type: any, listener: any): void {
+    this.listeners.push({ type, listener })
+    super.addEventListener(type as any, listener)
+  }
+
+  cleanAllListeners() {
+    this.listeners.forEach(({ type, listener }) => {
+      super.removeEventListener(type, listener)
+    })
   }
 
   render() {
@@ -267,7 +306,11 @@ export default class AstraEditorPromptDialog extends LitElement {
               this.triggerClose()
               e.preventDefault()
             } else if ((e.metaKey || e.ctrlKey) && e.key === 'Backspace') {
-              this.triggerReject()
+              if (this.loading) {
+                this.triggerCancel()
+              } else {
+                this.triggerReject()
+              }
               e.preventDefault()
             }
 
@@ -275,12 +318,21 @@ export default class AstraEditorPromptDialog extends LitElement {
           }}
           .value="${this.text}"
           style="height:${this.inputHeight}px;"
-          placeholder="Enter text to generate SQL..."
+          placeholder="Editing instructions"
         ></textarea>
 
         ${this.error ? html`<div class="error">${this.error}</div>` : nothing}
 
         <div class="actions">
+          ${this.loading ? unsafeHTML(LoadingSvg) : nothing}
+          ${this.loading
+            ? html`
+                <button @click=${this.triggerCancel}>
+                  <span>⌘⌫</span>
+                  <span>Cancel</span>
+                </button>
+              `
+            : nothing}
           ${this.shouldShowGenerateButton() || this.shouldShowSubmitEditButton()
             ? html`
                 <button
@@ -292,25 +344,30 @@ export default class AstraEditorPromptDialog extends LitElement {
                 >
                   ${this.loading
                     ? unsafeHTML(LoadingSvg)
-                    : html`<span style="min-width:13px">${this.shouldShowGenerateButton() ? '↩' : '⌘↩'}</span>`}
-                  ${this.shouldShowGenerateButton() ? 'Generate' : 'Submit Edit'}
+                    : html`<span style="min-width:13px">${this.shouldShowGenerateButton() ? '⌘' : '⌘↵'}</span>`}
+                  ${this.shouldShowGenerateButton() ? 'Submit' : 'Submit Edit'}
                 </button>
               `
             : nothing}
           ${this.shouldShowAcceptButton()
             ? html` <button class="primary" @click=${this.triggerAccept}>
-                <span>⌘↩</span>
+                <span>⌘↵</span>
                 <span>Accept</span>
               </button>`
             : nothing}
-
-          <button style=${this.showReject ? 'display:block' : 'display:none'} @click=${this.triggerReject}>
-            <span>⌘⌫</span>
-            <span>Reject</span>
-          </button>
-          <div class="muted" style="display:flex; flex-grow:1; justify-content: end; align-items:center; font-size: 13px;">
-            ${this.previousPrompt ? 'Edit prompt to continue chat' : 'esc to close'}
-          </div>
+          ${this.shouldShowRejectButton()
+            ? html`
+                <button style=${this.showReject ? 'display:block' : 'display:none'} @click=${this.triggerReject}>
+                  <span>⌘⌫</span>
+                  <span>Reject</span>
+                </button>
+              `
+            : nothing}
+          ${this.shouldShowEscInstruction()
+            ? html`<div class="muted" style="display:flex; flex-grow:1; justify-content: start; align-items:center; font-size: 11px;">
+                Esc to close
+              </div>`
+            : nothing}
         </div>
       </div>
     </div>`
