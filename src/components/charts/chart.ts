@@ -429,7 +429,8 @@ export default class AstraChart extends ClassifiedElement {
           },
         },
         axisLabel: {
-          // formatter: (value) => this.labelFormatter(value),
+          // @ts-ignore bug in echarts? this definitely exists
+          formatter: isXAxisDate ? undefined : this.labelFormatter,
           color: this.getTextColor(),
           hideOverlap: true,
           rotate: this.xAxisLabelDisplay,
@@ -461,7 +462,8 @@ export default class AstraChart extends ClassifiedElement {
           },
         },
         axisLabel: {
-          // formatter: (value) => this.labelFormatter(value),
+          // @ts-ignore bug in echarts? this definitely exists
+          formatter: isXAxisDate ? undefined : this.labelFormatter, // `isXAxisDate` is not a typo
           color: this.getTextColor(),
           align: 'right',
           inside: false,
