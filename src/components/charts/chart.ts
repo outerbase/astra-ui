@@ -298,7 +298,6 @@ export default class AstraChart extends ClassifiedElement {
 
     if (this.type === 'text') return this.renderAsText()
 
-    // GLASSY CHART STYLES
     return html`<div id="chart" class="h-full w-full"></div>`
   }
 
