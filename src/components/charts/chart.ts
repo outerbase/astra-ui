@@ -398,16 +398,15 @@ export default class AstraChart extends ClassifiedElement {
         type: 'scroll', // Enable scrolling if too many items
       },
       grid: {
-        left: '2%',
-        right: '2%',
-        bottom: isTall ? '15%' : '15%',
-        top: isTall ? '20%' : '20%', // Increased from 15% to 20%
+        left: '0', // this.type === 'bar' ? '100' : '0',
+        right: '0',
+        bottom: this.xAxisLabel ? '20' : '10', // isTall ? '15%' : '15%',
+        top: this.yAxisLabel ? '30' : '10',
         containLabel: true,
       },
       xAxis: {
         show: !this.hideXAxisLabel,
         type: this.type === 'bar' ? 'value' : isXAxisDate ? 'time' : 'category',
-        // type: 'category',
         name: isTall ? this.xAxisLabel : '',
         nameLocation: 'middle',
         nameGap: 30,
