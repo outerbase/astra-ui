@@ -617,6 +617,7 @@ export default class AstraChart extends ClassifiedElement {
             name: item[this.columns[0]] as string,
             value: item[this.columns[1]] as number,
           })),
+          color: this.getColorValues(),
         })
         break
       case 'pie':
