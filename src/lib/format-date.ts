@@ -11,6 +11,7 @@ type DateFormat =
   | 'yyyy.MM.dd'
   | 'EEE MMM dd yyyy HH:mm:ss GMT'
   | 'yyyy-MM-ddTHH:mm:ssZ'
+  | 'yyyy-MM-ddTHH:mm:ss.SSSZ'
   | 'M/d/yy'
   | 'yyyy-Www-d'
   | 'yy.MM.dd'
@@ -67,6 +68,8 @@ const datePatterns: DatePattern[] = [
     format: 'EEEE, dd MMMM yyyy hh:mm:ss a',
   },
   { pattern: /^(\w+)\s+(\d{1,2})(?:st|nd|rd|th),\s+(\d{4})$/, format: 'MMMM do, yyyy' },
+  { pattern: /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})([-+]\d{2}:\d{2})$/, format: 'yyyy-MM-ddTHH:mm:ssZ' },
+  { pattern: /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d{3}Z$/, format: 'yyyy-MM-ddTHH:mm:ss.SSSZ' },
 ]
 
 export function formatDate(value: string): string {
@@ -217,6 +220,11 @@ export function formatDate(value: string): string {
         month = setMonthIndex(match[1])
         day = parseInt(match[2], 10)
         year = parseInt(match[3], 10)
+        break
+      case datePatterns[25].pattern.toString():
+        year = parseInt(match[1], 10)
+        month = parseInt(match[2], 10)
+        day = parseInt(match[3], 10)
         break
       default:
         return null
