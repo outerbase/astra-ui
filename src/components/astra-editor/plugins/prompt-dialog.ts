@@ -293,7 +293,11 @@ export default class AstraEditorPromptDialog extends LitElement {
               this.triggerClose()
               e.preventDefault()
             } else if ((e.metaKey || e.ctrlKey) && e.key === 'Backspace') {
-              this.triggerReject()
+              if (this.loading) {
+                this.triggerCancel()
+              } else {
+                this.triggerReject()
+              }
               e.preventDefault()
             }
 
@@ -301,7 +305,7 @@ export default class AstraEditorPromptDialog extends LitElement {
           }}
           .value="${this.text}"
           style="height:${this.inputHeight}px;"
-          placeholder="Editing instructions (@ for Data Catalog definitions)"
+          placeholder="Editing instructions"
         ></textarea>
 
         ${this.error ? html`<div class="error">${this.error}</div>` : nothing}
