@@ -1,6 +1,6 @@
 import { css, html, type PropertyValueMap } from 'lit'
 import { customElement, property, query } from 'lit/decorators.js'
-import type { ChartTypeV3, DashboardV3Chart, DashboardV3ChartSortOrder, Row } from '../../types.js'
+import { THEMES, type ChartTypeV3, type DashboardV3Chart, type DashboardV3ChartSortOrder, type Row, type ThemeColors } from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
 
 // import * as echarts from 'echarts'
@@ -23,14 +23,11 @@ import { isDate } from '../../lib/format-date.js'
 
 // Register the required components
 echarts.use([
-  // renderer
   CanvasRenderer,
-  // charts
   BarChart,
   HeatmapChart,
   LineChart,
   ScatterChart,
-  // components
   DatasetComponent,
   LegendComponent,
   TitleComponent,
@@ -39,54 +36,7 @@ echarts.use([
   PieChart,
   RadarChart,
   FunnelChart,
-  // AxisPointerComponent,
-  // GridComponent,
-  // DataZoomComponent,
 ])
-
-// ai instructions: replace these colors
-const iridiumValues = ['#87E9C0', '#B9D975', '#C9D69B']
-const celestialValues = ['#D1FFFF', '#93FDFF', '#1A9EF5']
-const cobaltValues = ['#5956E2', '#A99AFF', '#82DBFF']
-const afterburnValues = ['#E75F98', '#FFA285', '#CCB8F2']
-const mercuryValuesDark = ['#fafafa', '#525252', '#a3a3a3', '#e5e5e5', '#262626']
-const mercuryValuesLight = ['#0a0a0a', '#a3a3a3', '#525252', '#262626', '#e5e5e5']
-type ThemeColors = 'mercury' | 'iridium' | 'celestial' | 'cobalt' | 'afterburn'
-
-// ai instructions: with the following colors
-// type ThemeColors =
-//   | "neonPunk"
-//   | "cyberGlow"
-//   | "neoTokyo"
-//   | "synthwave"
-//   | "vaporwave";
-
-// const THEMES: Record<ThemeColors, { background: string; colors: string[] }> = {
-//   neonPunk: {
-//     background: "linear-gradient(145deg, #1e0338 0%, #4a0d67 100%)",
-//     colors: ["#ff2e6e", "#8c54ff"],
-//   },
-//   cyberGlow: {
-//     background: "linear-gradient(145deg, #16213e 0%, #1a1a2e 100%)",
-//     colors: ["#ffa726", "#ff5722"],
-//   },
-//   neoTokyo: {
-//     background: "linear-gradient(145deg, #2d0a31 0%, #440a44 100%)",
-//     colors: ["#ff71ce", "#01cdfe"],
-//   },
-//   synthwave: {
-//     background: "linear-gradient(145deg, #2b1055 0%, #7597de 100%)",
-//     colors: ["#ff2a6d", "#05d9e8"],
-//   },
-//   vaporwave: {
-//     background: "linear-gradient(145deg, #391f5e 0%, #6b3fa0 100%)",
-//     colors: ["#ff71ce", "#b967ff"],
-//   },
-// };
-//
-
-// ai instructions: update the code to reflet this new THEME object
-// ai instructions: `getBackgroundColor` should return the selected themes bg color in the appropriate format
 
 @customElement('astra-chart')
 export default class AstraChart extends ClassifiedElement {
@@ -247,7 +197,6 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: String, attribute: 'group-by' }) groupBy?: string
 
   // new props for echarts
-  @property({ type: Array }) colorValues: string[] = this.theme === 'dark' ? mercuryValuesDark : mercuryValuesLight
   @property({ type: Array }) columns: string[] = []
   @property({ type: String }) title = ''
   @property({ type: String }) xAxisLabel = ''
@@ -372,29 +321,10 @@ export default class AstraChart extends ClassifiedElement {
     this.chartInstance.setOption(this.getChartOptions())
   }
 
-  private labelFormatter(value: unknown): string {
-    return typeof value === 'string' ? formatDate(value) : String(value)
-    // if (typeof value === 'string' || value instanceof String) {
-    //   const parsedDate = Date.parse(value as string)
-    //   if (!isNaN(parsedDate)) {
-    //     const date = new Date(parsedDate)
-    //     const year = date.getUTCFullYear()
-    //     const month = String(date.getUTCMonth() + 1).padStart(2, '0')
-    //     const day = String(date.getUTCDate()).padStart(2, '0')
-
-    //     if (this.uniqueYears.size > 1) {
-    //       return `${year}-${month}`
-    //     }
-
-    //     if (this.uniqueMonths.size > 1) {
-    //       return `${year}-${month}-${day}`
-    //     }
-
-    //     return `${year}`
-    //   }
-    // }
-    // return typeof value === 'string' ? value : String(value)
-  }
+  // private labelFormatter(value: unknown): string {
+  //   if (typeof value !== 'string') return String(value)
+  //   return value.length > 32 ? value.substring(0, 32) + '...' : value
+  // }
 
   private getChartOptions(): EChartsOption {
     const colorValues = this.getColorValues()
@@ -418,154 +348,137 @@ export default class AstraChart extends ClassifiedElement {
     // Determine if the X axis data is a date
     const isXAxisDate = !!(this.columns[0] && formattedSource.some((item) => isDate(item[this.columns[0]] as string)))
     const isYAxisDate = !!(this.columns[1] && formattedSource.some((item) => isDate(item[this.columns[1]] as string)))
-    const options: EChartsOption =
-      this.type === 'radar'
-        ? {
-            radar: {
-              shape: 'polygon',
-              indicator: this.columns.map((name) => ({ name })),
-            },
-            series: [
-              {
-                // name: '',
-                type: 'radar',
-                data:
-                  // e.g. data
-                  // {
-                  //   value: [5000, 14000, 28000, 26000, 42000, 21000],
-                  //   name: 'Actual Spending',
-                  // },
-                  //
-                  //
-                  // Extract real data for radar chart
-                  // Each object corresponds to a column and contains an array of flattened values
-                  this.columns.map((col) => ({
-                    value: formattedSource.map((item) => Number(item[col])),
-                    name: col,
-                  })),
-              },
-            ],
-          }
-        : {
-            backgroundColor: this.getBackgroundColor(),
-            dataset: {
-              dimensions: this.columns,
-              source: formattedSource,
-            },
-            tooltip: {
-              trigger: this.type === 'scatter' ? 'item' : 'axis',
-              borderColor: gridLineColors, // fix issue where 'item' tooltips were a different color than the rest (maybe it matched the series color)
-            },
-            legend: {
-              show: !this.omitLegend && isTall,
-              data: this.columns.slice(1),
-              textStyle: {
-                color: this.getTextColor(),
-              },
-              top: 8,
-              orient: 'horizontal',
-              type: 'scroll', // Enable scrolling if too many items
-            },
-            grid: {
-              left: '2%',
-              right: '2%',
-              bottom: isTall ? '15%' : '15%',
-              top: isTall ? '20%' : '20%', // Increased from 15% to 20%
-              containLabel: true,
-            },
-            xAxis: {
-              show: !this.hideXAxisLabel,
-              type: this.type === 'bar' ? 'value' : isXAxisDate ? 'time' : 'category',
-              // type: 'category',
-              name: isTall ? this.xAxisLabel : '',
-              nameLocation: 'middle',
-              nameGap: 30,
-              nameTextStyle: {
-                color: this.getTextColor(),
-              },
-              axisLine: {
-                show: false,
-                lineStyle: {
-                  color: axisLineColors,
-                },
-              },
-              axisLabel: {
-                // formatter: (value) => this.labelFormatter(value),
-                color: this.getTextColor(),
-                hideOverlap: true,
-                rotate: this.xAxisLabelDisplay,
-                // interval: 1,
-                align: 'center',
-              },
-              axisTick: {
-                // alignWithLabel: true,
-              },
-              splitLine: {
-                show: false,
-                lineStyle: {
-                  color: gridLineColors,
-                },
-              },
-              min: this.minX,
-              max: this.maxX,
-            },
-            yAxis: {
-              type: this.type === 'bar' ? (isXAxisDate ? 'time' : 'category') : isYAxisDate ? 'time' : 'value',
-              name: isTall ? this.yAxisLabel : '',
-              show: this.yAxisLabelDisplay !== 'hidden',
-              position: (this.yAxisLabelDisplay !== 'hidden' && this.yAxisLabelDisplay) || undefined, // exclude `hidden`, pass left/right
-              nameTextStyle: {
-                color: this.getTextColor(),
-                align: 'left',
-                padding: [0, 0, 0, 0],
-              },
-              axisLine: {
-                show: false,
-                lineStyle: {
-                  color: axisLineColors,
-                },
-              },
-              axisLabel: {
-                formatter: (value) => this.labelFormatter(value),
-                color: this.getTextColor(),
-                align: 'right',
-                inside: false,
-              },
-              axisTick: {
-                inside: false,
-              },
-              splitLine: {
-                show: true,
-                lineStyle: {
-                  color: gridLineColors,
-                },
-              },
-              min: this.minY,
-              max: this.maxY,
-            },
-            color: colorValues,
-          }
 
     if (this.type === 'radar') {
-      return options
+      return {
+        radar: {
+          shape: 'polygon',
+          indicator: this.columns.map((name) => ({ name })),
+        },
+        series: [
+          {
+            // name: '',
+            type: 'radar',
+            data:
+              // e.g. data
+              // {
+              //   value: [5000, 14000, 28000, 26000, 42000, 21000],
+              //   name: 'Actual Spending',
+              // },
+              //
+              //
+              // Extract real data for radar chart
+              // Each object corresponds to a column and contains an array of flattened values
+              this.columns.map((col) => ({
+                value: formattedSource.map((item) => Number(item[col])),
+                name: col,
+              })),
+          },
+        ],
+      }
+    }
+
+    const options: EChartsOption = {
+      // backgroundColor: this.getBackgroundColor(),
+      dataset: {
+        dimensions: this.columns,
+        source: formattedSource,
+      },
+      tooltip: {
+        trigger: this.type === 'scatter' ? 'item' : 'axis',
+        borderColor: gridLineColors, // fix issue where 'item' tooltips were a different color than the rest (maybe it matched the series color)
+      },
+      legend: {
+        show: !this.omitLegend && isTall,
+        data: this.columns.slice(1),
+        textStyle: {
+          color: this.getTextColor(),
+        },
+        top: 8,
+        orient: 'horizontal',
+        type: 'scroll', // Enable scrolling if too many items
+      },
+      grid: {
+        left: '2%',
+        right: '2%',
+        bottom: isTall ? '15%' : '15%',
+        top: isTall ? '20%' : '20%', // Increased from 15% to 20%
+        containLabel: true,
+      },
+      xAxis: {
+        show: !this.hideXAxisLabel,
+        type: this.type === 'bar' ? 'value' : isXAxisDate ? 'time' : 'category',
+        // type: 'category',
+        name: isTall ? this.xAxisLabel : '',
+        nameLocation: 'middle',
+        nameGap: 30,
+        nameTextStyle: {
+          color: this.getTextColor(),
+        },
+        axisLine: {
+          show: false,
+          lineStyle: {
+            color: axisLineColors,
+          },
+        },
+        axisLabel: {
+          // formatter: (value) => this.labelFormatter(value),
+          color: this.getTextColor(),
+          hideOverlap: true,
+          rotate: this.xAxisLabelDisplay,
+          align: 'center',
+        },
+        splitLine: {
+          show: false,
+          lineStyle: {
+            color: gridLineColors,
+          },
+        },
+        min: this.minX,
+        max: this.maxX,
+      },
+      yAxis: {
+        type: this.type === 'bar' ? (isXAxisDate ? 'time' : 'category') : isYAxisDate ? 'time' : 'value',
+        name: isTall ? this.yAxisLabel : '',
+        show: this.yAxisLabelDisplay !== 'hidden',
+        position: (this.yAxisLabelDisplay !== 'hidden' && this.yAxisLabelDisplay) || undefined, // exclude `hidden`, pass left/right
+        nameTextStyle: {
+          color: this.getTextColor(),
+          align: 'left',
+          padding: [0, 0, 0, 0],
+        },
+        axisLine: {
+          show: false,
+          lineStyle: {
+            color: axisLineColors,
+          },
+        },
+        axisLabel: {
+          // formatter: (value) => this.labelFormatter(value),
+          color: this.getTextColor(),
+          align: 'right',
+          inside: false,
+        },
+        axisTick: {
+          inside: false,
+        },
+        splitLine: {
+          show: true,
+          lineStyle: {
+            color: gridLineColors,
+          },
+        },
+        min: this.minY,
+        max: this.maxY,
+      },
+      color: colorValues,
     }
 
     return this.addSeries(options) // Pass the source dataset when adding series
   }
 
   private getColorValues(): string[] {
-    switch (this.colorTheme) {
-      case 'iridium':
-        return iridiumValues
-      case 'celestial':
-        return celestialValues
-      case 'cobalt':
-        return cobaltValues
-      case 'afterburn':
-        return afterburnValues
-      default:
-        return this.theme === 'dark' ? mercuryValuesDark : mercuryValuesLight
-    }
+    return this.theme === 'dark' ? THEMES[this.colorTheme].colors.dark : THEMES[this.colorTheme].colors.light
   }
 
   private applyTheme() {
@@ -618,9 +531,9 @@ export default class AstraChart extends ClassifiedElement {
     }
   }
 
-  private getBackgroundColor(): string {
-    return 'transparent'
-  }
+  // private getBackgroundColor(): string {
+  //   return THEMES[this.colorTheme].background
+  // }
 
   private getTextColor(): string {
     return this.theme === 'dark' ? '#FFFFFF' : '#000000'
