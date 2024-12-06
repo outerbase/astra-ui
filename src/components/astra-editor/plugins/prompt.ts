@@ -1,6 +1,6 @@
 import { unifiedMergeView } from '@codemirror/merge'
 import { EditorState, Prec, StateEffect, StateField, Transaction } from '@codemirror/state'
-import { Decoration, keymap, WidgetType } from '@codemirror/view'
+import { Decoration, keymap, showTooltip, WidgetType, type Tooltip } from '@codemirror/view'
 import { EditorView } from 'codemirror'
 import { customElement, property } from 'lit/decorators.js'
 import { AstraEditorPlugin } from './base.js'
@@ -277,6 +277,47 @@ function createPromptStatePlugin(plugin: AstraEditorPromptPlugin) {
   })
 }
 
+function triggerShowPrompt(v: EditorView, plugin: AstraEditorPromptPlugin) {
+  const currentCursor = v.state.selection.main.from
+  const currentCursorLine = v.state.doc.lineAt(currentCursor)
+  const nearestA = resolveToNearestStatement(v.state, v.state.selection.main.from)
+  const nearestB = resolveToNearestStatement(v.state, v.state.selection.main.to)
+
+  const startLine = v.state.doc.lineAt(nearestA?.from ?? 0)
+  const endLine = v.state.doc.lineAt(nearestB?.to ?? v.state.doc.length)
+
+  if (plugin.activeWidget) {
+    plugin.activeWidget.dialog.triggerClose()
+  }
+
+  setTimeout(() => {
+    if (v.state.selection.main.from === v.state.selection.main.to) {
+      // We need to find a way to know if user want to generate new query
+      // or user want to improve the existing query.
+
+      // We determine if user want to generate new query if it is in empty line
+      // and it is not in the middle of statement
+      if (currentCursor < startLine.from || currentCursor > endLine.to) {
+        v.dispatch({
+          effects: [effectShowPrompt.of({ lineNumber: currentCursorLine.number, from: currentCursorLine.from, to: currentCursorLine.to })],
+          selection: { anchor: currentCursor, head: currentCursor },
+        })
+        return true
+      }
+    }
+
+    v.dispatch({
+      effects: [
+        effectShowPrompt.of({ lineNumber: startLine.number, from: startLine.from, to: endLine.to }),
+        effectSelectedPromptLine.of(Array.from({ length: endLine.number - startLine.number + 1 }, (_, i) => startLine.number + i)),
+      ],
+      selection: { anchor: startLine.from, head: startLine.from },
+    })
+  }, 50)
+
+  return true
+}
+
 function createPromptKeyBinding(plugin: AstraEditorPromptPlugin) {
   return Prec.highest(
     keymap.of([
@@ -285,44 +326,7 @@ function createPromptKeyBinding(plugin: AstraEditorPromptPlugin) {
         mac: 'Cmd-b',
         preventDefault: true,
         run: (v) => {
-          const currentCursor = v.state.selection.main.from
-          const currentCursorLine = v.state.doc.lineAt(currentCursor)
-          const nearestA = resolveToNearestStatement(v.state, v.state.selection.main.from)
-          const nearestB = resolveToNearestStatement(v.state, v.state.selection.main.to)
-
-          const startLine = v.state.doc.lineAt(nearestA?.from ?? 0)
-          const endLine = v.state.doc.lineAt(nearestB?.to ?? v.state.doc.length)
-
-          if (plugin.activeWidget) {
-            plugin.activeWidget.dialog.triggerClose()
-          }
-
-          setTimeout(() => {
-            if (v.state.selection.main.from === v.state.selection.main.to) {
-              // We need to find a way to know if user want to generate new query
-              // or user want to improve the existing query.
-
-              // We determine if user want to generate new query if it is in empty line
-              // and it is not in the middle of statement
-              if (currentCursor < startLine.from || currentCursor > endLine.to) {
-                v.dispatch({
-                  effects: [
-                    effectShowPrompt.of({ lineNumber: currentCursorLine.number, from: currentCursorLine.from, to: currentCursorLine.to }),
-                  ],
-                })
-                return true
-              }
-            }
-
-            v.dispatch({
-              effects: [
-                effectShowPrompt.of({ lineNumber: startLine.number, from: startLine.from, to: endLine.to }),
-                effectSelectedPromptLine.of(Array.from({ length: endLine.number - startLine.number + 1 }, (_, i) => startLine.number + i)),
-              ],
-            })
-          }, 50)
-
-          return true
+          return triggerShowPrompt(v, plugin)
         },
       },
     ])
@@ -347,6 +351,34 @@ const promptSelectedLines = StateField.define({
   },
   provide: (f) => EditorView.decorations.from(f),
 })
+
+function getCursorTooltips(state: EditorState, plugin: AstraEditorPromptPlugin): readonly Tooltip[] {
+  return state.selection.ranges
+    .filter((range) => !range.empty)
+    .map((range) => {
+      return {
+        pos: range.head,
+        above: range.head < range.anchor,
+        strictSide: true,
+        arrow: false,
+        create: () => {
+          let dom = document.createElement('div')
+          dom.className = 'cm-tooltip-cursor'
+
+          let editButton = document.createElement('button')
+          editButton.innerHTML = 'Edit <span>⌘B</span>'
+
+          editButton.onclick = () => {
+            triggerShowPrompt(plugin.editor.getEditorView()!, plugin)
+          }
+
+          dom.appendChild(editButton)
+
+          return { dom }
+        },
+      }
+    })
+}
 
 @customElement('astra-editor-prompt')
 export class AstraEditorPromptPlugin extends AstraEditorPlugin {
@@ -423,6 +455,41 @@ export class AstraEditorPromptPlugin extends AstraEditorPlugin {
       .cm-deletedChunk del {
         text-decoration: none !important;
       }
+
+      .cm-tooltip-cursor {
+        border: 1px solid #eee;
+        border-radius: 5px;
+        overflow: hidden;
+      }
+
+      .dark .cm-tooltip-cursor {
+        border: 1px solid #555;
+      }
+
+      .cm-tooltip-cursor button {
+        padding: 5px 10px;
+        border: none;
+        background: #f1f1f1;
+        cursor: pointer;
+      }
+
+      .cm-tooltip-cursor button:hover {
+        background: #ccc;
+      }
+
+      .cm-tooltip-cursor button span {
+        color: #888;
+        margin-left: 2px;
+      }
+
+      .dark .cm-tooltip-cursor button {
+        background: #171717;
+        color: white;
+      }
+
+      .dark .cm-tooltip-cursor button:hover {
+        background: #272727;
+      }
     `
     )
 
@@ -430,6 +497,18 @@ export class AstraEditorPromptPlugin extends AstraEditorPlugin {
       createPromptKeyBinding(this),
       promptSelectedLines,
       this.promptStatePlugin,
+
+      StateField.define<readonly Tooltip[]>({
+        create: (state) => getCursorTooltips(state, this),
+
+        update: (tooltips, tr) => {
+          if (!tr.docChanged && !tr.selection) return tooltips
+          return getCursorTooltips(tr.state, this)
+        },
+
+        provide: (f) => showTooltip.computeN([f], (state) => state.field(f)),
+      }),
+
       StateField.define({
         create() {
           return Decoration.none
@@ -439,7 +518,7 @@ export class AstraEditorPromptPlugin extends AstraEditorPlugin {
           const line = tr.state.doc.lineAt(cursorPosition)
           const lineText = line.text
 
-          if (lineText === '' && !this.isActive) {
+          if (lineText === '' && !this.isActive && tr.state.selection && tr.selection?.main.from === tr.selection?.main.to) {
             return Decoration.set([
               Decoration.widget({
                 widget: new PlaceholderWidget(),
