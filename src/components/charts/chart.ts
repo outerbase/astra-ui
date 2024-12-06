@@ -299,7 +299,14 @@ export default class AstraChart extends ClassifiedElement {
 
     if (this.type === 'text') return this.renderAsText()
 
-    return html`<div id="chart" class="h-full w-full"></div>`
+    return html`<div
+      id="chart"
+      class="h-full w-full"
+      style="background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2) 60%, rgba(255, 255, 255, 0.6));
+               backdrop-filter: blur(10px) saturate(180%);
+               border-radius: 12px;
+               border: 1px solid rgba(255, 255, 255, 0.2);"
+    ></div>`
   }
 
   private renderTable() {
