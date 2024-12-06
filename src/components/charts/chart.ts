@@ -7,7 +7,6 @@ import {
   type DashboardV3ChartSortOrder,
   type PaletteThemeType,
   type Row,
-  type ThemeColors,
 } from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
 
