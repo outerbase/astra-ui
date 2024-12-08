@@ -201,7 +201,7 @@ export default class AstraComposedChart extends AstraChart {
       <div
         class="${classMap({
           dark: this.theme === 'dark',
-        })} h-full w-full bg-white bg-opacity-10 backdrop-blur-lg rounded-lg border border-white border-opacity-20"
+        })} h-full w-full bg-white bg-opacity-5 backdrop-blur-lg rounded-lg border border-white border-opacity-5"
       >
         <div
           id="composed-chart"

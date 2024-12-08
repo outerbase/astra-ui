@@ -376,8 +376,15 @@ export type DashboardV3ChartOptions = {
   format?: 'percent' | 'number' | 'decimal' | 'date' | 'time' | 'dollar' | 'euro' | 'pound' | 'yen'
   // Theme of the chart
   theme?: PaletteThemeType
-
   hideXAxisLabel?: boolean
+  // The type of background the chart card should contain
+  backgroundType?: 'gradient' | 'image' | 'none'
+  // Optional background image to the chart card
+  backgroundImage?: string
+  // Opational gradient to the chart card
+  gradientStart?: string
+  // Opational gradient to the chart card
+  gradientStop?: string
 }
 
 export type DashboardV3Highlight = {
