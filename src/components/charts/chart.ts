@@ -536,7 +536,7 @@ export default class AstraChart extends ClassifiedElement {
   // }
 
   private getTextColor(): string {
-    return this.theme === 'dark' ? '#FFFFFF' : '#000000'
+    return this.data?.options?.foreground ?? (this.theme === 'dark' ? '#FFFFFF' : '#000000')
   }
 
   private addSeries(_options: EChartsOption) {

@@ -75,12 +75,22 @@ export default class AstraComposedChart extends AstraChart {
       <div id="header" class="flex justify-between w-full">
         ${this.header || this.subheader
           ? html`
-              <div id="header-labels" class="flex flex-col">
+              <div id="header-labels" class="flex flex-col" style=${`color: ${this.data?.options?.foreground};`}>
                 ${this.header
-                  ? html`<h1 class="text-xl dark:text-neutral-200 text-neutral-800 font-medium line-clamp-1">${this.header}</h1>`
+                  ? html`<h1
+                      class="text-xl font-medium line-clamp-1 ${!this.data?.options?.foreground
+                        ? 'dark:text-neutral-200 text-neutral-800'
+                        : ''}"
+                    >
+                      ${this.header}
+                    </h1>`
                   : null}
                 ${this.subheader
-                  ? html`<h2 class="text-md text-neutral-600 dark:text-neutral-400 line-clamp-1">${this.subheader}</h2>`
+                  ? html`<h2
+                      class="text-md line-clamp-1 ${!this.data?.options?.foreground ? 'text-neutral-600 dark:text-neutral-400' : ''}"
+                    >
+                      ${this.subheader}
+                    </h2>`
                   : null}
               </div>
             `

@@ -385,6 +385,8 @@ export type DashboardV3ChartOptions = {
   gradientStart?: string
   // Opational gradient to the chart card
   gradientStop?: string
+  // text color
+  foreground?: string
 }
 
 export type DashboardV3Highlight = {
