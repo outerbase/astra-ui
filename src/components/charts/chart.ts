@@ -638,6 +638,10 @@ export default class AstraChart extends ClassifiedElement {
             textBorderColor: 'transparent', // Remove text border
           },
           color: this.getColorValues(),
+          tooltip: {
+            trigger: 'item',
+            borderColor: this.theme === 'dark' ? '#FFFFFF08' : '#00000010', // fix issue where 'item' tooltips were a different color than the rest (maybe it matched the series color)
+          },
         })
 
         break
