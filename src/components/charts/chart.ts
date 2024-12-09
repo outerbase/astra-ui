@@ -374,6 +374,10 @@ export default class AstraChart extends ClassifiedElement {
             },
           ],
         })),
+        tooltip: {
+          trigger: 'item',
+          borderColor: gridLineColors, // fix issue where 'item' tooltips were a different color than the rest (maybe it matched the series color)
+        },
       }
     }
 
