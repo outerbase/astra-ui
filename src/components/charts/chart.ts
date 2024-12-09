@@ -404,8 +404,8 @@ export default class AstraChart extends ClassifiedElement {
       grid: {
         left: '0', // this.type === 'bar' ? '100' : '0',
         right: '0',
-        bottom: this.xAxisLabel ? '20' : '10', // isTall ? '15%' : '15%',
-        top: this.yAxisLabel ? '30' : '10',
+        bottom: this.xAxisLabel && isTall ? '20' : '0', // isTall ? '15%' : '15%',
+        top: this.yAxisLabel && isTall ? '30' : '10',
         containLabel: true,
       },
       xAxis: {
