@@ -56,8 +56,6 @@ class PromptWidget extends WidgetType {
     this.plugin = plugin
     const view = this.plugin.editor.getEditorView()!
 
-    console.log('widget created')
-
     // First we need to lock the editor to read-only.
     // This will simplify the logic of the plugin of not having to
     // worry about keeping up with the editor state while the prompt

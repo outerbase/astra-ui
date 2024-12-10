@@ -109,7 +109,6 @@ const SCHEMA = {
 
         // randomly remove lines
         const finalLines = lines.filter((_, index) => Math.random() > 0.35)
-        console.log(finalLines)
 
         return finalLines.join('\n')
       })
@@ -144,16 +143,6 @@ const SCHEMA = {
     themeElement.onchange = () => {
       const editor = document.getElementById('editor') as any
       editor.theme = themeElement.value
-    }
-
-    const currentStatementButton = document.getElementById('current-statement') as HTMLButtonElement
-    currentStatementButton.onclick = () => {
-      console.log((document.getElementById('sql') as any).getCurrentStatement())
-    }
-
-    const allStatementButton = document.getElementById('all-statement') as HTMLButtonElement
-    allStatementButton.onclick = () => {
-      console.log((document.getElementById('sql') as any).getAllStatements())
     }
   </script>
 </div>
