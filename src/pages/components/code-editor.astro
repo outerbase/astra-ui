@@ -85,7 +85,7 @@ const SCHEMA = {
 
     setTimeout(() => {
       const promptPlugin = document.getElementById('prompt-plugin') as any
-      promptPlugin.handleSuggestion(async (promptText: string, selected?: { text: string }) => {
+      promptPlugin.handleSuggestion(async (_promptText: string, selected?: { text: string }) => {
         const selectedText = selected?.text
 
         // do some fake delay
@@ -108,7 +108,7 @@ const SCHEMA = {
         }
 
         // randomly remove lines
-        const finalLines = lines.filter((_, index) => Math.random() > 0.35)
+        const finalLines = lines.filter(() => Math.random() > 0.35)
 
         return finalLines.join('\n')
       })

@@ -512,7 +512,7 @@ export class AstraEditorPromptPlugin extends AstraEditorPlugin {
         create() {
           return Decoration.none
         },
-        update: (v, tr) => {
+        update: (_v, tr) => {
           const cursorPosition = tr.state.selection.main.from
           const line = tr.state.doc.lineAt(cursorPosition)
           const lineText = line.text
