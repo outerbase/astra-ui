@@ -403,9 +403,9 @@ export default class AstraChart extends ClassifiedElement {
       },
       grid: {
         left: '0', // this.type === 'bar' ? '100' : '0',
-        right: '0',
-        bottom: this.xAxisLabel && isTall ? '20' : '0', // isTall ? '15%' : '15%',
-        top: this.yAxisLabel && isTall ? '30' : '10',
+        right: '6',
+        bottom: this.xAxisLabel && isTall ? '23' : '0', // isTall ? '15%' : '15%',
+        top: this.yAxisLabel && isTall ? '26' : '8',
         containLabel: true,
       },
       xAxis: {
@@ -592,8 +592,8 @@ export default class AstraChart extends ClassifiedElement {
       case 'funnel':
         options.series = this.constructSeries<FunnelSeriesOption>('funnel', {
           left: '10%',
-          top: 60,
-          bottom: 60,
+          top: 26,
+          bottom: 0,
           width: '80%',
           minSize: '0%',
           maxSize: '100%',
