@@ -56,8 +56,6 @@ class PromptWidget extends WidgetType {
     this.plugin = plugin
     const view = this.plugin.editor.getEditorView()!
 
-    console.log('widget created')
-
     // First we need to lock the editor to read-only.
     // This will simplify the logic of the plugin of not having to
     // worry about keeping up with the editor state while the prompt
@@ -514,7 +512,7 @@ export class AstraEditorPromptPlugin extends AstraEditorPlugin {
         create() {
           return Decoration.none
         },
-        update: (v, tr) => {
+        update: (_v, tr) => {
           const cursorPosition = tr.state.selection.main.from
           const line = tr.state.doc.lineAt(cursorPosition)
           const lineText = line.text

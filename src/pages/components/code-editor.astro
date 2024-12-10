@@ -85,7 +85,7 @@ const SCHEMA = {
 
     setTimeout(() => {
       const promptPlugin = document.getElementById('prompt-plugin') as any
-      promptPlugin.handleSuggestion(async (promptText: string, selected?: { text: string }) => {
+      promptPlugin.handleSuggestion(async (_promptText: string, selected?: { text: string }) => {
         const selectedText = selected?.text
 
         // do some fake delay
@@ -108,8 +108,7 @@ const SCHEMA = {
         }
 
         // randomly remove lines
-        const finalLines = lines.filter((_, index) => Math.random() > 0.35)
-        console.log(finalLines)
+        const finalLines = lines.filter(() => Math.random() > 0.35)
 
         return finalLines.join('\n')
       })
@@ -144,16 +143,6 @@ const SCHEMA = {
     themeElement.onchange = () => {
       const editor = document.getElementById('editor') as any
       editor.theme = themeElement.value
-    }
-
-    const currentStatementButton = document.getElementById('current-statement') as HTMLButtonElement
-    currentStatementButton.onclick = () => {
-      console.log((document.getElementById('sql') as any).getCurrentStatement())
-    }
-
-    const allStatementButton = document.getElementById('all-statement') as HTMLButtonElement
-    allStatementButton.onclick = () => {
-      console.log((document.getElementById('sql') as any).getAllStatements())
     }
   </script>
 </div>

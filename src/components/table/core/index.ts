@@ -1126,7 +1126,7 @@ export default class AstraTable extends ClassifiedElement {
   public override render() {
     const tableEndPlaceholder = html`<div class="flex-1 flex flex-col">
       <!-- header -->
-      <div class="sticky top-0 z-30">
+      <div class="sticky top-0 z-10">
         <astra-th
           theme=${this.theme}
           table-height=${ifDefined(this._height)}
