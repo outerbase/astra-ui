@@ -89,9 +89,9 @@ export function splitSqlQuery(state: EditorState, generateText: boolean = true):
   }))
 }
 
-export function resolveToNearestStatement(state: EditorState): { from: number; to: number } | null {
+export function resolveToNearestStatement(state: EditorState, position?: number): { from: number; to: number } | null {
   // Breakdown and grouping the statement
-  const cursor = state.selection.main.from
+  const cursor = position ?? state.selection.main.from
   const statements = splitSqlQuery(state, false)
 
   if (statements.length === 0) return null
