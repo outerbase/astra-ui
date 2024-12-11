@@ -758,14 +758,12 @@ export default class AstraChart extends ClassifiedElement {
       firstRecordValue = `¥${number.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
     }
 
-    const style = this.sizeX === 1 && this.sizeY === 1 ? 'font-size: 30px; line-height: 36px;' : 'font-size: 60px; line-height: 68px;'
+    let style = this.sizeX === 1 && this.sizeY === 1 ? 'font-size: 30px; line-height: 36px;' : 'font-size: 60px; line-height: 68px;'
+    const fgColor = this.data?.options?.foreground
+    if (fgColor) style += ` color: ${fgColor};`
+
     return html`<div class="flex-1 self-start">
-      <div
-        style=${`font-family: Inter, sans-serif; ${style}`}
-        class=${`${this.theme === 'dark' ? 'text-neutral-50' : 'text-neutral-950'} font-bold truncate`}
-      >
-        ${firstRecordValue}
-      </div>
+      <div style=${`font-family: Inter, sans-serif; ${style}`} class="font-bold truncate">${firstRecordValue}</div>
     </div>`
   }
 }
