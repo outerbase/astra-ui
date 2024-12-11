@@ -42,6 +42,32 @@ export default class AstraComposedChart extends AstraChart {
   @property({ type: Number }) sizeX?: number
   // When presented in a grid layout, indicates how many spaces on the Y axis the chart consumes. Between 1 and 2.
   @property({ type: Number }) sizeY?: number
+  // Background color for the chart.
+  @property({ type: String }) backgroundColor?: string
+  // Text color for the chart.
+  @property({ type: String }) textColor?: string
+
+  override updated(changedProperties: Map<string | number | symbol, unknown>): void {
+    super.updated(changedProperties)
+
+    if (changedProperties.has('backgroundColor') || changedProperties.has('textColor')) {
+      const composedChartElement = this.renderRoot.querySelector('#composed-chart') as HTMLElement
+
+      if (composedChartElement) {
+        if (this.backgroundColor) {
+          composedChartElement.style.setProperty('background-color', this.backgroundColor, 'important')
+        } else {
+          composedChartElement.style.removeProperty('background-color')
+        }
+
+        if (this.textColor) {
+          composedChartElement.style.setProperty('color', this.textColor, 'important')
+        } else {
+          composedChartElement.style.removeProperty('color')
+        }
+      }
+    }
+  }
 
   public render() {
     // include header when large
@@ -49,12 +75,22 @@ export default class AstraComposedChart extends AstraChart {
       <div id="header" class="flex justify-between w-full">
         ${this.header || this.subheader
           ? html`
-              <div id="header-labels" class="flex flex-col">
+              <div id="header-labels" class="flex flex-col" style=${`color: ${this.data?.options?.foreground};`}>
                 ${this.header
-                  ? html`<h1 class="text-xl dark:text-neutral-200 text-neutral-800 font-medium line-clamp-1">${this.header}</h1>`
+                  ? html`<h1
+                      class="text-xl font-medium line-clamp-1 ${!this.data?.options?.foreground
+                        ? 'dark:text-neutral-200 text-neutral-800'
+                        : ''}"
+                    >
+                      ${this.header}
+                    </h1>`
                   : null}
                 ${this.subheader
-                  ? html`<h2 class="text-md text-neutral-600 dark:text-neutral-400 line-clamp-1">${this.subheader}</h2>`
+                  ? html`<h2
+                      class="text-md line-clamp-1 ${!this.data?.options?.foreground ? 'text-neutral-600 dark:text-neutral-400' : ''}"
+                    >
+                      ${this.subheader}
+                    </h2>`
                   : null}
               </div>
             `
@@ -141,61 +177,45 @@ export default class AstraComposedChart extends AstraChart {
     const showNoDataLabel = layer?.result?.length === 0 && layer?.type !== 'text'
     const chart = super.render()
     const chartSection = html`<div
-      id="chart"
-      class=${`flex-1 flex items-center justify-center overflow-hidden ${layer?.type === 'table' ? 'border-t border-[#d4d4d4] dark:border-[#404040]' : ''}`}
+      class=${`h-full w-full flex-1 ${layer?.type === 'table' ? 'border-t border-[#d4d4d4] dark:border-[#404040] z-0' : ''}`}
     >
       ${showNoDataLabel
         ? html`<svg
-                  width="32"
-                  height="32"
-                  stroke=${this.theme === 'dark' ? '#e5e5e5' : '#262626'}
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                    <g transform-origin="center">
-                        <circle
-                            cx="12"
-                            cy="12"
-                            r="9.5"
-                            fill="none"
-                            stroke-width="1.5"
-                            stroke-linecap="round"
-                        >
-                            <animateTransform
-                                attributeName="transform"
-                                type="rotate"
-                                from="0 12 12"
-                                to="360 12 12"
-                                dur="2s"
-                                repeatCount="indefinite"
-                            />
+            width="32"
+            height="32"
+            stroke=${this.theme === 'dark' ? '#e5e5e5' : '#262626'}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g transform-origin="center">
+              <circle cx="12" cy="12" r="9.5" fill="none" stroke-width="1.5" stroke-linecap="round">
+                <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="2s" repeatCount="indefinite" />
 
-                            <animate
-                                attributeName="stroke-dasharray"
-                                values="0 150;42 150;42 150"
-                                keyTimes="0;0.5;1"
-                                dur="1.5s"
-                                repeatCount="indefinite"
-                            />
+                <animate
+                  attributeName="stroke-dasharray"
+                  values="0 150;42 150;42 150"
+                  keyTimes="0;0.5;1"
+                  dur="1.5s"
+                  repeatCount="indefinite"
+                />
 
-                            <animate
-                                attributeName="stroke-dashoffset"
-                                values="0;-16;-59"
-                                keyTimes="0;0.5;1"
-                                dur="1.5s"
-                                repeatCount="indefinite"
-                            />
-                        </circle>
-                    </g>
-                </svg>`: html`${chart }`}
+                <animate attributeName="stroke-dashoffset" values="0;-16;-59" keyTimes="0;0.5;1" dur="1.5s" repeatCount="indefinite" />
+              </circle>
+            </g>
+          </svg>`
+        : html`${chart}`}
     </div>`
 
     // render result
     return html`
-      <div class="${classMap({ dark: this.theme === 'dark' })} h-full">
+      <div
+        class="${classMap({
+          dark: this.theme === 'dark',
+        })} h-full w-full bg-white bg-opacity-5 backdrop-blur-lg rounded-lg border border-white border-opacity-5"
+      >
         <div
           id="composed-chart"
-          class=${`dark:text-neutral-100 text-neutral-950 h-full flex flex-col ${layer?.type === 'table' ? '' : 'p-5'} gap-4 rounded-lg bg-neutral-100 dark:bg-neutral-925 group/actions`}
+          class=${`dark:text-neutral-100 text-neutral-950 h-full flex flex-col ${layer?.type === 'table' ? '' : 'p-5'} gap-4 rounded-lg bg-white dark:bg-black group/actions`}
         >
           ${layer?.type === 'single_value'
             ? // Single value charts show the highlights at the bottom of the card
