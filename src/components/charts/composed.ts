@@ -10,20 +10,6 @@ export default class AstraComposedChart extends AstraChart {
   static override styles = [
     ...ClassifiedElement.styles,
     css`
-      * {
-        --astra-table-background-color: #f5f5f5;
-        --astra-table-border-color: #d4d4d4;
-        --astra-table-column-header-background-color: #f5f5f5;
-        --astra-table-row-even-background-color: #f5f5f5;
-      }
-
-      * .dark {
-        --astra-table-background-color: #121212;
-        --astra-table-border-color: #404040;
-        --astra-table-column-header-background-color-dark: #121212;
-        --astra-table-row-even-background-color-dark: #121212;
-      }
-
       .space-mono-regular {
         font-family: 'Space Mono', monospace;
         font-weight: 400;

@@ -52,18 +52,14 @@ export default {
           'table-column-content-dark': 'var(--astra-table-column-header-content-color-dark, #ffffff)',
 
           // rows
-          'table-row-even': 'var(--astra-table-row-even-background-color, rgb(255,255,255))',
-          'table-row-even-dark': 'var(--astra-table-row-even-background-color-dark, rgb(0,0,0))',
-          'table-row-odd': 'var(--astra-table-row-even-background-color, rgb(255,255,255))',
-          'table-row-odd-dark': 'var(--astra-table-row-even-background-color-dark, rgb(0,0,0))',
           'table-row-new': 'var(--astra-table-row-new-background-color, #DDF0DF)',
           'table-row-new-dark': 'var(--astra-table-row-new-background-color-dark, #14532D)',
           'table-row-hover': 'var(--astra-table-row-hover-background-color, rgba(0,0,0,0.03))',
           'table-row-hover-dark': 'var(--astra-table-row-hover-background-color-dark, rgb(30,30,30))',
           'table-row-selected': 'var(--astra-table-row-selected-background-color, rgba(245, 245, 245, 1))',
-          'table-row-selected-dark': 'var(--astra-table-row-selected-background-color-dark, rgb(23 23 23))',
+          'table-row-selected-dark': 'var(--astra-table-row-selected-background-color-dark, rgb(23, 23, 23))',
           'table-row-selected-hover': 'var(--astra-table-row-selected-hover-background-color, rgba(229, 229, 229, 1))',
-          'table-row-selected-hover-dark': 'var(--astra-table-row-selected-hover-background-color-dark, rgb(38 38 38))',
+          'table-row-selected-hover-dark': 'var(--astra-table-row-selected-hover-background-color-dark, rgb(38, 38, 38))',
 
           // editing cells
           'table-cell-mutating-background': 'var(--astra-cell-mutating-background-color, rgb(239 246 255))',
