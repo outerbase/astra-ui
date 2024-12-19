@@ -535,9 +535,9 @@ export class TableData extends MutableElement {
       cellContents = commonCellContents
     }
 
-    const themeClass = this.theme === 'dark' ? 'dark' : ''
+    const themeClass = this.theme === 'dark' ? 'dark ' : ''
     const inputEl = this.isEditing // &nbsp; prevents the row from collapsing (in height) when there is only 1 column
-      ? html`<div class="text-sm ${themeClass}">&nbsp;<input .value=${typeof displayValue === 'string' ? displayValue : (displayValue ?? '')} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px] font-table" @blur=${this.onBlur}></input></div>`
+      ? html`<div class="text-sm ${themeClass}">&nbsp;<input .value=${typeof displayValue === 'string' ? displayValue : (displayValue ?? '')} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px] font-table dark:text-theme-table-cell-mutating-content-dark text-theme-table-cell-mutating-content" @blur=${this.onBlur}></input></div>`
       : html``
     const emptySlot = this.blank ? html`<slot></slot>` : html``
     const menuOptions = this.dirty
