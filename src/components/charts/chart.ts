@@ -2,11 +2,13 @@ import { css, html, type PropertyValueMap } from 'lit'
 import { customElement, property, query } from 'lit/decorators.js'
 import {
   THEMES,
+  type APIResponse,
   type ChartTypeV3,
   type DashboardV3Chart,
   type DashboardV3ChartSortOrder,
   type PaletteThemeType,
   type Row,
+  type Rows,
 } from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
 
@@ -44,6 +46,11 @@ echarts.use([
   RadarChart,
   FunnelChart,
 ])
+
+// the following placeholder is used for demo/poc only
+// we are waiting for an API endpoint that only requires an auth token and chart id
+const PLACEHOLDER_WORKSPACE_ID = '-est' // TODO not use a workspace id at all
+const OUTERBASE_DOMAIN = 'app.dev.outerbase.com' // TODO set to production
 
 @customElement('astra-chart')
 export default class AstraChart extends ClassifiedElement {
@@ -173,15 +180,15 @@ export default class AstraChart extends ClassifiedElement {
     `,
   ]
 
-  protected static async getChartData(apiKey: string, chartId: string): Promise<DashboardV3Chart> {
+  protected static async getChartData(apiKey: string, chartId: string): Promise<APIResponse<DashboardV3Chart>> {
     if (!apiKey) throw new Error('Missing API key')
     if (!chartId) throw new Error('Missing chart ID')
 
     try {
-      const response = await fetch(`https://app.outerbase.com/api/v1/chart/${chartId}`, {
-        method: 'POST',
+      const response = await fetch(`https://${OUTERBASE_DOMAIN}/api/v1/workspace/${PLACEHOLDER_WORKSPACE_ID}/chart/${chartId}`, {
+        method: 'GET',
         headers: {
-          'x-chart-api-key': apiKey,
+          'x-auth-token': apiKey,
           'content-type': 'application/json',
         },
       })
@@ -497,9 +504,35 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   private updateChartData() {
-    if (this.apiKey && this.chartId) {
-      AstraChart.getChartData(this.apiKey, this.chartId).then((data) => {
-        this.data = data
+    const apiKey = this.apiKey
+    if (apiKey && this.chartId) {
+      AstraChart.getChartData(apiKey, this.chartId).then(async ({ response: chart }) => {
+        const data: APIResponse<Rows> = await (
+          await fetch(
+            `https://${OUTERBASE_DOMAIN}/api/v1/workspace/${PLACEHOLDER_WORKSPACE_ID}/source/${chart.params?.source_id}/query/raw`,
+            {
+              body: JSON.stringify({ query: chart?.params?.layers?.[0]?.sql, options: {} }),
+              headers: {
+                'content-type': 'application/json',
+                'x-auth-token': apiKey,
+              },
+              method: 'POST',
+            }
+          )
+        ).json()
+
+        // transform data because our local types don't match the servers'
+        chart.layers = chart.params?.layers ?? []
+        chart.layers[0].result = data.response.items
+        this.type = chart.type
+        this.data = chart
+
+        // extract column names [i.e. all the keys]
+        if (chart.layers[0].result.length > 0) {
+          this.columns = Object.keys(chart.layers[0].result[0])
+        }
+
+        this.initializeChart()
       })
     }
   }

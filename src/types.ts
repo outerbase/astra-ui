@@ -410,10 +410,33 @@ export type DashboardV3Chart = {
   options?: DashboardV3ChartOptions
   // The type of chart to render
   type?: ChartTypeV3
-  // TBD
-  params?: Record<string, string>
-  // source id is necessary when rendering a chart without the context of a base
-  source_id?: string
+
+  // as observed from API response `/api/v1/workspace/-est/chart/77cb3112-10ad-4620-9336-198359ed1a42`
+  params?: {
+    id: string
+    name: string
+    type: string
+    model: string
+    apiKey: string
+    layers: Array<DashboardV3ChartQuery>
+    options: {
+      xAxisKey: string
+      yAxisKeys: string[]
+      foreground: string
+      gradientStop: string
+      gradientStart: string
+      backgroundType: string
+      yAxisKeyColors: Record<string, string>
+    }
+    source_id: string
+    created_at: string
+    updated_at: string
+    workspace_id: string
+    connection_id: string | null
+  }
+
+  connection_id: string | null // johnny observing null dec 19 2024 for arbitrary chart
+  source_id: string | null // johnny observing null dec 19 2024 for arbitrary chart
 }
 
 export enum DashboardFilterType {
