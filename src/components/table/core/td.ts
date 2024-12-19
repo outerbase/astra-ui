@@ -247,6 +247,7 @@ export class TableData extends MutableElement {
       'relative focus:z-[1]': true,
       'h-[34px] flex items-center justify-center': true,
       'border-theme-table-border dark:border-theme-table-border-dark': true,
+      'backdrop-blur-sm': this.blank || this.pinned,
       // TODO support odd vs even again
       'text-theme-table-content dark:text-theme-table-content-dark': !this.isEditing,
       'text-theme-table-cell-mutating-content dark:text-theme-table-cell-mutating-content': this.isEditing,
@@ -303,6 +304,9 @@ export class TableData extends MutableElement {
 
   @property({ attribute: 'row-is-new', type: Boolean })
   public rowIsNew = false
+
+  @property({ attribute: 'pinned', type: Boolean })
+  pinned = false
 
   @state() menuIsOpen = false
   @state() isContentEditable = true // this property is to toggle off the contenteditableness of to resolve quirky focus and text selection that can happen when, say, right-clicking to trigger the context menu
