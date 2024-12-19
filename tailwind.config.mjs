@@ -36,6 +36,8 @@ export default {
           // background
           table: 'var(--astra-table-background-color, rgba(255,255,255, 1))',
           'table-dark': 'var(--astra-table-background-color-dark, rgba(0, 0, 0, 1))',
+          'table-row': 'var(--astra-table-row-background-color, rgba(255,255,255, 1))',
+          'table-row-dark': 'var(--astra-table-row-background-color-dark, rgba(0, 0, 0, 1))',
 
           // text
           'table-content': 'var(--astra-table-content-color, #000000)',
