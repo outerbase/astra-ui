@@ -2,6 +2,7 @@ import commonjs from '@rollup/plugin-commonjs'
 import multi from '@rollup/plugin-multi-entry'
 import resolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
+import replace from 'rollup-plugin-replace'
 
 export default {
   input: 'dist/js/bundle.js',
@@ -15,5 +16,8 @@ export default {
     resolve(), // Resolves node modules
     commonjs(), // Converts CommonJS modules to ES6, so they can be included in a Rollup bundle
     terser(), // Minifies the bundle
+    replace({
+      'process.env.NODE_ENV': JSON.stringify('production'),
+    }),
   ],
 }
