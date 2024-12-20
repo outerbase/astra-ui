@@ -29,6 +29,7 @@ import type {
 } from 'echarts/types/dist/shared'
 import { unsafeHTML } from 'lit/directives/unsafe-html.js'
 import { isDate } from '../../lib/format-date.js'
+import { OUTERBASE_API_DOMAIN, PLACEHOLDER_WORKSPACE_ID } from '../../variables.js'
 
 // Register the required components
 echarts.use([
@@ -46,11 +47,6 @@ echarts.use([
   RadarChart,
   FunnelChart,
 ])
-
-// the following placeholder is used for demo/poc only
-// we are waiting for an API endpoint that only requires an auth token and chart id
-const PLACEHOLDER_WORKSPACE_ID = '-est' // TODO not use a workspace id at all
-const OUTERBASE_DOMAIN = 'app.dev.outerbase.com' // TODO set to production
 
 @customElement('astra-chart')
 export default class AstraChart extends ClassifiedElement {
@@ -185,7 +181,7 @@ export default class AstraChart extends ClassifiedElement {
     if (!chartId) throw new Error('Missing chart ID')
 
     try {
-      const response = await fetch(`https://${OUTERBASE_DOMAIN}/api/v1/workspace/${PLACEHOLDER_WORKSPACE_ID}/chart/${chartId}`, {
+      const response = await fetch(`https://${OUTERBASE_API_DOMAIN}/api/v1/workspace/${PLACEHOLDER_WORKSPACE_ID}/chart/${chartId}`, {
         method: 'GET',
         headers: {
           'x-auth-token': apiKey,
@@ -509,7 +505,7 @@ export default class AstraChart extends ClassifiedElement {
       AstraChart.getChartData(apiKey, this.chartId).then(async ({ response: chart }) => {
         const data: APIResponse<Rows> = await (
           await fetch(
-            `https://${OUTERBASE_DOMAIN}/api/v1/workspace/${PLACEHOLDER_WORKSPACE_ID}/source/${chart.params?.source_id}/query/raw`,
+            `https://${OUTERBASE_API_DOMAIN}/api/v1/workspace/${PLACEHOLDER_WORKSPACE_ID}/source/${chart.params?.source_id}/query/raw`,
             {
               body: JSON.stringify({ query: chart?.params?.layers?.[0]?.sql, options: {} }),
               headers: {
