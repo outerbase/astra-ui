@@ -503,29 +503,15 @@ export default class AstraChart extends ClassifiedElement {
     const apiKey = this.apiKey
     if (apiKey && this.chartId) {
       AstraChart.getChartData(apiKey, this.chartId).then(async ({ response: chart }) => {
-        const data: APIResponse<Rows> = await (
-          await fetch(
-            `https://${OUTERBASE_API_DOMAIN}/api/v1/workspace/${PLACEHOLDER_WORKSPACE_ID}/source/${chart.params?.source_id}/query/raw`,
-            {
-              body: JSON.stringify({ query: chart?.params?.layers?.[0]?.sql, options: {} }),
-              headers: {
-                'content-type': 'application/json',
-                'x-auth-token': apiKey,
-              },
-              method: 'POST',
-            }
-          )
-        ).json()
-
         // transform data because our local types don't match the servers'
         chart.layers = chart.params?.layers ?? []
-        chart.layers[0].result = data.response.items
+        chart.layers[0].result = chart.result?.items
         this.type = chart.type
         this.data = chart
 
         // extract column names [i.e. all the keys]
-        if (chart.layers[0].result.length > 0) {
-          this.columns = Object.keys(chart.layers[0].result[0])
+        if (chart.result?.items && chart.result.items.length > 0) {
+          this.columns = Object.keys(chart.result?.items?.[0])
         }
 
         this.initializeChart()
