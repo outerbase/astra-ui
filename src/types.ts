@@ -435,6 +435,12 @@ export type DashboardV3Chart = {
     connection_id: string | null
   }
 
+  result?: {
+    schema: boolean
+    items: Row[] | null | undefined
+    count: number
+  }
+
   connection_id: string | null // johnny observing null dec 19 2024 for arbitrary chart
   source_id: string | null // johnny observing null dec 19 2024 for arbitrary chart
 }
