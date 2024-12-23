@@ -29,7 +29,7 @@ import type {
 } from 'echarts/types/dist/shared'
 import { unsafeHTML } from 'lit/directives/unsafe-html.js'
 import { isDate } from '../../lib/format-date.js'
-import { OUTERBASE_API_DOMAIN, PLACEHOLDER_WORKSPACE_ID } from '../../variables.js'
+import { OUTERBASE_API_DOMAIN } from '../../variables.js'
 
 // Register the required components
 echarts.use([
