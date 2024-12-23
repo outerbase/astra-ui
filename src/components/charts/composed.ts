@@ -174,8 +174,8 @@ export default class AstraComposedChart extends AstraChart {
     }
 
     // render chart
-    const showNoDataLabel = layer?.result?.length === 0 && layer?.type !== 'text'
-    const chart = super.render()
+    const showNoDataLabel = (layer?.result === undefined || layer?.result?.length === 0) && layer?.type !== 'text'
+    const chart = showNoDataLabel ? null : super.render()
     const chartSection = html`<div
       class=${`h-full w-full flex-1 ${layer?.type === 'table' ? 'border-t border-[#d4d4d4] dark:border-[#404040] z-0' : ''}`}
     >
