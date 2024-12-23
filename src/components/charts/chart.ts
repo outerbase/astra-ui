@@ -273,6 +273,10 @@ export default class AstraChart extends ClassifiedElement {
     if (_changedProperties.has('theme') || _changedProperties.has('colorTheme')) {
       this.applyTheme()
     }
+
+    if (_changedProperties.has('data')) {
+      this.initializeChart()
+    }
   }
 
   override disconnectedCallback() {
