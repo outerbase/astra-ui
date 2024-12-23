@@ -181,10 +181,10 @@ export default class AstraChart extends ClassifiedElement {
     if (!chartId) throw new Error('Missing chart ID')
 
     try {
-      const response = await fetch(`https://${OUTERBASE_API_DOMAIN}/api/v1/workspace/${PLACEHOLDER_WORKSPACE_ID}/chart/${chartId}`, {
-        method: 'GET',
+      const response = await fetch(`https://${OUTERBASE_API_DOMAIN}/api/v1/chart/${chartId}`, {
+        method: 'POST',
         headers: {
-          'x-auth-token': apiKey,
+          'x-chart-api-key': apiKey,
           'content-type': 'application/json',
         },
       })
