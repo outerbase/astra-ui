@@ -636,7 +636,7 @@ export default class AstraChart extends ClassifiedElement {
             borderWidth: 2,
           },
           label: {
-            show: true,
+            show: this.data?.options?.xAxisLabelHidden !== true,
             formatter: '{b}: {c} ({d}%)',
             color: this.theme === 'dark' ? '#fff' : '#000', // Set label text color to white
             textBorderColor: 'transparent', // Remove text border
