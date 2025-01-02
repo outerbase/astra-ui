@@ -489,7 +489,14 @@ export default class AstraChart extends ClassifiedElement {
 
   private getColorValues(): string[] {
     const DEFAULT_THEME = 'mercury'
-    return THEMES[this.colorTheme ?? DEFAULT_THEME].colors[this.theme]
+    const colorTheme = this.colorTheme ?? DEFAULT_THEME
+    const values = THEMES[colorTheme]
+
+    if (!values) {
+      throw new Error(`Theme "${colorTheme}" does not exist`)
+    }
+
+    return values.colors[this.theme] // return light or dark values
   }
 
   private applyTheme() {
