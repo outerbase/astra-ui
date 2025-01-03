@@ -238,6 +238,8 @@ export default class AstraChart extends ClassifiedElement {
     super.willUpdate(changedProperties)
 
     if (changedProperties.has('keyX') || changedProperties.has('keyY')) {
+      if (this.chartId && this.apiKey) return // don't interfere with API-driven charts
+
       const _y = typeof this.keyY === 'string' ? [this.keyY] : (this.keyY ?? [''])
       this.columns = [this.keyX ?? '', ..._y]
     }
@@ -513,8 +515,19 @@ export default class AstraChart extends ClassifiedElement {
         // transform data because our local types don't match the servers'
         chart.layers = chart.params?.layers ?? []
         chart.layers[0].result = chart.result?.items
+
+        const opts = chart.params?.options
+
         this.type = chart.type
         this.data = chart
+        this.keyX = opts?.xAxisKey
+        // this.keyY = opts.y
+        this.xAxisLabel = opts?.xAxisLabel ?? ''
+        this.yAxisLabel = opts?.yAxisLabel ?? ''
+        this.hideXAxisLabel = !!opts?.xAxisLabelHidden
+        this.yAxisLabelDisplay = opts?.yAxisLabelHidden ? 'hidden' : this.yAxisLabelDisplay
+        this.colorTheme = opts?.theme
+        this.yAxisColors = opts?.yAxisKeyColors
 
         // extract column names [i.e. all the keys]
         if (chart.result?.items && chart.result.items.length > 0) {
