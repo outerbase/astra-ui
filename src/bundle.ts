@@ -5,6 +5,7 @@ import AstraButton from './components/button.js'
 import AstraCalendar from './components/calendar/calendar.js'
 import AstraCard from './components/card.js'
 import Chart from './components/charts/chart.js'
+import AstraComposedChart from './components/charts/composed.js'
 import AstraInput from './components/input.js'
 import AstraScrollArea from './components/scroll-area.js'
 import AstraSelect from './components/select.js'
@@ -23,5 +24,6 @@ export {
   AstraTable,
   AstraText,
   Chart,
+  AstraComposedChart,
   OuterbaseTable,
 }
