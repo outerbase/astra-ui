@@ -419,15 +419,7 @@ export type DashboardV3Chart = {
     model: string
     apiKey: string
     layers: Array<DashboardV3ChartQuery>
-    options: {
-      xAxisKey: string
-      yAxisKeys: string[]
-      foreground: string
-      gradientStop: string
-      gradientStart: string
-      backgroundType: string
-      yAxisKeyColors: Record<string, string>
-    }
+    options: DashboardV3ChartOptions
     source_id: string
     created_at: string
     updated_at: string
