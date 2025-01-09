@@ -8,7 +8,6 @@ import {
   type DashboardV3ChartSortOrder,
   type PaletteThemeType,
   type Row,
-  type Rows,
 } from '../../types.js'
 import { ClassifiedElement } from '../classified-element.js'
 
