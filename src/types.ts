@@ -413,18 +413,18 @@ export type DashboardV3Chart = {
 
   // as observed from API response `/api/v1/workspace/-est/chart/77cb3112-10ad-4620-9336-198359ed1a42`
   params?: {
-    id: string
-    name: string
-    type: string
-    model: string
-    apiKey: string
-    layers: Array<DashboardV3ChartQuery>
-    options: DashboardV3ChartOptions
-    source_id: string
-    created_at: string
-    updated_at: string
-    workspace_id: string
-    connection_id: string | null
+    id?: string
+    name?: string
+    type?: string
+    model?: string
+    apiKey?: string
+    layers?: Array<DashboardV3ChartQuery>
+    options?: DashboardV3ChartOptions
+    source_id?: string
+    created_at?: string
+    updated_at?: string
+    workspace_id?: string
+    connection_id?: string | null
   }
 
   result?: {
