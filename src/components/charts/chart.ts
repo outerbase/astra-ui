@@ -2,6 +2,7 @@ import { css, html, type PropertyValueMap } from 'lit'
 import { customElement, property, query } from 'lit/decorators.js'
 import {
   THEMES,
+  type APIResponse,
   type ChartTypeV3,
   type DashboardV3Chart,
   type DashboardV3ChartSortOrder,
@@ -27,6 +28,7 @@ import type {
 } from 'echarts/types/dist/shared'
 import { unsafeHTML } from 'lit/directives/unsafe-html.js'
 import { isDate } from '../../lib/format-date.js'
+import { OUTERBASE_API_DOMAIN } from '../../variables.js'
 
 // Register the required components
 echarts.use([
@@ -173,12 +175,12 @@ export default class AstraChart extends ClassifiedElement {
     `,
   ]
 
-  protected static async getChartData(apiKey: string, chartId: string): Promise<DashboardV3Chart> {
+  protected static async getChartData(apiKey: string, chartId: string): Promise<APIResponse<DashboardV3Chart>> {
     if (!apiKey) throw new Error('Missing API key')
     if (!chartId) throw new Error('Missing chart ID')
 
     try {
-      const response = await fetch(`https://app.outerbase.com/api/v1/chart/${chartId}`, {
+      const response = await fetch(`https://${OUTERBASE_API_DOMAIN}/api/v1/chart/${chartId}`, {
         method: 'POST',
         headers: {
           'x-chart-api-key': apiKey,
@@ -235,6 +237,8 @@ export default class AstraChart extends ClassifiedElement {
     super.willUpdate(changedProperties)
 
     if (changedProperties.has('keyX') || changedProperties.has('keyY')) {
+      if (this.chartId && this.apiKey) return // don't interfere with API-driven charts
+
       const _y = typeof this.keyY === 'string' ? [this.keyY] : (this.keyY ?? [''])
       this.columns = [this.keyX ?? '', ..._y]
     }
@@ -486,7 +490,14 @@ export default class AstraChart extends ClassifiedElement {
 
   private getColorValues(): string[] {
     const DEFAULT_THEME = 'mercury'
-    return THEMES[this.colorTheme ?? DEFAULT_THEME].colors[this.theme]
+    const colorTheme = this.colorTheme ?? DEFAULT_THEME
+    const values = THEMES[colorTheme]
+
+    if (!values) {
+      throw new Error(`Theme "${colorTheme}" does not exist`)
+    }
+
+    return values.colors[this.theme] // return light or dark values
   }
 
   private applyTheme() {
@@ -497,9 +508,32 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   private updateChartData() {
-    if (this.apiKey && this.chartId) {
-      AstraChart.getChartData(this.apiKey, this.chartId).then((data) => {
-        this.data = data
+    const apiKey = this.apiKey
+    if (apiKey && this.chartId) {
+      AstraChart.getChartData(apiKey, this.chartId).then(async ({ response: chart }) => {
+        // transform data because our local types don't match the servers'
+        chart.layers = chart.params?.layers ?? []
+        chart.layers[0].result = chart.result?.items
+
+        const opts = chart.params?.options
+
+        this.type = chart.type
+        this.data = chart
+        this.keyX = opts?.xAxisKey
+        // this.keyY = opts.y
+        this.xAxisLabel = opts?.xAxisLabel ?? ''
+        this.yAxisLabel = opts?.yAxisLabel ?? ''
+        this.hideXAxisLabel = !!opts?.xAxisLabelHidden
+        this.yAxisLabelDisplay = opts?.yAxisLabelHidden ? 'hidden' : this.yAxisLabelDisplay
+        this.colorTheme = opts?.theme
+        this.yAxisColors = opts?.yAxisKeyColors
+
+        // extract column names [i.e. all the keys]
+        if (chart.result?.items && chart.result.items.length > 0) {
+          this.columns = Object.keys(chart.result?.items?.[0])
+        }
+
+        this.initializeChart()
       })
     }
   }
