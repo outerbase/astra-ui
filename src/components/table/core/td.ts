@@ -247,11 +247,13 @@ export class TableData extends MutableElement {
       'relative focus:z-[1]': true,
       'h-[34px] flex items-center justify-center': true,
       'border-theme-table-border dark:border-theme-table-border-dark': true,
+      'backdrop-blur-sm': this.blank || this.pinned,
       // TODO support odd vs even again
-      'text-theme-table-column-content dark:text-theme-table-column-content-dark': true,
+      'text-theme-table-content dark:text-theme-table-content-dark': !this.isEditing,
+      'text-theme-table-cell-mutating-content dark:text-theme-table-cell-mutating-content': this.isEditing,
       'bg-theme-table-row-new dark:bg-theme-table-row-new-dark': this.rowIsNew,
       // 'hover:bg-theme-table-row-selected-hover dark:hover:bg-theme-row-selected-hover-dark': this.isActive,
-      'bg-theme-table-row-even dark:bg-theme-table-row-even-dark': !this.rowIsNew && !this.isActive && (!this.dirty || this.hideDirt),
+      'bg-theme-table-row dark:bg-theme-table-row-dark': !this.rowIsNew && !this.isActive && (!this.dirty || this.hideDirt),
       'bg-theme-table-row-selected dark:bg-theme-table-row-selected-dark':
         !this.rowIsNew && this.isActive && (!this.dirty || this.hideDirt), // i.e. this is the column being sorted
       'bg-theme-table-cell-dirty dark:bg-theme-table-cell-dirty-dark': !this.rowIsNew && this.dirty && !this.hideDirt, // dirty cells
@@ -302,6 +304,9 @@ export class TableData extends MutableElement {
 
   @property({ attribute: 'row-is-new', type: Boolean })
   public rowIsNew = false
+
+  @property({ attribute: 'pinned', type: Boolean })
+  pinned = false
 
   @state() menuIsOpen = false
   @state() isContentEditable = true // this property is to toggle off the contenteditableness of to resolve quirky focus and text selection that can happen when, say, right-clicking to trigger the context menu
@@ -534,9 +539,9 @@ export class TableData extends MutableElement {
       cellContents = commonCellContents
     }
 
-    const themeClass = this.theme === 'dark' ? 'dark' : ''
+    const themeClass = this.theme === 'dark' ? 'dark ' : ''
     const inputEl = this.isEditing // &nbsp; prevents the row from collapsing (in height) when there is only 1 column
-      ? html`<div class="text-sm ${themeClass}">&nbsp;<input .value=${typeof displayValue === 'string' ? displayValue : (displayValue ?? '')} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px] font-table" @blur=${this.onBlur}></input></div>`
+      ? html`<div class="text-sm ${themeClass}">&nbsp;<input .value=${typeof displayValue === 'string' ? displayValue : (displayValue ?? '')} ?readonly=${this.readonly} @input=${this.onChange} class="z-[2] absolute top-0 bottom-0 right-0 left-0 bg-theme-table-cell-mutating-background dark:bg-theme-table-cell-mutating-background-dark outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 px-3 focus:rounded-[4px] font-table dark:text-theme-table-cell-mutating-content-dark text-theme-table-cell-mutating-content" @blur=${this.onBlur}></input></div>`
       : html``
     const emptySlot = this.blank ? html`<slot></slot>` : html``
     const menuOptions = this.dirty
