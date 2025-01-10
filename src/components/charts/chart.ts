@@ -29,6 +29,7 @@ import type {
 import { unsafeHTML } from 'lit/directives/unsafe-html.js'
 import { isDate } from '../../lib/format-date.js'
 import { OUTERBASE_API_DOMAIN } from '../../variables.js'
+import { debounce } from 'lodash-es'
 
 // Register the required components
 echarts.use([
@@ -543,7 +544,7 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   private setupResizeObserver() {
-    this.resizeObserver = new ResizeObserver((entries) => {
+    const onResize = debounce((entries: ResizeObserverEntry[]) => {
       for (const entry of entries) {
         if (entry.target === this.chartDiv) {
           const { width, height } = entry.contentRect
@@ -556,7 +557,9 @@ export default class AstraChart extends ClassifiedElement {
           }
         }
       }
-    })
+    }, 50)
+
+    this.resizeObserver = new ResizeObserver(onResize)
 
     if (this.chartDiv) {
       this.resizeObserver.observe(this.chartDiv)
