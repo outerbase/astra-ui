@@ -247,7 +247,7 @@ export class TableData extends MutableElement {
       'relative focus:z-[1]': true,
       'h-[34px] flex items-center justify-center': true,
       'border-theme-table-border dark:border-theme-table-border-dark': true,
-      'backdrop-blur-sm': this.blank || this.pinned,
+      // 'backdrop-blur-sm': this.blank || this.pinned,
       // TODO support odd vs even again
       'text-theme-table-content dark:text-theme-table-content-dark': !this.isEditing,
       'text-theme-table-cell-mutating-content dark:text-theme-table-cell-mutating-content': this.isEditing,
