@@ -228,6 +228,9 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: Number, attribute: 'min-x' }) minX?: number
   @property({ type: Number, attribute: 'max-x' }) maxX?: number
 
+  // custom echarts options
+  @property({ type: Object, attribute: 'custom' }) custom?: EChartsOption
+
   @query('#chart') private chartDiv!: HTMLDivElement
 
   private chartInstance?: echarts.ECharts
@@ -269,6 +272,12 @@ export default class AstraChart extends ClassifiedElement {
       _changedProperties.has('yAxisLabel') ||
       _changedProperties.has('columns')
     ) {
+      if (this.chartInstance) {
+        this.chartInstance.setOption(this.getChartOptions(), true)
+      }
+    }
+
+    if (_changedProperties.has('custom')) {
       if (this.chartInstance) {
         this.chartInstance.setOption(this.getChartOptions(), true)
       }
@@ -342,7 +351,6 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   private getChartOptions(): EChartsOption {
-    const colorValues = this.getColorValues()
     const datasetSource = this.data?.layers?.[0]?.result ?? []
 
     // Transform the datasetSource into a format suitable for eCharts by mapping over each item
@@ -356,6 +364,19 @@ export default class AstraChart extends ClassifiedElement {
         {} as Record<string, unknown>
       )
     )
+
+    // dimensions + source
+    const dataset = {
+      dimensions: this.columns,
+      source: formattedSource,
+    }
+
+    // short-circuit use custom config, if any
+    if (this.custom) {
+      return { dataset, ...this.custom }
+    }
+
+    const colorValues = this.getColorValues()
     const isTall = (this.chartHeight ?? 0) > 150
     const gridLineColors = this.theme === 'dark' ? '#FFFFFF08' : '#00000010'
     const axisLineColors = this.theme === 'dark' ? '#FFFFFF15' : '#00000020'
@@ -391,10 +412,7 @@ export default class AstraChart extends ClassifiedElement {
 
     const options: EChartsOption = {
       // backgroundColor: this.getBackgroundColor(),
-      dataset: {
-        dimensions: this.columns,
-        source: formattedSource,
-      },
+      dataset,
       tooltip: {
         trigger: this.type === 'scatter' ? 'item' : 'axis',
         borderColor: gridLineColors, // fix issue where 'item' tooltips were a different color than the rest (maybe it matched the series color)
