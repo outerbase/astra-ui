@@ -14,6 +14,7 @@ import { ClassifiedElement } from '../classified-element.js'
 // import * as echarts from 'echarts'
 import { BarChart, FunnelChart, HeatmapChart, LineChart, PieChart, RadarChart, ScatterChart } from 'echarts/charts'
 import {
+  CalendarComponent,
   DatasetComponent,
   LegendComponent,
   TitleComponent,
@@ -53,6 +54,7 @@ echarts.use([
   RadarChart,
   FunnelChart,
   VisualMapComponent,
+  CalendarComponent,
 ])
 
 @customElement('astra-chart')
