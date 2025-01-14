@@ -13,7 +13,14 @@ import { ClassifiedElement } from '../classified-element.js'
 
 // import * as echarts from 'echarts'
 import { BarChart, FunnelChart, HeatmapChart, LineChart, PieChart, RadarChart, ScatterChart } from 'echarts/charts'
-import { DatasetComponent, LegendComponent, TitleComponent, TooltipComponent, TransformComponent } from 'echarts/components'
+import {
+  DatasetComponent,
+  LegendComponent,
+  TitleComponent,
+  TooltipComponent,
+  TransformComponent,
+  VisualMapComponent,
+} from 'echarts/components'
 import * as echarts from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import type {
@@ -45,6 +52,7 @@ echarts.use([
   PieChart,
   RadarChart,
   FunnelChart,
+  VisualMapComponent,
 ])
 
 @customElement('astra-chart')
@@ -351,24 +359,11 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   private getChartOptions(): EChartsOption {
-    const datasetSource = this.data?.layers?.[0]?.result ?? []
-
-    // Transform the datasetSource into a format suitable for eCharts by mapping over each item
-    // and reducing columns to a record with column names as keys and corresponding item values.
-    const formattedSource: Record<string, unknown>[] = datasetSource.map((item) =>
-      this.columns.reduce(
-        (acc, column) => {
-          acc[column] = item[column]
-          return acc
-        },
-        {} as Record<string, unknown>
-      )
-    )
+    const source = this.data?.layers?.[0]?.result ?? []
 
     // dimensions + source
     const dataset = {
-      dimensions: this.columns,
-      source: formattedSource,
+      source,
     }
 
     // short-circuit use custom config, if any
@@ -382,8 +377,8 @@ export default class AstraChart extends ClassifiedElement {
     const axisLineColors = this.theme === 'dark' ? '#FFFFFF15' : '#00000020'
 
     // Determine if the X axis data is a date
-    const isXAxisDate = !!(this.columns[0] && formattedSource.some((item) => isDate(item[this.columns[0]] as string)))
-    const isYAxisDate = !!(this.columns[1] && formattedSource.some((item) => isDate(item[this.columns[1]] as string)))
+    const isXAxisDate = !!(this.columns[0] && source.some((item) => isDate(item[this.columns[0]] as string)))
+    const isYAxisDate = !!(this.columns[1] && source.some((item) => isDate(item[this.columns[1]] as string)))
 
     if (this.type === 'radar') {
       return {
@@ -395,7 +390,7 @@ export default class AstraChart extends ClassifiedElement {
           type: 'radar',
           data: [
             {
-              value: formattedSource.map((item) => Number(item[col])), // throws away precision of bigint?!
+              value: source.map((item) => Number(item[col])), // throws away precision of bigint?!
               name: col,
               itemStyle: {
                 color: this.yAxisColors?.[col] || colorValues[index % colorValues.length],
