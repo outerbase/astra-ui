@@ -364,6 +364,8 @@ export default class AstraChart extends ClassifiedElement {
     const isXAxisDate = !!(this.columns[0] && formattedSource.some((item) => isDate(item[this.columns[0]] as string)))
     const isYAxisDate = !!(this.columns[1] && formattedSource.some((item) => isDate(item[this.columns[1]] as string)))
 
+    const tooltipBgColor = this.theme === 'light' ? 'white' : 'black'
+
     if (this.type === 'radar') {
       return {
         radar: {
@@ -385,6 +387,7 @@ export default class AstraChart extends ClassifiedElement {
         tooltip: {
           trigger: 'item',
           borderColor: gridLineColors, // fix issue where 'item' tooltips were a different color than the rest (maybe it matched the series color)
+          backgroundColor: tooltipBgColor,
         },
       }
     }
@@ -398,6 +401,7 @@ export default class AstraChart extends ClassifiedElement {
       tooltip: {
         trigger: this.type === 'scatter' ? 'item' : 'axis',
         borderColor: gridLineColors, // fix issue where 'item' tooltips were a different color than the rest (maybe it matched the series color)
+        backgroundColor: tooltipBgColor,
       },
       legend: {
         show: !this.omitLegend && isTall,
@@ -583,6 +587,7 @@ export default class AstraChart extends ClassifiedElement {
 
   private addSeries(_options: EChartsOption) {
     const options = { ..._options }
+    const tooltipBgColor = this.theme !== 'dark' ? 'black' : 'dark'
 
     switch (this.type) {
       case 'column':
@@ -679,6 +684,7 @@ export default class AstraChart extends ClassifiedElement {
           tooltip: {
             trigger: 'item',
             borderColor: this.theme === 'dark' ? '#FFFFFF08' : '#00000010', // fix issue where 'item' tooltips were a different color than the rest (maybe it matched the series color)
+            backgroundColor: tooltipBgColor,
           },
         })
 
