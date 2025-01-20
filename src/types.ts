@@ -319,12 +319,7 @@ export type ChartTypeV3 =
   | 'radar'
   | 'funnel'
   | 'pie'
-// | 'smoothLine'
-// | 'stackedBar'
-// | 'candlestick'
-// | 'stepLine'
-// | 'stackedHorizontalBar'
-
+  | 'custom'
 export type DashboardV3ChartLegend = 'none' | 'top' | 'bottom' | 'left' | 'right'
 export type DashboardV3ChartLabelDisplayX = 'auto' | '0' | '45' | '90' | 'hidden'
 export type DashboardV3ChartLabelDisplayY = 'left' | 'right' | 'hidden'
