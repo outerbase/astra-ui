@@ -388,6 +388,9 @@ export default class AstraChart extends ClassifiedElement {
           trigger: 'item',
           borderColor: gridLineColors, // fix issue where 'item' tooltips were a different color than the rest (maybe it matched the series color)
           backgroundColor: tooltipBgColor,
+          textStyle: {
+            color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
+          },
         },
       }
     }
@@ -402,6 +405,9 @@ export default class AstraChart extends ClassifiedElement {
         trigger: this.type === 'scatter' ? 'item' : 'axis',
         borderColor: gridLineColors, // fix issue where 'item' tooltips were a different color than the rest (maybe it matched the series color)
         backgroundColor: tooltipBgColor,
+        textStyle: {
+          color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
+        },
       },
       legend: {
         show: !this.omitLegend && isTall,
@@ -685,6 +691,9 @@ export default class AstraChart extends ClassifiedElement {
             trigger: 'item',
             borderColor: this.theme === 'dark' ? '#FFFFFF08' : '#00000010', // fix issue where 'item' tooltips were a different color than the rest (maybe it matched the series color)
             backgroundColor: tooltipBgColor,
+            textStyle: {
+              color: this.theme === 'dark' ? '#FFFFFF' : '#000000',
+            },
           },
         })
 
