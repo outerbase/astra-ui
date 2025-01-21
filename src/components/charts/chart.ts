@@ -516,7 +516,6 @@ export default class AstraChart extends ClassifiedElement {
         chart.layers[0].result = chart.result?.items
 
         const opts = chart.params?.options
-
         this.type = chart.type
         this.data = chart
         this.keyX = opts?.xAxisKey
@@ -527,11 +526,7 @@ export default class AstraChart extends ClassifiedElement {
         this.yAxisLabelDisplay = opts?.yAxisLabelHidden ? 'hidden' : this.yAxisLabelDisplay
         this.colorTheme = opts?.theme
         this.yAxisColors = opts?.yAxisKeyColors
-
-        // extract column names [i.e. all the keys]
-        if (chart.result?.items && chart.result.items.length > 0) {
-          this.columns = Object.keys(chart.result?.items?.[0])
-        }
+        this.columns = opts && opts.xAxisKey ? [opts.xAxisKey, ...(opts.yAxisKeys ?? [])] : []
 
         this.initializeChart()
       })
