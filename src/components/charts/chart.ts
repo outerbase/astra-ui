@@ -737,13 +737,8 @@ export default class AstraChart extends ClassifiedElement {
     // Line break (double space followed by a newline)
     markdown = markdown.replace(/  \n/g, '<br>')
 
-    return html`<div
-      variant=${variant}
-      style=${`display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; font-family: Inter, sans-serif;`}
-      class="flex-1 self-start text-neutral-900 dark:text-neutral-100"
-    >
-      ${unsafeHTML(markdown)}
-    </div>`
+    // add `truncate` here to get ellipsis working, but at the cost of losing visibility of most of the content
+    return html`<div variant=${variant} class="flex-1 self-start text-neutral-900 dark:text-neutral-100">${unsafeHTML(markdown)}</div>`
   }
 
   private renderAsSingleValue() {

@@ -201,14 +201,16 @@ export default class AstraComposedChart extends AstraChart {
       >
         <div
           id="composed-chart"
-          class=${`dark:text-neutral-100 text-neutral-950 h-full flex flex-col ${layer?.type === 'table' ? '' : 'p-5'} gap-4 rounded-lg bg-white dark:bg-black group/actions`}
+          class=${`dark:text-neutral-100 text-neutral-950 h-full ${layer?.type === 'table' ? '' : 'p-5'} gap-4 rounded-lg bg-white dark:bg-black group/actions`}
         >
-          ${layer?.type === 'single_value'
-            ? // Single value charts show the highlights at the bottom of the card
-              html`${headerSection} ${chartSection}` // ${highlightSection} - Until more meaningful highlights are available, disabling for single value
-            : // All other charts show the highlights above the chart rendering
-              html`<div class=${`${layer?.type === 'table' ? 'p-5' : ''}`}>${headerSection} ${highlightSection}</div>
-                ${chartSection}`}
+          <div class=${`flex flex-col flex-1 h-full ${layer?.type === 'text' ? 'overflow-hidden' : ''}`}>
+            ${layer?.type === 'single_value'
+              ? // Single value charts show the highlights at the bottom of the card
+                html`${headerSection} ${chartSection}` // ${highlightSection} - Until more meaningful highlights are available, disabling for single value
+              : // All other charts show the highlights above the chart rendering
+                html`<div class=${`${layer?.type === 'table' ? 'p-5' : ''}`}>${headerSection} ${highlightSection}</div>
+                  ${chartSection}`}
+          </div>
         </div>
       </div>
     `
