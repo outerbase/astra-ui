@@ -382,6 +382,8 @@ export type DashboardV3ChartOptions = {
   gradientStop?: string
   // text color
   foreground?: string
+  // echarts custom json
+  echartsOptions?: string // JSON.stringified object matching `EChartsOption`
 }
 
 export type DashboardV3Highlight = {
