@@ -269,7 +269,6 @@ export default class AstraChart extends ClassifiedElement {
     super.firstUpdated(_changedProperties)
 
     this.initializeChart()
-    this.setupResizeObserver()
   }
 
   override updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
@@ -353,6 +352,8 @@ export default class AstraChart extends ClassifiedElement {
 
     this.chartInstance = echarts.init(this.chartDiv, undefined, { renderer: 'canvas' })
     this.chartInstance.setOption(this.getChartOptions())
+
+    this.setupResizeObserver()
   }
 
   private labelFormatter(value: unknown): string {
