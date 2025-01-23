@@ -29,6 +29,7 @@ import type {
 import { unsafeHTML } from 'lit/directives/unsafe-html.js'
 import { isDate } from '../../lib/format-date.js'
 import { OUTERBASE_API_DOMAIN } from '../../variables.js'
+import { debounce } from 'lodash-es'
 
 // Register the required components
 echarts.use([
@@ -254,9 +255,7 @@ export default class AstraChart extends ClassifiedElement {
 
   override firstUpdated(_changedProperties: PropertyValueMap<this>) {
     super.firstUpdated(_changedProperties)
-
     this.initializeChart()
-    this.setupResizeObserver()
   }
 
   override updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
@@ -334,6 +333,13 @@ export default class AstraChart extends ClassifiedElement {
 
     this.chartInstance = echarts.init(this.chartDiv, undefined, { renderer: 'canvas' })
     this.chartInstance.setOption(this.getChartOptions())
+
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect()
+      delete this.resizeObserver
+    }
+
+    this.setupResizeObserver()
   }
 
   private labelFormatter(value: unknown): string {
@@ -543,7 +549,7 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   private setupResizeObserver() {
-    this.resizeObserver = new ResizeObserver((entries) => {
+    const onResize = debounce((entries: ResizeObserverEntry[]) => {
       for (const entry of entries) {
         if (entry.target === this.chartDiv) {
           const { width, height } = entry.contentRect
@@ -556,7 +562,9 @@ export default class AstraChart extends ClassifiedElement {
           }
         }
       }
-    })
+    }, 50)
+
+    this.resizeObserver = new ResizeObserver(onResize)
 
     if (this.chartDiv) {
       this.resizeObserver.observe(this.chartDiv)
