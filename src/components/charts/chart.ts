@@ -13,7 +13,15 @@ import { ClassifiedElement } from '../classified-element.js'
 
 // import * as echarts from 'echarts'
 import { BarChart, FunnelChart, HeatmapChart, LineChart, PieChart, RadarChart, ScatterChart } from 'echarts/charts'
-import { DatasetComponent, LegendComponent, TitleComponent, TooltipComponent, TransformComponent } from 'echarts/components'
+import {
+  CalendarComponent,
+  DatasetComponent,
+  LegendComponent,
+  TitleComponent,
+  TooltipComponent,
+  TransformComponent,
+  VisualMapComponent,
+} from 'echarts/components'
 import * as echarts from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import type {
@@ -45,6 +53,8 @@ echarts.use([
   PieChart,
   RadarChart,
   FunnelChart,
+  VisualMapComponent,
+  CalendarComponent,
 ])
 
 @customElement('astra-chart')
@@ -228,6 +238,9 @@ export default class AstraChart extends ClassifiedElement {
   @property({ type: Number, attribute: 'min-x' }) minX?: number
   @property({ type: Number, attribute: 'max-x' }) maxX?: number
 
+  // custom echarts options
+  @property({ type: Object, attribute: 'custom' }) custom?: EChartsOption
+
   @query('#chart') private chartDiv!: HTMLDivElement
 
   private chartInstance?: echarts.ECharts
@@ -269,6 +282,12 @@ export default class AstraChart extends ClassifiedElement {
       _changedProperties.has('yAxisLabel') ||
       _changedProperties.has('columns')
     ) {
+      if (this.chartInstance) {
+        this.chartInstance.setOption(this.getChartOptions(), true)
+      }
+    }
+
+    if (_changedProperties.has('custom')) {
       if (this.chartInstance) {
         this.chartInstance.setOption(this.getChartOptions(), true)
       }
@@ -342,27 +361,26 @@ export default class AstraChart extends ClassifiedElement {
   }
 
   private getChartOptions(): EChartsOption {
-    const colorValues = this.getColorValues()
-    const datasetSource = this.data?.layers?.[0]?.result ?? []
+    const source = this.data?.layers?.[0]?.result ?? []
 
-    // Transform the datasetSource into a format suitable for eCharts by mapping over each item
-    // and reducing columns to a record with column names as keys and corresponding item values.
-    const formattedSource: Record<string, unknown>[] = datasetSource.map((item) =>
-      this.columns.reduce(
-        (acc, column) => {
-          acc[column] = item[column]
-          return acc
-        },
-        {} as Record<string, unknown>
-      )
-    )
+    // dimensions + source
+    const dataset = {
+      source,
+    }
+
+    // short-circuit use custom config, if any
+    if (this.custom) {
+      return { dataset, ...this.custom }
+    }
+
+    const colorValues = this.getColorValues()
     const isTall = (this.chartHeight ?? 0) > 150
     const gridLineColors = this.theme === 'dark' ? '#FFFFFF08' : '#00000010'
     const axisLineColors = this.theme === 'dark' ? '#FFFFFF15' : '#00000020'
 
     // Determine if the X axis data is a date
-    const isXAxisDate = !!(this.columns[0] && formattedSource.some((item) => isDate(item[this.columns[0]] as string)))
-    const isYAxisDate = !!(this.columns[1] && formattedSource.some((item) => isDate(item[this.columns[1]] as string)))
+    const isXAxisDate = !!(this.columns[0] && source.some((item) => isDate(item[this.columns[0]] as string)))
+    const isYAxisDate = !!(this.columns[1] && source.some((item) => isDate(item[this.columns[1]] as string)))
 
     if (this.type === 'radar') {
       return {
@@ -374,7 +392,7 @@ export default class AstraChart extends ClassifiedElement {
           type: 'radar',
           data: [
             {
-              value: formattedSource.map((item) => Number(item[col])), // throws away precision of bigint?!
+              value: source.map((item) => Number(item[col])), // throws away precision of bigint?!
               name: col,
               itemStyle: {
                 color: this.yAxisColors?.[col] || colorValues[index % colorValues.length],
@@ -391,10 +409,7 @@ export default class AstraChart extends ClassifiedElement {
 
     const options: EChartsOption = {
       // backgroundColor: this.getBackgroundColor(),
-      dataset: {
-        dimensions: this.columns,
-        source: formattedSource,
-      },
+      dataset,
       tooltip: {
         trigger: this.type === 'scatter' ? 'item' : 'axis',
         borderColor: gridLineColors, // fix issue where 'item' tooltips were a different color than the rest (maybe it matched the series color)
