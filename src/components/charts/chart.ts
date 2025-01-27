@@ -186,6 +186,11 @@ export default class AstraChart extends ClassifiedElement {
           'x-chart-api-key': apiKey,
           'content-type': 'application/json',
         },
+        body: JSON.stringify({
+          filters: {
+            time: { type: 'search', value: "'9 years'" },
+          },
+        }),
       })
       return response.json()
     } catch (err) {
@@ -261,6 +266,15 @@ export default class AstraChart extends ClassifiedElement {
 
   override updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
     super.updated(_changedProperties)
+
+    // Iterating through attributes to find those with the 'filter-' prefix
+    Array.from(this.attributes).forEach((attr) => {
+      if (attr.name.startsWith('filter-')) {
+        const key = attr.name
+        const value = attr.value
+        console.log(`Key: ${key}, Value: ${value}`)
+      }
+    })
 
     if (
       _changedProperties.has('data') ||
