@@ -1,1 +1,1 @@
-export const OUTERBASE_API_DOMAIN = 'app.outerbase.com'
+export const OUTERBASE_API_DOMAIN = 'app.dev.outerbase.com'
