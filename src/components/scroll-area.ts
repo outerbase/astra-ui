@@ -266,7 +266,7 @@ export default class ScrollArea extends ClassifiedElement {
       transform: `translateX(${this.horizontalScrollPosition}px)`,
       width: `${this.horizontalScrollSize}px`,
     }
-    let scrollableClasses = `absolute bottom-0 left-0 right-0 top-0 bg-theme-table dark:bg-theme-table-dark`
+    let scrollableClasses = `absolute bottom-0 left-0 right-0 top-0 bg-theme-table dark:bg-theme-table-dark h-fit`
     if (this.axis === Axis.both) scrollableClasses += ' overflow-scroll'
     if (this.axis === Axis.horizontal) scrollableClasses += ' overflow-scroll'
     if (this.axis === Axis.vertical) scrollableClasses += ' overflow-y-scroll overflow-x-hidden'
