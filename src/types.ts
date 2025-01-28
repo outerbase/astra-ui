@@ -383,7 +383,7 @@ export type DashboardV3ChartOptions = {
   // text color
   foreground?: string
   // echarts custom json
-  echartsOptions?: string // JSON.stringified object matching `EChartsOption`
+  echartOptions?: string // JSON.stringified object matching `EChartsOption`
 }
 
 export type DashboardV3Highlight = {
